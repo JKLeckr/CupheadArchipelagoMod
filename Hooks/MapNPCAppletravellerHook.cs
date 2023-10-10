@@ -72,7 +72,7 @@ namespace CupheadArchipelago.Hooks {
 
         private static bool APCheck() {
             if (APData.IsCurrentSlotEnabled()) {
-                APClient.SendCheck(APLocation.npc_mac);
+                APClient.Check(APLocation.npc_mac);
                 return true;
             } else return false;
         }
