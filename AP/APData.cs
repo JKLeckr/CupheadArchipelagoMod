@@ -28,12 +28,9 @@ namespace CupheadArchipelago.AP {
         public string slot = "Player";
         public string password = "";
         public string seed = "";
-        public DataPackage data = null;
         public Dictionary<string, object> slotData = null;
         public List<long> doneChecks = new List<long>();
         public List<NetworkItem> receivedItems = new List<NetworkItem>();
-
-        public string DataSum {get => (data!=null&&slot!=null)?data.Games[slot].Checksum:"";}
 
         public static void Init() {
             SData = new APData[3];
@@ -42,7 +39,7 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        public static void LoadData(bool overrideSave = false) {
+        public static void LoadData() {
             Plugin.Log($"[APData] Loading Data");
             for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
                 string filename = AP_SAVE_PATH + AP_SAVE_FILE_KEYS[i]+".sav";
@@ -97,7 +94,6 @@ namespace CupheadArchipelago.AP {
                 data.password = null;
             }
             data.seed = null;
-            data.data = null;
             Save(index);
         }
 
