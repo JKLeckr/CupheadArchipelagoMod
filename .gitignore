@@ -3,8 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# Custom Scripts
+# Custom Scripts and Files
 copy-build.bat
+copy-build.sh
+cuphead-folder.desktop
+
+# Backup files
+*.bak
 
 # Restricted
 [Rr]estricted/
