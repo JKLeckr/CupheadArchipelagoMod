@@ -6,6 +6,7 @@
 # Custom Scripts and Files
 copy-build.bat
 copy-build.sh
+launch-game.sh
 cuphead-folder.desktop
 
 # Backup files
@@ -315,6 +316,9 @@ tools/
 
 # Windows Shortcuts
 *.lnk
+
+# Vim files
+*.swp
 
 # OS General Files
 .DS_Store
