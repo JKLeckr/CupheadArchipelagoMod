@@ -163,6 +163,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation level_dlc_boss_rumrunners = new APLocation("Bootlegger Boogie Complete", 0xc4fae8);
         public static readonly APLocation level_dlc_boss_rumrunners_dlc_chaliced = new APLocation("Bootlegger Boogie Chalice Complete", 0xc4faea);
         public static readonly APLocation level_dlc_boss_rumrunners_topgrade = new APLocation("Bootlegger Boogie Top Grade", 0xc4fae9);
+        public static readonly APLocation level_dlc_boss_saltbaker = new APLocation("A Dish to Die For Complete", 0xc4faf4);
+        public static readonly APLocation level_dlc_boss_saltbaker_topgrade = new APLocation("A Dish to Die For Top Grade", 0xc4faf5);
         public static readonly APLocation level_dlc_boss_saltbaker_dlc_chaliced = new APLocation("A Dish to Die For Chalice Complete", 0xc4faf6);
         public static readonly APLocation level_dlc_boss_snowcult = new APLocation("Snow Cult Scuffle Complete", 0xc4faeb);
         public static readonly APLocation level_dlc_boss_snowcult_dlc_chaliced = new APLocation("Snow Cult Scuffle Chalice Complete", 0xc4faed);
