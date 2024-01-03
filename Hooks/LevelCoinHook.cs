@@ -1,10 +1,12 @@
+using System;
+using CupheadArchipelago.AP;
 using HarmonyLib;
 using UnityEngine;
 
 namespace CupheadArchipelago.Hooks {
     internal class LevelCoinHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Awake));
+            //Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(Collect));
         }
 
@@ -13,17 +15,17 @@ namespace CupheadArchipelago.Hooks {
             // DEBUG
             static bool Prefix(LevelCoin __instance, ref SpriteRenderer ____spriteRenderer, ref bool ____collected) {
 		        ____spriteRenderer = __instance.GetComponent<SpriteRenderer>();
-                Plugin.Log("Coin: "+__instance.transform.position.x+" : "+__instance.GlobalID);
+                Vector3 pos = __instance.transform.position;
+                Plugin.Log("Coin: "+pos.x+", "+pos.y+" : "+__instance.GlobalID);
                 return false;
             }
         }
 
         [HarmonyPatch(typeof(LevelCoin), "Collect")]
         internal static class Collect {
-            // DEBUG
-            static bool Prefix(ref bool ____collected) {
-                Plugin.Log("[Coin] Collected");
-                return false;
+            static bool Prefix(LevelCoin __instance, ref bool ____collected) {
+                Plugin.Log("Coin Collected: {0}", CoinIdMap.GetAPLocationId(__instance.GlobalID));
+                return true;
             }
         }
     }

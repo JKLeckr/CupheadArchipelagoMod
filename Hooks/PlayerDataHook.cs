@@ -47,13 +47,16 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(PlayerData), "ApplyLevelCoins")]
         internal static class ApplyLevelCoins {
-            /*static bool Prefix(ref PlayerData.PlayerCoinManager ___levelCoinManager) {
+            static bool Prefix(ref PlayerData.PlayerCoinManager ___levelCoinManager) {
                 if (APData.IsCurrentSlotEnabled()) {
                     Plugin.Log("[ApplyLevelCoins] Disabled.");
+                    foreach (PlayerData.PlayerCoinProperties coin in ___levelCoinManager.coins) {
+                        Plugin.Log("Got Coin {0}", coin.coinID);
+		            }
                     ___levelCoinManager = new PlayerData.PlayerCoinManager();
                     return false;
                 } else return true;
-            }*/
+            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool found = false;
