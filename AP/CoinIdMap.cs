@@ -48,6 +48,6 @@ namespace CupheadArchipelago.AP {
         };
 
         public static bool CoinIDExists(string coinId) => idToLoc.ContainsKey(coinId);
-        public static long GetAPLocationId(string coinId) => idToLoc[coinId];
+        public static APLocation GetAPLocation(string coinId) => idToLoc[coinId];
     }
 }
