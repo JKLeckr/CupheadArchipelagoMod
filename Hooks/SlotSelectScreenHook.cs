@@ -138,6 +138,10 @@ namespace CupheadArchipelago.Hooks {
                     APError();
                 }
                 else {
+                    object a = APClient.APSessionGSData.slotData["use_dlc"];
+                    Plugin.Log(a.ToString());
+                    int test = (int)APClient.APSessionGSData.slotData["use_dlc"];
+                    Plugin.Log(test);
                     SetAPConStatusText("Connected!\nChecking...");
                     while (Status>=0&&Status<=3) {
                         yield return null;
