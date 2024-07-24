@@ -34,7 +34,11 @@ namespace CupheadArchipelago.AP {
         public Dictionary<string, object> slotData = null;
         public DataPackage dataPackage = null;
         public List<long> doneChecks = new List<long>();
+        public long ReceivedItemIndex {get => receivedItems.Count;}
+        public Queue<NetworkItem> receivedItemApplyQueue = new Queue<NetworkItem>();
+        public Queue<NetworkItem> receivedLevelItemApplyQueue = new Queue<NetworkItem>();
         public List<NetworkItem> receivedItems = new List<NetworkItem>();
+        public List<NetworkItem> appliedReceivedItems = new List<NetworkItem>();
 
         static APData() {
             SData = new APData[3];
@@ -88,25 +92,25 @@ namespace CupheadArchipelago.AP {
                 Save(i);
             }
         }
+        public static void SaveCurrent() => Save(PlayerData.CurrentSaveFileIndex);
 
         public static void ResetData(int index, bool disable = true, bool resetSettings = false) {
+            APData old_data = SData[index];
+            SData[index] = new APData();
             APData data = SData[index];
-            //if (disable) data.enabled = false; //NOTE: This is a temp disable for testing purposes
-            if (resetSettings) {
-                data.address = null;
-                data.slot = null;
-                data.password = null;
+            //if (!disable) data.enabled = old_data.enabled; //NOTE: This is a temp disable for testing purposes
+            if (!resetSettings) {
+                data.address = old_data.address;
+                data.slot = old_data.slot;
+                data.password = old_data.password;
             }
-            data.seed = null;
             Save(index);
         }
 
         public static bool IsSlotEnabled(int index) {
-            return APData.Initialized&&APData.SData[index].enabled;
+            return Initialized&&SData[index].enabled;
         }
-        public static bool IsCurrentSlotEnabled() {
-            return APData.Initialized&&APData.SData[PlayerData.CurrentSaveFileIndex].enabled;
-        }
+        public static bool IsCurrentSlotEnabled() => IsSlotEnabled(PlayerData.CurrentSaveFileIndex);
 
         private static bool SlotDataIsEmpty(int index) {
             if (PlayerData.Initialized) {

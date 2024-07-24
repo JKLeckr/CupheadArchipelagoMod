@@ -13,6 +13,8 @@ using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
 using System.Net;
 using CupheadArchipelago.Auxiliary;
+using UnityEngine.Bindings;
+using UnityEngine;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -23,21 +25,20 @@ namespace CupheadArchipelago.AP {
         public static string APSessionSlotName {get; private set;} = "";
         public static int APSessionDataSlotNum {get; private set;} = -1;
         public static ConnectedPacket ConnectionInfo {get; private set;}
-        public static Dictionary<string, object> SlotData {get => APSessionGSData.slotData;}
-        public static Queue<NetworkItem> ItemReceiveQueue {get; private set;}
-        public static Queue<NetworkItem> ItemReceiveLevelQueue {get; private set;}
         public static bool IsTryingSessionConnect {get => SessionStatus > 1;}
         public static int SessionStatus { get; private set; } = 0;
+        private static Dictionary<string, object> SlotData {get => APSessionGSData.slotData;}
+        private static Queue<NetworkItem> ItemReceiveQueue {get => APSessionGSData.receivedItemApplyQueue;}
+        private static Queue<NetworkItem> ItemReceiveLevelQueue {get => APSessionGSData.receivedLevelItemApplyQueue;}
+        private static List<NetworkItem> ReceivedItems {get => APSessionGSData.receivedItems;}
+        private static long ReceivedItemsIndex {get => APSessionGSData.ReceivedItemIndex;}
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
+        private static long currentReceivedItemIndex = 0;
         private static readonly Version AP_VERSION = new Version(0,4,4,0);
         private const int STATUS_CONNECTED = 5;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
-        
-        static APClient() {
-            ResetQueues();
-        }
 
         public static bool CreateAndStartArchipelagoSession(int index) {
             if (IsTryingSessionConnect) {
@@ -68,7 +69,7 @@ namespace CupheadArchipelago.AP {
             return res;
         }
 
-        private static bool ConnectArchipelagoSession() {
+        private static bool ConnectArchipelagoSession(bool resetOnFail = true) {
             if (SessionStatus > 2) {
                 Plugin.LogWarning("[APClient] Already Trying to Connect. Aborting.");
                 return false;
@@ -97,7 +98,7 @@ namespace CupheadArchipelago.AP {
                 if (APData.CurrentSData.seed != seed) {
                     if (APData.CurrentSData.seed != "") {
                         Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
-                        CloseArchipelagoSession();
+                        CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -2;
                         return false;
                     }
@@ -110,7 +111,7 @@ namespace CupheadArchipelago.AP {
                     //TODO: Update this later
                     if (DLCManager.DLCEnabled() != use_dlc) { //!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC
                         Plugin.LogError("[APClient] Content Mismatch! Cannot use a non-DLC client on a DLC Archipelago slot!");
-                        CloseArchipelagoSession();
+                        CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -3;
                         return false;
                     }
@@ -131,7 +132,7 @@ namespace CupheadArchipelago.AP {
                     //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
-                    CloseArchipelagoSession();
+                    CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -4;
                     return false;
                 }
@@ -158,28 +159,27 @@ namespace CupheadArchipelago.AP {
 
                 Plugin.LogError(errorMessage);
 
-                Reset();
+                if (resetOnFail) Reset();
                 SessionStatus = -1;
                 return false;
             }
         }
         public static void ReconnectArchipelagoSession() {
             /* TODO: Have a return result from the success of the connection instead of passively failing */
-            Thread reconnectThread = new Thread(() => {
+            ThreadPool.QueueUserWorkItem(_ => {
                 int chances = RECONNECT_MAX_RETRIES;
                 while (chances<0||chances>0) {
                     Plugin.Log($"[APClient] Waiting {RECONNECT_RETRY_WAIT}...");
                     Thread.Sleep(RECONNECT_RETRY_WAIT);
                     Plugin.Log("[APClient] Reconnecting...");
-                    bool result = ConnectArchipelagoSession();
+                    bool result = ConnectArchipelagoSession(false);
                     if (result) return;
                     chances--;
                 }
                 Plugin.LogError("[APClient] Failed to reconnect!");
             });
-            reconnectThread.Start();
         }
-        public static bool CloseArchipelagoSession() {
+        public static bool CloseArchipelagoSession(bool reset = true) {
             bool res = false;
             Enabled = false;
             if (APSession!=null) {
@@ -189,7 +189,7 @@ namespace CupheadArchipelago.AP {
                     res = true;
                 }
             }
-            Reset();
+            if (reset) Reset();
             return res;
         }
         private static void Reset() {
@@ -199,7 +199,6 @@ namespace CupheadArchipelago.AP {
             APSessionDataSlotNum = -1;
             ConnectionInfo = null;
             doneChecksUnique = null;
-            ResetQueues();
         }
 
         public static void Check(long loc, bool sendChecks = true) {
@@ -212,6 +211,7 @@ namespace CupheadArchipelago.AP {
             if (!doneChecksUnique.Contains(loc)) {
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);
+                //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             }
         }
@@ -242,7 +242,7 @@ namespace CupheadArchipelago.AP {
             Plugin.Log($"[Archipelago] {message}");
         }
         private static void OnError(Exception e, string message) {
-            Plugin.Log("[APClient] "+message, LogLevel.Error);
+            Plugin.Log($"[APClient] {message}", LogLevel.Error);
         }
         private static void OnSocketClosed(string reason) {
             Plugin.Log("[APClient] Disconnected.");
@@ -252,23 +252,42 @@ namespace CupheadArchipelago.AP {
             }
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
+            Plugin.Log("[APClient] OnItemReceived");
             NetworkItem item = helper.PeekItem();
-            if ((item.Flags&ItemFlags.Trap)>0) {
-                ReceiveLevelItem(item);
-            }
-            else if (item.Item==APItem.extrahealth.Id||item.Item==APItem.superrecharge.Id) {
-                ReceiveLevelItem(item);
-            }
-            else {
+            if (currentReceivedItemIndex<ReceivedItemsIndex) {
+                Plugin.Log($"Recieved {item.Item} from {item.Player}");
                 ReceiveItem(item);
+            } else {
+                Plugin.Log($"Skipping {item.Item}");
+                currentReceivedItemIndex++;
             }
             helper.DequeueItem();
         }
         private static void ReceiveItem(NetworkItem item) {
-            ItemReceiveQueue.Enqueue(item);
+            if ((item.Flags&ItemFlags.Trap)>0) {
+                QueueItem(item, true);
+            }
+            else if (item.Item==APItem.extrahealth.Id||item.Item==APItem.superrecharge.Id) {
+                QueueItem(item, true);
+            }
+            else {
+                QueueItem(item, false);
+            }
         }
-        private static void ReceiveLevelItem(NetworkItem item) {
-            ItemReceiveLevelQueue.Enqueue(item);
+        private static void QueueItem(NetworkItem item, bool levelItem) {
+            if (levelItem) ItemReceiveLevelQueue.Enqueue(item);
+            else ItemReceiveQueue.Enqueue(item);
+            ReceivedItems.Add(item);
+            currentReceivedItemIndex++;
+        }
+        public static NetworkItem PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
+        public static NetworkItem PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
+        private static NetworkItem PopItemQueue(Queue<NetworkItem> itemQueue) {
+            NetworkItem item = itemQueue.Peek();
+            APItemMngr.ApplyItem(item.Item);
+            APSessionGSData.appliedReceivedItems.Add(item);
+            itemQueue.Dequeue();
+            return item;
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
@@ -301,11 +320,6 @@ namespace CupheadArchipelago.AP {
             } catch (KeyNotFoundException) {
                 throw new KeyNotFoundException($"GetAPSlotData: {key} is not a valid key!");
             }
-        }
-        
-        private static void ResetQueues() {
-            ItemReceiveQueue = new Queue<NetworkItem>();
-            ItemReceiveLevelQueue = new Queue<NetworkItem>();
         }
     }
 }

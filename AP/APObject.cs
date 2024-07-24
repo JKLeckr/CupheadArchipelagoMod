@@ -16,9 +16,9 @@ namespace CupheadArchipelago.AP {
     }
 
     public class APItem : APObject {
-        private static readonly Dictionary<long,string> id_to_name = new();
+        private static readonly Dictionary<long,APItem> id_map = new();
         private static readonly Dictionary<string,long> name_to_id = new();
-        public APItem(string name, long id) : base(name,id) { id_to_name.Add(id,name); name_to_id.Add(name,id); }
+        public APItem(string name, long id) : base(name,id) { id_map.Add(id,this); name_to_id.Add(name,id); }
 
         public static readonly APItem ability_dash = new APItem("Dash", 0xc4eae8);
         public static readonly APItem ability_duck = new APItem("Duck", 0xc4eae7);
@@ -60,17 +60,17 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem weapon_roundabout = new APItem("Roundabout", 0xc4eadd);
         public static readonly APItem weapon_spread = new APItem("Spread", 0xc4ead9);
 
-        public static APItem FromId(long id) => new APItem(id_to_name[id], id);
-        public static bool IdExists(long id) => id_to_name.ContainsKey(id);
-        public static bool NameExists(string name) => id_to_name.ContainsValue(name);
-        public static string IdToName(long id) => id_to_name[id];
+        public static APItem FromId(long id) => id_map[id];
+        public static bool IdExists(long id) => id_map.ContainsKey(id);
+        public static bool NameExists(string name) => name_to_id.ContainsKey(name);
+        public static string IdToName(long id) => id_map[id].Name;
         public static long NameToId(string name) => name_to_id[name];
     }
 
     public class APLocation : APObject {
-        private static readonly Dictionary<long,string> id_to_name = new();
+        private static readonly Dictionary<long,APLocation> id_map = new();
         private static readonly Dictionary<string,long> name_to_id = new();
-        public APLocation(string name, long id) : base(name,id) { id_to_name.Add(id,name); name_to_id.Add(name,id); }
+        public APLocation(string name, long id) : base(name,id) { id_map.Add(id,this); name_to_id.Add(name,id); }
 
         public static readonly APLocation coin_isle1_secret = new APLocation("Inkwell Isle One Secret Coin", 0xc4eb42);
         public static readonly APLocation coin_isle2_secret = new APLocation("Inkwell Isle Two Secret Coin", 0xc4eb43);
@@ -246,10 +246,10 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation shop_weapon4 = new APLocation("Porkrind's Emporium Weapon 4", 0xc4eb38);
         public static readonly APLocation shop_weapon5 = new APLocation("Porkrind's Emporium Weapon 5", 0xc4eb39);
 
-        public static APLocation FromId(long id) => new APLocation(id_to_name[id], id);
-        public static bool IdExists(long id) => id_to_name.ContainsKey(id);
-        public static bool NameExists(string name) => id_to_name.ContainsValue(name);
-        public static string IdToName(long id) => id_to_name[id];
+        public static APLocation FromId(long id) => id_map[id];
+        public static bool IdExists(long id) => id_map.ContainsKey(id);
+        public static bool NameExists(string name) => name_to_id.ContainsKey(name);
+        public static string IdToName(long id) => id_map[id].Name;
         public static long NameToId(string name) => name_to_id[name];
     }
 }

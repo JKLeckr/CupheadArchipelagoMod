@@ -133,10 +133,14 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator connect_and_start_cr() {
+                int displayState = 0;
                 while (Status!=1) {
                     if (Status<0) {
                         APAbort();
                         yield break;
+                    }
+                    if (Status>=5 && displayState<5) {
+                        SetAPConStatusText("Connected!\nSetting Up!");
                     }
                     yield return null;
                 }
