@@ -168,21 +168,21 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 // Setting up indexes and counts
                 int shopLevel = 0;
-                if (Ext.CheckAnyLevelComplete([]))
-                    shopLevel = 1;
-                if (Ext.CheckAnyLevelComplete([]))
-                    shopLevel = 2;
-                if (APSettings.UseDLC && Ext.CheckAnyLevelComplete([]))
-                    shopLevel = 3;
+                if (Ext.CheckAnyLevelComplete([Levels.FlyingBird, Levels.Dragon, Levels.Platforming_Level_2_1, Levels.Platforming_Level_2_2]))
+                    shopLevel++;
+                if (Ext.CheckAnyLevelComplete([Levels.SallyStagePlay, Levels.Platforming_Level_3_1, Levels.Platforming_Level_3_2]))
+                    shopLevel++;
+                if (APSettings.UseDLC && PlayerData.Data.GetMapData(Scenes.scene_map_world_DLC).sessionStarted)
+                    shopLevel++;
 
-                Plugin.Log("0");
+                Plugin.Log($"0: {shopLevel}");
 
                 int weaponCount = 0;
                 int charmCount = 0;
 
                 for (int i=0;i<=shopLevel;i++) {
                     weaponCount+=shopMap[i].Weapons;
-                    weaponCount+=shopMap[i].Charms;
+                    charmCount+=shopMap[i].Charms;
                 }
 
                 int totalCount = weaponCount + charmCount;

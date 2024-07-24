@@ -41,6 +41,7 @@ namespace CupheadArchipelago.AP {
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,4,6,0);
         internal const long AP_SLOTDATA_VERSION = 0;
+        internal const long AP_ID_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
@@ -121,6 +122,13 @@ namespace CupheadArchipelago.AP {
                     SessionStatus = -3;
                     return false;
                 }
+                Plugin.Log($"[APClient] Checking ID version...");
+                if (SlotData.id_version != AP_SLOTDATA_VERSION) {
+                    Plugin.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
+                    CloseArchipelagoSession(resetOnFail);
+                    SessionStatus = -3;
+                    return false;
+                }
                 Plugin.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
                 if (APData.CurrentSData.seed != seed) {
@@ -176,11 +184,12 @@ namespace CupheadArchipelago.AP {
 
                 SessionStatus = 6;
 
-                Plugin.Log($"[APClient] Waiting for location scout...");
+                if (scoutMapStatus==0) Plugin.Log($"[APClient] Waiting for location scout...");
                 while (scoutMapStatus==0) {
                     Thread.Sleep(100);
                 }
                 if (scoutMapStatus<0) {
+                    Plugin.LogError($"[APClient] Scout failed!");
                     SessionStatus = -7;
                     return false;
                 }
@@ -422,13 +431,19 @@ namespace CupheadArchipelago.AP {
                     break;
                 }*/
                 case ArchipelagoPacketType.Connected: {
-                    if (locMap.Count==0) {
+                    if (scoutMapStatus!=1) {
                         Plugin.Log($"[APClient] Getting location data...");
                         session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
                             Plugin.Log($" [APClient] Processing {si.Count} locations...");
+                            locMap.Clear();
                             bool err = false;
                             try {
                                 foreach (ScoutedItemInfo item in si.Values) {
+                                    if (SessionStatus<0) {
+                                        Plugin.LogError($" [APClient] Aborted due to session error.");
+                                        locMap.Clear();
+                                        return;
+                                    }
                                     long loc = item.LocationId;
                                     string locName = item.LocationName;
 

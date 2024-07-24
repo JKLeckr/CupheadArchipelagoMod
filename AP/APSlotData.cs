@@ -8,6 +8,7 @@ using CupheadArchipelago.Util;
 namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
+        public long id_version {get; private set;}
         public double world_version {get; private set;}
         public string[] levels {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
@@ -22,6 +23,7 @@ namespace CupheadArchipelago.AP {
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
+            id_version = GetAPSlotDataLong(slotData, "id_version");
             world_version = GetAPSlotDataFloat(slotData, "world_version");
             //Plugin.Log($"levels: {GetAPSlotData(slotData, "levels")}");
             levels = GetAPSlotDataDeserialized<List<string>>(slotData, "levels").ToArray();
