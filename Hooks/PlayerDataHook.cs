@@ -3,10 +3,10 @@
 
 using CupheadArchipelago.AP;
 using System;
-using System.Reflection;
-using HarmonyLib;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
+using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
     internal class PlayerDataHook {
@@ -16,6 +16,7 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));
             Harmony.CreateAndPatchAll(typeof(AddCurrency));
             Harmony.CreateAndPatchAll(typeof(ApplyLevelCoins));
+            //PlayerInventoryHook.Hook();
             //PlayerCoinManagerHook.Hook();
         }
 
@@ -55,7 +56,40 @@ namespace CupheadArchipelago.Hooks {
             }
         }
 
-        internal static class PlayerCoinManagerHook {
+        private static class PlayerInventoryHook {
+            internal static void Hook() {
+                Harmony.CreateAndPatchAll(typeof(PlayerInventory));
+            }
+
+            [HarmonyPatch(typeof(PlayerData.PlayerInventory), MethodType.Constructor)]
+            internal static class PlayerInventory {
+                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                    List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                    bool debug = false;
+                    bool success = false;
+
+                    if (debug) {
+                        for (int i = 0; i < codes.Count; i++) {
+                            Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        }
+                    }
+                    for (int i = 0; i < codes.Count - 3; i++) {
+                        success = true;
+                    }
+                    if (!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
+                    if (debug) {
+                        Plugin.Log("---");
+                        for (int i = 0; i < codes.Count; i++) {
+                            Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        }
+                    }
+
+                    return codes;
+                }
+            }
+        }
+
+        private static class PlayerCoinManagerHook {
             internal static void Hook() {
                 Harmony.CreateAndPatchAll(typeof(GetCoinCollected));
             }

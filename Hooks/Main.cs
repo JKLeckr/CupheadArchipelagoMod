@@ -15,6 +15,7 @@ namespace CupheadArchipelago.Hooks {
             MapCoinHook.Hook();
             MapNPCAppletravellerHook.Hook();
             MapDifficultySelectStartUIHook.Hook();
+            MapUICoinHook.Hook();
             LevelHook.Hook();
             TutorialLevelDoorHook.Hook();
             PlatformingLevelHook.Hook();

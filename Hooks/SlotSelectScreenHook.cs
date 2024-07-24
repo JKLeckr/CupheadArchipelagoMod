@@ -1,6 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using System;
 using System.Threading;
@@ -145,13 +146,28 @@ namespace CupheadArchipelago.Hooks {
                         yield break;
                     }
                     if (Status>=5 && displayState<5) {
-                        SetAPConStatusText("Connected!\nSetting Up!");
+                        SetAPConStatusText("Connected!\nSetting Up...");
                     }
                     yield return null;
                 }
 
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                 else Level.SetCurrentMode(Level.Mode.Normal);
+
+                if (APClient.APSessionGSData.appliedItems.Count==0) {
+                    SetAPConStatusText("Connected!\nInitial Setup...");
+                    Plugin.Log("Getting initial weapon...");
+                    bool hasWeapon = false;
+                    while (!hasWeapon) {
+                        if (!APClient.ItemReceiveQueueIsEmpty()) {
+                            NetworkItem item = APClient.PopItemReceiveQueue();
+                            if (ItemMap.GetItemType(item.Item)==AP.ItemType.Weapon) {
+                                Plugin.Log("Got a Weapon. All done!");
+                                // FIXME
+                            }
+                        }
+                    }
+                }
 
                 SetAPConStatusText("Connected!\nDone!");
                 _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
@@ -284,7 +300,7 @@ namespace CupheadArchipelago.Hooks {
             TextMeshProUGUI txt = obj.AddComponent<TextMeshProUGUI>();
             txt.alignment = TextAlignmentOptions.TopRight;
             txt.OverflowMode = TextOverflowModes.Overflow;
-            txt.color = Color.white;
+            txt.color = UnityEngine.Color.white;
             txt.font = FontLoader.GetTMPFont(FontLoader.TMPFontType.CupheadVogue_Bold_merged__SDF);
             txt.fontSize = 16;
             txt.text = "CupheadArchipelago "+PluginInfo.PLUGIN_VERSION;
@@ -311,7 +327,7 @@ namespace CupheadArchipelago.Hooks {
             TextMeshProUGUI txt = obj.AddComponent<TextMeshProUGUI>();
             txt.alignment = TextAlignmentOptions.TopLeft;
             txt.OverflowMode = TextOverflowModes.Overflow;
-            txt.color = Color.white;
+            txt.color = UnityEngine.Color.white;
             txt.font = FontLoader.GetTMPFont(FontLoader.TMPFontType.CupheadVogue_Bold_merged__SDF);
             txt.fontWeight = 600;
             txt.fontSize = 22;

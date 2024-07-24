@@ -39,7 +39,7 @@ namespace CupheadArchipelago.AP {
         public Queue<NetworkItem> receivedItemApplyQueue = new Queue<NetworkItem>();
         public Queue<NetworkItem> receivedLevelItemApplyQueue = new Queue<NetworkItem>();
         public List<NetworkItem> receivedItems = new List<NetworkItem>();
-        public List<NetworkItem> appliedReceivedItems = new List<NetworkItem>();
+        public List<NetworkItem> appliedItems = new List<NetworkItem>();
         private Goal goalsCompleted = Goal.None;
 
         static APData() {

@@ -128,7 +128,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.FreemoveIsles = GetAPSlotDataBool("freemove_isles");
                     APSettings.BossGradeChecks = (GradeChecks)GetAPSlotDataLong("boss_grade_checks");
                     APSettings.RungunGradeChecks = (GradeChecks)GetAPSlotDataLong("rungun_grade_checks");
-                    APSettings.DeathLink = GetAPSlotDataBool("deathlink"); 
+                    APSettings.DeathLink = GetAPSlotDataBool("deathlink");
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
@@ -313,7 +313,7 @@ namespace CupheadArchipelago.AP {
         private static NetworkItem PopItemQueue(Queue<NetworkItem> itemQueue) {
             NetworkItem item = itemQueue.Peek();
             APItemMngr.ApplyItem(item.Item);
-            APSessionGSData.appliedReceivedItems.Add(item);
+            APSessionGSData.appliedItems.Add(item);
             Plugin.Log("[APClient] Queue Pop");
             itemQueue.Dequeue();
             Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);

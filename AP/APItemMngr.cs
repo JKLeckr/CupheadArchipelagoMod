@@ -13,7 +13,7 @@ namespace CupheadArchipelago.AP {
                 case ItemType.Weapon: {
                     PlayerData.Data.Gift(PlayerId.PlayerOne, ItemMap.GetWeapon(item));
                     PlayerData.Data.Gift(PlayerId.PlayerTwo, ItemMap.GetWeapon(item));
-                    if (DLCManager.DLCEnabled()) {
+                    if (APSettings.UseDLC) {
                         if (item==APItem.plane_gun) {
                             PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way);
                             PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_3way);
@@ -21,6 +21,8 @@ namespace CupheadArchipelago.AP {
                         else if (item==APItem.plane_bombs) {
                             PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb);
                             PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_bomb);
+                            PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).HasEquippedSecondarySHMUPWeapon = true;
+                            PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).HasEquippedSecondarySHMUPWeapon = true;
                         }
                     }
                     break;
