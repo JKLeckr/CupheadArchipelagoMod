@@ -20,7 +20,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "Start")]
         internal static class Start {
             static bool Prefix(MapLevelDependentObstacle __instance, GameObject ___ToEnable, GameObject ___ToDisable) {
-                if (APData.Initialized&&APData.SData[PlayerData.CurrentSaveFileIndex].enabled&&APData.CurrentSData.FreemoveIsles) {
+                if (APData.Initialized&&APData.SData[PlayerData.CurrentSaveFileIndex].enabled&&APSettings.FreemoveIsles) {
                     __instance.OnConditionAlreadyMet();
                     return false;
                 }

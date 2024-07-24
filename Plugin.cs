@@ -74,12 +74,18 @@ namespace CupheadArchipelago {
             Hooks.LevelCoinHook.Hook();
         }
 
-        public static void Log(object data, LoggingFlags requiredFlags, LogLevel logLevel = LogLevel.Info) {
-            if (IsLoggingFlagsEnabled(requiredFlags)) Instance.Logger.Log(logLevel, data);
-        }
         public static void Log(object data, LogLevel logLevel = LogLevel.Info) {
             Log(data, (logLevel==LogLevel.Fatal||logLevel==LogLevel.Error)?LoggingFlags.None:LoggingFlags.Info, logLevel);
         }
+        public static void Log(object data, LoggingFlags requiredFlags, LogLevel logLevel = LogLevel.Info) {
+            if (IsLoggingFlagsEnabled(requiredFlags)) Instance.Logger.Log(logLevel, data);
+        }
+        public static void LogWarning(object data, LoggingFlags requiredFlags) {
+            Log(data, LoggingFlags.Warning | requiredFlags, LogLevel.Warning);
+        }
+        public static void LogWarning(object data) => LogWarning(data, LoggingFlags.None);
+        public static void LogError(object data) => Log(data, LoggingFlags.None, LogLevel.Error);
+        public static void LogFatal(object data) => Log(data, LoggingFlags.None, LogLevel.Fatal);
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
             return (((int)flags)&(int)Instance.configLogging.Value)==(int)flags;
         }

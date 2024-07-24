@@ -10,8 +10,6 @@ using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
     public class LevelHook {
-        private static readonly bool itemlevelqueueonly = false;
-
         public static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(zHack_OnWin));

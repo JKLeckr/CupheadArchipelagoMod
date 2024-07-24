@@ -31,8 +31,8 @@ namespace CupheadArchipelago.Hooks {
             private static Level.Mode GetClamppedCurrentLevelMode() {
                 if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
                     //Plugin.Log.LogInfo("Clamping mode");
-                    if (APData.CurrentSData.Hard||Level.CurrentMode>0) {
-                        return (Level.Mode)(APData.CurrentSData.Hard?2:1);
+                    if (APSettings.Hard||Level.CurrentMode>0) {
+                        return (Level.Mode)(APSettings.Hard?2:1);
                     } else return 0;
                 }
                 else return Level.CurrentMode;
@@ -46,8 +46,8 @@ namespace CupheadArchipelago.Hooks {
             RectTransform ___easy, RectTransform ___normalSeparator, RectTransform ___normal, RectTransform ___hardSeparator, RectTransform ___hard) {
                 if (!APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) return true;
                 bool hardonly = false;
-                if (APData.CurrentSData.Hard || PlayerData.Data.CurrentMap == Scenes.scene_map_world_4 || __instance.level == "Saltbaker") {
-                    if (APData.CurrentSData.Hard)
+                if (APSettings.Hard || PlayerData.Data.CurrentMap == Scenes.scene_map_world_4 || __instance.level == "Saltbaker") {
+                    if (APSettings.Hard)
                         if (PlayerData.Data.CurrentMap == Scenes.scene_map_world_4) {
                             ___options = new Level.Mode[1] {Level.Mode.Hard};
                             hardonly = true;
@@ -70,8 +70,8 @@ namespace CupheadArchipelago.Hooks {
                 }
                 ___index = Mathf.Max(0, ___options.Length-1);
                 ___normal.gameObject.SetActive(!hardonly);
-                ___hardSeparator.gameObject.SetActive(APData.CurrentSData.Hard&&!hardonly);
-                ___hard.gameObject.SetActive(APData.CurrentSData.Hard);
+                ___hardSeparator.gameObject.SetActive(APSettings.Hard&&!hardonly);
+                ___hard.gameObject.SetActive(APSettings.Hard);
                 return false;
             }
         }
@@ -126,7 +126,7 @@ namespace CupheadArchipelago.Hooks {
                 return codes;
             }
 
-            private static RectTransform GetDefaultDifficulty() => (APData.IsCurrentSlotEnabled() && APData.CurrentSData.Hard)?_hard:_normal;
+            private static RectTransform GetDefaultDifficulty() => (APData.IsCurrentSlotEnabled() && APSettings.Hard)?_hard:_normal;
         }
     }
 }

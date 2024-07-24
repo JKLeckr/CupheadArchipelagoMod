@@ -9,9 +9,10 @@ namespace CupheadArchipelago {
         None = 0x0,
         PluginInfo = 0x1,
         Info = 0x2,
-        Network = 0x4,
-        Debug = 0x8,
-        Transpiler = 0x16,
-        All = PluginInfo|Info|Network|Debug|Transpiler
+        Warning = 0x4,
+        Network = 0x8,
+        Debug = 0x16,
+        Transpiler = 0x32,
+        All = PluginInfo|Info|Warning|Network|Debug|Transpiler
     }
 }

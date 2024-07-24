@@ -9,28 +9,27 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
         public static ArchipelagoSession APSession {get; private set;}
         public static bool Enabled {get; private set;} = false;
+        public static bool Connected {get => SessionStatus>=STATUS_CONNECTED;}
         public static APData APSessionGSData {get => GetAPSessionData();}
         public static string APSessionSlotName {get; private set;} = "";
         public static int APSessionDataSlotNum {get; private set;} = -1;
-        public static RoomInfoPacket RoomInfo {get; private set;}
         public static ConnectedPacket ConnectionInfo {get; private set;}
         public static Dictionary<string, object> SlotData {get => APSessionGSData.slotData;}
-        public static DataPackage SessionDataPackage {get; private set;}
-        public static int HintPoints {get; private set;} = 0;
         public static Queue<NetworkItem> ItemReceiveQueue {get; private set;}
         public static Queue<NetworkItem> ItemReceiveLevelQueue {get; private set;}
         public static bool IsTryingSessionConnect {get => SessionStatus > 0;}
         public static int SessionStatus { get; private set; } = 0;
-        private static string DataPackageChecksum {get => (RoomInfo!=null)?RoomInfo.DataPackageChecksums["Cuphead"]:"-1";}
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static readonly Version AP_VERSION = new Version(0,4,2,0);
+        private const int STATUS_CONNECTED = 5;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
         
@@ -53,18 +52,13 @@ namespace CupheadArchipelago.AP {
             bool res = false;
 
             APData data = APData.SData[index];
-            APSession = ArchipelagoSessionFactory.CreateSession(data.address);
+            APSession = ArchipelagoSessionFactory.CreateSession(data.address, data.port);
             APSessionSlotName = data.slot;
             APSessionDataSlotNum = index;
-            SessionDataPackage = APSessionGSData.data;
-            APSession.Socket.SocketClosed += (string reason) => {
-                Plugin.Log("[APClient] Disconnected.");
-                Plugin.Log($"[APClient] Disconnect Reason: {reason}", LoggingFlags.Network);
-                if (Enabled) {
-                    ReconnectArchipelagoSession();
-                }
-            };
-            APSession.Socket.PacketReceived += OnPacket;
+            APSession.MessageLog.OnMessageReceived += OnMessageReceived;
+            APSession.Socket.ErrorReceived += OnError;
+            APSession.Socket.SocketClosed += OnSocketClosed;
+            APSession.Items.ItemReceived += OnItemReceived;
 
             res = ConnectArchipelagoSession();
 
@@ -72,7 +66,7 @@ namespace CupheadArchipelago.AP {
         }
         private static bool ConnectArchipelagoSession() {
             if (SessionStatus>1) {
-                Plugin.Log($"[APClient] Already Trying to Connect. Aborting.", LogLevel.Warning);
+                Plugin.LogWarning($"[APClient] Already Trying to Connect. Aborting.");
                 return false;
             }
             SessionStatus = 2;
@@ -81,7 +75,8 @@ namespace CupheadArchipelago.AP {
             Plugin.Log($"[APClient] Connecting to {data.address} as {data.slot}...");
             LoginResult result;
             try {
-                result = APSession.TryConnectAndLogin("Cuphead", data.slot, ItemsHandlingFlags.IncludeStartingInventory, AP_VERSION, null, null, data.password);
+                string passwd = data.password.Length>0?data.password:null;
+                result = APSession.TryConnectAndLogin("Cuphead", data.slot, ItemsHandlingFlags.IncludeStartingInventory, AP_VERSION, null, null, passwd);
             } catch (Exception e) {
                 result = new LoginFailure(e.GetBaseException().Message);
             }
@@ -97,7 +92,7 @@ namespace CupheadArchipelago.AP {
                 Plugin.Log($"[APClient] Checking seed...");
                 if (APData.CurrentSData.seed != APSession.RoomState.Seed) {
                     if (APData.CurrentSData.seed != "") {
-                        Plugin.Log("[APClient] Seed mismatch! Are you connecting to a different multiworld?", LogLevel.Error);
+                        Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession();
                         SessionStatus = -2;
                         return false;
@@ -109,7 +104,7 @@ namespace CupheadArchipelago.AP {
                 Plugin.Log($"[APClient] Checking settings...");
                 //TODO: Update this later
                 if (DLCManager.DLCEnabled() != use_dlc) { //!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC
-                    Plugin.Log("[APClient] Content Mismatch! Cannot use a non-DLC client on a DLC Archipelago slot!", LogLevel.Error);
+                    Plugin.LogError("[APClient] Content Mismatch! Cannot use a non-DLC client on a DLC Archipelago slot!");
                     CloseArchipelagoSession();
                     SessionStatus = -3;
                     return false;
@@ -128,6 +123,8 @@ namespace CupheadArchipelago.AP {
                 Plugin.Log($"[APClient] Setting up game...");
                 doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
 
+                //TODO: Add randomize client-side stuff
+
                 SessionStatus = 5;
 
                 Enabled = true;
@@ -145,7 +142,7 @@ namespace CupheadArchipelago.AP {
                     errorMessage += $"\n    {error}";
                 }
 
-                Plugin.Log(errorMessage, LogLevel.Error);
+                Plugin.LogError(errorMessage);
 
                 Reset();
                 SessionStatus = -1;
@@ -166,7 +163,7 @@ namespace CupheadArchipelago.AP {
                     if (result) return;
                     chances--;
                 }
-                Plugin.Log("[APClient] Failed to reconnect!", LogLevel.Error);
+                Plugin.LogError("[APClient] Failed to reconnect!");
             });
             reconnectThread.Start();
         }
@@ -184,12 +181,11 @@ namespace CupheadArchipelago.AP {
             return res;
         }
         private static void Reset() {
+            APSession = null;
+            SessionStatus = 0;
             APSessionSlotName = "";
             APSessionDataSlotNum = -1;
-            HintPoints = 0;
-            RoomInfo = null;
             ConnectionInfo = null;
-            SessionDataPackage = null;
             doneChecksUnique = null;
             ResetQueues();
         }
@@ -225,63 +221,31 @@ namespace CupheadArchipelago.AP {
 
         public static bool IsLocationChecked(long loc) => APSession.Locations.AllLocationsChecked.Contains(loc);
 
-        private static void OnPacket(ArchipelagoPacketBase packet) {
-            Plugin.Log($"[APClient] Packet type {packet.PacketType} received", LoggingFlags.Network);
-            switch (packet.PacketType) {
-                case ArchipelagoPacketType.RoomInfo: {
-                    RoomInfo = ((RoomInfoPacket)packet);
-                    Plugin.Log(String.Join(", ", new List<string>(RoomInfo.DataPackageChecksums.Keys).ToArray()));
-                    break;
-                }
-                case ArchipelagoPacketType.DataPackage: {
-                    SessionDataPackage = ((DataPackagePacket)packet).DataPackage;
-                    if (SessionDataPackage.Games["Cuphead"].Checksum!=APSessionGSData.DataSum) {
-                        Plugin.Log($"[APClient] Updating cached DataPackage...", LoggingFlags.Network);
-                        APSessionGSData.data = SessionDataPackage;
-                    }
-                    break;
-                }
-                case ArchipelagoPacketType.Connected: {
-                    ConnectionInfo = ((ConnectedPacket)packet);
-                    APSessionGSData.slotData = ConnectionInfo.SlotData;
-                    break;
-                }
-                case ArchipelagoPacketType.ReceivedItems: {
-                    ReceivedItemsPacket pk = ((ReceivedItemsPacket)packet);
-                    NetworkItem item = pk.Items[pk.Index];
-                    if ((item.Flags&ItemFlags.Trap)>0) {
-                        ReceiveLevelItem(item);
-                    }
-                    else if (item.Item==APItem.extrahealth.Id||item.Item==APItem.superrecharge.Id) {
-                        ReceiveLevelItem(item);
-                    }
-                    else {
-                        ReceiveItem(item);
-                    }
-                    break;
-                }
-                case ArchipelagoPacketType.PrintJSON: {
-                    //Console Log later
-                    break;
-                }
-                case ArchipelagoPacketType.RoomUpdate: {
-                    RoomUpdatePacket update = (RoomUpdatePacket)packet;
-                    if (update.Tags!=null) RoomInfo.Tags = update.Tags;
-                    if (update.Password.HasValue) RoomInfo.Password = (bool)update.Password;
-                    if (update.Permissions!=null) RoomInfo.Permissions = update.Permissions;
-                    if (update.HintCostPercentage.HasValue) RoomInfo.HintCostPercentage = (int)update.HintCostPercentage;
-                    if (update.LocationCheckPoints.HasValue) RoomInfo.LocationCheckPoints = (int)update.LocationCheckPoints;
-                    if (update.Players!=null) RoomInfo.Players = update.Players;
-                    if (update.HintPoints.HasValue) HintPoints = (int)update.HintPoints;
-                    if (update.CheckedLocations!=null) {
-                        long[] checkLocations = new long[ConnectionInfo.LocationsChecked.LongLength + update.CheckedLocations.LongLength];
-                        ConnectionInfo.LocationsChecked.CopyTo(checkLocations, 0);
-                        update.CheckedLocations.CopyTo(checkLocations, ConnectionInfo.LocationsChecked.LongLength);
-                        //TODO: Update
-                    }
-                    break;
-                }
+        private static void OnMessageReceived(LogMessage message) {
+            Plugin.Log($"[Archipelago] {message}");
+        }
+        private static void OnError(Exception e, string message) {
+            Plugin.Log("[APClient] "+message, LogLevel.Error);
+        }
+        private static void OnSocketClosed(string reason) {
+            Plugin.Log("[APClient] Disconnected.");
+            Plugin.Log($"[APClient] Disconnect Reason: {reason}", LoggingFlags.Network);
+            if (Enabled) {
+                ReconnectArchipelagoSession();
             }
+        }
+        private static void OnItemReceived(ReceivedItemsHelper helper) {
+            NetworkItem item = helper.PeekItem();
+            if ((item.Flags&ItemFlags.Trap)>0) {
+                ReceiveLevelItem(item);
+            }
+            else if (item.Item==APItem.extrahealth.Id||item.Item==APItem.superrecharge.Id) {
+                ReceiveLevelItem(item);
+            }
+            else {
+                ReceiveItem(item);
+            }
+            helper.DequeueItem();
         }
         private static void ReceiveItem(NetworkItem item) {
             ItemReceiveQueue.Enqueue(item);

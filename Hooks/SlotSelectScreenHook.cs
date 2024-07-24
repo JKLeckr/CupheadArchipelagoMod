@@ -80,7 +80,6 @@ namespace CupheadArchipelago.Hooks {
             private static MethodInfo _mi_SetState;
             private static Thread _ap_connect_thread = null;
             private static int Status => APClient.SessionStatus;
-            private static bool _ap_setup_result;
 
             static UpdatePlayerSelect() {
                 _mi_game_start_cr = typeof(SlotSelectScreen).GetMethod("game_start_cr", BindingFlags.NonPublic | BindingFlags.Instance);

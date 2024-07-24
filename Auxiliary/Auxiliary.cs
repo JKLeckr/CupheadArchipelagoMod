@@ -7,6 +7,8 @@ using HarmonyLib;
 
 namespace CupheadArchipelago.Auxiliary {
     public class Aux {
+        public static string BlankIsNull(string str) => str.Length>0?str:null;
+
         public static string CollectionToString(IEnumerable collection) {
             bool first = true;
             string res = "[";
