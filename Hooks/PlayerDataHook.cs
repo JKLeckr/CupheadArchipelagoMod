@@ -37,38 +37,6 @@ namespace CupheadArchipelago.Hooks {
                 }
                 else return true;
             }
-            /*static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-                bool debug = true;
-                FieldInfo _fi__APMode = typeof(PlayerDataHook).GetField("_APMode", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_SanitizeSlot = typeof(ClearSlot).GetMethod("SanitizeSlot", BindingFlags.NonPublic | BindingFlags.Static);
-                FieldInfo _fi__saveFiles = typeof(PlayerData).GetField("_saveFiles", BindingFlags.NonPublic | BindingFlags.Static);
-
-                Label startLabel = il.DefineLabel();
-
-                if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
-                }
-                codes[0].labels.Add(startLabel);
-                List<CodeInstruction> ncodes = [
-                    new CodeInstruction(OpCodes.Ldsfld, _fi__APMode),
-                    new CodeInstruction(OpCodes.Brfalse, startLabel),
-                    new CodeInstruction(OpCodes.Ldfld, _fi_inventories), // FIX
-                    new CodeInstruction(OpCodes.Call, _mi_SanitizeSlot),
-                    new CodeInstruction(OpCodes.Ret),
-                ];
-                codes.InsertRange(0, ncodes);
-                if (debug) {
-                    Plugin.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
-                }
-                
-                return codes;
-            }*/
 
             private static void SanitizeSlot(PlayerInventories inventories) {
                 inventories.playerOne._weapons.Clear();
@@ -129,7 +97,6 @@ namespace CupheadArchipelago.Hooks {
                     List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                     bool debug = false;
                     bool success = false;
-                    bool labelPlaced = false;
                     FieldInfo _fi__weapons = typeof(PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
                     MethodInfo _mi__weapons_Add = typeof(PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
 
@@ -150,7 +117,7 @@ namespace CupheadArchipelago.Hooks {
                                 break;
                         }
                     }
-                    if (!labelPlaced||!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
+                    if (!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
                     if (debug) {
                         Plugin.Log("---");
                         for (int i = 0; i < codes.Count; i++) {

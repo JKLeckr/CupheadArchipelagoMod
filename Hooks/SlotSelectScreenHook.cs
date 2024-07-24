@@ -129,7 +129,7 @@ namespace CupheadArchipelago.Hooks {
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
-                    if (APData.SData[_slotSelection].appliedItems.Count==0) {
+                    if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
                         SetAPConStatusText("Initial setup...");
                         PlayerDataHook.APSanitizeSlot(_slotSelection);
                     }
@@ -158,10 +158,8 @@ namespace CupheadArchipelago.Hooks {
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                 else Level.SetCurrentMode(Level.Mode.Normal);
 
-                SetAPConStatusText("Connected!\nUpdating items...");
-                while (APClient.APSessionGSData.appliedItems.Count==0 || !APClient.AreItemsUpToDate()) {
-                    yield return null;
-                }
+                if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) 
+                    APData.SData[_slotSelection].playerData.GiveStartWeapon();
 
                 SetAPConStatusText("Connected!\nDone!");
                 _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
@@ -189,6 +187,7 @@ namespace CupheadArchipelago.Hooks {
                 }
                 _lockMenu = false;
                 _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.SlotSelect});
+                //FIXME: Fix visual glitch with reverting
                 AudioManager.Play("level_menu_select");
             }
             private static void APErrorConnected(string message) {

@@ -3,7 +3,7 @@
 
 using HarmonyLib;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.Hooks {
     internal class MapNPCCanteenHook {
         internal static void Hook() {}
 

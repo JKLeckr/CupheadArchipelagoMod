@@ -126,6 +126,17 @@ namespace CupheadArchipelago.AP {
                     Plugin.Log($"[APClient] Applying settings...");
                     APSettings.UseDLC = use_dlc;
                     APSettings.Hard = GetAPSlotDataBool("expert_mode");
+                    APSettings.StartWeapon = GetAPSlotDataLong("start_weapon") switch {
+                        1 => APItem.weapon_spread,
+                        2 => APItem.weapon_chaser,
+                        3 => APItem.weapon_lobber,
+                        4 => APItem.weapon_charge,
+                        5 => APItem.weapon_roundabout,
+                        6 => APItem.weapon_dlc_crackshot,
+                        7 => APItem.weapon_dlc_converge,
+                        8 => APItem.weapon_dlc_twistup,
+                        _ => APItem.weapon_peashooter,
+                    };
                     APSettings.FreemoveIsles = GetAPSlotDataBool("freemove_isles");
                     APSettings.BossGradeChecks = (GradeChecks)GetAPSlotDataLong("boss_grade_checks");
                     APSettings.RungunGradeChecks = (GradeChecks)GetAPSlotDataLong("rungun_grade_checks");
@@ -296,9 +307,10 @@ namespace CupheadArchipelago.AP {
                 currentReceivedItemIndex=ReceivedItemsIndex;
                 Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
             }
-            if (currentReceivedItemIndex==ReceivedItemsIndex) {
+            else if (currentReceivedItemIndex==ReceivedItemsIndex && item.Item!=APSettings.StartWeapon) {
                 Plugin.Log($"Recieved {itemName} from {item.Player}");
                 ReceiveItem(item);
+                currentReceivedItemIndex++;
             } else {
                 Plugin.Log($"Skipping {itemName}");
                 currentReceivedItemIndex++;
@@ -307,18 +319,6 @@ namespace CupheadArchipelago.AP {
         }
         public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
         private static void ReceiveItem(NetworkItem item) {
-            if (item.Location == -1 && ItemMap.GetItemType(item.Item) != ItemType.Level) {
-                APItem apitem = APItem.FromId(item.Item);
-                Plugin.Log($"{apitem} is a precollected item! Applying immediately.");
-                APItemMngr.ApplyItem(item.Item);
-                // NOTE: This might need to be adjusted later depending on the order in which the start_weapon is in precollected
-                if (ItemMap.GetItemType(item.Item) == ItemType.Weapon && !ItemMap.IsPlaneItem(item.Item)) {
-                    Weapon weapon = ItemMap.GetWeapon(item.Item);
-                    PlayerData.PlayerLoadouts loadouts = PlayerData.GetDataForSlot(APSessionDataSlotNum).Loadouts;
-                    loadouts.playerOne.primaryWeapon = weapon;
-                    loadouts.playerTwo.primaryWeapon = weapon;
-                }
-            }
             if (ItemMap.GetItemType(item.Item)==ItemType.Level) {
                 QueueItem(item, true);
             }
@@ -332,7 +332,6 @@ namespace CupheadArchipelago.AP {
             Plugin.Log("[APClient] Queue Push");
             ReceivedItems.Add(item);
             LogQueueItemCounts();
-            currentReceivedItemIndex++;
         }
         internal static void LogQueueItemCounts() {
             Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);

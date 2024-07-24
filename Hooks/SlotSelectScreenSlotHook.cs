@@ -5,6 +5,10 @@ using CupheadArchipelago.AP;
 using HarmonyLib;
 using UnityEngine;
 using TMPro;
+using System;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using System.Reflection;
 
 namespace CupheadArchipelago.Hooks {
     internal class SlotSelectScreenSlotHook {
@@ -23,18 +27,71 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(SlotSelectScreenSlot), "Init")]
         internal static class Init {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                bool debug = false;
+                bool success = false;
+                bool labelPlaced = false;
+                FieldInfo _fi_MapData_sessionStarted = typeof(PlayerData.MapData).GetField("sessionStarted", BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo _fi_emptyChild = typeof(SlotSelectScreenSlot).GetField("emptyChild", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo _mi_gameObject_SetActive = typeof(GameObject).GetMethod("SetActive");
+                MethodInfo _mi_IsAPEmpty = typeof(Init).GetMethod("IsAPEmpty", BindingFlags.NonPublic | BindingFlags.Static);
+
+                Label tgt_label = il.DefineLabel();
+
+                Plugin.Log(_fi_MapData_sessionStarted);
+
+                if (debug) {
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+                for (int i=0;i<codes.Count-4;i++) {
+                    if (!success && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && 
+                        codes[i+2].opcode == OpCodes.Callvirt && codes[i+3].opcode == OpCodes.Ldfld && 
+                        (FieldInfo)codes[i+3].operand == _fi_MapData_sessionStarted && codes[i+4].opcode == OpCodes.Brtrue) {
+                            List<CodeInstruction> ncodes = [
+                                new CodeInstruction(OpCodes.Ldarg_1),
+                                new CodeInstruction(OpCodes.Call, _mi_IsAPEmpty),
+                                new CodeInstruction(OpCodes.Brtrue, tgt_label),
+                            ];
+                            codes.InsertRange(i, ncodes);
+                            i+=ncodes.Count;
+                            success = true;
+                    }
+                    if (!labelPlaced && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 
+                        (FieldInfo)codes[i+1].operand == _fi_emptyChild && codes[i+2].opcode == OpCodes.Callvirt && 
+                        codes[i+3].opcode == OpCodes.Ldc_I4_1 && codes[i+4].opcode == OpCodes.Callvirt && 
+                        (MethodInfo)codes[i+4].operand == _mi_gameObject_SetActive) {
+                            codes[i].labels.Add(tgt_label);
+                            labelPlaced = true;
+                    }
+                    if (success&&labelPlaced) break;
+                }
+                if (!labelPlaced||!success) throw new Exception($"{nameof(Init)}: Patch Failed! {labelPlaced}||{success}");
+                if (debug) {
+                    Plugin.Log("---");
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+
+                return codes;
+            }
             static void Postfix(SlotSelectScreenSlot __instance, ref int slotNumber) {
                 //Plugin.Log.LogInfo("Init");
                 //Plugin.Log.LogInfo(__instance.gameObject.name);
                 instances[slotNumber] = __instance;
 
                 if (slotAPText[slotNumber] != null) {
-                    Object.Destroy(slotAPText[slotNumber]);
+                    UnityEngine.Object.Destroy(slotAPText[slotNumber]);
                     slotAPText[slotNumber] = null;
                 }
 
                 CreateSlotAPText(slotNumber, __instance.transform);
             }
+
+            private static bool IsAPEmpty(int slot) => APData.IsSlotEnabled(slot) && APData.IsSlotEmpty(slot);
         }
         [HarmonyPatch(typeof(SlotSelectScreenSlot), "SetSelected")]
         internal static class SetSelected {
