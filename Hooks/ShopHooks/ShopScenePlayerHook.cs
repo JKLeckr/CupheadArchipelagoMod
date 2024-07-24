@@ -70,18 +70,31 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_charmItemPrefabs = typeof(ShopScenePlayer).GetField("charmItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_weaponIndex = typeof(ShopScenePlayer).GetField("weaponIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_charmIndex = typeof(ShopScenePlayer).GetField("charmIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_gameObject_SetActive = typeof(GameObject).GetMethod("SetActive");
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_IsUnlocked_c = GetMethod_IsUnlocked(typeof(Charm));
+                MethodInfo _mi_IsUnlocked_w = GetMethod_IsUnlocked(typeof(Weapon));
+                MethodInfo _mi_item_IsAvailable = typeof(ShopSceneItem).GetProperty("IsAvailable", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
                 MethodInfo _mi_SetupItems = typeof(Awake).GetMethod(nameof(SetupItems), BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPWeaponChecked = typeof(ShopScenePlayerHook).GetMethod(nameof(IsAPWeaponChecked), BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPCharmChecked = typeof(ShopScenePlayerHook).GetMethod(nameof(IsAPCharmChecked), BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label cifp = il.DefineLabel();
                 Label cmain = il.DefineLabel();
+                Label vwwhile = il.DefineLabel();
+                Label vcwhile = il.DefineLabel();
+                Label cwwhile = il.DefineLabel();
+                Label ccwhile = il.DefineLabel();
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
-                for (int i=0;i<codes.Count-6;i++) {
+                for (int i=0;i<codes.Count-11;i++) {
                     if ((successBit&1) == 0 && codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == _fi_Multiplayer &&
                         codes[i+1].opcode == OpCodes.Brtrue && codes[i+3].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+3].operand == _fi_player &&
                         codes[i+4].opcode == OpCodes.Ldc_I4_1 && codes[i+5].opcode == OpCodes.Bne_Un) {
@@ -95,7 +108,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             i+=ncodes.Count;
                             successBit|=1;
                     }
-                    if ((successBit&4) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i].labels.Count>0 && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
+                    if ((successBit&2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i].labels.Count>0 && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
                         codes[i+2].opcode == OpCodes.Stfld && (FieldInfo)codes[i+2].operand == _fi_weaponIndex) {
                             Label vanilla_label = codes[i].labels[0];
                             List<CodeInstruction> ncodes = [
@@ -112,11 +125,62 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             ncodes[0].labels.Add(cmain);
                             codes.InsertRange(i, ncodes);
                             i+=ncodes.Count;
-                            successBit|=4;
+                            successBit|=2;
                     }
-                    if (successBit>=5) break;
+                    if ((successBit&12) != 12 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data &&
+                        codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+2].operand == _fi_player &&
+                        codes[i+3].opcode == OpCodes.Ldarg_0 && codes[i+4].opcode == OpCodes.Ldfld && codes[i+5].opcode == OpCodes.Ldarg_0 &&
+                        codes[i+6].opcode == OpCodes.Ldfld && codes[i+7].opcode == OpCodes.Ldelem_Ref && codes[i+8].opcode == OpCodes.Ldfld &&
+                        codes[i+9].opcode == OpCodes.Callvirt && codes[i+10].opcode == OpCodes.Brtrue) {
+                            if ((successBit&4) == 0 && (FieldInfo)codes[i+4].operand == _fi_weaponItemPrefabs && (FieldInfo)codes[i+8].operand == _fi_weapon) {
+                                Label tgt_label = (Label)codes[i+10].operand;
+                                List<CodeInstruction> ncodes = [
+                                    CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                    new CodeInstruction(OpCodes.Brfalse, vwwhile),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_weaponItemPrefabs),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_weaponIndex),
+                                    new CodeInstruction(OpCodes.Ldelem_Ref),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_weapon),
+                                    new CodeInstruction(OpCodes.Call, _mi_IsAPWeaponChecked),
+                                    new CodeInstruction(OpCodes.Brfalse, cwwhile),
+                                    new CodeInstruction(OpCodes.Br, tgt_label),
+                                ];
+                                codes[i].labels.Add(vwwhile);
+                                codes[i+11].labels.Add(cwwhile);
+                                codes.InsertRange(i, ncodes);
+                                i+=ncodes.Count;
+                                successBit|=4;
+                            }
+                            else if ((successBit&8) == 0 && (FieldInfo)codes[i+4].operand == _fi_charmItemPrefabs && (FieldInfo)codes[i+8].operand == _fi_charm) {
+                                Label tgt_label = (Label)codes[i+10].operand;
+                                List<CodeInstruction> ncodes = [
+                                    CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                    new CodeInstruction(OpCodes.Brfalse, vcwhile),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_charmItemPrefabs),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_charmIndex),
+                                    new CodeInstruction(OpCodes.Ldelem_Ref),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_charm),
+                                    new CodeInstruction(OpCodes.Call, _mi_IsAPCharmChecked),
+                                    new CodeInstruction(OpCodes.Brfalse, ccwhile),
+                                    new CodeInstruction(OpCodes.Br, tgt_label),
+                                ];
+                                codes[i].labels.Add(vcwhile);
+                                codes[i+11].labels.Add(ccwhile);
+                                codes.InsertRange(i, ncodes);
+                                i+=ncodes.Count;
+                                successBit|=8;
+                            }
+                            else {
+                                Plugin.LogWarning($"{nameof(Awake)}: Found cluster bit 12, but bits 4 and 8 not found!");
+                            }
+                    }
+                    if (successBit>=15) break;
                 }
-                if (successBit!=5) throw new Exception($"{nameof(Awake)}: Patch Failed! {successBit}");
+                if (successBit!=15) throw new Exception($"{nameof(Awake)}: Patch Failed! {successBit}");
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -137,13 +201,16 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Plugin.Log("-items-");
                 foreach (ShopSceneItem item in items) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("\n-charmItemPrefabs-");
+                Plugin.Log("");
+                Plugin.Log("-charmItemPrefabs-");
                 foreach (ShopSceneItem item in charmItemPrefabs) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("\n-weaponItemPrefabs-");
+                Plugin.Log("");
+                Plugin.Log("-weaponItemPrefabs-");
                 foreach (ShopSceneItem item in weaponItemPrefabs) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("\n---END SHOP---");
+                Plugin.Log("");
+                Plugin.Log("---END SHOP---");
                 
                 // Setting order of prefabs for all shops
                 for (int i=0; i<wlen; i++) {
@@ -223,12 +290,17 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                     }
                 }
+                Transform parent = items[0].transform.parent;
                 foreach (ShopSceneItem item in items) {
-                    if (!(weaponSet.Contains(item.weapon) || charmSet.Contains(item.charm))) {
-                        item.gameObject.SetActive(false);
-                    }
+                    item.gameObject.SetActive(false);
+                    GameObject.Destroy(item.gameObject);
                 }
-                items = nitems;
+                items.Clear();
+                foreach (ShopSceneItem item in nitems) {
+                    ShopSceneItem nitem = UnityEngine.Object.Instantiate(item, parent);
+                    nitem.name = item.name;
+                    items.Add(nitem);
+                }
 
                 Plugin.Log("---SHOP AP---");
                 Plugin.Log("-items-");
@@ -273,6 +345,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 res += "]";
                 return res;
             }
+            /*private static bool IsAPWeaponChecked(PlayerId player, Weapon weapon) =>
+                ShopScenePlayerHook.IsAPWeaponChecked(weapon);
+            private static bool IsAPCharmChecked(PlayerId player, Charm charm) =>
+                ShopScenePlayerHook.IsAPCharmChecked(charm);*/
         }
 
         [HarmonyPatch(typeof(ShopScenePlayer), "Start")]
@@ -344,8 +420,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
-                MethodInfo _mi_IsAPCharmChecked = typeof(addNewItem_cr).GetMethod("IsAPCharmChecked", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_IsAPWeaponChecked = typeof(addNewItem_cr).GetMethod("IsAPWeaponChecked", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPCharmChecked = typeof(ShopScenePlayerHook).GetMethod("IsAPCharmChecked", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPWeaponChecked = typeof(ShopScenePlayerHook).GetMethod("IsAPWeaponChecked", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label cvanilla = il.DefineLabel();
                 Label wvanilla = il.DefineLabel();
@@ -416,17 +492,21 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 return codes;
             }
-
-            private static MethodInfo GetMethod_IsUnlocked(Type type) {
-                return typeof(PlayerData).GetMethod("IsUnlocked", BindingFlags.Public | BindingFlags.Instance,
-                    null, [typeof(PlayerId), type], null);
-            }
-            private static bool IsAPCharmChecked(Charm charm) => IsAPChecked(ItemType.Charm, Weapon.None, charm);
-            private static bool IsAPWeaponChecked(Weapon weapon) => IsAPChecked(ItemType.Weapon, weapon, Charm.None);
-            private static bool IsAPChecked(ItemType itemType, Weapon weapon, Charm charm) {
-                long loc = ShopSceneItemHook.GetAPLocation(itemType, weapon, charm);
-                return APClient.IsLocationChecked(loc);
-            }
         }
+
+        private static MethodInfo GetMethod_IsUnlocked(Type type) {
+            return typeof(PlayerData).GetMethod("IsUnlocked", BindingFlags.Public | BindingFlags.Instance,
+                null, [typeof(PlayerId), type], null);
+        }
+        private static bool IsAPCharmChecked(Charm charm) {
+            long loc = ShopSceneItemHook.charmLocations[charm];
+            return APClient.IsLocationChecked(loc);
+        }
+        private static bool IsAPWeaponChecked(Weapon weapon) {
+            long loc = ShopSceneItemHook.weaponLocations[weapon];
+            return APClient.IsLocationChecked(loc);
+        }
+        private static bool IsAPLocationChecked(ShopSceneItem item) => 
+            ShopSceneItemHook.IsAPLocationChecked(item);
     }
 }

@@ -84,7 +84,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static CupheadInput.AnyPlayerInput _input;
             private static MethodInfo _mi_game_start_cr;
             private static MethodInfo _mi_SetState;
-            private static MethodInfo _mi_GetButtonDown;
+            //private static MethodInfo _mi_GetButtonDown;
             private static int Status => APClient.SessionStatus;
 
             static UpdatePlayerSelect() {
