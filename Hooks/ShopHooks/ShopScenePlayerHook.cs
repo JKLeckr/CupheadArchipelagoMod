@@ -66,8 +66,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
         [HarmonyPatch(typeof(ShopScenePlayer), "Start")]
         internal static class Start {
-            static bool Prefix(ShopScenePlayer __instance) {
-                if (APData.IsCurrentSlotEnabled()) {
+            static bool Prefix(ShopScenePlayer __instance, PlayerId ___player) {
+                if (APData.IsCurrentSlotEnabled() && ___player!=0) {
                     __instance.enabled = false;
                     __instance.gameObject.SetActive(false);
                     return false;

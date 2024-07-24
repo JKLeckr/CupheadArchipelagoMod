@@ -146,6 +146,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             APClient.CloseArchipelagoSession(true);
                         }
                     }
+                    if (APData.SData[_slotSelection].version != APData.AP_DATA_VERSION) {
+                        SetAPConStatusText("Error!\nData Version Mismatch!\nCheck Log!");
+                        APAbort(false);
+                        return;
+                    }
                     SetAPConStatusText("Connecting...");
                     ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
                     _instance.StartCoroutine(connect_and_start_cr());
@@ -180,24 +185,26 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                 _lockMenu = false;
             }
-            private static void APAbort() {
+            private static void APAbort(bool displayError = true) {
                 Plugin.Log($"Abort! Client Status {Status}");
-                switch (Status) {
-                    case -1: {
-                        SetAPConStatusText("Connection failed!\nCheck Log!");
-                        break;
-                    }
-                    case -2: {
-                        SetAPConStatusText($"Disconnected!\nCheck failed!\nMultiworld Mismatch!");
-                        break;
-                    }
-                    case -3: {
-                        SetAPConStatusText($"Disconnected!\nCheck failed!\nContent Mismatch!");
-                        break;
-                    }
-                    default: { 
-                        SetAPConStatusText("Disconnected!\nError!\nCheck Log!");
-                        break;
+                if (displayError) {
+                    switch (Status) {
+                        case -1: {
+                            SetAPConStatusText("Connection failed!\nCheck Log!");
+                            break;
+                        }
+                        case -2: {
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nMultiworld Mismatch!");
+                            break;
+                        }
+                        case -3: {
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nContent Mismatch!");
+                            break;
+                        }
+                        default: { 
+                            SetAPConStatusText("Disconnected!\nError!\nCheck Log!");
+                            break;
+                        }
                     }
                 }
                 APClient.ResetSessionError();

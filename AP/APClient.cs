@@ -27,7 +27,7 @@ namespace CupheadArchipelago.AP {
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
-        private static Dictionary<string, object> SlotData { get => APSessionGSData.slotData; }
+        private static APSlotData SlotData { get => APSessionGSData.slotData; }
         private static Queue<NetworkItem> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
         private static Queue<NetworkItem> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
         private static List<NetworkItem> ReceivedItems { get => APSessionGSData.receivedItems; }
@@ -37,6 +37,7 @@ namespace CupheadArchipelago.AP {
         private static bool complete = false;
         private static long currentReceivedItemIndex = 0;
         private static readonly Version AP_VERSION = new Version(0,4,4,0);
+        internal const long AP_SLOTDATA_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
@@ -93,17 +94,26 @@ namespace CupheadArchipelago.AP {
                 Plugin.Log($"[APClient] Getting AP Data...");
 
                 LoginSuccessful loginData = (LoginSuccessful)result;
-                APSessionGSData.slotData = loginData.SlotData;
-                APSessionGSData.seed = APSession.RoomState.Seed;
+                if (APSessionGSData.seed.Length==0)
+                    APSessionGSData.seed = APSession.RoomState.Seed;
+                if (APSessionGSData.slotData==null) // Does the slot data change?
+                    APSessionGSData.slotData = new APSlotData(loginData.SlotData);
 
                 SessionStatus = 4;
+                Plugin.Log($"[APClient] Checking version...");
+                if (SlotData.version != AP_SLOTDATA_VERSION) {
+                    Plugin.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
+                    CloseArchipelagoSession(resetOnFail);
+                    SessionStatus = -2;
+                    return false;
+                }
                 Plugin.Log($"[APClient] Checking seed...");
                 string seed = APSession.RoomState.Seed;
                 if (APData.CurrentSData.seed != seed) {
                     if (APData.CurrentSData.seed != "") {
                         Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -2;
+                        SessionStatus = -3;
                         return false;
                     }
                     APData.CurrentSData.seed = seed;
@@ -111,37 +121,26 @@ namespace CupheadArchipelago.AP {
 
                 Plugin.Log($"[APClient] Checking settings...");
                 try {
-                    bool use_dlc = GetAPSlotDataBool("use_dlc");
                     // Probably handle this better later
-                    if (DLCManager.DLCEnabled()!=use_dlc) {
-                        Plugin.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {use_dlc}");
+                    if (DLCManager.DLCEnabled()!=SlotData.use_dlc) {
+                        Plugin.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
                         if (DLCManager.DLCEnabled())
                             Plugin.LogError($"[APClient] Note: You can disable the DLC if you have to.");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -3;
+                        SessionStatus = -4;
                         return false;
                     }
 
                     SessionStatus = 5;
 
                     Plugin.Log($"[APClient] Applying settings...");
-                    APSettings.UseDLC = use_dlc;
-                    APSettings.Hard = GetAPSlotDataBool("expert_mode");
-                    APSettings.StartWeapon = GetAPSlotDataLong("start_weapon") switch {
-                        1 => APItem.weapon_spread,
-                        2 => APItem.weapon_chaser,
-                        3 => APItem.weapon_lobber,
-                        4 => APItem.weapon_charge,
-                        5 => APItem.weapon_roundabout,
-                        6 => APItem.weapon_dlc_crackshot,
-                        7 => APItem.weapon_dlc_converge,
-                        8 => APItem.weapon_dlc_twistup,
-                        _ => APItem.weapon_peashooter,
-                    };
-                    APSettings.FreemoveIsles = GetAPSlotDataBool("freemove_isles");
-                    APSettings.BossGradeChecks = (GradeChecks)GetAPSlotDataLong("boss_grade_checks");
-                    APSettings.RungunGradeChecks = (GradeChecks)GetAPSlotDataLong("rungun_grade_checks");
-                    APSettings.DeathLink = GetAPSlotDataBool("deathlink");
+                    APSettings.UseDLC = SlotData.use_dlc;
+                    APSettings.Hard = SlotData.expert_mode;
+                    APSettings.StartWeapon = SlotData.start_weapon;
+                    APSettings.FreemoveIsles = SlotData.freemove_isles;
+                    APSettings.BossGradeChecks = SlotData.boss_grade_checks;
+                    APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
+                    APSettings.DeathLink = SlotData.deathlink;
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
@@ -154,7 +153,7 @@ namespace CupheadArchipelago.AP {
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -4;
+                    SessionStatus = -5;
                     return false;
                 }
 
@@ -378,17 +377,6 @@ namespace CupheadArchipelago.AP {
             else {
                 Plugin.Log("[APClient] Cannot get APSessionData", LogLevel.Error);
                 return null;
-            }
-        }
-
-        private static bool GetAPSlotDataBool(string key) => Aux.IntAsBool(GetAPSlotDataLong(key));
-        private static long GetAPSlotDataLong(string key) => (long)GetAPSlotData(key);
-        private static string GetAPSlotDataString(string key) => (string)GetAPSlotData(key);
-        private static object GetAPSlotData(string key) {
-            try { 
-                return APSessionGSData.slotData[key];
-            } catch (KeyNotFoundException) {
-                throw new KeyNotFoundException($"GetAPSlotData: {key} is not a valid key!");
             }
         }
     }

@@ -10,7 +10,7 @@ using BepInEx.Logging;
 
 namespace CupheadArchipelago.AP {
     public class APData {
-        private const int AP_WORLD_VERSION = 0;
+        internal const int AP_DATA_VERSION = 0;
         private static readonly string[] AP_SAVE_FILE_KEYS = new string[3]
         {
             "cuphead_player_data_v1_ap_slot_0_apdata",
@@ -24,7 +24,7 @@ namespace CupheadArchipelago.AP {
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionGSData; }
 
-        public int version {get; private set;} = AP_WORLD_VERSION;
+        public long version {get; private set;} = AP_DATA_VERSION;
         public bool enabled = false;
         public string address = "archipelago.gg";
         public int port = 38281;
@@ -32,7 +32,7 @@ namespace CupheadArchipelago.AP {
         public string password = "";
         public string seed = "";
         public PlayerData playerData = new PlayerData();
-        public Dictionary<string, object> slotData = null;
+        public APSlotData slotData = null;
         public DataPackage dataPackage = null;
         public List<long> doneChecks = new List<long>();
         public long ReceivedItemIndex {get => receivedItems.Count;}
@@ -68,6 +68,9 @@ namespace CupheadArchipelago.AP {
                     }
                     else {
                         SData[i] = data;
+                        if (data.version != AP_DATA_VERSION) {
+                            Plugin.LogWarning($"[APData] Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                        }
                     }
                 }
                 else {
@@ -79,8 +82,12 @@ namespace CupheadArchipelago.AP {
         }
         public static void Save(int index) {
             Plugin.Log($"Saving slot {index}");
-            string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
             APData data = SData[index];
+            if (data.version != AP_DATA_VERSION) {
+                Plugin.LogError($"[APData] Slot {index} Data version mismatch. {data.version} != {AP_DATA_VERSION}. Skipping.");
+                return;
+            }
+            string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
             string sdata = JsonConvert.SerializeObject(data);
             try {
                 File.WriteAllText(filename, sdata);
