@@ -106,7 +106,6 @@ namespace CupheadArchipelago.Hooks {
                                     break;
                                 }
                             }
-                            APClient.SendChecks();
                         } else {
                             Plugin.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                         }

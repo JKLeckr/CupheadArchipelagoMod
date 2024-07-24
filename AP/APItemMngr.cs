@@ -91,23 +91,23 @@ namespace CupheadArchipelago.AP {
                     AbstractPlayerController p1 = PlayerManager.GetPlayer(PlayerId.PlayerOne);
                     AbstractPlayerController p2 = PlayerManager.GetPlayer(PlayerId.PlayerTwo);
                     PlayerStatsManager stats1 = p1.stats;
-                    PlayerStatsManager stats2 = p2.stats;
+                    PlayerStatsManager stats2 = p2?.stats;
                     
                     if (item==APItem.lv_extrahealth) {
                         AudioManager.Play("pop_up");
                         stats1.SetHealth(stats1.Health + 1);
-                        if (p2!=null) stats2.SetHealth(stats2.Health + 1);
+                        stats2?.SetHealth(stats2.Health + 1);
                     }
                     else if (item==APItem.lv_superrecharge) {
                         stats1.DebugFillSuper();
-                        if (p2!=null) stats2.DebugFillSuper();
+                        stats2?.DebugFillSuper();
                     }
                     else if (item==APItem.lv_trap_fingerjam) {Stub(item);}
                     else if (item==APItem.lv_trap_inktrap) {Stub(item);}
                     else if (item==APItem.lv_trap_slowfire) {Stub(item);}
                     else if (item==APItem.lv_trap_superdrain) {
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
-                        if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
+                        if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
                     }
                     break;
                 }

@@ -140,6 +140,8 @@ namespace CupheadArchipelago.AP {
                     return false;
                 }
 
+                LogQueueItemCounts();
+
                 SessionStatus = 6;
 
                 Enabled = true;
@@ -294,8 +296,11 @@ namespace CupheadArchipelago.AP {
             else ItemReceiveQueue.Enqueue(item);
             Plugin.Log("[APClient] Queue Push");
             ReceivedItems.Add(item);
-            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);
+            LogQueueItemCounts();
             currentReceivedItemIndex++;
+        }
+        internal static void LogQueueItemCounts() {
+            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);
         }
         public static bool ItemReceiveQueueIsEmpty() => ItemReceiveQueue.Count==0;
         public static bool ItemReceiveLevelQueueIsEmpty() => ItemReceiveLevelQueue.Count==0;

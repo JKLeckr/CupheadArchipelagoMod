@@ -30,6 +30,7 @@ namespace CupheadArchipelago.Unity {
                 Current = this;
             }
             Plugin.Log($"[APManager] Initialized as Current {type}");
+            this.type = type;
             active = true;
             init = true;
         }
@@ -48,7 +49,9 @@ namespace CupheadArchipelago.Unity {
                     if (type == Type.Level) {
                         if (debug) Plugin.Log($"ItemLevelQueue {APClient.ItemReceiveLevelQueueCount()}");
                         if (!APClient.ItemReceiveLevelQueueIsEmpty()) {
+                            if (debug) Plugin.Log($"ItemLevelQueue has item");
                             if (timer>=applyInterval) {
+                                if (debug) Plugin.Log($"ItemLevelQueue is applying");
                                 APClient.PopItemReceiveLevelQueue();
                                 AudioManager.Play("level_coin_pickup"); //TEMP
                                 timer = 0f;
@@ -57,6 +60,7 @@ namespace CupheadArchipelago.Unity {
                     }
                     if (debug) Plugin.Log($"ItemQueue {APClient.ItemReceiveQueueCount()}");
                     if (!APClient.ItemReceiveQueueIsEmpty()) {
+                        if (debug) Plugin.Log($"ItemQueue has item");
                         APClient.PopItemReceiveQueue();
                         AudioManager.Play("level_coin_pickup"); //TEMP
                     }
