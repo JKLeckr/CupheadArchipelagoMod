@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using static PlayerData;
 
 namespace CupheadArchipelago.Hooks {
     internal class PlayerDataHook {
         internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(Init));
+            Harmony.CreateAndPatchAll(typeof(ClearSlot));
             Harmony.CreateAndPatchAll(typeof(OnLoaded));
             Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));
             Harmony.CreateAndPatchAll(typeof(AddCurrency));
@@ -24,18 +26,59 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(PlayerData), "ClearSlot")]
         internal static class ClearSlot {
-            static bool Prefix() {
+            private static readonly FieldInfo _fi_inventories = typeof(PlayerData).GetField("inventories", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            static bool Prefix(int slot, PlayerData[] ____saveFiles) {
                 if (_APMode) {
-                    // TODO: Add
+                    PlayerData data = ____saveFiles[slot];
+                    PlayerInventories inventories = (PlayerInventories)_fi_inventories.GetValue(data);
+                    SanitizeSlot(inventories);
                     return false;
                 }
                 else return true;
+            }
+            /*static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                bool debug = true;
+                FieldInfo _fi__APMode = typeof(PlayerDataHook).GetField("_APMode", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_SanitizeSlot = typeof(ClearSlot).GetMethod("SanitizeSlot", BindingFlags.NonPublic | BindingFlags.Static);
+                FieldInfo _fi__saveFiles = typeof(PlayerData).GetField("_saveFiles", BindingFlags.NonPublic | BindingFlags.Static);
+
+                Label startLabel = il.DefineLabel();
+
+                if (debug) {
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+                codes[0].labels.Add(startLabel);
+                List<CodeInstruction> ncodes = [
+                    new CodeInstruction(OpCodes.Ldsfld, _fi__APMode),
+                    new CodeInstruction(OpCodes.Brfalse, startLabel),
+                    new CodeInstruction(OpCodes.Ldfld, _fi_inventories), // FIX
+                    new CodeInstruction(OpCodes.Call, _mi_SanitizeSlot),
+                    new CodeInstruction(OpCodes.Ret),
+                ];
+                codes.InsertRange(0, ncodes);
+                if (debug) {
+                    Plugin.Log("---");
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+                
+                return codes;
+            }*/
+
+            private static void SanitizeSlot(PlayerInventories inventories) {
+                inventories.playerOne._weapons.Clear();
+                inventories.playerTwo._weapons.Clear();
             }
         }
 
         internal static void APSanitizeSlot(int slot) {
             _APMode = true;
-            PlayerData.ClearSlot(slot);
+            ClearSlot(slot);
             _APMode = false;
         }
 
@@ -50,7 +93,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(PlayerData), "SaveCurrentFile")]
         internal static class SaveCurrentFile {
             static void Postfix() {
-                int index = PlayerData.CurrentSaveFileIndex;
+                int index = CurrentSaveFileIndex;
                 Debug.Log($"[APData] Saving to slot {index}");
                 APData.Save(index);
             }
@@ -66,10 +109,10 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(PlayerData), "ApplyLevelCoins")]
         internal static class ApplyLevelCoins {
-            static bool Prefix(PlayerData.PlayerCoinManager ___coinManager, ref PlayerData.PlayerCoinManager ___levelCoinManager) {
+            static bool Prefix(PlayerCoinManager ___coinManager, ref PlayerCoinManager ___levelCoinManager) {
                 if (APData.IsCurrentSlotEnabled()) {
                     Plugin.Log("[ApplyLevelCoins] Disabled.");
-                    ___levelCoinManager = new PlayerData.PlayerCoinManager();
+                    ___levelCoinManager = new PlayerCoinManager();
                     return false;
                 } else return true;
             }
@@ -80,34 +123,27 @@ namespace CupheadArchipelago.Hooks {
                 Harmony.CreateAndPatchAll(typeof(PlayerInventory));
             }
 
-            [HarmonyPatch(typeof(PlayerData.PlayerInventory), MethodType.Constructor)]
+            [HarmonyPatch(typeof(PlayerInventory), MethodType.Constructor)]
             internal static class PlayerInventory {
-                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                     List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                     bool debug = false;
                     bool success = false;
                     bool labelPlaced = false;
-                    FieldInfo _fi__weapons = typeof(PlayerData.PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
-                    MethodInfo _mi__weapons_Add = typeof(PlayerData.PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
-
-                    Label endLabel = il.DefineLabel();
+                    FieldInfo _fi__weapons = typeof(PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
+                    MethodInfo _mi__weapons_Add = typeof(PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
 
                     if (debug) {
                         for (int i = 0; i < codes.Count; i++) {
                             Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                         }
                     }
-                    if (codes[codes.Count-1].opcode == OpCodes.Ret) {
-                        codes[codes.Count-1].labels.Add(endLabel);
-                        Plugin.Log($"{nameof(PlayerInventory)}: Placed endlabel");
-                        labelPlaced = true;
-                    }
                     for (int i = 0; i < codes.Count - 3; i++) {
                         if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi__weapons &&
                             codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi__weapons_Add) {
                                 List<CodeInstruction> ncodes = [
                                     CodeInstruction.Call(() => IsAPMode()), 
-                                    new CodeInstruction(OpCodes.Brtrue, endLabel)
+                                    new CodeInstruction(OpCodes.Ret),
                                 ];
                                 codes.InsertRange(i, ncodes);
                                 success = true;
@@ -134,9 +170,9 @@ namespace CupheadArchipelago.Hooks {
                 Harmony.CreateAndPatchAll(typeof(GetCoinCollected));
             }
 
-            [HarmonyPatch(typeof(PlayerData.PlayerCoinManager), "GetCoinCollected", new Type[] {typeof(string)})]
+            [HarmonyPatch(typeof(PlayerCoinManager), "GetCoinCollected", new Type[] {typeof(string)})]
             internal static class GetCoinCollected {
-                private static MethodInfo _mi_GetCoin__str = typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoin",
+                private static MethodInfo _mi_GetCoin__str = typeof(PlayerCoinManager).GetMethod("GetCoin",
                         BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[]{typeof(string)}, null);
 
                 static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
@@ -159,8 +195,8 @@ namespace CupheadArchipelago.Hooks {
                     return codes;
                 }
 
-                private static bool APGetCoinCollected(PlayerData.PlayerCoinManager instance, string coinID) {
-                    return ((PlayerData.PlayerCoinProperties)_mi_GetCoin__str.Invoke(instance, new object[]{coinID})).collected;
+                private static bool APGetCoinCollected(PlayerCoinManager instance, string coinID) {
+                    return ((PlayerCoinProperties)_mi_GetCoin__str.Invoke(instance, new object[]{coinID})).collected;
                 }
             }
         }
