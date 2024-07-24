@@ -93,18 +93,25 @@ namespace CupheadArchipelago.AP {
 
                 Plugin.Log($"[APClient] Getting AP Data...");
 
-                LoginSuccessful loginData = (LoginSuccessful)result;
-                if (APSessionGSData.seed.Length==0)
-                    APSessionGSData.seed = APSession.RoomState.Seed;
-                if (APSessionGSData.slotData==null) // Does the slot data change?
-                    APSessionGSData.slotData = new APSlotData(loginData.SlotData);
+                try {
+                    LoginSuccessful loginData = (LoginSuccessful)result;
+                    if (APSessionGSData.seed.Length==0)
+                        APSessionGSData.seed = APSession.RoomState.Seed;
+                    if (APSessionGSData.slotData==null) // Does the slot data change?
+                        APSessionGSData.slotData = new APSlotData(loginData.SlotData);
+                } catch (Exception e) {
+                    Plugin.LogError($"[APClient] Exception: {e.Message}");
+                    CloseArchipelagoSession(resetOnFail);
+                    SessionStatus = -2;
+                    return false;
+                }
 
                 SessionStatus = 4;
                 Plugin.Log($"[APClient] Checking version...");
                 if (SlotData.version != AP_SLOTDATA_VERSION) {
                     Plugin.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -2;
+                    SessionStatus = -3;
                     return false;
                 }
                 Plugin.Log($"[APClient] Checking seed...");
@@ -113,7 +120,7 @@ namespace CupheadArchipelago.AP {
                     if (APData.CurrentSData.seed != "") {
                         Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -3;
+                        SessionStatus = -4;
                         return false;
                     }
                     APData.CurrentSData.seed = seed;
@@ -127,7 +134,7 @@ namespace CupheadArchipelago.AP {
                         if (DLCManager.DLCEnabled())
                             Plugin.LogError($"[APClient] Note: You can disable the DLC if you have to.");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -4;
+                        SessionStatus = -5;
                         return false;
                     }
 
@@ -153,7 +160,7 @@ namespace CupheadArchipelago.AP {
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -5;
+                    SessionStatus = -6;
                     return false;
                 }
 

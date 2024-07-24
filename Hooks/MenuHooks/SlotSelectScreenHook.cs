@@ -193,11 +193,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             SetAPConStatusText("Connection failed!\nCheck Log!");
                             break;
                         }
-                        case -2: {
+                        case -3: {
                             SetAPConStatusText($"Disconnected!\nCheck failed!\nMultiworld Mismatch!");
                             break;
                         }
-                        case -3: {
+                        case -4: {
                             SetAPConStatusText($"Disconnected!\nCheck failed!\nContent Mismatch!");
                             break;
                         }
