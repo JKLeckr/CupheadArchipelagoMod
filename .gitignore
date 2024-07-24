@@ -40,6 +40,9 @@ bld/
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
+# No Solutions Please
+*.sln
+
 # Visual Studio Code
 .vscode/
 *.code-workspace
