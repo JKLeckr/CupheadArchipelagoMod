@@ -22,40 +22,21 @@ namespace CupheadArchipelago.AP {
         public static bool Initialized { get; private set; } = false;
         public static APData[] SData { get; private set; }
         public static APData CurrentSData { get => SData[PlayerData.CurrentSaveFileIndex]; }
-        public static APData SessionSData { get => APClient.APSessionSData; }
-        
-        /* Overrides */
-        private static readonly bool? hard = null;
-        private static readonly bool? freemoveIsles = false;
-        private static readonly int? bossGradeChecks = 0;
-        private static readonly int? rungunGradeChecks = 0;
+        public static APData SessionSData { get => APClient.APSessionGSData; }
 
         public int version {get; private set;} = AP_WORLD_VERSION;
         public bool enabled = false;
         public string address = "archipelago.gg";
         public int port = 38281;
-        public string slot = "";
+        public string slot = "Player";
         public string password = "";
         public string seed = "";
         public DataPackage data = null;
         public Dictionary<string, object> slotData = null;
         public List<long> doneChecks = new List<long>();
+        public List<NetworkItem> receivedItems = new List<NetworkItem>();
 
-        public bool UseDLC {get => (int)(long)slotData["use_dlc"]>0;}
-        public bool Hard {
-            get => hard.HasValue?(bool)hard:(long)slotData["expert_mode"]>0;
-        }
-        public bool FreemoveIsles {
-            get => freemoveIsles.HasValue?(bool)freemoveIsles:(long)slotData["freemove_isles"]>0;
-        }
-        public int BossGradeChecks {
-            get => bossGradeChecks.HasValue?(int)bossGradeChecks:(int)(long)slotData["boss_grade_checks"];
-        }
-        public int RungunGradeChecks {
-            get => rungunGradeChecks.HasValue?(int)rungunGradeChecks:(int)(long)slotData["rungun_grade_checks"];
-        }
-
-        public string DataSum {get => (data!=null&&slot!=null)?data.Games[slot].Checksum:"0";}
+        public string DataSum {get => (data!=null&&slot!=null)?data.Games[slot].Checksum:"";}
 
         public static void Init() {
             SData = new APData[3];

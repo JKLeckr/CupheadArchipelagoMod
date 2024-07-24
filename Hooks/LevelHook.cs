@@ -81,7 +81,7 @@ namespace CupheadArchipelago.Hooks {
 
             private static Level.Mode HackDifficulty(Level.Mode mode) {
                 if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
-                    return (APData.CurrentSData.Hard&&mode<Level.Mode.Hard)?Level.Mode.Easy:mode;
+                    return (APSettings.Hard&&mode<Level.Mode.Hard)?Level.Mode.Easy:mode;
                 }
                 else return mode;
             }

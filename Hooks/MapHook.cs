@@ -64,7 +64,7 @@ namespace CupheadArchipelago.Hooks {
                 if (Level.Won) {
                     yield return CupheadTime.WaitForSeconds(__instance, 1.0f);
 
-                    Level.Mode normalMode = APData.CurrentSData.Hard?Level.Mode.Hard:Level.Mode.Normal;
+                    Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
                     
                     Plugin.Log(Level.PreviousLevel, LoggingFlags.Debug);
 
@@ -77,10 +77,10 @@ namespace CupheadArchipelago.Hooks {
                                     Plugin.Log("Battle", LoggingFlags.Debug);
                                     if (Level.Difficulty >= normalMode) {
                                         Plugin.Log(Level.Grade, LoggingFlags.Debug);
-                                        Plugin.Log(APData.CurrentSData.BossGradeChecks, LoggingFlags.Debug);
+                                        Plugin.Log(APSettings.BossGradeChecks, LoggingFlags.Debug);
                                         APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,0));
-                                        if (APData.CurrentSData.BossGradeChecks>0) {
-                                            if (Level.Grade>=(LevelScoringData.Grade.A+APData.CurrentSData.BossGradeChecks)) {
+                                        if (APSettings.BossGradeChecks>0) {
+                                            if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.BossGradeChecks))) {
                                                 APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,1));
                                             }
                                         }
@@ -91,11 +91,11 @@ namespace CupheadArchipelago.Hooks {
                                 case Level.Type.Platforming: {
                                     Plugin.Log("Platforming", LoggingFlags.Debug);
                                     Plugin.Log(Level.Grade, LoggingFlags.Debug);
-                                    Plugin.Log(APData.CurrentSData.RungunGradeChecks, LoggingFlags.Debug);
+                                    Plugin.Log(APSettings.RungunGradeChecks, LoggingFlags.Debug);
                                     APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,0));
-                                    if (APData.CurrentSData.RungunGradeChecks>0) {
-                                        if (Level.Grade>=(LevelScoringData.Grade.APlus+(APData.CurrentSData.RungunGradeChecks>=2?1:0))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,APData.CurrentSData.RungunGradeChecks));
+                                    if (APSettings.RungunGradeChecks>0) {
+                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.RungunGradeChecks))) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,((int)APSettings.RungunGradeChecks>3)?2:1));
                                         }
                                     }
                                     break;
