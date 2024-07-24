@@ -18,6 +18,20 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
+            static bool Prefix(List<ShopSceneItem> ___items, ShopSceneItem[] ___charmItemPrefabs, ShopSceneItem[] ___weaponItemPrefabs) {
+                Plugin.Log("---SHOP---");
+                Plugin.Log("-items-");
+                foreach (ShopSceneItem item in ___items) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n-charmItemPrefabs-");
+                foreach (ShopSceneItem item in ___charmItemPrefabs) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n-weaponItemPrefabs-");
+                foreach (ShopSceneItem item in ___weaponItemPrefabs) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n---END SHOP---");
+                return true;
+            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;

@@ -32,7 +32,6 @@ namespace CupheadArchipelago.AP {
         public string password = "";
         public string seed = "";
         public PlayerData playerData = new PlayerData();
-        public APSlotData slotData = null;
         public List<long> doneChecks = new List<long>();
         public long receivedItemIndex {get => receivedItems.Count;}
         public Queue<NetworkItem> receivedItemApplyQueue = new Queue<NetworkItem>();

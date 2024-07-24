@@ -26,7 +26,7 @@ namespace CupheadArchipelago.AP {
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
-        private static APSlotData SlotData { get => APSessionGSData.slotData; }
+        private static APSlotData SlotData { get; set; }
         private static Dictionary<long, APCheck> checkMap = new();
         private static Queue<NetworkItem> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
         private static Queue<NetworkItem> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
@@ -98,8 +98,7 @@ namespace CupheadArchipelago.AP {
                     LoginSuccessful loginData = (LoginSuccessful)result;
                     if (APSessionGSData.seed.Length==0)
                         APSessionGSData.seed = session.RoomState.Seed;
-                    if (APSessionGSData.slotData==null)
-                        APSessionGSData.slotData = new APSlotData(loginData.SlotData);
+                    SlotData = new APSlotData(loginData.SlotData);
                     if (checkMap.Count==0) {
                         Plugin.Log($"[APClient] Getting location data...");
                         session.Locations.ScoutLocationsAsync((LocationInfoPacket pk) => {
