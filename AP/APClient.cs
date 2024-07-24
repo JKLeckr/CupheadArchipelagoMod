@@ -81,7 +81,7 @@ namespace CupheadArchipelago.AP {
             LoginResult result;
             try {
                 string passwd = data.password.Length>0?data.password:null;
-                result = APSession.TryConnectAndLogin("Cuphead", data.slot, ItemsHandlingFlags.IncludeStartingInventory, AP_VERSION, null, null, passwd);
+                result = APSession.TryConnectAndLogin("Cuphead", data.slot, ItemsHandlingFlags.AllItems, AP_VERSION, null, null, passwd); //FIXME: Use better Item Handling Later
             } catch (Exception e) {
                 result = new LoginFailure(e.GetBaseException().Message);
             }
