@@ -16,6 +16,7 @@ namespace CupheadArchipelago.Hooks {
             // DEBUG
             static bool Prefix(LevelCoin __instance, ref SpriteRenderer ____spriteRenderer, ref bool ____collected) {
 		        ____spriteRenderer = __instance.GetComponent<SpriteRenderer>();
+                Plugin.Log("Coin: "+__instance.transform.position.x+" : "+__instance.GlobalID);
                 return false;
             }
         }
