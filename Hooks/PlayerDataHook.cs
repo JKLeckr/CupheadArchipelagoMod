@@ -40,10 +40,8 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(PlayerData), "AddCurrency")]
         internal static class AddCurrency {
             static bool Prefix() {
-                if (APData.IsCurrentSlotEnabled()) {
-                    Plugin.Log("[AddCurrency] Disabled.");
-                    return false;
-                } else return true;
+                Plugin.Log("AddCurrency.");
+                return true;
             }
         }
 
@@ -54,9 +52,10 @@ namespace CupheadArchipelago.Hooks {
                     if (APSettings.CoinChecksVanilla) {
                         foreach (PlayerData.PlayerCoinProperties coin in ___levelCoinManager.coins) {
                             Plugin.Log($"Got Coin {coin.coinID}");
-                            APClient.Check(CoinIdMap.GetAPLocation(coin.coinID));
+                            APClient.Check(CoinIdMap.GetAPLocation(coin.coinID), false);
                             ___coinManager.SetCoinValue(coin.coinID, coin.collected, coin.player);
 		                }
+                        APClient.SendChecks();
                     } else {
                         Plugin.Log("[ApplyLevelCoins] Disabled.");
                     }

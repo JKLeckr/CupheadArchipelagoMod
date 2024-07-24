@@ -205,11 +205,8 @@ namespace CupheadArchipelago.AP {
 
         public static void Check(long loc, bool sendChecks = true) {
             Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
-            Plugin.Log("0");
-            Plugin.Log(doneChecksUnique);
-            Plugin.Log("1");
-            Plugin.Log(DoneChecks);
-            Plugin.Log("2");
+            Plugin.Log(doneChecksUnique.Count);
+            Plugin.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);

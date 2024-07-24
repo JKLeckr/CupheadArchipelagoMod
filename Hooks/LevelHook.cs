@@ -123,7 +123,7 @@ namespace CupheadArchipelago.Hooks {
                                     Plugin.Log("[LevelHook] Battle Type");
                                     if (APSettings.BossGradeChecks>0)
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.BossGradeChecks))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,1));
+                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,1), false);
                                         }
                                     break;
                                 }
@@ -131,7 +131,7 @@ namespace CupheadArchipelago.Hooks {
                                     Plugin.Log("[LevelHook] Platforming Type");
                                     if (APSettings.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.RungunGradeChecks))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,((int)APSettings.RungunGradeChecks>3)?7:6));
+                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,((int)APSettings.RungunGradeChecks>3)?7:6), false);
                                         }
                                     }
                                     break;
@@ -141,6 +141,7 @@ namespace CupheadArchipelago.Hooks {
                                     break;
                                 }
                             }
+                            APClient.SendChecks();
                         } else {
                             Plugin.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                         }

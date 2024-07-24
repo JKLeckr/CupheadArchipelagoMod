@@ -190,8 +190,20 @@ namespace CupheadArchipelago.AP {
                     break;
                 }
                 case ItemType.Level: {
-                    if (item==APItem.lv_extrahealth) {Stub(item);}
-                    else if (item==APItem.lv_superrecharge) {Stub(item);}
+                    AbstractPlayerController p1 = PlayerManager.GetPlayer(PlayerId.PlayerOne);
+                    AbstractPlayerController p2 = PlayerManager.GetPlayer(PlayerId.PlayerTwo);
+                    PlayerStatsManager stats1 = p1.stats;
+                    PlayerStatsManager stats2 = p2.stats;
+                    
+                    if (item==APItem.lv_extrahealth) {
+                        AudioManager.Play("pop_up");
+                        stats1.SetHealth(stats1.Health + 1);
+                        if (p2!=null) stats2.SetHealth(stats2.Health + 1);
+                    }
+                    else if (item==APItem.lv_superrecharge) {
+                        stats1.DebugFillSuper();
+                        if (p2!=null) stats2.DebugFillSuper();
+                    }
                     else if (item==APItem.lv_trap_fingerjam) {Stub(item);}
                     else if (item==APItem.lv_trap_inktrap) {Stub(item);}
                     else if (item==APItem.lv_trap_slowfire) {Stub(item);}
