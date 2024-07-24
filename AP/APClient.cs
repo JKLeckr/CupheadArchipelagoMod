@@ -280,6 +280,8 @@ namespace CupheadArchipelago.AP {
             ReceivedItems.Add(item);
             currentReceivedItemIndex++;
         }
+        public static bool ItemReceiveQueueIsEmpty() => ItemReceiveQueue.Count==0;
+        public static bool ItemReceiveLevelQueueIsEmpty() => ItemReceiveLevelQueue.Count==0;
         public static NetworkItem PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
         public static NetworkItem PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
         private static NetworkItem PopItemQueue(Queue<NetworkItem> itemQueue) {

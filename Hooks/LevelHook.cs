@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Unity;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -23,6 +24,11 @@ namespace CupheadArchipelago.Hooks {
             }*/
             static void Postfix(Level __instance) {
                 Plugin.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
+                if (APData.IsCurrentSlotEnabled()) {
+                    APClient.SendChecks();
+                    APManager apmngr = __instance.gameObject.AddComponent<APManager>();
+                    apmngr.Init(APManager.Type.Normal);
+                }
             }
 
             /*private static Level.Mode GetClamppedCurrentLevelMode() {
