@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using CupheadArchipelago.Auxiliary;
 
 namespace CupheadArchipelago.AP {
-    internal class APSlotData {
+    public class APSlotData {
         public long version {get; private set;}
         public string[] levels {get; private set;}
         public string level_shuffle_map {get; private set;}
