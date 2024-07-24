@@ -65,6 +65,7 @@ namespace CupheadArchipelago {
             Hooks.SlotSelectScreenHook.Hook();
             Hooks.SlotSelectScreenSlotHook.Hook();
             Hooks.PlayerDataHook.Hook();
+            Hooks.PlayerStatsManagerHook.Hook();
             Hooks.MapHook.Hook();
             Hooks.MapLevelDependentObstacleHook.Hook();
             Hooks.MapCoinHook.Hook();

@@ -129,7 +129,7 @@ namespace CupheadArchipelago.AP {
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
-                    if (true) APSessionGSData.playerData.SetValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
+                    if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
 
                     //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
@@ -203,6 +203,7 @@ namespace CupheadArchipelago.AP {
             doneChecksUnique = null;
         }
 
+        public static bool IsChecked(long loc) => doneChecksUnique.Contains(loc);
         public static void Check(long loc, bool sendChecks = true) {
             Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
             Plugin.Log(doneChecksUnique.Count);
@@ -267,10 +268,7 @@ namespace CupheadArchipelago.AP {
             helper.DequeueItem();
         }
         private static void ReceiveItem(NetworkItem item) {
-            if ((item.Flags&ItemFlags.Trap)>0) {
-                QueueItem(item, true);
-            }
-            else if (item.Item==APItem.lv_extrahealth.Id||item.Item==APItem.lv_superrecharge.Id) {
+            if (ItemMap.GetItemType(item.Item)==ItemType.Level) {
                 QueueItem(item, true);
             }
             else {

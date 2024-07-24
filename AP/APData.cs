@@ -128,22 +128,32 @@ namespace CupheadArchipelago.AP {
 
         public class PlayerData {
             public enum SetTarget {
-                BasicAbilities = 1,
+                Essential = 1,
+                BasicAbilities = 2,
                 All = int.MaxValue,
             }
             
+            public int contracts = 0;
+            public int dlc_ingredients = 0;
+
             public bool dash = false;
             public bool duck = false;
             public bool parry = false;
             public bool plane_parry = false;
             public bool plane_shrink = false;
+            public bool dlc_boat = false;
 
-            public void SetValues(bool value, SetTarget setTarget) {
+            public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget&SetTarget.BasicAbilities)>0) dash = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) duck = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) parry = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) plane_parry = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) plane_shrink = value;
+                if ((setTarget&SetTarget.Essential)>0) dlc_boat = value;
+            }
+            public void SetIntValues(int value, SetTarget setTarget) {
+                if ((setTarget&SetTarget.Essential)>0) contracts = value;
+                if ((setTarget&SetTarget.Essential)>0) dlc_ingredients = value;
             }
         }
     }

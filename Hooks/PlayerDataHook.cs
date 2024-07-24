@@ -5,7 +5,6 @@ using CupheadArchipelago.AP;
 using System;
 using System.Reflection;
 using HarmonyLib;
-using BepInEx.Logging;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
@@ -49,16 +48,7 @@ namespace CupheadArchipelago.Hooks {
         internal static class ApplyLevelCoins {
             static bool Prefix(PlayerData.PlayerCoinManager ___coinManager, ref PlayerData.PlayerCoinManager ___levelCoinManager) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    if (APSettings.CoinChecksVanilla) {
-                        foreach (PlayerData.PlayerCoinProperties coin in ___levelCoinManager.coins) {
-                            Plugin.Log($"Got Coin {coin.coinID}");
-                            APClient.Check(CoinIdMap.GetAPLocation(coin.coinID), false);
-                            ___coinManager.SetCoinValue(coin.coinID, coin.collected, coin.player);
-		                }
-                        APClient.SendChecks();
-                    } else {
-                        Plugin.Log("[ApplyLevelCoins] Disabled.");
-                    }
+                    Plugin.Log("[ApplyLevelCoins] Disabled.");
                     ___levelCoinManager = new PlayerData.PlayerCoinManager();
                     return false;
                 } else return true;

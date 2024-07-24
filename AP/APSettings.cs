@@ -9,6 +9,7 @@ namespace CupheadArchipelago.AP {
         public static GradeChecks BossGradeChecks { get; internal set; } = GradeChecks.Disabled;
         public static GradeChecks RungunGradeChecks { get; internal set; } = GradeChecks.Disabled;
         public static bool DeathLink { get; internal set; } = false;
-        public static bool CoinChecksVanilla { get; internal set; } = true;
+        public static int[] RequiredContracts { get; internal set; } = new int[] {5,10,17};
+        public static int RequiredIngredients { get; internal set; } = 5;
     }
 }

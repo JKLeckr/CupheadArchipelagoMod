@@ -33,11 +33,9 @@ namespace CupheadArchipelago.Hooks {
 
             private static bool APCheck(LevelCoin instance, PlayerId player) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    if (!APSettings.CoinChecksVanilla) {
-                        APClient.Check(CoinIdMap.GetAPLocation(instance.GlobalID));
-                        PlayerData.Data.coinManager.SetCoinValue(instance.GlobalID, true, player);
-                        return true;
-                    }
+                    APClient.Check(CoinIdMap.GetAPLocation(instance.GlobalID));
+                    PlayerData.Data.coinManager.SetCoinValue(instance.GlobalID, true, player);
+                    return true;
                 }
                 return false;
             }
