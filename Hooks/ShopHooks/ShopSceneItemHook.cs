@@ -12,9 +12,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
     internal class ShopSceneItemHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(isPurchased));
+            Harmony.CreateAndPatchAll(typeof(Purchase));
         }
 
-        private static readonly Dictionary<Weapon, APLocation> weaponLocations = new() {
+        internal static readonly Dictionary<Weapon, APLocation> weaponLocations = new() {
             {Weapon.level_weapon_homing, APLocation.shop_weapon1},
             {Weapon.level_weapon_spreadshot, APLocation.shop_weapon2},
             {Weapon.level_weapon_boomerang, APLocation.shop_weapon3},
@@ -24,7 +25,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             {Weapon.level_weapon_crackshot, APLocation.shop_dlc_weapon7},
             {Weapon.level_weapon_upshot, APLocation.shop_dlc_weapon8},
         };
-        private static readonly Dictionary<Charm, APLocation> charmLocations = new() {
+        internal static readonly Dictionary<Charm, APLocation> charmLocations = new() {
             {Charm.charm_health_up_1, APLocation.shop_charm1},
             {Charm.charm_smoke_dash, APLocation.shop_charm2},
             {Charm.charm_parry_plus, APLocation.shop_charm3},
@@ -34,26 +35,33 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             {Charm.charm_healer, APLocation.shop_dlc_charm7},
             {Charm.charm_curse, APLocation.shop_dlc_charm8},
         };
+        internal static long GetAPLocation(ItemType itemType, Weapon weapon, Charm charm) {
+            long loc = -1;
+            switch(itemType) {
+                case ItemType.Weapon:
+                    if (weaponLocations.ContainsKey(weapon)) {
+                        loc = weaponLocations[weapon];                
+                    }
+                    else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {weapon}");
+                    break;
+                case ItemType.Charm: 
+                    if (charmLocations.ContainsKey(charm)) {
+                        loc = charmLocations[charm];
+                    }
+                    else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {charm}");
+                    break;
+                default:
+                    Plugin.LogWarning($"[ShopSceneItem] Cannot get item. Unknown Type {itemType}");
+                    break;
+            }
+            return loc;
+        }
 
         [HarmonyPatch(typeof(ShopSceneItem), "isPurchased")]
         internal static class isPurchased {
             static bool Prefix(ref bool __result, ItemType ___itemType, Weapon ___weapon, Charm ___charm) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    long loc = -1;
-                    if (___itemType==ItemType.Weapon) {
-                        if (weaponLocations.ContainsKey(___weapon))
-                            loc = weaponLocations[___weapon];
-                        else
-                            Plugin.LogWarning($"[ShopSceneItem] Unknown item: {___weapon}");
-                    }
-                    else if (___itemType==ItemType.Charm) {
-                        if (charmLocations.ContainsKey(___charm))
-                            loc = charmLocations[___charm];
-                        else
-                            Plugin.LogWarning($"[ShopSceneItem] Unknown item: {___charm}");
-                    }
-                    else
-                        Plugin.LogWarning("[ShopSceneItem] Unexpected type");
+                    long loc = GetAPLocation(___itemType, ___weapon, ___charm);
                     __result = APClient.IsLocationChecked(loc);
                     return false;
                 }
@@ -125,30 +133,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
             private static bool APCheck(ItemType itemType, Weapon weapon, Charm charm) {
                 bool res = false;
-                switch(itemType) {
-                    case ItemType.Weapon:
-                        if (weaponLocations.ContainsKey(weapon)) {
-                            long loc = weaponLocations[weapon];
-                            if (!APClient.IsLocationChecked(loc)) {
-                                APClient.Check(loc);
-                                res = true;
-                            }
-                        }
-                        else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {weapon}");
-                        break;
-                    case ItemType.Charm: 
-                        if (charmLocations.ContainsKey(charm)) {
-                            long loc = charmLocations[charm];
-                            if (!APClient.IsLocationChecked(loc)) {
-                                APClient.Check(loc);
-                                res = true;
-                            }
-                        }
-                        else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {charm}");
-                        break;
-                    default:
-                        Plugin.LogWarning($"[ShopSceneItem] Cannot Check item. Unknown Type {itemType}");
-                        break;
+                long loc = GetAPLocation(itemType, weapon, charm);
+                if (!APClient.IsLocationChecked(loc)) {
+                    APClient.Check(loc);
+                    res = true;
                 }
                 return res;
             }

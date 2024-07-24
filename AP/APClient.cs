@@ -12,6 +12,7 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
+using System.Data.Common;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -114,6 +115,15 @@ namespace CupheadArchipelago.AP {
                                 APPlayer cplayer = new(player, playerName, playerAlias);
                                 APCheckItem citem = new(item.Item, itemName, cplayer, item.Flags);
                                 APCheck check = new(loc, locName, citem);
+
+                                bool loc_cond1 = APLocation.IdExists(loc);
+                                bool loc_cond2 = APLocation.NameExists(locName);
+                                if (loc_cond1!=loc_cond2) {
+                                    throw new Exception("[APClient] Location id/name conflict!");
+                                }
+                                else if (!loc_cond1||!loc_cond2) {
+                                    Plugin.LogWarning($"[APClient] Setup: Unknown Location: {locName}:{loc}");
+                                }
                                 
                                 checkMap.Add(loc, check);
                             }
@@ -263,7 +273,7 @@ namespace CupheadArchipelago.AP {
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
         public static void Check(long loc, bool sendChecks = true) {
-            Plugin.Log($"[APClient] Adding check \"{APLocation.IdToName(loc)}\"...");
+            Plugin.Log($"[APClient] Adding check \"{checkMap[loc].Name}\"...");
             //Plugin.Log(doneChecksUnique.Count);
             //Plugin.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
@@ -272,7 +282,7 @@ namespace CupheadArchipelago.AP {
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Plugin.LogWarning($"[APClient] \"{APLocation.IdToName(loc)}\" is already Checked!");
+                Plugin.LogWarning($"[APClient] \"{checkMap[loc].Name}\" is already Checked!");
             }
         }
         public static void Check(long[] locs, bool sendChecks = true) {
@@ -318,7 +328,7 @@ namespace CupheadArchipelago.AP {
             string locsstr = "[";
             for (int i=0;i<locs.Length;i++) {
                 if (i>0) locsstr += ","; 
-                locsstr += APLocation.IdExists(locs[i])?APLocation.IdToName(locs[i]):locs[i];
+                locsstr += checkMap.ContainsKey(locs[i])?checkMap[locs[i]].Name:locs[i];
                 if (i==locs.Length-1) locsstr += "]";
             }
             Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", LoggingFlags.Network, state?LogLevel.Info:LogLevel.Warning);
