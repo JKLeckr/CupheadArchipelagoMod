@@ -11,11 +11,11 @@ namespace CupheadArchipelago {
     [BepInDependency(DEP_SAVECONFIG_MOD_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("Cuphead.exe")]
     public class Plugin : BaseUnityPlugin {
-        public const string VERSION = "20240406";
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
 
         public static Plugin Instance { get; private set; }
         public static bool ConfigSkipIntro => Instance.configSkipIntro.Value;
+        public static string Version => PluginInfo.PLUGIN_VERSION;
 
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<LoggingFlags> configLogging;
@@ -31,9 +31,10 @@ namespace CupheadArchipelago {
             configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
 
             if (configEnabled.Value) {
+                Log($"CupheadArchipelago Mod by JKLeckr");
                 if (!IsPluginLoaded(DEP_SAVECONFIG_MOD_GUID)) {
                     Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
-                    Log("Using Save Key: " + configSaveKeyName.Value);
+                    Log($"Using Save Key: {configSaveKeyName.Value}");
                 } else Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
                 Hooks.Main.HookMain();
                 Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);

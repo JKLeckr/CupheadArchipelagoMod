@@ -112,8 +112,10 @@ namespace CupheadArchipelago.AP {
                     return false;
                 }
 
+                Plugin.Log($"[APClient] APWorld version {SlotData.world_version}");
+
                 SessionStatus = 4;
-                Plugin.Log($"[APClient] Checking version...");
+                Plugin.Log($"[APClient] Checking SlotData version...");
                 if (SlotData.version != AP_SLOTDATA_VERSION) {
                     Plugin.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
                     CloseArchipelagoSession(resetOnFail);

@@ -5,8 +5,8 @@
       "Archipelago.MultiClient.Net": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.0.0",
-        "contentHash": "96ccSayRZpZQomqA50DaaYvKcEWxWbvjEDv+2n15tsfnY5oBmEdlXtL/iKEXi4+rTzV9UpkCsCZrz5nTrUqGaA=="
+        "resolved": "6.1.1",
+        "contentHash": "ztJEvZfjUJE9Hm1uJLJzT8Y7Qp60usayiBtoCxgsnEDu9ACFRrBgTpP6n7aS2+36HohGr4ybLrlDupy59JDwvg=="
       },
       "BepInEx.Analyzers": {
         "type": "Direct",

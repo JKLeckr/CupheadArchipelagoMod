@@ -8,6 +8,7 @@ using CupheadArchipelago.Util;
 namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
+        public double world_version {get; private set;}
         public string[] levels {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
         public ShopSet[] shop_map {get; private set;}
@@ -21,6 +22,7 @@ namespace CupheadArchipelago.AP {
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
+            world_version = GetAPSlotDataFloat(slotData, "world_version");
             //Plugin.Log($"levels: {GetAPSlotData(slotData, "levels")}");
             levels = GetAPSlotDataDeserialized<List<string>>(slotData, "levels").ToArray();
             level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<string, string>>(slotData, "level_shuffle_map"));
@@ -48,6 +50,7 @@ namespace CupheadArchipelago.AP {
         public static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataLong(slotData, "version");
         private static bool GetAPSlotDataBool(Dictionary<string, object> slotData, string key) => Aux.IntAsBool(GetAPSlotDataLong(slotData, key));
         private static long GetAPSlotDataLong(Dictionary<string, object> slotData, string key) => (long)GetAPSlotData(slotData, key);
+        private static double GetAPSlotDataFloat(Dictionary<string, object> slotData, string key) => (double)GetAPSlotData(slotData, key);
         private static string GetAPSlotDataString(Dictionary<string, object> slotData, string key) => GetAPSlotData(slotData, key).ToString();
         private static T GetAPSlotDataDeserialized<T>(Dictionary<string, object> slotData, string key) => JsonConvert.DeserializeObject<T>(GetAPSlotDataString(slotData, key));
         private static object GetAPSlotData(Dictionary<string, object> slotData, string key) {
