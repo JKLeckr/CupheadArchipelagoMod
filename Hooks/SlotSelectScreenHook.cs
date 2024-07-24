@@ -128,10 +128,13 @@ namespace CupheadArchipelago.Hooks {
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
-                    APClient.CloseArchipelagoSession(true);
-                    if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
-                        SetAPConStatusText("Initial setup...");
-                        PlayerDataHook.APSanitizeSlot(_slotSelection);
+                    if (Status!=0) {
+                        if (Status==1) {
+                            SetAPConStatusText("Disconnecting...");
+                            APClient.CloseArchipelagoSession(true);
+                        }
+                        else if (Status<0) APClient.ResetSessionError();
+                        else Plugin.LogWarning($"Client Status is not reset correctly! S:{Status}");
                     }
                     SetAPConStatusText("Connecting...");
                     ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
@@ -155,11 +158,13 @@ namespace CupheadArchipelago.Hooks {
                     yield return null;
                 }
 
+                if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
+                    PlayerDataHook.APSanitizeSlot(_slotSelection);
+                    APData.SData[_slotSelection].playerData.GotStartWeapon();
+                }
+
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                 else Level.SetCurrentMode(Level.Mode.Normal);
-
-                if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) 
-                    APData.SData[_slotSelection].playerData.GiveStartWeapon();
 
                 SetAPConStatusText("Connected!\nDone!");
                 _instance.StartCoroutine(_mi_game_start_cr.Name, 0);

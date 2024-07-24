@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));
             Harmony.CreateAndPatchAll(typeof(AddCurrency));
             Harmony.CreateAndPatchAll(typeof(ApplyLevelCoins));
-            Harmony.CreateAndPatchAll(typeof(NumWeapons));
+            //Harmony.CreateAndPatchAll(typeof(NumWeapons));
             //PlayerInventoryHook.Hook();
             //PlayerCoinManagerHook.Hook();
         }
@@ -31,18 +31,18 @@ namespace CupheadArchipelago.Hooks {
             private static readonly FieldInfo _fi_inventories = typeof(PlayerData).GetField("inventories", BindingFlags.NonPublic | BindingFlags.Instance);
 
             static bool Prefix(int slot, PlayerData[] ____saveFiles) {
+                // Sanitize Slot of vanilla defaults and replace with AP Defaults
                 if (_APMode) {
                     PlayerData data = ____saveFiles[slot];
                     PlayerInventories inventories = (PlayerInventories)_fi_inventories.GetValue(data);
-                    SanitizeSlot(inventories);
+                    Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon);
+                    inventories.playerOne._weapons = [weapon];
+                    data.Loadouts.playerOne.primaryWeapon = weapon;
+                    inventories.playerTwo._weapons = [weapon];
+                    data.Loadouts.playerTwo.primaryWeapon = weapon;
                     return false;
                 }
                 else return true;
-            }
-
-            private static void SanitizeSlot(PlayerInventories inventories) {
-                inventories.playerOne._weapons.Clear();
-                inventories.playerTwo._weapons.Clear();
             }
         }
 
@@ -102,12 +102,14 @@ namespace CupheadArchipelago.Hooks {
 
             [HarmonyPatch(typeof(PlayerInventory), MethodType.Constructor)]
             internal static class PlayerInventory {
-                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                     List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                     bool debug = false;
                     bool success = false;
                     FieldInfo _fi__weapons = typeof(PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
                     MethodInfo _mi__weapons_Add = typeof(PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
+
+                    Label vanilla_label = il.DefineLabel();
 
                     if (debug) {
                         for (int i = 0; i < codes.Count; i++) {
@@ -116,9 +118,15 @@ namespace CupheadArchipelago.Hooks {
                     }
                     for (int i = 0; i < codes.Count - 3; i++) {
                         if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi__weapons &&
-                            codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi__weapons_Add) {
+                            codes[i+2].opcode == OpCodes.Ldc_I4 && codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi__weapons_Add) {
+                                codes[i].labels.Add(vanilla_label);
                                 List<CodeInstruction> ncodes = [
                                     CodeInstruction.Call(() => IsAPMode()), 
+                                    new CodeInstruction(OpCodes.Brfalse, vanilla_label),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi__weapons),
+                                    CodeInstruction.Call(() => GetAPStartWeapon()),
+                                    new CodeInstruction(OpCodes.Callvirt, _mi__weapons_Add),
                                     new CodeInstruction(OpCodes.Ret),
                                 ];
                                 codes.InsertRange(i, ncodes);
@@ -138,6 +146,11 @@ namespace CupheadArchipelago.Hooks {
                 }
 
                 private static bool IsAPMode() => _APMode;
+                private static Weapon GetAPStartWeapon() => ItemMap.GetWeapon(APSettings.StartWeapon);
+                private static void AddAPWeapon(List<Weapon> weapons) {
+                    Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon);
+                    weapons.Add(weapon);
+                }
             }
         }
 

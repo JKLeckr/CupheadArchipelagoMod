@@ -214,9 +214,13 @@ namespace CupheadArchipelago.AP {
             if (reset) Reset();
             return res;
         }
+        public static void ResetSessionError() {
+            if (SessionStatus<0) SessionStatus = 0;
+            else Plugin.LogWarning("[APClient] Cannot Reset an active session. Close the session first! ");
+        }
         private static void Reset() {
             APSession = null;
-            SessionStatus = 0;
+            if (SessionStatus>0) SessionStatus = 0;
             APSessionSlotName = "";
             APSessionDataSlotNum = -1;
             ConnectionInfo = null;

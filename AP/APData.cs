@@ -163,22 +163,7 @@ namespace CupheadArchipelago.AP {
 
             private bool got_start_weapon = false;
             public bool HasStartWeapon() => got_start_weapon;
-            public void GiveStartWeapon() {
-                global::PlayerData data = global::PlayerData.Data;
-                if (data.NumWeapons(PlayerId.PlayerOne)!=data.NumWeapons(PlayerId.PlayerTwo)) {
-                    Plugin.LogError(
-                        $"[APData] Player Weapon Inventory mismatch! {data.NumWeapons(PlayerId.PlayerOne)}!={data.NumWeapons(PlayerId.PlayerTwo)}");
-                }
-                if (data.NumWeapons(PlayerId.PlayerOne)==0) {
-                    Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon);
-                    data.Gift(PlayerId.PlayerOne, weapon);
-                    data.Gift(PlayerId.PlayerTwo, weapon);
-                    data.Loadouts.playerOne.primaryWeapon = weapon;
-                    data.Loadouts.playerTwo.primaryWeapon = weapon;
-                } else {
-                    Plugin.LogWarning("[APData] Player Weapon Inventory not empty.");
-                }
-            }
+            public void GotStartWeapon() => got_start_weapon = true;
         }
     }
 }
