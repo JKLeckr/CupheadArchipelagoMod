@@ -133,8 +133,14 @@ namespace CupheadArchipelago.Hooks {
                             SetAPConStatusText("Disconnecting...");
                             APClient.CloseArchipelagoSession(true);
                         }
-                        else if (Status<0) APClient.ResetSessionError();
-                        else Plugin.LogWarning($"Client Status is not reset correctly! S:{Status}");
+                        else if (Status<0) {
+                            Plugin.LogWarning($"Client Status is not reset correctly! S:{Status}");
+                            APClient.ResetSessionError();
+                        }
+                        else {
+                            Plugin.LogWarning($"Client Status is not reset correctly! S:{Status}");
+                            APClient.CloseArchipelagoSession(true);
+                        }
                     }
                     SetAPConStatusText("Connecting...");
                     ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
@@ -190,9 +196,10 @@ namespace CupheadArchipelago.Hooks {
                         break;
                     }
                 }
-                _lockMenu = false;
-                _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.SlotSelect});
+                APClient.ResetSessionError();
                 //FIXME: Fix visual glitch with reverting
+                _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.SlotSelect});
+                _lockMenu = false;
                 AudioManager.Play("level_menu_select");
             }
             private static void APErrorConnected(string message) {

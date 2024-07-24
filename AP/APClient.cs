@@ -16,27 +16,28 @@ using CupheadArchipelago.Auxiliary;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
-        public static ArchipelagoSession APSession {get; private set;}
-        public static bool Enabled {get; private set;} = false;
-        public static bool Connected {get => SessionStatus>=STATUS_CONNECTED;}
-        public static APData APSessionGSData {get => GetAPSessionData();}
-        public static APData.PlayerData APSessionGSPlayerData {get => APSessionGSData.playerData;}
-        public static string APSessionSlotName {get; private set;} = "";
-        public static int APSessionDataSlotNum {get; private set;} = -1;
-        public static ConnectedPacket ConnectionInfo {get; private set;}
-        public static bool IsTryingSessionConnect {get => SessionStatus > 1;}
+        public static ArchipelagoSession APSession { get; private set; }
+        public static bool Enabled { get; private set; } = false;
+        public static bool Connected { get => APSession?.Socket.Connected ?? false; }
+        public static bool Ready { get => SessionStatus == STATUS_READY; }
+        public static APData APSessionGSData { get => GetAPSessionData(); }
+        public static APData.PlayerData APSessionGSPlayerData { get => APSessionGSData.playerData; }
+        public static string APSessionSlotName { get; private set; } = "";
+        public static int APSessionDataSlotNum { get; private set; } = -1;
+        public static ConnectedPacket ConnectionInfo { get; private set; }
+        public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
-        private static Dictionary<string, object> SlotData {get => APSessionGSData.slotData;}
-        private static Queue<NetworkItem> ItemReceiveQueue {get => APSessionGSData.receivedItemApplyQueue;}
-        private static Queue<NetworkItem> ItemReceiveLevelQueue {get => APSessionGSData.receivedLevelItemApplyQueue;}
-        private static List<NetworkItem> ReceivedItems {get => APSessionGSData.receivedItems;}
-        private static long ReceivedItemsIndex {get => APSessionGSData.ReceivedItemIndex;}
+        private static Dictionary<string, object> SlotData { get => APSessionGSData.slotData; }
+        private static Queue<NetworkItem> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
+        private static Queue<NetworkItem> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
+        private static List<NetworkItem> ReceivedItems { get => APSessionGSData.receivedItems; }
+        private static long ReceivedItemsIndex { get => APSessionGSData.ReceivedItemIndex; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static bool complete = false;
         private static long currentReceivedItemIndex = 0;
         private static readonly Version AP_VERSION = new Version(0,4,4,0);
-        private const int STATUS_CONNECTED = 1;
+        private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
 
@@ -208,6 +209,7 @@ namespace CupheadArchipelago.AP {
                 if (APSession.Socket.Connected) {
                     Plugin.Log($"[APClient] Disconnecting APSession...");
                     APSession.Socket.Disconnect();
+                    SessionStatus = 0;
                     res = true;
                 }
             }
