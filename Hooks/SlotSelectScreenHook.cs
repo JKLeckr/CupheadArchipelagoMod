@@ -129,6 +129,10 @@ namespace CupheadArchipelago.Hooks {
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
+                    if (APData.SData[_slotSelection].appliedItems.Count==0) {
+                        SetAPConStatusText("Initial setup...");
+                        PlayerDataHook.APSanitizeSlot(_slotSelection);
+                    }
                     SetAPConStatusText("Connecting...");
                     ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
                     _instance.StartCoroutine(connect_and_start_cr());
@@ -154,19 +158,9 @@ namespace CupheadArchipelago.Hooks {
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                 else Level.SetCurrentMode(Level.Mode.Normal);
 
-                if (APClient.APSessionGSData.appliedItems.Count==0) {
-                    SetAPConStatusText("Connected!\nInitial Setup...");
-                    Plugin.Log("Getting initial weapon...");
-                    bool hasWeapon = false;
-                    while (!hasWeapon) {
-                        if (!APClient.ItemReceiveQueueIsEmpty()) {
-                            NetworkItem item = APClient.PopItemReceiveQueue();
-                            if (ItemMap.GetItemType(item.Item)==AP.ItemType.Weapon) {
-                                Plugin.Log("Got a Weapon. All done!");
-                                // FIXME
-                            }
-                        }
-                    }
+                SetAPConStatusText("Connected!\nUpdating items...");
+                while (APClient.APSessionGSData.appliedItems.Count==0 || !APClient.AreItemsUpToDate()) {
+                    yield return null;
                 }
 
                 SetAPConStatusText("Connected!\nDone!");

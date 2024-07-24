@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Packets;
@@ -131,8 +132,11 @@ namespace CupheadArchipelago.AP {
                     APSettings.DeathLink = GetAPSlotDataBool("deathlink");
                     
                     Plugin.Log($"[APClient] Setting up game...");
-                    doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
+                    doneChecksUnique = new HashSet<long>(DoneChecks);
                     if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
+
+                    Plugin.Log($"[APClient] Catching up...");
+                    CatchUpChecks();
 
                     //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
@@ -220,6 +224,22 @@ namespace CupheadArchipelago.AP {
                 if (sendChecks) SendChecks();
             }
         }
+        public static void Check(long[] locs, bool sendChecks = true) {
+            foreach (long loc in locs) {
+                Check(loc, false);
+            }
+            if (sendChecks) SendChecks();
+        }
+        public static void CatchUpChecks() {
+            if (APSession.Socket.Connected) {
+                ReadOnlyCollection<long> checkedLocations = APSession.Locations.AllLocationsChecked;
+                if (DoneChecks.Count<checkedLocations.Count) {
+                    for (int i=DoneChecks.Count-1;i<checkedLocations.Count;i++) {
+                        Check(checkedLocations[i], false);
+                    }
+                }
+            }
+        }
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
@@ -285,7 +305,20 @@ namespace CupheadArchipelago.AP {
             }
             helper.DequeueItem();
         }
+        public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
         private static void ReceiveItem(NetworkItem item) {
+            if (item.Location == -1 && ItemMap.GetItemType(item.Item) != ItemType.Level) {
+                APItem apitem = APItem.FromId(item.Item);
+                Plugin.Log($"{apitem} is a precollected item! Applying immediately.");
+                APItemMngr.ApplyItem(item.Item);
+                // NOTE: This might need to be adjusted later depending on the order in which the start_weapon is in precollected
+                if (ItemMap.GetItemType(item.Item) == ItemType.Weapon && !ItemMap.IsPlaneItem(item.Item)) {
+                    Weapon weapon = ItemMap.GetWeapon(item.Item);
+                    PlayerData.PlayerLoadouts loadouts = PlayerData.GetDataForSlot(APSessionDataSlotNum).Loadouts;
+                    loadouts.playerOne.primaryWeapon = weapon;
+                    loadouts.playerTwo.primaryWeapon = weapon;
+                }
+            }
             if (ItemMap.GetItemType(item.Item)==ItemType.Level) {
                 QueueItem(item, true);
             }
@@ -293,8 +326,8 @@ namespace CupheadArchipelago.AP {
                 QueueItem(item, false);
             }
         }
-        private static void QueueItem(NetworkItem item, bool levelItem) {
-            if (levelItem) ItemReceiveLevelQueue.Enqueue(item);
+        private static void QueueItem(NetworkItem item, bool isLevelItem) {
+            if (isLevelItem) ItemReceiveLevelQueue.Enqueue(item);
             else ItemReceiveQueue.Enqueue(item);
             Plugin.Log("[APClient] Queue Push");
             ReceivedItems.Add(item);

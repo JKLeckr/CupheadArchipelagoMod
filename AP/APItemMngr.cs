@@ -11,8 +11,9 @@ namespace CupheadArchipelago.AP {
 
             switch (ItemMap.GetItemType(item)) {
                 case ItemType.Weapon: {
-                    PlayerData.Data.Gift(PlayerId.PlayerOne, ItemMap.GetWeapon(item));
-                    PlayerData.Data.Gift(PlayerId.PlayerTwo, ItemMap.GetWeapon(item));
+                    Weapon weapon = ItemMap.GetWeapon(item);
+                    PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
+                    PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
                     if (APSettings.UseDLC) {
                         if (item==APItem.plane_gun) {
                             PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way);

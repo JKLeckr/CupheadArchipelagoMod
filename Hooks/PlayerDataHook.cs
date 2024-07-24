@@ -20,6 +20,25 @@ namespace CupheadArchipelago.Hooks {
             //PlayerCoinManagerHook.Hook();
         }
 
+        private static bool _APMode = false;
+
+        [HarmonyPatch(typeof(PlayerData), "ClearSlot")]
+        internal static class ClearSlot {
+            static bool Prefix() {
+                if (_APMode) {
+                    // TODO: Add
+                    return false;
+                }
+                else return true;
+            }
+        }
+
+        internal static void APSanitizeSlot(int slot) {
+            _APMode = true;
+            PlayerData.ClearSlot(slot);
+            _APMode = false;
+        }
+
         [HarmonyPatch(typeof(PlayerData), "OnLoaded")]
         internal static class OnLoaded {
             static void Postfix() {
@@ -63,20 +82,39 @@ namespace CupheadArchipelago.Hooks {
 
             [HarmonyPatch(typeof(PlayerData.PlayerInventory), MethodType.Constructor)]
             internal static class PlayerInventory {
-                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                     List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                     bool debug = false;
                     bool success = false;
+                    bool labelPlaced = false;
+                    FieldInfo _fi__weapons = typeof(PlayerData.PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
+                    MethodInfo _mi__weapons_Add = typeof(PlayerData.PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
+
+                    Label endLabel = il.DefineLabel();
 
                     if (debug) {
                         for (int i = 0; i < codes.Count; i++) {
                             Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                         }
                     }
-                    for (int i = 0; i < codes.Count - 3; i++) {
-                        success = true;
+                    if (codes[codes.Count-1].opcode == OpCodes.Ret) {
+                        codes[codes.Count-1].labels.Add(endLabel);
+                        Plugin.Log($"{nameof(PlayerInventory)}: Placed endlabel");
+                        labelPlaced = true;
                     }
-                    if (!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
+                    for (int i = 0; i < codes.Count - 3; i++) {
+                        if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi__weapons &&
+                            codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi__weapons_Add) {
+                                List<CodeInstruction> ncodes = [
+                                    CodeInstruction.Call(() => IsAPMode()), 
+                                    new CodeInstruction(OpCodes.Brtrue, endLabel)
+                                ];
+                                codes.InsertRange(i, ncodes);
+                                success = true;
+                                break;
+                        }
+                    }
+                    if (!labelPlaced||!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
                     if (debug) {
                         Plugin.Log("---");
                         for (int i = 0; i < codes.Count; i++) {
@@ -86,6 +124,8 @@ namespace CupheadArchipelago.Hooks {
 
                     return codes;
                 }
+
+                private static bool IsAPMode() => _APMode;
             }
         }
 

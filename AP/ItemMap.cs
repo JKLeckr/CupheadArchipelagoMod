@@ -98,5 +98,13 @@ namespace CupheadArchipelago.AP {
             // Plane Supers??
         };
         public static Super GetSuper(long item) => idToSuper[item];
+
+        private static readonly HashSet<long> planeItems = new() {
+            APItem.plane_gun,
+            APItem.plane_bombs,
+            APItem.ability_plane_parry,
+            APItem.ability_plane_shrink,
+        };
+        public static bool IsPlaneItem(long item) => planeItems.Contains(item);
     }
 }
