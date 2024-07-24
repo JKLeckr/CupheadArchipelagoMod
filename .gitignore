@@ -6,8 +6,10 @@
 # Backup files
 *.bak
 
-# Restricted
+# Excluded Folders
 [Rr]estricted/
+[Ee]xclude/
+[Ee]xcluded/
 
 # User-specific files
 *.suo

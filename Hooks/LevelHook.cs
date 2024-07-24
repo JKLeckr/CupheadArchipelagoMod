@@ -164,7 +164,6 @@ namespace CupheadArchipelago.Hooks {
                     }
                 }
                 if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
-                //if (!success) Plugin.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {

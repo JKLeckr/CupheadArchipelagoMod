@@ -75,6 +75,11 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(SlotSelectScreen), "UpdatePlayerSelect")]
         internal static class UpdatePlayerSelect {
+            /*
+                FIXME: I hate this! Static vars when extracting values are so cringe!
+                They are all over the place from earlier parts of development.
+                Now that I am much more familiar with the Transpiler, redo these parts.
+            */
             private static int _slotSelection;
             private static MethodInfo _mi_game_start_cr;
             private static MethodInfo _mi_SetState;

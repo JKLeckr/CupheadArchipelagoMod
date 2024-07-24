@@ -48,6 +48,8 @@ namespace CupheadArchipelago.AP {
             {"scene_level_platforming_3_2F::Level_Coin :: 084a7b75-e752-452f-8710-687db1e165fe", APLocation.level_rungun_mountain_coin5},
             
             {"43dfad5b-65dc-42f1-9ab3-25e0174f4ee8", APLocation.coin_isleh_secret},
+
+            //{"TBA", APLocation.dlc_coin_isle4_secret}, // Add this later
         };
 
         public static bool CoinIDExists(string coinId) => idToLoc.ContainsKey(coinId);

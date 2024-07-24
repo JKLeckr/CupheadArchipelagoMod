@@ -11,7 +11,7 @@ namespace CupheadArchipelago {
     [BepInDependency(DEP_SAVECONFIG_MOD_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("Cuphead.exe")]
     public class Plugin : BaseUnityPlugin {
-        public const string VERSION = "20240126";
+        public const string VERSION = "20240218";
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
 
         public static Plugin Instance { get; private set; }

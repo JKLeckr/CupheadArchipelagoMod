@@ -11,7 +11,7 @@ using BepInEx.Logging;
 namespace CupheadArchipelago.Hooks {
     internal class MapCoinHook {
         internal static void Hook() {
-            //Harmony.CreateAndPatchAll(typeof(Start));
+            Harmony.CreateAndPatchAll(typeof(Start)); //Debug
         }
 
         [HarmonyPatch(typeof(MapCoin), "Start")]

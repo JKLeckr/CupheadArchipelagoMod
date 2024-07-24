@@ -3,16 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
-using Newtonsoft.Json.Serialization;
 
 namespace CupheadArchipelago.Hooks {
     internal class DiceGateLevelHook {
-        internal static void Hook() {}
+        internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(Start));
+        }
 
         [HarmonyPatch(typeof(DiceGateLevel), "Start")]
         internal static class Start {

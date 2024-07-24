@@ -110,9 +110,11 @@ namespace CupheadArchipelago.AP {
                 Plugin.Log($"[APClient] Checking settings...");
                 try {
                     bool use_dlc = GetAPSlotDataBool("use_dlc");
-                    //TODO: Update this later
-                    if (DLCManager.DLCEnabled() != use_dlc) { //!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC
-                        Plugin.LogError("[APClient] Content Mismatch! Cannot use a non-DLC client on a DLC Archipelago slot!");
+                    // Probably handle this better later
+                    if (DLCManager.DLCEnabled()!=use_dlc) {
+                        Plugin.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {use_dlc}");
+                        if (DLCManager.DLCEnabled())
+                            Plugin.LogError($"[APClient] Note: You can disable the DLC if you have to.");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -3;
                         return false;

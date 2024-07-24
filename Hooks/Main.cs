@@ -19,6 +19,7 @@ namespace CupheadArchipelago.Hooks {
             TutorialLevelDoorHook.Hook();
             PlatformingLevelHook.Hook();
             LevelCoinHook.Hook();
+            MausoleumLevelHook.Hook();
             DiceGateLevelHook.Hook();
         }
 
