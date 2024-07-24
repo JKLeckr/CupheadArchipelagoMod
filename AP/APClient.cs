@@ -69,8 +69,8 @@ namespace CupheadArchipelago.AP {
         }
 
         private static bool ConnectArchipelagoSession() {
-            if (IsTryingSessionConnect) {
-                Plugin.LogWarning($"[APClient] Already Trying to Connect. Aborting.");
+            if (SessionStatus > 2) {
+                Plugin.LogWarning("[APClient] Already Trying to Connect. Aborting.");
                 return false;
             }
             SessionStatus = 3;

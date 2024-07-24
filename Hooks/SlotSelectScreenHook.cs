@@ -125,7 +125,6 @@ namespace CupheadArchipelago.Hooks {
                     _lockMenu = true;
                     SetAPConStatusText("Connecting...");
                     ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
-                    //APClient.CreateAndStartArchipelagoSession(_slotSelection);
                     _instance.StartCoroutine(connect_and_start_cr());
                 }
                 else {

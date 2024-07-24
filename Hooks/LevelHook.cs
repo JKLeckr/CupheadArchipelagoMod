@@ -95,7 +95,7 @@ namespace CupheadArchipelago.Hooks {
 
             private static void APCheck(Level instance) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Plugin.Log("[LevelHook] Level: {0}", instance.CurrentLevel);
+                    Plugin.Log($"[LevelHook] Level: {instance.CurrentLevel}");
                     if (!Level.IsInBossesHub && instance.CurrentLevel != Levels.Mausoleum) {
                         Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
                         if (Level.Difficulty >= normalMode) {

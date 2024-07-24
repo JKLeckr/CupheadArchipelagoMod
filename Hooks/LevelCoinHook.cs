@@ -26,7 +26,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(LevelCoin), "Collect")]
         internal static class Collect {
             static bool Prefix(LevelCoin __instance, ref bool ____collected) {
-                Plugin.Log("Coin Collected: {0}", CoinIdMap.GetAPLocation(__instance.GlobalID).Name);
+                Plugin.Log($"Coin Collected: {CoinIdMap.GetAPLocation(__instance.GlobalID).Name}");
                 return true;
             }
             // TODO: Add Transpiler for collecting checks on coin grab instead of vanilla behavior at the end of level. This will be an option in Archipelago

@@ -53,7 +53,7 @@ namespace CupheadArchipelago.Hooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (APSettings.CoinChecksVanilla) {
                         foreach (PlayerData.PlayerCoinProperties coin in ___levelCoinManager.coins) {
-                            Plugin.Log("Got Coin {0}", coin.coinID);
+                            Plugin.Log($"Got Coin {coin.coinID}");
                             APClient.Check(CoinIdMap.GetAPLocation(coin.coinID));
                             ___coinManager.SetCoinValue(coin.coinID, coin.collected, coin.player);
 		                }

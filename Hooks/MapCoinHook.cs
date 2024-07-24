@@ -66,7 +66,7 @@ namespace CupheadArchipelago.Hooks {
 
             private static bool APCheck(string coinID) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Plugin.Log("Check: {0}", coinID);
+                    Plugin.Log($"Check: {coinID}");
                     APClient.Check(CoinIdMap.GetAPLocation(coinID));
                     return true;
                 } else return false;
