@@ -40,8 +40,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem contract = new APItem("Contract", 0xc4ead6);
         public static readonly APItem dlc_ingredient = new APItem("Ingredient", 0xc4fad0);
         public static readonly APItem extrahealth = new APItem("+1 Health", 0xc4ead0);
-        public static readonly APItem goal_devilko = new APItem("The Devil's Surrender", 0xc4eaf8);
-        public static readonly APItem goal_dlc_saltbakerko = new APItem("Chef Saltbaker's Surrender", 0xc4fada);
+        public static readonly APItem goal_devilko = new APItem("The Devil's Surrender", 0xc4eaf8); // Will be removed soon
+        public static readonly APItem goal_dlc_saltbakerko = new APItem("Chef Saltbaker's Surrender", 0xc4fada); // Will be removed soon
         public static readonly APItem progressive_plane = new APItem("Progressive Plane", 0xc4ead5);
         public static readonly APItem super_i = new APItem("Super Art I", 0xc4eae3);
         public static readonly APItem super_ii = new APItem("Super Art II", 0xc4eae4);
