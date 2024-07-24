@@ -16,6 +16,16 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             Harmony.CreateAndPatchAll(typeof(Start));
         }
 
+        /* SHOP LAYOUT: WCWCW */
+
+        // Order: BW, BC, DW, DC
+        private static readonly int[][] shopOrders = [
+            [0,1,2,3,4,5,6,7],
+            [0,1,2,3,4,5,6,7],
+            [7,6,5,4,3,0,1,2],
+            [7,6,5,4,3,2,0,1]
+        ];
+
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
             static bool Prefix(List<ShopSceneItem> ___items, ShopSceneItem[] ___charmItemPrefabs, ShopSceneItem[] ___weaponItemPrefabs) {

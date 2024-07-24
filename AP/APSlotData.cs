@@ -3,8 +3,7 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using CupheadArchipelago.Auxiliary;
-using System;
+using CupheadArchipelago.Util;
 
 namespace CupheadArchipelago.AP {
     public class APSlotData {

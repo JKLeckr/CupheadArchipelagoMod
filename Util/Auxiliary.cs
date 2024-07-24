@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Auxiliary {
+namespace CupheadArchipelago.Util {
     public class Aux {
         public static string BlankIsNull(string str) => str.Length>0?str:null;
 

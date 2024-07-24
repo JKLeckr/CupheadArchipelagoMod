@@ -1,7 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using CupheadArchipelago.Auxiliary;
+using CupheadArchipelago.Util;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
