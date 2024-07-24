@@ -12,13 +12,14 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
+using System.Linq;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
         private static ArchipelagoSession session;
         public static bool Enabled { get; private set; } = false;
         public static bool Connected { get => session?.Socket.Connected ?? false; }
-        public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapReady; }
+        public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapStatus==1; }
         public static APData APSessionGSData { get => GetAPSessionData(); }
         public static APData.PlayerData APSessionGSPlayerData { get => APSessionGSData.playerData; }
         public static string APSessionSlotName { get; private set; } = "";
@@ -35,8 +36,9 @@ namespace CupheadArchipelago.AP {
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static bool complete = false;
-        private static bool scoutMapReady = false;
+        private static int scoutMapStatus = 0;
         private static long currentReceivedItemIndex = 0;
+        private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,4,6,0);
         internal const long AP_SLOTDATA_VERSION = 0;
         private const int STATUS_READY = 1;
@@ -66,6 +68,7 @@ namespace CupheadArchipelago.AP {
             session.Socket.SocketClosed += OnSocketClosed;
             session.Items.ItemReceived += OnItemReceived;
             session.Socket.PacketReceived += OnPacketReceived;
+            session.Socket.SocketOpened += () => {Plugin.Log("Socket Opened");};
 
             res = ConnectArchipelagoSession();
 
@@ -99,29 +102,6 @@ namespace CupheadArchipelago.AP {
                     if (APSessionGSData.seed.Length==0)
                         APSessionGSData.seed = session.RoomState.Seed;
                     SlotData = new APSlotData(loginData.SlotData);
-                    if (scoutMap.Count==0) {
-                        Plugin.Log($"[APClient] Getting location data...");
-                        session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
-                            Plugin.Log($"[APClient] Processing location data...");
-                            foreach (ScoutedItemInfo item in si.Values) {
-                                long loc = item.LocationId;
-                                string locName = item.LocationName;
-
-                                bool loc_cond1 = APLocation.IdExists(loc);
-                                bool loc_cond2 = APLocation.NameExists(locName);
-                                if (loc_cond1!=loc_cond2) {
-                                    throw new Exception("[APClient] Location id/name conflict!");
-                                }
-                                else if (!loc_cond1||!loc_cond2) {
-                                    Plugin.LogWarning($"[APClient] Setup: Unknown Location: {locName}:{loc}");
-                                }
-                                
-                                scoutMap.Add(loc, item);
-                            }
-                            Plugin.Log($"[APClient] Processed location data.");
-                            scoutMapReady = true;
-                        });
-                    } else scoutMapReady = true;
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
                     Plugin.LogError(e.ToString());
@@ -194,6 +174,15 @@ namespace CupheadArchipelago.AP {
 
                 SessionStatus = 6;
 
+                Plugin.Log($"[APClient] Waiting for location scout...");
+                while (scoutMapStatus==0) {
+                    Thread.Sleep(100);
+                }
+                if (scoutMapStatus<0) {
+                    SessionStatus = -7;
+                    return false;
+                }
+
                 Enabled = true;
                 SessionStatus = 1;
 
@@ -259,13 +248,18 @@ namespace CupheadArchipelago.AP {
             APSessionDataSlotNum = -1;
             ConnectionInfo = null;
             doneChecksUnique = null;
-            scoutMapReady = false;
+            scoutMapStatus = 0;
             scoutMap.Clear();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
-        public static void Check(long loc, bool sendChecks = true) {
-            Plugin.Log($"[APClient] Adding check \"{scoutMap[loc].LocationName}\"...");
+        public static bool Check(long loc, bool sendChecks = true) {
+            if (!scoutMap.ContainsKey(loc)) {
+                Plugin.LogError($"[APClient] Location {loc} is missing. Skipping.");
+                return false;
+            }
+            string locName = !scoutMap.ContainsKey(loc) ? scoutMap[loc].LocationName : $"#{loc}";
+            Plugin.Log($"[APClient] Adding check \"{locName}\"...");
             //Plugin.Log(doneChecksUnique.Count);
             //Plugin.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
@@ -274,8 +268,9 @@ namespace CupheadArchipelago.AP {
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Plugin.LogWarning($"[APClient] \"{scoutMap[loc].LocationName}\" is already Checked!");
+                Plugin.LogWarning($"[APClient] \"{locName}\" is already Checked!");
             }
+            return true;
         }
         public static void Check(long[] locs, bool sendChecks = true) {
             foreach (long loc in locs) {
@@ -401,13 +396,51 @@ namespace CupheadArchipelago.AP {
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
+            Plugin.Log(string.Format("Packet got: {0}", packet.PacketType));
             switch (packet.PacketType) {
                 /*case ArchipelagoPacketType.DataPackage: {
                     DataPackagePacket datapackagepkt = (DataPackagePacket)packet;
                     APData.CurrentSData.dataPackage = datapackagepkt.DataPackage;
                     break;
                 }*/
-                default: Plugin.Log(string.Format("Packet got: {0}", packet.PacketType)); break;
+                case ArchipelagoPacketType.Connected: {
+                    if (scoutMap.Count==0) {
+                        Plugin.Log($"[APClient] Getting location data...");
+                        session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
+                            Plugin.Log($" [APClient] Processing {si.Count} locations...");
+                            foreach (ScoutedItemInfo item in si.Values) {
+                                long loc = item.LocationId;
+                                string locName = item.LocationName;
+
+                                bool loc_cond1 = APLocation.IdExists(loc);
+                                bool loc_cond2 = APLocation.NameExists(locName);
+                                if (loc_cond1!=loc_cond2) {
+                                    Plugin.LogError(" [APClient] Location id/name conflict!");
+                                }
+                                else if (!loc_cond1||!loc_cond2) {
+                                    Plugin.LogWarning($" [APClient] Setup: Unknown Location: {locName}:{loc}");
+                                }
+                                
+                                scoutMap.Add(loc, item);
+                            }
+                            if (scoutMap.Count<1) {
+                                scoutMapStatus = -1;
+                                Plugin.LogError(" [APClient] scoutMap is empty!");
+                            }
+                            Plugin.Log($" [APClient] Processed location data.");
+                            if ((debug&4)>0) {
+                                Plugin.Log(" -- Location data dump: --");
+                                foreach (KeyValuePair<long, ScoutedItemInfo> entry in scoutMap) {
+                                    Plugin.Log($"  {entry.Key}: {entry.Value.ItemId}: {entry.Value.LocationId}: {entry.Value.ItemName}: {entry.Value.LocationName}");
+                                }
+                                Plugin.Log(" -- End Location data dump --");
+                            }
+                            scoutMapStatus = 1;
+                        }, session.Locations.AllLocations.ToArray());
+                    } else scoutMapStatus = 1;
+                    break;
+                }
+                default: break;
             }
         }
 

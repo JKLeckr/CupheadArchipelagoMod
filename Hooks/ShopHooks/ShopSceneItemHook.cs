@@ -106,8 +106,11 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, vanilla_label),
+                                new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Ldfld, _fi_itemType),
+                                new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Ldfld, _fi_weapon),
+                                new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Ldfld, _fi_charm),
                                 new CodeInstruction(OpCodes.Call, _mi_APCheck),
                                 new CodeInstruction(OpCodes.Stloc_0),

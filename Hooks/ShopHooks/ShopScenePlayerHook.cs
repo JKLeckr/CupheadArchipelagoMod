@@ -221,19 +221,30 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;
-                bool success = false;
-                byte labelbits = 0;
+                byte successbits = 0;
+                MethodInfo crmethod = typeof(ShopScenePlayer).GetMethod("addNewItem_cr", BindingFlags.NonPublic | BindingFlags.Instance);
+                //Plugin.Log("crmethod" + crmethod?.ToString());
+                Type crtype = Reflection.GetEnumeratorType(crmethod);
+                FieldInfo _fi_this = crtype.GetField("$this");
+                FieldInfo _fi_i2 = crtype.GetField("<i>__2");
+                FieldInfo _fi_i6 = crtype.GetField("<i>__6");
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data").GetGetMethod();
+                MethodInfo _mi_IsUnlocked = typeof(PlayerData).GetMethod("IsUnlocked");
+                FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_charmItemPrefabs = typeof(ShopScenePlayer).GetField("charmItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
-                if (labelbits>0) {
-                    for (int i=0;i<codes.Count-1;i++) {
+                for (int i=0;i<codes.Count-14;i++) {
+                    if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_Data && 
+                        codes[i+2].opcode==OpCodes.Ldfld && (FieldInfo)codes[i+2].operand==_fi_this) {
+                            Plugin.Log($"Found {i}");
                     }
                 }
-                if (!success||labelbits!=7) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}:{labelbits}");
+                //if (successbits!=7) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}:{labelbits}");
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
