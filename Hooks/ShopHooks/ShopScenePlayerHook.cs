@@ -3,12 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Util;
 using HarmonyLib;
-using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.ShopHooks {
@@ -21,7 +20,6 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         }
 
         /* SHOP LAYOUT: WCWCW */
-
         // Order: BW, BC, DW, DC
         private static readonly int[][] shopOrders = [
             [0,1,2,3,4,5,6,7],
@@ -29,6 +27,36 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             [7,6,5,4,3,0,1,2],
             [7,6,5,4,3,2,0,1]
         ];
+
+        private static readonly Dictionary<Scenes, int> worldIndexes = new() {
+            {Scenes.scene_map_world_1, 0},
+            {Scenes.scene_map_world_2, 1},
+            {Scenes.scene_map_world_3, 2},
+            {Scenes.scene_map_world_DLC, 3},
+        };
+        private static readonly Dictionary<Weapon, int> weaponOrder = new() {
+            {Weapon.level_weapon_homing, 0},
+            {Weapon.level_weapon_spreadshot, 1},
+            {Weapon.level_weapon_boomerang, 2},
+            {Weapon.level_weapon_bouncer, 3},
+            {Weapon.level_weapon_charge, 4},
+            {Weapon.level_weapon_wide_shot, 5},
+            {Weapon.level_weapon_crackshot, 6},
+            {Weapon.level_weapon_upshot, 7},
+        };
+        private static readonly Dictionary<Charm, int> charmOrder = new() {
+            {Charm.charm_health_up_1, 0},
+            {Charm.charm_smoke_dash, 1},
+            {Charm.charm_parry_plus, 2},
+            {Charm.charm_super_builder, 3},
+            {Charm.charm_parry_attack, 4},
+            {Charm.charm_health_up_2, 5},
+            {Charm.charm_healer, 6},
+            {Charm.charm_curse, 7},
+        };
+
+        //private static Dictionary<Weapon, APLocation> WeaponLocations { get => ShopSceneItemHook.weaponLocations; }
+        //private static Dictionary<Charm, APLocation> CharmLocations { get => ShopSceneItemHook.charmLocations; }
 
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
@@ -113,7 +141,33 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             }
 
             private static void SetupItems(ref List<ShopSceneItem> items, ref ShopSceneItem[] weaponItemPrefabs, ref ShopSceneItem[] charmItemPrefabs) {
-                items.Clear(); //TODO: FINISH LATER
+                int wlen = weaponItemPrefabs.Length;
+                int clen = charmItemPrefabs.Length;
+                ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
+                ShopSceneItem[] ctmp = new ShopSceneItem[clen];
+                
+                for (int i=0; i<wlen; i++) {
+                    ShopSceneItem item = weaponItemPrefabs[i];
+                    wtmp[weaponOrder[item.weapon]] = item;
+                }
+                for (int i=0; i<clen; i++) {
+                    ShopSceneItem item = charmItemPrefabs[i];
+                    ctmp[charmOrder[item.charm]] = item;
+                }
+                int wnullc = Aux.ArrayNullCount(wtmp);
+                int cnullc = Aux.ArrayNullCount(ctmp);
+                if (wnullc+cnullc>0) {
+                    Plugin.LogError($"Prefabs have null values! w:{wnullc} c:{cnullc}");
+                    return;
+                }
+                int shopIndex = worldIndexes[PlayerData.Data.CurrentMap];
+                int weaponCount = APClient.SlotData.shop_map[shopIndex].Weapons;
+                int charmCount = APClient.SlotData.shop_map[shopIndex].Charms;
+                weaponItemPrefabs = new ShopSceneItem[APClient.SlotData.shop_map[0].Weapons];
+                charmItemPrefabs = new ShopSceneItem[APClient.SlotData.shop_map[0].Weapons];
+                items.Clear();
+                bool charm = false;
+                for (int i=0; i<weaponCount+charmCount; i++) {}
             }
         }
 

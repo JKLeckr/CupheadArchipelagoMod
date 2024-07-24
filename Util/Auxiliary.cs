@@ -23,6 +23,14 @@ namespace CupheadArchipelago.Util {
             return res;
         }
 
+        public static int ArrayNullCount(object[] arr) {
+            int c = 0;
+            foreach (object o in arr) {
+                if (o==null) c++;
+            }
+            return c;
+        }
+
         private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {
             foreach (CodeInstruction code in codes) {
                 Plugin.Log(code.opcode + " -: " + code.operand, LoggingFlags.Transpiler);

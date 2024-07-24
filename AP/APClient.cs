@@ -27,7 +27,7 @@ namespace CupheadArchipelago.AP {
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
-        private static APSlotData SlotData { get; set; }
+        public static APSlotData SlotData { get; private set; }
         private static Dictionary<long, APCheck> checkMap = new();
         private static Queue<NetworkItem> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
         private static Queue<NetworkItem> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
