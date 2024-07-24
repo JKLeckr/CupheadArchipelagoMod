@@ -195,6 +195,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 // Set prefabs for shop
                 weaponItemPrefabs = Aux.ArrayRange(wtmp, weaponCount);
                 charmItemPrefabs = Aux.ArrayRange(ctmp, charmCount);
+                HashSet<Weapon> weaponSet = GetWeaponSet(weaponItemPrefabs);
+                HashSet<Charm> charmSet = GetCharmSet(charmItemPrefabs);
 
                 Plugin.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}");
                 Plugin.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}");
@@ -202,25 +204,31 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Plugin.Log("2");
 
                 // Set items in shop
-                items.Clear();
+                List<ShopSceneItem> nitems = new();
                 bool charm = false;
                 int wi = 0;
                 int ci = 0;
                 for (int i=0; i<Math.Min(totalCount,5); i++) {
                     if (charm) {
                         Plugin.Log("3");
-                        items.Add(charmItemPrefabs[ci]);
+                        nitems.Add(charmItemPrefabs[ci]);
                         ci++;
                         charm=false;
                     }
                     else {
                         Plugin.Log("4");
-                        items.Add(weaponItemPrefabs[wi]);
+                        nitems.Add(weaponItemPrefabs[wi]);
                         wi++;
                         charm=true;
 
                     }
                 }
+                foreach (ShopSceneItem item in items) {
+                    if (!(weaponSet.Contains(item.weapon) || charmSet.Contains(item.charm))) {
+                        item.gameObject.SetActive(false);
+                    }
+                }
+                items = nitems;
 
                 Plugin.Log("---SHOP AP---");
                 Plugin.Log("-items-");
@@ -233,6 +241,26 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 foreach (ShopSceneItem item in weaponItemPrefabs) 
                     Plugin.Log(item.ToString());
                 Plugin.Log("\n---END SHOP AP---");
+            }
+            private static HashSet<Weapon> GetWeaponSet(IEnumerable<ShopSceneItem> items) {
+                HashSet<Weapon> wset = new();
+                foreach (ShopSceneItem item in items) {
+                    if (!wset.Contains(item.weapon)) 
+                        wset.Add(item.weapon);
+                    else
+                        Plugin.LogWarning($"[SetupItems] {item.weapon} already exists in set!");
+                }
+                return wset;
+            }
+            private static HashSet<Charm> GetCharmSet(IEnumerable<ShopSceneItem> items) {
+                HashSet<Charm> cset = new();
+                foreach (ShopSceneItem item in items) {
+                    if (!cset.Contains(item.charm)) 
+                        cset.Add(item.charm);
+                    else
+                        Plugin.LogWarning($"[SetupItems] {item.charm} already exists in set!");
+                }
+                return cset;
             }
             private static string ShopSceneItemsToString(IEnumerable<ShopSceneItem> items) {
                 bool first = true;
