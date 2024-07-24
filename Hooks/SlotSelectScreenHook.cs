@@ -79,9 +79,8 @@ namespace CupheadArchipelago.Hooks {
             private static MethodInfo _mi_game_start_cr;
             private static MethodInfo _mi_SetState;
             private static Thread _ap_connect_thread = null;
-            private static Thread _ap_setup_thread = null;
-            private static bool? _ap_connection_result = null;
-            private static bool? _ap_setup_result = null;
+            private static int Status => APClient.SessionConnectPhase;
+            private static bool _ap_setup_result;
 
             static UpdatePlayerSelect() {
                 _mi_game_start_cr = typeof(SlotSelectScreen).GetMethod("game_start_cr", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -123,16 +122,13 @@ namespace CupheadArchipelago.Hooks {
             private static void ConnectAndStart() {
                 //Plugin.Log.LogInfo(_instance);
                 //Plugin.Log.LogInfo(__slotSelection);
-                _ap_connection_result = null;
-                _ap_setup_result = null;
-                _ap_connect_thread = new Thread(() => _ap_connection_result = APClient.CreateAndStartArchipelagoSession(_slotSelection));
+                _ap_connect_thread = new Thread(() => APClient.CreateAndStartArchipelagoSession(_slotSelection));
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
                     SetAPConStatusText("Connecting...");
                     _ap_connect_thread.Start();
-                    IEnumerator coroutine = connect_and_start_cr();
-                    _instance.StartCoroutine(coroutine);
+                    _instance.StartCoroutine(connect_and_start_cr());
                 }
                 else {
                     _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
@@ -140,17 +136,21 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator connect_and_start_cr() {
-                while (!_ap_connection_result.HasValue) {
+                while (Status==1) {
                     yield return null;
                 }
-                if (!(bool)_ap_connection_result) {
+                if (Status==0) {
                     SetAPConStatusText("Connection failed!");
-                    _lockMenu = false;
-                    _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.PlayerSelect});
-                    AudioManager.Play("level_menu_select");
+                    APError();
                 }
                 else {
                     SetAPConStatusText("Connected!\nChecking...");
+                    while (Status==2) {
+                        yield return null;
+                    }
+                    if (Status==0) {
+                        APErrorConnected("Check failed!");
+                    }
                     while (APClient.SlotData==null) {
                         yield return null;
                     }
@@ -158,22 +158,16 @@ namespace CupheadArchipelago.Hooks {
                     //TODO: Update this later
                     if (DLCManager.DLCEnabled()!=APClient.APSessionSData.UseDLC) { //!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC
                         Plugin.Log("[APClient] Content Mismatch! Cannot use a non-DLC client on a DLC Archipelago slot!", LogLevel.Error);
-                        SetAPConStatusText("Connected!\nError: Content Mismatch!");
-                        APClient.CloseArchipelagoSession();
-                        SetAPConStatusText("Disconnected.\nError: Content Mismatch!");
-                        _lockMenu = false;
-                        _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.PlayerSelect});
-                        AudioManager.Play("level_menu_select");
+                        APErrorConnected("Error: Content Mismatch!");
                     }
                     SetAPConStatusText("Connected!\nSetting Up...");
                     if (APClient.APSessionSData.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                     else Level.SetCurrentMode(Level.Mode.Normal);
-                    _ap_setup_thread = new Thread(() => _ap_setup_result = APClient.SetupArchipelagoGame());
-                    _ap_setup_thread.Start();
-                    while (!_ap_setup_result.HasValue) {
-                        yield return null;
-                    }
-                    if ((bool)_ap_setup_result) {
+                    
+                    _ap_setup_result = false;
+                    yield return _instance.StartCoroutine(setup_game_cr());
+
+                    if (_ap_setup_result) {
                         SetAPConStatusText("Connected!\nDone!");
                         _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                         _lockMenu = false;
@@ -186,6 +180,41 @@ namespace CupheadArchipelago.Hooks {
                     }
                 }
                 yield break;
+            }
+            private static IEnumerator setup_game_cr() {
+                /* Send location checks of completed levels */
+                PlayerData pd = PlayerData.Data;
+                // Level Locations
+                foreach (Levels level in LevelLocationMap.GetKeys()) {
+                    if (pd.CheckLevelsHaveMinDifficulty(new Levels[]{level}, APClient.APSessionSData.Hard?Level.Mode.Hard:Level.Mode.Normal)) {
+                        APClient.Check(LevelLocationMap.GetLocationId(level,0));
+                        if (APClient.APSessionSData.BossGradeChecks>0&&Array.IndexOf(Level.platformingLevels, level)<0) {
+                            if (pd.CheckLevelsHaveMinGrade(new Levels[]{level}, LevelScoringData.Grade.A+APClient.APSessionSData.BossGradeChecks)) {
+                                APClient.Check((long)LevelLocationMap.GetLocationId(level,1));
+                            }
+                        }
+                        else if (APClient.APSessionSData.RungunGradeChecks>0) {
+                            int rungunGradeChecks = APData.CurrentSData.RungunGradeChecks;
+                            if (pd.CheckLevelsHaveMinGrade(new Levels[]{level}, LevelScoringData.Grade.APlus+(rungunGradeChecks>=2?2:0))) {
+                                APClient.Check((long)LevelLocationMap.GetLocationId(level,rungunGradeChecks>=2?2:1));
+                            }
+                        }
+                    }
+                }
+
+                _ap_setup_result = true;
+                yield return null;
+            }
+            private static void APError() {
+                _lockMenu = false;
+                _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.PlayerSelect});
+                AudioManager.Play("level_menu_select");
+            }
+            private static void APErrorConnected(string message) {
+                SetAPConStatusText("Connected!\n"+message);
+                APClient.CloseArchipelagoSession();
+                SetAPConStatusText("Disconnected.\n"+message);
+                APError();
             }
         }
 
