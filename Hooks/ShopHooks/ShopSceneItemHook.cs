@@ -90,33 +90,31 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
-                if (labelbits>0) {
-                    for (int i=codes.Count-2;i>=0;i--) {
-                        if (labelbits==0 && codes[i+1].opcode == OpCodes.Ret && codes[i].labels.Count>0) {
-                            end_label = codes[i].labels[0];
-                            labelbits|=1;
-                        }
-                        else if ((labelbits&2)==0 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Brfalse && (Label)codes[i+1].operand == end_label) {
-                            codes[i].labels.Add(flag_label);
-                            labelbits|=2;
-                        }
-                        else if ((labelbits&4)==0 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i+1].opcode == OpCodes.Stloc_0) {
-                            if ((i+2)<codes.Count) {
-                                codes[i+2].labels.Add(vanilla_label);
-                                labelbits|=4;
-                                List<CodeInstruction> ncodes = [
-                                    CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
-                                    new CodeInstruction(OpCodes.Brfalse, vanilla_label),
-                                    new CodeInstruction(OpCodes.Ldfld, _fi_itemType),
-                                    new CodeInstruction(OpCodes.Ldfld, _fi_weapon),
-                                    new CodeInstruction(OpCodes.Ldfld, _fi_charm),
-                                    new CodeInstruction(OpCodes.Call, _mi_APCheck),
-                                    new CodeInstruction(OpCodes.Stloc_0),
-                                    new CodeInstruction(OpCodes.Br, flag_label),
-                                ];
-                                codes.InsertRange(i+2, ncodes);
-                                success = true;
-                            }
+                for (int i=codes.Count-2;i>=0;i--) {
+                    if (labelbits==0 && codes[i+1].opcode == OpCodes.Ret && codes[i].labels.Count>0) {
+                        end_label = codes[i].labels[0];
+                        labelbits|=1;
+                    }
+                    else if ((labelbits&2)==0 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Brfalse && (Label)codes[i+1].operand == end_label) {
+                        codes[i].labels.Add(flag_label);
+                        labelbits|=2;
+                    }
+                    else if ((labelbits&4)==0 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i+1].opcode == OpCodes.Stloc_0) {
+                        if ((i+2)<codes.Count) {
+                            codes[i+2].labels.Add(vanilla_label);
+                            labelbits|=4;
+                            List<CodeInstruction> ncodes = [
+                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                new CodeInstruction(OpCodes.Brfalse, vanilla_label),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_itemType),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_weapon),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_charm),
+                                new CodeInstruction(OpCodes.Call, _mi_APCheck),
+                                new CodeInstruction(OpCodes.Stloc_0),
+                                new CodeInstruction(OpCodes.Br, flag_label),
+                            ];
+                            codes.InsertRange(i+2, ncodes);
+                            success = true;
                         }
                     }
                 }
