@@ -442,18 +442,23 @@ namespace CupheadArchipelago.AP {
                         session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
                             Plugin.Log($" [APClient] Processing {si.Count} locations...");
                             bool err = false;
-                            foreach (ScoutedItemInfo item in si.Values) {
-                                long loc = item.LocationId;
-                                string locName = item.LocationName;
+                            try {
+                                foreach (ScoutedItemInfo item in si.Values) {
+                                    long loc = item.LocationId;
+                                    string locName = item.LocationName;
 
-                                bool loc_cond = APLocation.IdExists(loc);
-                                if (!loc_cond) {
-                                    err = true;
-                                    Plugin.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
-                                }
+                                    bool loc_cond = APLocation.IdExists(loc);
+                                    if (!loc_cond) {
+                                        err = true;
+                                        Plugin.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
+                                    }
                                 
-                                locMap.Add(loc, item);
-                                itemMap.Add(item.ItemId, item);
+                                    locMap.Add(loc, item);
+                                    itemMap.Add(item.ItemId, item);
+                                }
+                            } catch (Exception e) {
+                                err = true;
+                                Plugin.LogError(e.ToString());
                             }
                             if (locMap.Count<1) {
                                 scoutMapStatus = -1;
