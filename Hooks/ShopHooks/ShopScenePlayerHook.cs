@@ -60,20 +60,6 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
-            static bool Prefix(List<ShopSceneItem> ___items, ShopSceneItem[] ___charmItemPrefabs, ShopSceneItem[] ___weaponItemPrefabs) {
-                Plugin.Log("---SHOP---");
-                Plugin.Log("-items-");
-                foreach (ShopSceneItem item in ___items) 
-                    Plugin.Log(item.ToString());
-                Plugin.Log("\n-charmItemPrefabs-");
-                foreach (ShopSceneItem item in ___charmItemPrefabs) 
-                    Plugin.Log(item.ToString());
-                Plugin.Log("\n-weaponItemPrefabs-");
-                foreach (ShopSceneItem item in ___weaponItemPrefabs) 
-                    Plugin.Log(item.ToString());
-                Plugin.Log("\n---END SHOP---");
-                return true;
-            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;
@@ -139,13 +125,24 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 return codes;
             }
-
             private static void SetupItems(ref List<ShopSceneItem> items, ref ShopSceneItem[] weaponItemPrefabs, ref ShopSceneItem[] charmItemPrefabs) {
                 ShopSet[] shopMap = APClient.SlotData.shop_map;
                 int wlen = weaponItemPrefabs.Length;
                 int clen = charmItemPrefabs.Length;
                 ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
                 ShopSceneItem[] ctmp = new ShopSceneItem[clen];
+
+                Plugin.Log("---SHOP---");
+                Plugin.Log("-items-");
+                foreach (ShopSceneItem item in items) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n-charmItemPrefabs-");
+                foreach (ShopSceneItem item in charmItemPrefabs) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n-weaponItemPrefabs-");
+                foreach (ShopSceneItem item in weaponItemPrefabs) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n---END SHOP---");
                 
                 // Setting order of prefabs for all shops
                 for (int i=0; i<wlen; i++) {
@@ -162,6 +159,11 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     Plugin.LogError($"[ShopScenePlayerHook] Null Prefabs! w:{wnullc} c:{cnullc}");
                     return;
                 }
+
+                Plugin.Log($"wp {ShopSceneItemsToString(weaponItemPrefabs)}");
+                Plugin.Log($"cp {ShopSceneItemsToString(charmItemPrefabs)}");
+                Plugin.Log($"wt {ShopSceneItemsToString(wtmp)}");
+                Plugin.Log($"ct {ShopSceneItemsToString(ctmp)}");
 
                 // Setting up indexes and counts
                 int shopIndex = worldIndexes[PlayerData.Data.CurrentMap];
@@ -198,6 +200,29 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                     }
                 }
+
+                Plugin.Log("---SHOP AP---");
+                Plugin.Log("-items-");
+                foreach (ShopSceneItem item in items) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n-charmItemPrefabs-");
+                foreach (ShopSceneItem item in charmItemPrefabs) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n-weaponItemPrefabs-");
+                foreach (ShopSceneItem item in weaponItemPrefabs) 
+                    Plugin.Log(item.ToString());
+                Plugin.Log("\n---END SHOP AP---");
+            }
+            private static string ShopSceneItemsToString(IEnumerable<ShopSceneItem> items) {
+                bool first = true;
+                string res = "[";
+                foreach (var item in items) {
+                    string prefix = !first?", ":"";
+                    if (first) first = false;
+                    res += prefix + ((item.itemType==ItemType.Charm)?item.charm:item.weapon);
+                }
+                res += "]";
+                return res;
             }
         }
 
