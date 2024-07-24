@@ -45,6 +45,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(Level), "_OnLevelStart")]
         internal static class _OnLevelStart {
             static void Postfix(Level __instance) {
+                Plugin.Log("_OnLevelStart", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(APManager.Type.Level);
@@ -71,33 +72,41 @@ namespace CupheadArchipelago.Hooks {
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                //bool debug = false;
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                bool debug = false;
+                bool debug2 = false;
                 bool success = false;
                 bool success2 = false;
                 MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode").GetGetMethod();
                 MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty").GetSetMethod(true);
                 MethodInfo _mi__OnLevelEnd = typeof(Level).GetMethod("_OnLevelEnd", BindingFlags.Instance | BindingFlags.NonPublic);
                 MethodInfo _mi_APCheck = typeof(zHack_OnWin).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
 
-                /*if (debug) {
+                if (debug2) {
+                    Plugin.Log(_mi_get_mode);
+                    Plugin.Log(_mi_set_Difficulty);
+                    Plugin.Log(_mi__OnLevelEnd);
+                    Plugin.Log(_mi_APCheck);
+                    Plugin.Log(_mi_HackDifficulty);
+                }
+                if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
-                    Plugin.Log(_mi_get_mode);
-                    Plugin.Log(_mi_set_Difficulty);
-                }*/
+                }
 
                 for (int i = 0; i < codes.Count - 2; i++) {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
                         codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
-                        codes.Insert(i+1, CodeInstruction.Call(typeof(zHack_OnWin), "HackDifficulty"));
-                        //Plugin.Log("Patch success");
+                        codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_HackDifficulty));
+                        if (debug) Plugin.Log("Patch success");
                         success = true;
                     }
-                    if (codes[i].opcode==OpCodes.Ldarg_0 && codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi__OnLevelEnd) {
+                    if (success && codes[i].opcode==OpCodes.Ldarg_0 && codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi__OnLevelEnd) {
                         codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
                         codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_APCheck));
+                        if (debug) Plugin.Log("Patch2 success");
                         success2 = true;
                         break;
                     }
@@ -105,11 +114,12 @@ namespace CupheadArchipelago.Hooks {
                 if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
                 if (!success2) throw new Exception($"{nameof(zHack_OnWin)}: Patch2 Failed!");
                 //if (!success) Plugin.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
-                /*if (debug) {
+                if (debug) {
+                    Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
-                }*/
+                }
 
                 return codes;
             }
@@ -122,10 +132,12 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static void APCheck(Level instance) {
+                Plugin.Log("[LevelHook] APCheck");
                 if (APData.IsCurrentSlotEnabled()) {
                     Plugin.Log($"[LevelHook] Level: {instance.CurrentLevel}");
                     // For now, the final bosses are not checks because they are event locations
                     if (instance.CurrentLevel == Levels.Devil || instance.CurrentLevel == Levels.Saltbaker) {
+                        Plugin.Log("[LevelHook] Goal");
                         APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goal.Saltbaker:Goal.Devil);
                     }
                     else if (!Level.IsInBossesHub && instance.CurrentLevel != Levels.Mausoleum) {

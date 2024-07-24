@@ -35,7 +35,7 @@ namespace CupheadArchipelago {
                     Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
                     Log("Using Save Key: " + configSaveKeyName.Value);
                 } else Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
-                Hooks.Main.Hook();
+                Hooks.Main.HookMain();
                 Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
             }
             else {

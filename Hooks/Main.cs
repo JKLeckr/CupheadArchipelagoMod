@@ -3,7 +3,7 @@
 
 namespace CupheadArchipelago.Hooks {
     public class Main {
-        public static void Hook() {
+        public static void HookMain() {
             CupheadHook.Hook();
             StartScreenHook.Hook();
             SlotSelectScreenHook.Hook();

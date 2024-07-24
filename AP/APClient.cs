@@ -32,6 +32,7 @@ namespace CupheadArchipelago.AP {
         private static long ReceivedItemsIndex {get => APSessionGSData.ReceivedItemIndex;}
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
+        private static bool complete = false;
         private static long currentReceivedItemIndex = 0;
         private static readonly Version AP_VERSION = new Version(0,4,4,0);
         private const int STATUS_CONNECTED = 1;
@@ -221,9 +222,9 @@ namespace CupheadArchipelago.AP {
             if (APSession.Socket.Connected) {
                 APSession.Locations.CompleteLocationChecksAsync((bool state) => OnLocationSendComplete(state, locs), locs);
                 if (IsAPGoalComplete()) {
-                    if (!APSessionGSData.complete) {
+                    if (!complete) {
                         StatusUpdatePacket statusUpdate = new StatusUpdatePacket() { Status = ArchipelagoClientState.ClientGoal };
-                        APSession.Socket.SendPacketAsync(statusUpdate, _ => {APSessionGSData.complete = true;});
+                        APSession.Socket.SendPacketAsync(statusUpdate, _ => {complete = true;});
                     }
                 }
             }
@@ -291,7 +292,9 @@ namespace CupheadArchipelago.AP {
         private static void QueueItem(NetworkItem item, bool levelItem) {
             if (levelItem) ItemReceiveLevelQueue.Enqueue(item);
             else ItemReceiveQueue.Enqueue(item);
+            Plugin.Log("[APClient] Queue Push");
             ReceivedItems.Add(item);
+            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);
             currentReceivedItemIndex++;
         }
         public static bool ItemReceiveQueueIsEmpty() => ItemReceiveQueue.Count==0;
@@ -302,7 +305,9 @@ namespace CupheadArchipelago.AP {
             NetworkItem item = itemQueue.Peek();
             APItemMngr.ApplyItem(item.Item);
             APSessionGSData.appliedReceivedItems.Add(item);
+            Plugin.Log("[APClient] Queue Pop");
             itemQueue.Dequeue();
+            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);
             return item;
         }
 

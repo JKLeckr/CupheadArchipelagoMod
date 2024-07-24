@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using Archipelago.MultiClient.Net.Models;
+using Newtonsoft.Json;
 using BepInEx.Logging;
 
 namespace CupheadArchipelago.AP {
@@ -31,7 +31,6 @@ namespace CupheadArchipelago.AP {
         public string slot = "Player";
         public string password = "";
         public string seed = "";
-        public bool complete = false;
         public PlayerData playerData = new PlayerData();
         public Dictionary<string, object> slotData = null;
         public DataPackage dataPackage = null;
@@ -58,7 +57,7 @@ namespace CupheadArchipelago.AP {
                     APData data = null;
                     try {
                         string sdata = File.ReadAllText(filename);
-                        data = JsonUtility.FromJson<APData>(sdata);
+                        data = JsonConvert.DeserializeObject<APData>(sdata);
                     }
                     catch (Exception e) {
                         Plugin.Log($"[APData] Unable to read AP Save Data for {i}: " + e.StackTrace, LogLevel.Error);
@@ -82,7 +81,7 @@ namespace CupheadArchipelago.AP {
             Plugin.Log($"Saving slot {index}");
             string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
             APData data = SData[index];
-            string sdata = JsonUtility.ToJson(SData[index]);
+            string sdata = JsonConvert.SerializeObject(data);
             try {
                 File.WriteAllText(filename, sdata);
             }

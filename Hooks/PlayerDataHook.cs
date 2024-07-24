@@ -62,12 +62,8 @@ namespace CupheadArchipelago.Hooks {
 
             [HarmonyPatch(typeof(PlayerData.PlayerCoinManager), "GetCoinCollected", new Type[] {typeof(string)})]
             internal static class GetCoinCollected {
-                private static MethodInfo _mi_GetCoin__str;
-
-                static GetCoinCollected() {
-                    _mi_GetCoin__str = typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoin",
+                private static MethodInfo _mi_GetCoin__str = typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoin",
                         BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[]{typeof(string)}, null);
-                }
 
                 static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                     List<CodeInstruction> codes = new List<CodeInstruction>(instructions);

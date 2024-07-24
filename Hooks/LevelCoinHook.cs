@@ -37,18 +37,16 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(LevelCoin), "Collect")]
         internal static class Collect {
-            private static readonly FieldInfo _fi__collected = typeof(LevelCoin).GetField("_collected", BindingFlags.Instance | BindingFlags.NonPublic);
-            private static readonly MethodInfo _mi_APCheck = typeof(Collect).GetMethod("APCheck", BindingFlags.Static | BindingFlags.NonPublic);
-
             static bool Prefix(LevelCoin __instance, ref bool ____collected) {
                 Plugin.Log($"Coin Collected: {CoinIdMap.GetAPLocation(__instance.GlobalID).Name}");
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-
                 bool debug = false;
                 bool success = false;
+                FieldInfo _fi__collected = typeof(LevelCoin).GetField("_collected", BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo _mi_APCheck = typeof(Collect).GetMethod("APCheck", BindingFlags.Static | BindingFlags.NonPublic);
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {

@@ -46,16 +46,14 @@ namespace CupheadArchipelago.Unity {
                     if (type == Type.Level) {
                         if (!APClient.ItemReceiveLevelQueueIsEmpty()) {
                             if (timer>=applyInterval) {
-                                NetworkItem item = APClient.PopItemReceiveLevelQueue();
-                                APItemMngr.ApplyItem(item.Item);
+                                APClient.PopItemReceiveLevelQueue();
                                 AudioManager.Play("level_coin_pickup"); //TEMP
                                 timer = 0f;
                             }
                         }
                     }
                     if (!APClient.ItemReceiveQueueIsEmpty()) {
-                        NetworkItem item = APClient.PopItemReceiveQueue();
-                        APItemMngr.ApplyItem(item.Item);
+                        APClient.PopItemReceiveQueue();
                         AudioManager.Play("level_coin_pickup"); //TEMP
                     }
                 }
