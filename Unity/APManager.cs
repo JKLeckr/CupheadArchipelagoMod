@@ -61,8 +61,12 @@ namespace CupheadArchipelago.Unity {
                     if (debug) Plugin.Log($"ItemQueue {APClient.ItemReceiveQueueCount()}");
                     if (!APClient.ItemReceiveQueueIsEmpty()) {
                         if (debug) Plugin.Log($"ItemQueue has item");
-                        APClient.PopItemReceiveQueue();
-                        AudioManager.Play("level_coin_pickup"); //TEMP
+                        if (timer>=applyInterval) {
+                            if (debug) Plugin.Log($"ItemQueue is applying");
+                            APClient.PopItemReceiveQueue();
+                            AudioManager.Play("level_coin_pickup"); //TEMP
+                            timer = 0f;
+                        }
                     }
                     if (timer<applyInterval) timer += Time.deltaTime;
                 }
