@@ -46,7 +46,7 @@ namespace CupheadArchipelago.AP {
         public static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataLong(slotData, "version");
         private static bool GetAPSlotDataBool(Dictionary<string, object> slotData, string key) => Aux.IntAsBool(GetAPSlotDataLong(slotData, key));
         private static long GetAPSlotDataLong(Dictionary<string, object> slotData, string key) => (long)GetAPSlotData(slotData, key);
-        private static string GetAPSlotDataString(Dictionary<string, object> slotData, string key) => (string)GetAPSlotData(slotData, key);
+        private static string GetAPSlotDataString(Dictionary<string, object> slotData, string key) => GetAPSlotData(slotData, key).ToString();
         private static T GetAPSlotDataDeserialized<T>(Dictionary<string, object> slotData, string key) => JsonConvert.DeserializeObject<T>(GetAPSlotDataString(slotData, key));
         private static object GetAPSlotData(Dictionary<string, object> slotData, string key) {
             try { 

@@ -101,6 +101,8 @@ namespace CupheadArchipelago.AP {
                         APSessionGSData.slotData = new APSlotData(loginData.SlotData);
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
+                    Plugin.LogError(e.ToString());
+                    //Plugin.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -2;
                     return false;
@@ -159,6 +161,7 @@ namespace CupheadArchipelago.AP {
                     //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
+                    Plugin.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -6;
                     return false;
