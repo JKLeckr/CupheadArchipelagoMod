@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
@@ -51,10 +52,65 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {charm}");
                     break;
                 default:
-                    Plugin.LogWarning($"[ShopSceneItem] Cannot get item. Unknown Type {itemType}");
+                    Plugin.LogWarning($"[ShopSceneItem] Cannot get item. Invalid Type {itemType}");
                     break;
             }
             return loc;
+        }
+
+        [HarmonyPatch(typeof(ShopSceneItem), "Init")]
+        internal static class Init {}
+
+        [HarmonyPatch(typeof(ShopSceneItem), "DisplayName", MethodType.Getter)]
+        internal static class DisplayName {
+            static bool Prefix(ItemType ___itemType, Weapon ___weapon, Charm ___charm, ref string __result) {
+                if (!APData.IsCurrentSlotEnabled()) return true;
+                long loc = GetAPLocation(___itemType, ___weapon, ___charm);
+                if (loc<0) {
+                    __result = "INVALID";
+                    return false;
+                }
+                ScoutedItemInfo check = APClient.GetCheck(loc);
+                if (check != null) {
+                    string name = check.ItemName;
+                    __result = name ?? $"APItem {check.ItemId}";
+                }
+                else __result = $"AP{loc}";
+
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(ShopSceneItem), "SubText", MethodType.Getter)]
+        internal static class SubText {
+            static bool Prefix(ItemType ___itemType, Weapon ___weapon, Charm ___charm, ref string __result) {
+                if (!APData.IsCurrentSlotEnabled()) return true;
+                long loc = GetAPLocation(___itemType, ___weapon, ___charm);
+                if (loc<0) {
+                    __result = $"{___itemType}";
+                    return false;
+                }
+                ScoutedItemInfo check = APClient.GetCheck(loc);
+                if (check != null) {
+                    __result = $"For {check.Player} from {check.ItemGame}.";
+                }
+                else __result = "Missing Location Scout Data.";
+
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(ShopSceneItem), "Value", MethodType.Getter)]
+        internal static class Value {
+            static bool Prefix(ItemType ___itemType, ref int __result) {
+                if (!APData.IsCurrentSlotEnabled()) return true;
+                
+                // Static until pricing is randomizable
+                if (___itemType == ItemType.Charm) __result = 3;
+                else __result = 4;
+
+                return false;
+            }
         }
 
         [HarmonyPatch(typeof(ShopSceneItem), "isPurchased")]

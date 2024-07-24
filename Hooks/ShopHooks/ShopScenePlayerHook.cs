@@ -15,7 +15,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(Start));
-            //Harmony.CreateAndPatchAll(typeof(UpdateSelection));
+            Harmony.CreateAndPatchAll(typeof(UpdateSelection));
             Harmony.CreateAndPatchAll(typeof(addNewItem_cr));
         }
 
@@ -214,7 +214,43 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         }
 
         [HarmonyPatch(typeof(ShopScenePlayer), "UpdateSelection")]
-        internal static class UpdateSelection {}
+        internal static class UpdateSelection {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                bool debug = false;
+                bool success = false;
+
+                Label end = il.DefineLabel();
+
+                if (debug) {
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+                codes[codes.Count-1].labels.Add(end);
+                for (int i = 0; i < codes.Count-4; i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+3].opcode == OpCodes.Ldc_I4 && 
+                        (Charm)codes[i+3].operand == Charm.charm_curse && codes[i+4].opcode == OpCodes.Bne_Un) {
+                            List<CodeInstruction> ncodes = [
+                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                new CodeInstruction(OpCodes.Brtrue, end),
+                            ];
+                            codes.InsertRange(i,ncodes);
+                            success = true;
+                            break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(UpdateSelection)}: Patch Failed!");
+                if (debug) {
+                    Plugin.Log("---");
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+
+                return codes;
+            }
+        }
 
         [HarmonyPatch(typeof(ShopScenePlayer), "addNewItem_cr", MethodType.Enumerator)]
         internal static class addNewItem_cr {
@@ -227,11 +263,15 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 FieldInfo _fi_this = crtype.GetField("$this", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_i2 = crtype.GetField("<i>__2", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_i6 = crtype.GetField("<i>__6", BindingFlags.NonPublic | BindingFlags.Instance);
-                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data").GetGetMethod();
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
                 MethodInfo _mi_IsUnlocked_c = GetMethod_IsUnlocked(typeof(Charm));
                 MethodInfo _mi_IsUnlocked_w = GetMethod_IsUnlocked(typeof(Weapon));
-                FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_charmItemPrefabs = typeof(ShopScenePlayer).GetField("charmItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo _mi_IsAPCharmChecked = typeof(addNewItem_cr).GetMethod("IsAPCharmChecked", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPWeaponChecked = typeof(addNewItem_cr).GetMethod("IsAPWeaponChecked", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label cvanilla = il.DefineLabel();
                 Label wvanilla = il.DefineLabel();
@@ -246,11 +286,24 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 for (int i=0;i<codes.Count-13;i++) {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_Data && codes[i+2].opcode==OpCodes.Ldfld && 
                         (FieldInfo)codes[i+2].operand==_fi_this && codes[i+11].opcode==OpCodes.Callvirt && codes[i+12].opcode==OpCodes.Brtrue) {
-                            Label end = codes[i+12].labels[0];
+                            Label contloop = (Label)codes[i+12].operand;
                             if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_c && (successbits&1)==0) {
                                 codes[i].labels.Add(cvanilla);
                                 codes[i+13].labels.Add(cifa);
-                                List<CodeInstruction> ncodes = [];
+                                List<CodeInstruction> ncodes = [
+                                    CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                    new CodeInstruction(OpCodes.Brfalse, cvanilla),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_this),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_charmItemPrefabs),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_i2),
+                                    new CodeInstruction(OpCodes.Ldelem_Ref),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_charm),
+                                    new CodeInstruction(OpCodes.Call, _mi_IsAPCharmChecked),
+                                    new CodeInstruction(OpCodes.Brtrue, contloop),
+                                    new CodeInstruction(OpCodes.Br, cifa),
+                                ];
                                 codes.InsertRange(i, ncodes);
                                 i+=ncodes.Count;
                                 successbits|=1;
@@ -258,7 +311,20 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             else if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_w && (successbits&2)==0) {
                                 codes[i].labels.Add(wvanilla);
                                 codes[i+13].labels.Add(wifa);
-                                List<CodeInstruction> ncodes = [];
+                                List<CodeInstruction> ncodes = [
+                                    CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                    new CodeInstruction(OpCodes.Brfalse, wvanilla),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_this),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_weaponItemPrefabs),
+                                    new CodeInstruction(OpCodes.Ldarg_0),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_i6),
+                                    new CodeInstruction(OpCodes.Ldelem_Ref),
+                                    new CodeInstruction(OpCodes.Ldfld, _fi_weapon),
+                                    new CodeInstruction(OpCodes.Call, _mi_IsAPWeaponChecked),
+                                    new CodeInstruction(OpCodes.Brtrue, contloop),
+                                    new CodeInstruction(OpCodes.Br, wifa),
+                                ];
                                 codes.InsertRange(i, ncodes);
                                 i+=ncodes.Count;
                                 successbits|=2;
@@ -266,7 +332,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             else Plugin.LogWarning($"{nameof(addNewItem_cr)}: Cannot find IsUnlocked method!");
                     }
                 }
-                //if (successbits!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}:{labelbits}");
+                if (successbits!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {successbits}");
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -279,8 +345,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
             private static MethodInfo GetMethod_IsUnlocked(Type type) {
                 return typeof(PlayerData).GetMethod("IsUnlocked", BindingFlags.Public | BindingFlags.Instance,
-                    null, new Type[] {typeof(PlayerId), type}, null);
+                    null, [typeof(PlayerId), type], null);
             }
+            private static bool IsAPCharmChecked(Charm charm) => IsAPChecked(ItemType.Charm, Weapon.None, charm);
+            private static bool IsAPWeaponChecked(Weapon weapon) => IsAPChecked(ItemType.Weapon, weapon, Charm.None);
             private static bool IsAPChecked(ItemType itemType, Weapon weapon, Charm charm) {
                 long loc = ShopSceneItemHook.GetAPLocation(itemType, weapon, charm);
                 return APClient.IsLocationChecked(loc);
