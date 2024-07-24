@@ -34,7 +34,7 @@ namespace CupheadArchipelago.AP {
         private static HashSet<long> doneChecksUnique;
         private static long currentReceivedItemIndex = 0;
         private static readonly Version AP_VERSION = new Version(0,4,4,0);
-        private const int STATUS_CONNECTED = 5;
+        private const int STATUS_CONNECTED = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
 
