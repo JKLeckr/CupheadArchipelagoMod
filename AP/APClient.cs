@@ -39,7 +39,7 @@ namespace CupheadArchipelago.AP {
         private static int scoutMapStatus = 0;
         private static long currentReceivedItemIndex = 0;
         private static readonly byte debug = 0;
-        private static readonly Version AP_VERSION = new Version(0,4,6,0);
+        private static readonly Version AP_VERSION = new Version(0,5,0,0);
         internal const long AP_SLOTDATA_VERSION = 0;
         internal const long AP_ID_VERSION = 0;
         private const int STATUS_READY = 1;
