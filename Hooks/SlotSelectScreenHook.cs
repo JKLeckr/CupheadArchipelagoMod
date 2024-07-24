@@ -128,6 +128,10 @@ namespace CupheadArchipelago.Hooks {
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
+                    if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
+                        Plugin.Log("Cleaning APData...");
+                        APData.ResetData(_slotSelection, false, false);
+                    }
                     if (Status!=0) {
                         if (Status==1) {
                             SetAPConStatusText("Disconnecting...");
@@ -198,7 +202,7 @@ namespace CupheadArchipelago.Hooks {
                 }
                 APClient.ResetSessionError();
                 //FIXME: Fix visual glitch with reverting
-                _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.SlotSelect});
+                _mi_SetState.Invoke(_instance, [SlotSelectScreen.State.SlotSelect]);
                 _lockMenu = false;
                 AudioManager.Play("level_menu_select");
             }

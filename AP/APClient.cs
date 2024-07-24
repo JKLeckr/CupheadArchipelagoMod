@@ -231,7 +231,7 @@ namespace CupheadArchipelago.AP {
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
         public static void Check(long loc, bool sendChecks = true) {
-            Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
+            Plugin.Log($"[APClient] Adding check \"{APLocation.IdToName(loc)}\"...");
             //Plugin.Log(doneChecksUnique.Count);
             //Plugin.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
@@ -239,6 +239,8 @@ namespace CupheadArchipelago.AP {
                 DoneChecks.Add(loc);
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
+            } else {
+                Plugin.LogWarning($"[APClient] \"{APLocation.IdToName(loc)}\" is already Checked!");
             }
         }
         public static void Check(long[] locs, bool sendChecks = true) {
