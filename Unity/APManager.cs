@@ -60,8 +60,8 @@ namespace CupheadArchipelago.Unity {
                         APClient.PopItemReceiveQueue();
                         AudioManager.Play("level_coin_pickup"); //TEMP
                     }
+                    if (timer<applyInterval) timer += Time.deltaTime;
                 }
-                if (timer<applyInterval) timer += Time.deltaTime;
             }
         }
 

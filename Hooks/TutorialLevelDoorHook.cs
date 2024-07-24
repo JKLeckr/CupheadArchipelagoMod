@@ -21,7 +21,8 @@ namespace CupheadArchipelago.Hooks {
                 bool debug = false;
                 bool success = false;
                 FieldInfo _fi_isChaliceTutorial = typeof(TutorialLevelDoor).GetField("isChaliceTutorial", BindingFlags.Instance | BindingFlags.NonPublic);
-                MethodInfo _mi_base_Activate = typeof(AbstractLevelInteractiveEntity).GetMethod("Activate", BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo _mi_base_Activate = typeof(AbstractLevelInteractiveEntity).GetMethod(
+                    "Activate", BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] {}, null);
                 MethodInfo _mi_APCheck = typeof(Activate).GetMethod("APCheck", BindingFlags.Static | BindingFlags.NonPublic);
 
                 if (debug) {
@@ -31,8 +32,10 @@ namespace CupheadArchipelago.Hooks {
                 }
                 for (int i = 0; i < codes.Count - 2; i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_base_Activate) {
-                        codes.Insert(i+2, new CodeInstruction(OpCodes.Ldfld, _fi_isChaliceTutorial));
-                        codes.Insert(i+3, new CodeInstruction(OpCodes.Call, _mi_APCheck));
+                        codes.Insert(i+2, new CodeInstruction(OpCodes.Ldarg_0));
+                        codes.Insert(i+3, new CodeInstruction(OpCodes.Ldfld, _fi_isChaliceTutorial));
+                        codes.Insert(i+4, new CodeInstruction(OpCodes.Call, _mi_APCheck));
+                        success = true;
                         break;
                     }
                 }
