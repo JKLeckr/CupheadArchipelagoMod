@@ -80,7 +80,25 @@ namespace CupheadArchipelago.Hooks {
                         Plugin.Log("[LevelHook] Goal");
                         APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goal.Saltbaker:Goal.Devil);
                     }
-                    else if (!Level.IsInBossesHub && instance.CurrentLevel != Levels.Mausoleum) {
+                    else if (instance.CurrentLevel == Levels.Mausoleum) {
+                        Plugin.Log("[LevelHook] Mausoleum Type");
+                        switch (PlayerData.Data.CurrentMap)
+		                {
+		                    case Scenes.scene_map_world_1:
+			                    APClient.Check(APLocation.level_mausoleum_i);
+			                    break;
+		                    case Scenes.scene_map_world_2:
+			                    APClient.Check(APLocation.level_mausoleum_ii);
+			                    break;
+		                    case Scenes.scene_map_world_3:
+			                    APClient.Check(APLocation.level_mausoleum_iii);
+			                    break;
+                            default:
+                                Plugin.LogWarning($"[LevelHook] Invalid Mausoleum Map: {PlayerData.Data.CurrentMap}");
+                                break;
+		                }
+                    }
+                    else if (!Level.IsInBossesHub) {
                         Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
                         if (Level.Difficulty >= normalMode) {
                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
