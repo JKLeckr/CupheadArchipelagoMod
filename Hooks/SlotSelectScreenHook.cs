@@ -125,6 +125,7 @@ namespace CupheadArchipelago.Hooks {
                     _lockMenu = true;
                     SetAPConStatusText("Connecting...");
                     ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
+                    //APClient.CreateAndStartArchipelagoSession(_slotSelection);
                     _instance.StartCoroutine(connect_and_start_cr());
                 }
                 else {
@@ -133,55 +134,50 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator connect_and_start_cr() {
-                while (Status>=0&&Status<=2) {
-                    yield return null;
-                }
-                if (Status<0) {
-                    SetAPConStatusText("Connection failed!");
-                    APError();
-                }
-                else {
-                    object a = APClient.APSessionGSData.slotData["use_dlc"];
-                    Plugin.Log(a.ToString());
-                    int test = (int)APClient.APSessionGSData.slotData["use_dlc"];
-                    Plugin.Log(test);
-                    SetAPConStatusText("Connected!\nChecking...");
-                    while (Status>=0&&Status<=3) {
-                        yield return null;
-                    }
+                while (Status!=1) {
                     if (Status<0) {
-                        string errorReasonString;
-                        switch (Status) {
-                            case -2: errorReasonString = "Multiworld Mismatch!"; break;
-                            default: errorReasonString = ""; break;
-                        }
-                        SetAPConStatusText("Disonnected!\nCheck failed!\n"+errorReasonString);
-                        APError();
+                        APAbort();
                         yield break;
                     }
-                    SetAPConStatusText("Connected!\nSetting Up...");
-                    while (Status<=4) {
-                        yield return null;
-                    }
-                    if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
-                    else Level.SetCurrentMode(Level.Mode.Normal);
-
-                    SetAPConStatusText("Connected!\nDone!");
-                    _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
-                    _lockMenu = false;
+                    yield return null;
                 }
-                yield break;
-            }
-            private static void APError() {
+
+                if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
+                else Level.SetCurrentMode(Level.Mode.Normal);
+
+                SetAPConStatusText("Connected!\nDone!");
+                _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                 _lockMenu = false;
-                _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.PlayerSelect});
+            }
+            private static void APAbort() {
+                Plugin.Log($"Abort! Client Status {Status}");
+                switch (Status) {
+                    case -1: {
+                        SetAPConStatusText("Connection failed!\nCheck Log!");
+                        break;
+                    }
+                    case -2: {
+                        SetAPConStatusText($"Disconnected!\nCheck failed!\nMultiworld Mismatch!");
+                        break;
+                    }
+                    case -3: {
+                        SetAPConStatusText($"Disconnected!\nCheck failed!\nContent Mismatch!");
+                        break;
+                    }
+                    default: { 
+                        SetAPConStatusText("Disconnected!\nError!\nCheck Log!");
+                        break;
+                    }
+                }
+                _lockMenu = false;
+                _mi_SetState.Invoke(_instance, new object[]{SlotSelectScreen.State.SlotSelect});
                 AudioManager.Play("level_menu_select");
             }
             private static void APErrorConnected(string message) {
                 SetAPConStatusText("Connected!\n"+message);
                 APClient.CloseArchipelagoSession();
                 SetAPConStatusText("Disconnected.\n"+message);
-                APError();
+                APAbort();
             }
         }
 

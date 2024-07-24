@@ -12,7 +12,6 @@ using System.Reflection.Emit;
 namespace CupheadArchipelago.Hooks {
     public class PlayerDataHook {
         public static void Hook() {
-            APData.Init();
             //Harmony.CreateAndPatchAll(typeof(Init));
             Harmony.CreateAndPatchAll(typeof(OnLoaded));
             Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));

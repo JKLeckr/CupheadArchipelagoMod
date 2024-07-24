@@ -36,7 +36,7 @@ namespace CupheadArchipelago.AP {
         public List<long> doneChecks = new List<long>();
         public List<NetworkItem> receivedItems = new List<NetworkItem>();
 
-        public static void Init() {
+        static APData() {
             SData = new APData[3];
             for (int i=0;i<SData.Length;i++) {
                 SData[i] = new APData();
