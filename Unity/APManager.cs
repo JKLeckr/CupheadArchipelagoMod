@@ -15,6 +15,8 @@ namespace CupheadArchipelago.Unity {
         }
 
         [SerializeField]
+        private bool debug = false;
+        [SerializeField]
         private float applyInterval = 1f;
         private bool init = false;
         private bool active = false;
@@ -44,6 +46,7 @@ namespace CupheadArchipelago.Unity {
                 }
                 else if (active) {
                     if (type == Type.Level) {
+                        if (debug) Plugin.Log($"ItemLevelQueue {APClient.ItemReceiveLevelQueueCount()}");
                         if (!APClient.ItemReceiveLevelQueueIsEmpty()) {
                             if (timer>=applyInterval) {
                                 APClient.PopItemReceiveLevelQueue();
@@ -52,6 +55,7 @@ namespace CupheadArchipelago.Unity {
                             }
                         }
                     }
+                    if (debug) Plugin.Log($"ItemQueue {APClient.ItemReceiveQueueCount()}");
                     if (!APClient.ItemReceiveQueueIsEmpty()) {
                         APClient.PopItemReceiveQueue();
                         AudioManager.Play("level_coin_pickup"); //TEMP

@@ -15,4 +15,4 @@ This mod is currently in the development phase and it is very very incomplete, s
 
 2. Place the contents of the extracted CupheadArchipelagoMod folder into the BepInEx/plugins folder.
 
-3. Launch.
+3. Launch game.

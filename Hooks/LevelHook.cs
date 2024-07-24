@@ -63,72 +63,11 @@ namespace CupheadArchipelago.Hooks {
             }
         }
 
-        [HarmonyPatch(typeof(Level), "zHack_OnWin")]
-        internal static class zHack_OnWin {
-            static bool Prefix(Level __instance) {
-                Plugin.Log("zHack_OnWin", LoggingFlags.Debug);
-                if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
-                    APManager.Current.SetActive(false);
-                return true;
-            }
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-                bool debug = false;
-                bool debug2 = false;
-                bool success = false;
-                bool success2 = false;
-                MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode").GetGetMethod();
-                MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty").GetSetMethod(true);
-                MethodInfo _mi__OnLevelEnd = typeof(Level).GetMethod("_OnLevelEnd", BindingFlags.Instance | BindingFlags.NonPublic);
-                MethodInfo _mi_APCheck = typeof(zHack_OnWin).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
-
-                if (debug2) {
-                    Plugin.Log(_mi_get_mode);
-                    Plugin.Log(_mi_set_Difficulty);
-                    Plugin.Log(_mi__OnLevelEnd);
-                    Plugin.Log(_mi_APCheck);
-                    Plugin.Log(_mi_HackDifficulty);
-                }
-                if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
-                }
-
-                for (int i = 0; i < codes.Count - 2; i++) {
-                    if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
-                        codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
-                        codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_HackDifficulty));
-                        if (debug) Plugin.Log("Patch success");
-                        success = true;
-                    }
-                    if (success && codes[i].opcode==OpCodes.Ldarg_0 && codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi__OnLevelEnd) {
-                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
-                        codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_APCheck));
-                        if (debug) Plugin.Log("Patch2 success");
-                        success2 = true;
-                        break;
-                    }
-                }
-                if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
-                if (!success2) throw new Exception($"{nameof(zHack_OnWin)}: Patch2 Failed!");
-                //if (!success) Plugin.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
-                if (debug) {
-                    Plugin.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
-                }
-
-                return codes;
-            }
-
-            private static Level.Mode HackDifficulty(Level.Mode mode) {
-                if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
-                    return (APSettings.Hard&&mode<Level.Mode.Hard)?Level.Mode.Easy:mode;
-                }
-                else return mode;
+        [HarmonyPatch(typeof(Level), "_OnPreWin")]
+        internal static class _OnPreWin {
+            static void Postfix(Level __instance) {
+                Plugin.Log("_OnPreWin", LoggingFlags.Debug);
+                APCheck(__instance);
             }
 
             private static void APCheck(Level instance) {
@@ -149,7 +88,7 @@ namespace CupheadArchipelago.Hooks {
                                     Plugin.Log("[LevelHook] Battle Type");
                                     if (APSettings.BossGradeChecks>0)
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.BossGradeChecks))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,1), false);
+                                            APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,1), false);
                                         }
                                     break;
                                 }
@@ -157,7 +96,7 @@ namespace CupheadArchipelago.Hooks {
                                     Plugin.Log("[LevelHook] Platforming Type");
                                     if (APSettings.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.RungunGradeChecks))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,((int)APSettings.RungunGradeChecks>3)?7:6), false);
+                                            APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,((int)APSettings.RungunGradeChecks>3)?2:1), false);
                                         }
                                     }
                                     break;
@@ -173,6 +112,56 @@ namespace CupheadArchipelago.Hooks {
                         }
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Level), "zHack_OnWin")]
+        internal static class zHack_OnWin {
+            static bool Prefix(Level __instance) {
+                Plugin.Log("zHack_OnWin", LoggingFlags.Debug);
+                if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
+                    APManager.Current.SetActive(false);
+                return true;
+            }
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                bool debug = false;
+                bool success = false;
+                MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode").GetGetMethod();
+                MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty").GetSetMethod(true);
+                MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (debug) {
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+                for (int i = 0; i < codes.Count - 2; i++) {
+                    if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
+                        codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
+                        codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_HackDifficulty));
+                        if (debug) Plugin.Log("Patch success");
+                        success = true;
+                        break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
+                //if (!success) Plugin.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
+                if (debug) {
+                    Plugin.Log("---");
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
+
+                return codes;
+            }
+
+            private static Level.Mode HackDifficulty(Level.Mode mode) {
+                if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
+                    return (APSettings.Hard&&mode<Level.Mode.Hard)?Level.Mode.Easy:mode;
+                }
+                else return mode;
             }
         }
     }

@@ -207,8 +207,8 @@ namespace CupheadArchipelago.AP {
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
         public static void Check(long loc, bool sendChecks = true) {
             Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
-            Plugin.Log(doneChecksUnique.Count);
-            Plugin.Log(DoneChecks.Count);
+            //Plugin.Log(doneChecksUnique.Count);
+            //Plugin.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);
@@ -299,6 +299,8 @@ namespace CupheadArchipelago.AP {
         }
         public static bool ItemReceiveQueueIsEmpty() => ItemReceiveQueue.Count==0;
         public static bool ItemReceiveLevelQueueIsEmpty() => ItemReceiveLevelQueue.Count==0;
+        public static int ItemReceiveQueueCount() => ItemReceiveQueue.Count;
+        public static int ItemReceiveLevelQueueCount() => ItemReceiveLevelQueue.Count;
         public static NetworkItem PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
         public static NetworkItem PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
         private static NetworkItem PopItemQueue(Queue<NetworkItem> itemQueue) {
