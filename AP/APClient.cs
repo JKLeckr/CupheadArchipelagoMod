@@ -11,10 +11,7 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
-using System.Net;
 using CupheadArchipelago.Auxiliary;
-using UnityEngine.Bindings;
-using UnityEngine;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
