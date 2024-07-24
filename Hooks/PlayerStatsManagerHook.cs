@@ -39,9 +39,10 @@ namespace CupheadArchipelago.Hooks {
             SetSuper(instance, instance.SuperMeter + add);
         }
         public static void SetSuper(PlayerStatsManager instance, float set) {
+            float orig = superFillAmount;
             superFillAmount = set;
             instance.DebugFillSuper();
-            superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
+            superFillAmount = orig;
         }
     }
 }

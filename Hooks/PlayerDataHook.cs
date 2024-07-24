@@ -71,7 +71,7 @@ namespace CupheadArchipelago.Hooks {
 
                     for (int i=0;i<codes.Count-1;i++) {
                         if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_GetCoin__str) {
-                            codes[i] = CodeInstruction.Call(typeof(GetCoinCollected), "APGetCoinCollected");
+                            codes[i] = CodeInstruction.Call(typeof(GetCoinCollected), "APGetCoinCollected"); //FIXME: Style use OpCodes.Call instead
                             codes.RemoveAt(i+1);
                             found = true;
                             break;

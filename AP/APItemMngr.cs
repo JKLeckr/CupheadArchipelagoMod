@@ -99,8 +99,8 @@ namespace CupheadArchipelago.AP {
                         stats2?.SetHealth(stats2.Health + 1);
                     }
                     else if (item==APItem.lv_superrecharge) {
-                        stats1.DebugFillSuper();
-                        stats2?.DebugFillSuper();
+                        if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                        if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                     }
                     else if (item==APItem.lv_trap_fingerjam) {Stub(item);}
                     else if (item==APItem.lv_trap_inktrap) {Stub(item);}

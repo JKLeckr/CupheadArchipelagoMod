@@ -20,6 +20,7 @@ namespace CupheadArchipelago.Hooks {
             PlatformingLevelHook.Hook();
             MausoleumLevelHook.Hook();
             LevelCoinHook.Hook();
+            DiceGateLevelHook.Hook();
         }
 
         public static void HookSaveKeyUpdater(string saveKeyName) {

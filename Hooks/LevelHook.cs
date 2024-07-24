@@ -15,6 +15,7 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(_OnLevelStart));
             Harmony.CreateAndPatchAll(typeof(_OnLevelEnd));
+            Harmony.CreateAndPatchAll(typeof(_OnPreWin));
             Harmony.CreateAndPatchAll(typeof(zHack_OnWin));
         }
 
