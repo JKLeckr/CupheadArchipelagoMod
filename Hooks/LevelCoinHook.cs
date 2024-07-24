@@ -47,7 +47,14 @@ namespace CupheadArchipelago.Hooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
 
+                bool debug = false;
                 bool success = false;
+
+                if (debug) {
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
+                }
 
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_1 &&
@@ -55,12 +62,20 @@ namespace CupheadArchipelago.Hooks {
                         codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
                         codes.Insert(i+1, new CodeInstruction(OpCodes.Ldarg_1));
                         codes.Insert(i+2, new CodeInstruction(OpCodes.Call, _mi_APCheck));
+                        codes.Insert(i+3, new CodeInstruction(OpCodes.Pop));
                         success = true;
                         break;
                     }
                 }
                 if (!success) {
                     throw new Exception("[LevelCoinHook] Failed to Patch Collect");
+                }
+
+                if (debug) {
+                    Plugin.Log($"===");
+                    for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                    }
                 }
 
                 return codes;

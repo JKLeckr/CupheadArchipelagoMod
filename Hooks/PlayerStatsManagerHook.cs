@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
@@ -14,28 +15,20 @@ namespace CupheadArchipelago.Hooks {
 
         public const float DEFAULT_SUPER_ADD_AMOUNT = 10f;
         public const float DEFAULT_SUPER_FILL_AMOUNT = 50f;
+        public const bool DEFAULT_PLAY_SUPER_CHANGED_EFFECT = true;
 
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
+        private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
+
+        private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter").GetSetMethod(true);
+        private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [HarmonyPatch(typeof(PlayerStatsManager), "DebugFillSuper")]
         internal static class DebugFillSuper {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-
-                bool success = false;
-
-                for (int i=0; i<codes.Count; i++) {
-                    if (codes[i].opcode == OpCodes.Ldc_R4 && (float)codes[i].operand == 50f) {
-                        codes[i] = new CodeInstruction(OpCodes.Ldsfld, superFillAmount);
-                        success = true;
-                        break;
-                    }
-                }
-                if (!success) {
-                    throw new Exception("[PlayerStatsManagerHook] Failed to Patch DebugFillSuper");
-                }
-
-                return codes;
+            static bool Prefix(PlayerStatsManager __instance) {
+                _mi_set_SuperMeter.Invoke(__instance, new object[]{superFillAmount});
+                _mi_OnSuperChanged.Invoke(__instance, new object[]{playSuperChangedEffect});
+                return false;
             }
         }
 
