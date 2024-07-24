@@ -74,11 +74,11 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_boss_kingdice_topgrade,
                     APLocation.level_boss_kingdice_dlc_chaliced
                 }},
-                {Levels.Devil, new APLocation[] {
+                /*{Levels.Devil, new APLocation[] {
                     APLocation.level_boss_devil,
                     APLocation.level_boss_devil_topgrade,
                     APLocation.level_boss_devil_dlc_chaliced
-                }},
+                }},*/
                 {Levels.FlyingBlimp, new APLocation[] {
                     APLocation.level_boss_plane_blimp,
                     APLocation.level_boss_plane_blimp_topgrade,
@@ -189,11 +189,11 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_dlc_boss_plane_cowboy_topgrade,
                     APLocation.level_dlc_boss_plane_cowboy_dlc_chaliced
                 }},
-                {Levels.Saltbaker, new APLocation[] {
+                /*{Levels.Saltbaker, new APLocation[] {
                     APLocation.level_dlc_boss_saltbaker,
                     APLocation.level_dlc_boss_saltbaker_topgrade,
                     APLocation.level_dlc_boss_saltbaker_dlc_chaliced
-                }},
+                }},*/
             };
         }
 
