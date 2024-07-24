@@ -95,11 +95,11 @@ namespace CupheadArchipelago.AP {
         }
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
-        public static void ResetData(int index, bool disable = true, bool resetSettings = false) {
+        public static void ResetData(int index, bool disable = false, bool resetSettings = false) { // TODO: disable is false by default for testing purposes
             APData old_data = SData[index];
             SData[index] = new APData();
             APData data = SData[index];
-            //if (!disable) data.enabled = old_data.enabled; //NOTE: This is a temp disable for testing purposes
+            if (!disable) data.enabled = old_data.enabled;
             if (!resetSettings) {
                 data.address = old_data.address;
                 data.slot = old_data.slot;
