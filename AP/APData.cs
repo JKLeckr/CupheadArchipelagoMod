@@ -35,10 +35,10 @@ namespace CupheadArchipelago.AP {
         public DataPackage dataPackage = new DataPackage();
         public List<long> doneChecks = new List<long>();
         public long receivedItemIndex {get => receivedItems.Count;}
-        public Queue<NetworkItem> receivedItemApplyQueue = new Queue<NetworkItem>();
-        public Queue<NetworkItem> receivedLevelItemApplyQueue = new Queue<NetworkItem>();
-        public List<NetworkItem> receivedItems = new List<NetworkItem>();
-        public List<NetworkItem> appliedItems = new List<NetworkItem>();
+        public Queue<ItemInfo> receivedItemApplyQueue = new Queue<ItemInfo>();
+        public Queue<ItemInfo> receivedLevelItemApplyQueue = new Queue<ItemInfo>();
+        public List<ItemInfo> receivedItems = new List<ItemInfo>();
+        public List<ItemInfo> appliedItems = new List<ItemInfo>();
         private Goal goalsCompleted = Goal.None;
 
         static APData() {

@@ -12,7 +12,6 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
-using System.Data.Common;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -28,10 +27,10 @@ namespace CupheadArchipelago.AP {
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; }
-        private static Dictionary<long, APCheck> checkMap = new();
-        private static Queue<NetworkItem> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
-        private static Queue<NetworkItem> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
-        private static List<NetworkItem> ReceivedItems { get => APSessionGSData.receivedItems; }
+        private static Dictionary<long, ScoutedItemInfo> scoutMap = new();
+        private static Queue<ItemInfo> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
+        private static Queue<ItemInfo> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
+        private static List<ItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
         private static long ReceivedItemsIndex { get => APSessionGSData.receivedItemIndex; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
@@ -100,21 +99,13 @@ namespace CupheadArchipelago.AP {
                     if (APSessionGSData.seed.Length==0)
                         APSessionGSData.seed = session.RoomState.Seed;
                     SlotData = new APSlotData(loginData.SlotData);
-                    if (checkMap.Count==0) {
+                    if (scoutMap.Count==0) {
                         Plugin.Log($"[APClient] Getting location data...");
-                        session.Locations.ScoutLocationsAsync((LocationInfoPacket pk) => {
+                        session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
                             Plugin.Log($"[APClient] Processing location data...");
-                            foreach (NetworkItem item in pk.Locations) {
-                                long loc = item.Location;
-                                string locName = GetLocationName(loc);
-                                string itemName = GetItemName(item.Item);
-                                int player = item.Player; 
-                                string playerName = GetPlayerName(player);
-                                string playerAlias = GetPlayerAlias(player);
-                                
-                                APPlayer cplayer = new(player, playerName, playerAlias);
-                                APCheckItem citem = new(item.Item, itemName, cplayer, item.Flags);
-                                APCheck check = new(loc, locName, citem);
+                            foreach (ScoutedItemInfo item in si.Values) {
+                                long loc = item.LocationId;
+                                string locName = item.LocationName;
 
                                 bool loc_cond1 = APLocation.IdExists(loc);
                                 bool loc_cond2 = APLocation.NameExists(locName);
@@ -125,7 +116,7 @@ namespace CupheadArchipelago.AP {
                                     Plugin.LogWarning($"[APClient] Setup: Unknown Location: {locName}:{loc}");
                                 }
                                 
-                                checkMap.Add(loc, check);
+                                scoutMap.Add(loc, item);
                             }
                             Plugin.Log($"[APClient] Processed location data.");
                         });
@@ -268,12 +259,12 @@ namespace CupheadArchipelago.AP {
             ConnectionInfo = null;
             doneChecksUnique = null;
             checkMapReady = false;
-            checkMap.Clear();
+            scoutMap.Clear();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
         public static void Check(long loc, bool sendChecks = true) {
-            Plugin.Log($"[APClient] Adding check \"{checkMap[loc].Name}\"...");
+            Plugin.Log($"[APClient] Adding check \"{scoutMap[loc].LocationName}\"...");
             //Plugin.Log(doneChecksUnique.Count);
             //Plugin.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
@@ -282,7 +273,7 @@ namespace CupheadArchipelago.AP {
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Plugin.LogWarning($"[APClient] \"{checkMap[loc].Name}\" is already Checked!");
+                Plugin.LogWarning($"[APClient] \"{scoutMap[loc].LocationName}\" is already Checked!");
             }
         }
         public static void Check(long[] locs, bool sendChecks = true) {
@@ -301,9 +292,9 @@ namespace CupheadArchipelago.AP {
                 }
             }
         }
-        public static APCheck GetCheck(long loc) {
-            if (checkMap.ContainsKey(loc))
-                return checkMap[loc];
+        public static ScoutedItemInfo GetCheck(long loc) {
+            if (scoutMap.ContainsKey(loc))
+                return scoutMap[loc];
             else
                 throw new KeyNotFoundException($"[APClient] GetCheck(): Invalid location id {loc}.");
         }
@@ -328,7 +319,7 @@ namespace CupheadArchipelago.AP {
             string locsstr = "[";
             for (int i=0;i<locs.Length;i++) {
                 if (i>0) locsstr += ","; 
-                locsstr += checkMap.ContainsKey(locs[i])?checkMap[locs[i]].Name:locs[i];
+                locsstr += scoutMap.ContainsKey(locs[i])?scoutMap[locs[i]].LocationName:locs[i];
                 if (i==locs.Length-1) locsstr += "]";
             }
             Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", LoggingFlags.Network, state?LogLevel.Info:LogLevel.Warning);
@@ -340,18 +331,6 @@ namespace CupheadArchipelago.AP {
         public static bool IsAPGoalComplete() {
             if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goal.Devil | Goal.Saltbaker);
             else return APSessionGSData.IsGoalsCompleted(Goal.Devil);
-        }
-        private static string GetLocationName(long loc) {
-            return Connected?session.Locations.GetLocationNameFromId(loc):"";
-        }
-        private static string GetPlayerName(int player) {
-            return Connected?session.Players.GetPlayerName(player):"";
-        }
-        private static string GetPlayerAlias(int player) {
-            return Connected?session.Players.GetPlayerAlias(player):"";
-        }
-        private static string GetItemName(long id) {
-            return Connected?session.Items.GetItemName(id):"";
         }
 
         private static void OnMessageReceived(LogMessage message) {
@@ -369,13 +348,13 @@ namespace CupheadArchipelago.AP {
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Plugin.Log("[APClient] OnItemReceived");
-            NetworkItem item = helper.PeekItem();
-            string itemName = APItem.IdExists(item.Item)?APItem.IdToName(item.Item):item.Item.ToString();
+            ItemInfo item = helper.PeekItem();
+            string itemName = APItem.IdExists(item.ItemId)?APItem.IdToName(item.ItemId):item.ItemId.ToString();
             if (currentReceivedItemIndex>ReceivedItemsIndex) {
                 currentReceivedItemIndex=ReceivedItemsIndex;
                 Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
             }
-            else if (currentReceivedItemIndex==ReceivedItemsIndex && item.Item!=APSettings.StartWeapon) {
+            else if (currentReceivedItemIndex==ReceivedItemsIndex && item.ItemId!=APSettings.StartWeapon) {
                 Plugin.Log($"Recieved {itemName} from {item.Player}");
                 ReceiveItem(item);
                 currentReceivedItemIndex++;
@@ -386,15 +365,15 @@ namespace CupheadArchipelago.AP {
             helper.DequeueItem();
         }
         public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
-        private static void ReceiveItem(NetworkItem item) {
-            if (ItemMap.GetItemType(item.Item)==ItemType.Level) {
+        private static void ReceiveItem(ItemInfo item) {
+            if (ItemMap.GetItemType(item.ItemId)==ItemType.Level) {
                 QueueItem(item, true);
             }
             else {
                 QueueItem(item, false);
             }
         }
-        private static void QueueItem(NetworkItem item, bool isLevelItem) {
+        private static void QueueItem(ItemInfo item, bool isLevelItem) {
             if (isLevelItem) ItemReceiveLevelQueue.Enqueue(item);
             else ItemReceiveQueue.Enqueue(item);
             Plugin.Log("[APClient] Queue Push");
@@ -408,11 +387,11 @@ namespace CupheadArchipelago.AP {
         public static bool ItemReceiveLevelQueueIsEmpty() => ItemReceiveLevelQueue.Count==0;
         public static int ItemReceiveQueueCount() => ItemReceiveQueue.Count;
         public static int ItemReceiveLevelQueueCount() => ItemReceiveLevelQueue.Count;
-        public static NetworkItem PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
-        public static NetworkItem PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
-        private static NetworkItem PopItemQueue(Queue<NetworkItem> itemQueue) {
-            NetworkItem item = itemQueue.Peek();
-            APItemMngr.ApplyItem(item.Item);
+        public static ItemInfo PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
+        public static ItemInfo PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
+        private static ItemInfo PopItemQueue(Queue<ItemInfo> itemQueue) {
+            ItemInfo item = itemQueue.Peek();
+            APItemMngr.ApplyItem(item.ItemId);
             APSessionGSData.appliedItems.Add(item);
             Plugin.Log("[APClient] Queue Pop");
             itemQueue.Dequeue();
