@@ -256,7 +256,11 @@ namespace CupheadArchipelago.AP {
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Plugin.Log("[APClient] OnItemReceived");
             NetworkItem item = helper.PeekItem();
-            if (currentReceivedItemIndex<ReceivedItemsIndex) {
+            if (currentReceivedItemIndex>ReceivedItemsIndex) {
+                currentReceivedItemIndex=ReceivedItemsIndex;
+                Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
+            }
+            if (currentReceivedItemIndex==ReceivedItemsIndex) {
                 Plugin.Log($"Recieved {item.Item} from {item.Player}");
                 ReceiveItem(item);
             } else {
