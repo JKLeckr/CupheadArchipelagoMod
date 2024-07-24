@@ -339,6 +339,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         }
 
         private static void CreateAPConStatusText(Transform parent) {
+            //FIXME: Fix text not positioned correctly on some resolutions
             GameObject obj = new GameObject("APStatusText");
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();

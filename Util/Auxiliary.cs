@@ -1,6 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
@@ -29,6 +30,19 @@ namespace CupheadArchipelago.Util {
                 if (o==null) c++;
             }
             return c;
+        }
+
+        public static T[] ArrayRange<T>(T[] arr, int start, int end) {
+            if (start>=end || start < 0 || end > arr.Length)
+                throw new IndexOutOfRangeException();
+
+            T[] res = new T[end-start];
+
+            for (int i=0;i<res.Length;i++) {
+                res[i] = arr[start+i];
+            }
+
+            return res;
         }
 
         private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {

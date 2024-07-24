@@ -7,7 +7,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class LevelPlayerWeaponManagerHook {
         internal static void Hook() {}
 
-        private static PlayerData.PlayerLoadouts loadouts;
+        //private static PlayerData.PlayerLoadouts loadouts;
 
         [HarmonyPatch(typeof(LevelPlayerWeaponManager), "HandleWeaponFiring")]
         internal static class HandleWeaponFiring {

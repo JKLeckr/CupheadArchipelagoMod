@@ -141,11 +141,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             }
 
             private static void SetupItems(ref List<ShopSceneItem> items, ref ShopSceneItem[] weaponItemPrefabs, ref ShopSceneItem[] charmItemPrefabs) {
+                ShopSet[] shopMap = APClient.SlotData.shop_map;
                 int wlen = weaponItemPrefabs.Length;
                 int clen = charmItemPrefabs.Length;
                 ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
                 ShopSceneItem[] ctmp = new ShopSceneItem[clen];
                 
+                // Setting order of prefabs for all shops
                 for (int i=0; i<wlen; i++) {
                     ShopSceneItem item = weaponItemPrefabs[i];
                     wtmp[weaponOrder[item.weapon]] = item;
@@ -157,17 +159,45 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 int wnullc = Aux.ArrayNullCount(wtmp);
                 int cnullc = Aux.ArrayNullCount(ctmp);
                 if (wnullc+cnullc>0) {
-                    Plugin.LogError($"Prefabs have null values! w:{wnullc} c:{cnullc}");
+                    Plugin.LogError($"[ShopScenePlayerHook] Null Prefabs! w:{wnullc} c:{cnullc}");
                     return;
                 }
+
+                // Setting up indexes and counts
                 int shopIndex = worldIndexes[PlayerData.Data.CurrentMap];
-                int weaponCount = APClient.SlotData.shop_map[shopIndex].Weapons;
-                int charmCount = APClient.SlotData.shop_map[shopIndex].Charms;
-                weaponItemPrefabs = new ShopSceneItem[APClient.SlotData.shop_map[0].Weapons];
-                charmItemPrefabs = new ShopSceneItem[APClient.SlotData.shop_map[0].Weapons];
+                int weaponCount = shopMap[shopIndex].Weapons;
+                int charmCount = shopMap[shopIndex].Charms;
+                int totalCount = weaponCount + charmCount;
+                int weaponIndex = 0;
+                int charmIndex = 0;
+
+                for (int i=0;i<shopIndex;i++) {
+                    weaponIndex+=shopMap[i].Weapons;
+                    charmIndex+=shopMap[i].Charms;
+                }
+                
+                // Set prefabs for shop
+                weaponItemPrefabs = Aux.ArrayRange(wtmp,weaponIndex,weaponIndex+weaponCount);
+                charmItemPrefabs = Aux.ArrayRange(ctmp,charmIndex,charmIndex+charmCount);
+
+                // Set items in shop
                 items.Clear();
                 bool charm = false;
-                for (int i=0; i<weaponCount+charmCount; i++) {}
+                int wi = 0;
+                int ci = 0;
+                for (int i=0; i<Math.Min(totalCount,5); i++) {
+                    if (charm) {
+                        items.Add(charmItemPrefabs[ci]);
+                        ci++;
+                        charm=false;
+                    }
+                    else {
+                        items.Add(weaponItemPrefabs[wi]);
+                        wi++;
+                        charm=true;
+
+                    }
+                }
             }
         }
 

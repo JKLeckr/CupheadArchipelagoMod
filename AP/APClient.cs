@@ -18,7 +18,7 @@ namespace CupheadArchipelago.AP {
         private static ArchipelagoSession session;
         public static bool Enabled { get; private set; } = false;
         public static bool Connected { get => session?.Socket.Connected ?? false; }
-        public static bool Ready { get => SessionStatus == STATUS_READY && checkMapReady; }
+        public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapReady; }
         public static APData APSessionGSData { get => GetAPSessionData(); }
         public static APData.PlayerData APSessionGSPlayerData { get => APSessionGSData.playerData; }
         public static string APSessionSlotName { get; private set; } = "";
@@ -35,9 +35,9 @@ namespace CupheadArchipelago.AP {
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static bool complete = false;
-        private static bool checkMapReady = false;
+        private static bool scoutMapReady = false;
         private static long currentReceivedItemIndex = 0;
-        private static readonly Version AP_VERSION = new Version(0,4,4,0);
+        private static readonly Version AP_VERSION = new Version(0,4,6,0);
         internal const long AP_SLOTDATA_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
@@ -119,8 +119,9 @@ namespace CupheadArchipelago.AP {
                                 scoutMap.Add(loc, item);
                             }
                             Plugin.Log($"[APClient] Processed location data.");
+                            scoutMapReady = true;
                         });
-                    }
+                    } else scoutMapReady = true;
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
                     Plugin.LogError(e.ToString());
@@ -258,7 +259,7 @@ namespace CupheadArchipelago.AP {
             APSessionDataSlotNum = -1;
             ConnectionInfo = null;
             doneChecksUnique = null;
-            checkMapReady = false;
+            scoutMapReady = false;
             scoutMap.Clear();
         }
 
