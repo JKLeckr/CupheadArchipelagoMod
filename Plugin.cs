@@ -25,13 +25,21 @@ namespace CupheadArchipelago {
         private void Awake() {
             Instance = this;
             configEnabled = Config.Bind("Main", "Enabled", true);
-            configLogging = Config.Bind("Main", "Logging", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Warning, "Set mod logging verbosity.");
+            configLogging = Config.Bind("Main", "Logging", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves (Default: \"cuphead_player_data_v1_ap_slot_\", Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
 
             if (configEnabled.Value) {
                 Log($"CupheadArchipelago Mod by JKLeckr");
+                
+                Log("[Log] Info", LoggingFlags.Debug);
+                LogWarning("[Log] Warning", LoggingFlags.Debug);
+                LogError("[Log] Error", LoggingFlags.Debug);
+                LogFatal("[Log] Fatal", LoggingFlags.Debug);
+                LogMessage("[Log] Message", LoggingFlags.Debug);
+                LogDebug("[Log] Debug", LoggingFlags.Debug);
+
                 if (!IsPluginLoaded(DEP_SAVECONFIG_MOD_GUID)) {
                     Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
                     Log($"Using Save Key: {configSaveKeyName.Value}");
@@ -69,14 +77,30 @@ namespace CupheadArchipelago {
             Log(data, requiredFlags, LogLevel.Info);
         }
         public static void Log(object data, LoggingFlags requiredFlags, LogLevel logLevel) {
-            if (IsLoggingFlagsEnabled(requiredFlags)) Instance.Logger.Log(logLevel, string.Format(data.ToString()));
+            if (IsLoggingFlagsEnabled(requiredFlags)) {
+                Instance.Logger.Log(logLevel, data);
+            }
         }
-        public static void LogWarning(object data) => LogWarning(data, LoggingFlags.None);
+        public static void LogMessage(object data) => LogMessage(data, LoggingFlags.Message);
+        public static void LogMessage(object data, LoggingFlags requiredFlags) {
+            Log(data, requiredFlags, LogLevel.Message);
+        }
+        public static void LogWarning(object data) => LogWarning(data, LoggingFlags.Warning);
         public static void LogWarning(object data, LoggingFlags requiredFlags) {
-            Log(data, LoggingFlags.Warning | requiredFlags, LogLevel.Warning);
+            Log(data, requiredFlags, LogLevel.Warning);
         }
-        public static void LogError(object data) => Log(data, LoggingFlags.None, LogLevel.Error);
-        public static void LogFatal(object data) => Log(data, LoggingFlags.None, LogLevel.Fatal);
+        public static void LogError(object data) => LogError(data, LoggingFlags.None);
+        private static void LogError(object data, LoggingFlags requiredFlags) {
+            Log(data, requiredFlags, LogLevel.Error);
+        }
+        public static void LogFatal(object data) => LogFatal(data, LoggingFlags.None);
+        private static void LogFatal(object data, LoggingFlags requiredFlags) {
+            Log(data, requiredFlags, LogLevel.Fatal);
+        }
+        public static void LogDebug(object data) => LogDebug(data, LoggingFlags.Debug);
+        public static void LogDebug(object data, LoggingFlags requiredFlags) {
+            Log(data, requiredFlags, LogLevel.Debug);
+        }
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
             return (((int)flags)&(int)Instance.configLogging.Value)==(int)flags;
         }

@@ -29,7 +29,6 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; }
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
-        private static Dictionary<long, ScoutedItemInfo> itemMap = new();
         private static Queue<ItemInfo> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
         private static Queue<ItemInfo> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
         private static List<ItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
@@ -112,7 +111,7 @@ namespace CupheadArchipelago.AP {
                     return false;
                 }
 
-                Plugin.Log($"[APClient] APWorld version {SlotData.world_version}");
+                //Plugin.Log($"[APClient] APWorld version {SlotData.world_version}");
 
                 SessionStatus = 4;
                 Plugin.Log($"[APClient] Checking SlotData version...");
@@ -253,7 +252,6 @@ namespace CupheadArchipelago.AP {
             doneChecksUnique = null;
             scoutMapStatus = 0;
             locMap.Clear();
-            itemMap.Clear();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
@@ -313,12 +311,6 @@ namespace CupheadArchipelago.AP {
             else
                 throw new KeyNotFoundException($"[APClient] GetCheck: Invalid location id {loc}.");
         }
-        public static ScoutedItemInfo GetCheckFromItem(long item) {
-            if (itemMap.ContainsKey(item))
-                return itemMap[item];
-            else
-                throw new KeyNotFoundException($"[APClient] GetCheckFromItem: Invalid item id {item}.");
-        }
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
@@ -371,14 +363,7 @@ namespace CupheadArchipelago.AP {
             Plugin.Log("[APClient] OnItemReceived");
             ItemInfo item = helper.PeekItem();
             long itemId = item.ItemId;
-            string itemName = $"APItem {itemId}";
-            try {
-                string nname = GetCheckFromItem(itemId).ItemName;
-                if (nname!=null) itemName = nname;
-            } catch (KeyNotFoundException e) {
-                Plugin.LogError(e.ToString());
-                return;
-            }
+            string itemName = item.ItemName ?? $"APItem {itemId}";
             if (currentReceivedItemIndex>ReceivedItemsIndex) {
                 currentReceivedItemIndex=ReceivedItemsIndex;
                 Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
@@ -420,7 +405,7 @@ namespace CupheadArchipelago.AP {
         public static ItemInfo PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
         private static ItemInfo PopItemQueue(Queue<ItemInfo> itemQueue) {
             ItemInfo item = itemQueue.Peek();
-            APItemMngr.ApplyItem(item.ItemId);
+            APItemMngr.ApplyItem(item);
             APSessionGSData.appliedItems.Add(item);
             Plugin.Log("[APClient] Queue Pop");
             itemQueue.Dequeue();
@@ -453,12 +438,12 @@ namespace CupheadArchipelago.AP {
                                         Plugin.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
                                     }
                                 
+                                    Plugin.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                                     locMap.Add(loc, item);
-                                    itemMap.Add(item.ItemId, item);
                                 }
                             } catch (Exception e) {
                                 err = true;
-                                Plugin.LogError(e.ToString());
+                                Plugin.LogError($" [APClient] Exception: {e.Message}");
                             }
                             if (locMap.Count<1) {
                                 scoutMapStatus = -1;
