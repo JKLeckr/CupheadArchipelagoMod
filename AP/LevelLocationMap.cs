@@ -168,7 +168,6 @@ namespace CupheadArchipelago.AP {
         }
 
         public static long GetLocationId(Levels level, int index) => map[level][index].Id;
-        public static string GetLocationName(Levels level, int index) => map[level][index].Name;
         public static IEnumerable<Levels> GetKeys() => map.Keys;
     }
 }

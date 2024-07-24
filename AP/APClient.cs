@@ -28,7 +28,8 @@ namespace CupheadArchipelago.AP {
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; }
-        private static Dictionary<long, ScoutedItemInfo> scoutMap = new();
+        private static Dictionary<long, ScoutedItemInfo> locMap = new();
+        private static Dictionary<long, ScoutedItemInfo> itemMap = new();
         private static Queue<ItemInfo> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
         private static Queue<ItemInfo> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
         private static List<ItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
@@ -249,16 +250,32 @@ namespace CupheadArchipelago.AP {
             ConnectionInfo = null;
             doneChecksUnique = null;
             scoutMapStatus = 0;
-            scoutMap.Clear();
+            locMap.Clear();
+            itemMap.Clear();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
+        public static bool IsAnyLocationChecked(long[] locs) {
+            foreach (long loc in locs) {
+                if (IsLocationChecked(loc))
+                    return true;
+            }
+            return false;
+        }
+        public static bool IsLocationsChecked(long[] locs) {
+            if (locs.Length<1) return false;
+            foreach (long loc in locs) {
+                if (IsLocationChecked(loc))
+                    return false;
+            }
+            return true;
+        }
         public static bool Check(long loc, bool sendChecks = true) {
-            if (!scoutMap.ContainsKey(loc)) {
+            if (!locMap.ContainsKey(loc)) {
                 Plugin.LogError($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
-            string locName = !scoutMap.ContainsKey(loc) ? scoutMap[loc].LocationName : $"#{loc}";
+            string locName = !locMap.ContainsKey(loc) ? locMap[loc].LocationName : $"#{loc}";
             Plugin.Log($"[APClient] Adding check \"{locName}\"...");
             //Plugin.Log(doneChecksUnique.Count);
             //Plugin.Log(DoneChecks.Count);
@@ -289,10 +306,16 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static ScoutedItemInfo GetCheck(long loc) {
-            if (scoutMap.ContainsKey(loc))
-                return scoutMap[loc];
+            if (locMap.ContainsKey(loc))
+                return locMap[loc];
             else
-                throw new KeyNotFoundException($"[APClient] GetCheck(): Invalid location id {loc}.");
+                throw new KeyNotFoundException($"[APClient] GetCheck: Invalid location id {loc}.");
+        }
+        public static ScoutedItemInfo GetCheckFromItem(long item) {
+            if (itemMap.ContainsKey(item))
+                return itemMap[item];
+            else
+                throw new KeyNotFoundException($"[APClient] GetCheckFromItem: Invalid item id {item}.");
         }
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
@@ -315,7 +338,7 @@ namespace CupheadArchipelago.AP {
             string locsstr = "[";
             for (int i=0;i<locs.Length;i++) {
                 if (i>0) locsstr += ","; 
-                locsstr += scoutMap.ContainsKey(locs[i])?scoutMap[locs[i]].LocationName:locs[i];
+                locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
                 if (i==locs.Length-1) locsstr += "]";
             }
             Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", LoggingFlags.Network, state?LogLevel.Info:LogLevel.Warning);
@@ -345,7 +368,15 @@ namespace CupheadArchipelago.AP {
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Plugin.Log("[APClient] OnItemReceived");
             ItemInfo item = helper.PeekItem();
-            string itemName = APItem.IdExists(item.ItemId)?APItem.IdToName(item.ItemId):item.ItemId.ToString();
+            long itemId = item.ItemId;
+            string itemName = $"APItem {itemId}";
+            try {
+                string nname = GetCheckFromItem(itemId).ItemName;
+                if (nname!=null) itemName = nname;
+            } catch (KeyNotFoundException e) {
+                Plugin.LogError(e.ToString());
+                return;
+            }
             if (currentReceivedItemIndex>ReceivedItemsIndex) {
                 currentReceivedItemIndex=ReceivedItemsIndex;
                 Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
@@ -404,33 +435,38 @@ namespace CupheadArchipelago.AP {
                     break;
                 }*/
                 case ArchipelagoPacketType.Connected: {
-                    if (scoutMap.Count==0) {
+                    if (locMap.Count==0) {
                         Plugin.Log($"[APClient] Getting location data...");
                         session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
                             Plugin.Log($" [APClient] Processing {si.Count} locations...");
+                            bool err = false;
                             foreach (ScoutedItemInfo item in si.Values) {
                                 long loc = item.LocationId;
                                 string locName = item.LocationName;
 
-                                bool loc_cond1 = APLocation.IdExists(loc);
-                                bool loc_cond2 = APLocation.NameExists(locName);
-                                if (loc_cond1!=loc_cond2) {
-                                    Plugin.LogError(" [APClient] Location id/name conflict!");
-                                }
-                                else if (!loc_cond1||!loc_cond2) {
-                                    Plugin.LogWarning($" [APClient] Setup: Unknown Location: {locName}:{loc}");
+                                bool loc_cond = APLocation.IdExists(loc);
+                                if (!loc_cond) {
+                                    err = true;
+                                    Plugin.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
                                 }
                                 
-                                scoutMap.Add(loc, item);
+                                locMap.Add(loc, item);
+                                itemMap.Add(item.ItemId, item);
                             }
-                            if (scoutMap.Count<1) {
+                            if (locMap.Count<1) {
                                 scoutMapStatus = -1;
                                 Plugin.LogError(" [APClient] scoutMap is empty!");
+                                return;
+                            }
+                            if (err) {
+                                scoutMapStatus = -2;
+                                Plugin.LogError(" [APClient] Errors occured during processing.");
+                                return;
                             }
                             Plugin.Log($" [APClient] Processed location data.");
                             if ((debug&4)>0) {
                                 Plugin.Log(" -- Location data dump: --");
-                                foreach (KeyValuePair<long, ScoutedItemInfo> entry in scoutMap) {
+                                foreach (KeyValuePair<long, ScoutedItemInfo> entry in locMap) {
                                     Plugin.Log($"  {entry.Key}: {entry.Value.ItemId}: {entry.Value.LocationId}: {entry.Value.ItemName}: {entry.Value.LocationName}");
                                 }
                                 Plugin.Log(" -- End Location data dump --");

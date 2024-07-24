@@ -167,33 +167,37 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Plugin.Log($"ct {ShopSceneItemsToString(ctmp)}");*/
 
                 // Setting up indexes and counts
-                int shopIndex = worldIndexes[PlayerData.Data.CurrentMap];
-                int weaponCount = shopMap[shopIndex].Weapons;
-                int charmCount = shopMap[shopIndex].Charms;
-                int totalCount = weaponCount + charmCount;
-                int weaponIndex = 0;
-                int charmIndex = 0;
+                int shopLevel = 0;
+                if (Ext.CheckAnyLevelComplete([]))
+                    shopLevel = 1;
+                if (Ext.CheckAnyLevelComplete([]))
+                    shopLevel = 2;
+                if (APSettings.UseDLC && Ext.CheckAnyLevelComplete([]))
+                    shopLevel = 3;
 
                 Plugin.Log("0");
 
-                Plugin.Log($"w {shopMap[shopIndex].Weapons}");
-                Plugin.Log($"c {shopMap[shopIndex].Charms}");
+                int weaponCount = 0;
+                int charmCount = 0;
 
-                for (int i=0;i<shopIndex;i++) {
-                    weaponIndex+=shopMap[i].Weapons;
-                    charmIndex+=shopMap[i].Charms;
+                for (int i=0;i<=shopLevel;i++) {
+                    weaponCount+=shopMap[i].Weapons;
+                    weaponCount+=shopMap[i].Charms;
                 }
+
+                int totalCount = weaponCount + charmCount;
+
+                Plugin.Log($"wc {weaponCount}");
+                Plugin.Log($"cc {charmCount}");
 
                 Plugin.Log("1");
                 
                 // Set prefabs for shop
-                weaponItemPrefabs = Aux.ArrayRange(wtmp,weaponIndex,weaponIndex+weaponCount);
-                charmItemPrefabs = Aux.ArrayRange(ctmp,charmIndex,charmIndex+charmCount);
+                weaponItemPrefabs = Aux.ArrayRange(wtmp, weaponCount);
+                charmItemPrefabs = Aux.ArrayRange(ctmp, charmCount);
 
                 Plugin.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}");
                 Plugin.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}");
-                Plugin.Log($"wi {weaponIndex}");
-                Plugin.Log($"ci {charmIndex}");
 
                 Plugin.Log("2");
 

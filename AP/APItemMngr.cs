@@ -1,13 +1,16 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.Hooks.PlayerHooks;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
         public static void ApplyItem(long itemId) {
             APItem item = APItem.FromId(itemId);
-            Plugin.Log($"[APItemMngr] Applying item {item.Name}...");
+            ScoutedItemInfo itemInfo = APClient.GetCheckFromItem(item);
+            string itemName = itemInfo.ItemName ?? $"#{itemId}";
+            Plugin.Log($"[APItemMngr] Applying item {itemName}...");
 
             switch (ItemMap.GetItemType(item)) {
                 case ItemType.Weapon: {
@@ -96,19 +99,19 @@ namespace CupheadArchipelago.AP {
                     PlayerStatsManager stats1 = p1.stats;
                     PlayerStatsManager stats2 = p2?.stats;
                     
-                    if (item==APItem.lv_extrahealth) {
+                    if (item==APItem.level_extrahealth) {
                         AudioManager.Play("pop_up");
                         stats1.SetHealth(stats1.Health + 1);
                         stats2?.SetHealth(stats2.Health + 1);
                     }
-                    else if (item==APItem.lv_superrecharge) {
+                    else if (item==APItem.level_superrecharge) {
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                         if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                     }
-                    else if (item==APItem.lv_trap_fingerjam) {Stub(item);}
-                    else if (item==APItem.lv_trap_inktrap) {Stub(item);}
-                    else if (item==APItem.lv_trap_slowfire) {Stub(item);}
-                    else if (item==APItem.lv_trap_superdrain) {
+                    else if (item==APItem.level_trap_fingerjam) {Stub(itemName);}
+                    else if (item==APItem.level_trap_envirotrap) {Stub(itemName);}
+                    else if (item==APItem.level_trap_slowfire) {Stub(itemName);}
+                    else if (item==APItem.level_trap_superdrain) {
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
                         if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
                     }
@@ -118,6 +121,6 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        private static void Stub(APItem item) => Plugin.LogWarning($"Item handling unimplemented: {item.Name}");
+        private static void Stub(string itemName) => Plugin.LogWarning($"Item handling unimplemented: {itemName}");
     }
 }

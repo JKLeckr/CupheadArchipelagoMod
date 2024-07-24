@@ -6,12 +6,12 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.AP {
     public static class ItemMap {
         private static readonly Dictionary<long, ItemType> itemTypes = new() {
-            {APItem.lv_extrahealth, ItemType.Level},
-            {APItem.lv_superrecharge, ItemType.Level},
-            {APItem.lv_trap_fingerjam, ItemType.Level},
-            {APItem.lv_trap_inktrap, ItemType.Level},
-            {APItem.lv_trap_slowfire, ItemType.Level},
-            {APItem.lv_trap_superdrain, ItemType.Level},
+            {APItem.level_extrahealth, ItemType.Level},
+            {APItem.level_superrecharge, ItemType.Level},
+            {APItem.level_trap_fingerjam, ItemType.Level},
+            {APItem.level_trap_envirotrap, ItemType.Level},
+            {APItem.level_trap_slowfire, ItemType.Level},
+            {APItem.level_trap_superdrain, ItemType.Level},
             {APItem.coin, ItemType.Essential},
             {APItem.coin2, ItemType.Essential},
             {APItem.coin3, ItemType.Essential},

@@ -38,7 +38,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(LevelCoin), "Collect")]
         internal static class Collect {
             static bool Prefix(LevelCoin __instance, ref bool ____collected) {
-                Plugin.Log($"Coin Collected: {CoinIdMap.GetAPLocation(__instance.GlobalID).Name}");
+                Plugin.Log($"Coin Collected: {APClient.GetCheck(CoinIdMap.GetAPLocation(__instance.GlobalID)).LocationName}");
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {

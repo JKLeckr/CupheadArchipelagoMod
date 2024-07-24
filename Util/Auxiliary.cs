@@ -44,6 +44,7 @@ namespace CupheadArchipelago.Util {
 
             return res;
         }
+        public static T[] ArrayRange<T>(T[] arr, int end) => ArrayRange(arr, 0, end);
 
         private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {
             foreach (CodeInstruction code in codes) {
