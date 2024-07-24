@@ -94,7 +94,40 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static void APCheck(Level instance) {
-                
+                if (APData.IsCurrentSlotEnabled()) {
+                    Plugin.Log("[LevelHook] Level: {0}", instance.CurrentLevel);
+                    if (!Level.IsInBossesHub && instance.CurrentLevel != Levels.Mausoleum) {
+                        Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
+                        if (Level.Difficulty >= normalMode) {
+                            APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
+                            switch (instance.LevelType) {
+                                case Level.Type.Battle: {
+                                    Plugin.Log("[LevelHook] Battle Type");
+                                    if (APSettings.BossGradeChecks>0)
+                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.BossGradeChecks))) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,1));
+                                        }
+                                    break;
+                                }
+                                case Level.Type.Platforming: {
+                                    Plugin.Log("[LevelHook] Platforming Type");
+                                    if (APSettings.RungunGradeChecks>0) {
+                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.RungunGradeChecks))) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,((int)APSettings.RungunGradeChecks>3)?7:6));
+                                        }
+                                    }
+                                    break;
+                                }
+                                default: {
+                                    Plugin.Log("[LevelHook] Other Level Type");
+                                    break;
+                                }
+                            }
+                        } else {
+                            Plugin.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                        }
+                    }
+                }
             }
         }
 

@@ -73,6 +73,7 @@ namespace CupheadArchipelago {
             Hooks.MapDifficultySelectStartUIHook.Hook();
             Hooks.LevelHook.Hook();
             Hooks.PlatformingLevelHook.Hook();
+            Hooks.MausoleumLevelHook.Hook();
             Hooks.LevelCoinHook.Hook();
         }
 

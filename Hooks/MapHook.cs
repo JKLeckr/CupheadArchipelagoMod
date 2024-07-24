@@ -53,8 +53,9 @@ namespace CupheadArchipelago.Hooks {
             }
             static void Postfix(Map __instance, CupheadMapCamera ___cupheadMapCamera) {
                 Plugin.Log(Level.Difficulty, LoggingFlags.Debug);
+                if (APData.IsCurrentSlotEnabled()) APClient.SendChecks();
                 __instance.StartCoroutine(_mi_start_cr.Name);
-                if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) __instance.StartCoroutine(start_ap_cr(__instance));
+                //if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) __instance.StartCoroutine(start_ap_cr(__instance));
             }
 
             private static IEnumerator start_ap_cr(Map __instance) {
