@@ -17,11 +17,9 @@ namespace CupheadArchipelago.AP {
             "cuphead_player_data_v1_ap_slot_1_apdata",
             "cuphead_player_data_v1_ap_slot_2_apdata"
         };
-        private static readonly string AP_SAVE_PATH_WIN = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"\\Cuphead\\";
-        private static readonly string AP_SAVE_PATH_MAC = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"/Cuphead/";
-        private static readonly string AP_SAVE_PATH;
+        private static readonly string AP_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
 
-        public static bool Initialized { get; private set; }
+        public static bool Initialized { get; private set; } = false;
         public static APData[] SData { get; private set; }
         public static APData CurrentSData { get => SData[PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionSData; }
@@ -32,54 +30,37 @@ namespace CupheadArchipelago.AP {
         private static readonly int? bossGradeChecks = 0;
         private static readonly int? rungunGradeChecks = 0;
 
+        public int version {get; private set;} = AP_WORLD_VERSION;
+        public bool enabled = false;
+        public string address = "archipelago.gg";
+        public int port = 38281;
+        public string slot = "";
+        public string password = "";
+        public string seed = "";
+        public DataPackage data = null;
+        public Dictionary<string, object> slotData = null;
+        public List<long> doneChecks = new List<long>();
+
         public bool UseDLC {get => (int)(long)slotData["use_dlc"]>0;}
         public bool Hard {
-            get => (hard.HasValue)?(bool)hard:(long)slotData["expert_mode"]>0;
+            get => hard.HasValue?(bool)hard:(long)slotData["expert_mode"]>0;
         }
         public bool FreemoveIsles {
-            get => (freemoveIsles.HasValue)?(bool)freemoveIsles:(long)slotData["freemove_isles"]>0;
+            get => freemoveIsles.HasValue?(bool)freemoveIsles:(long)slotData["freemove_isles"]>0;
         }
         public int BossGradeChecks {
-            get => (bossGradeChecks.HasValue)?(int)bossGradeChecks:(int)(long)slotData["boss_grade_checks"];
+            get => bossGradeChecks.HasValue?(int)bossGradeChecks:(int)(long)slotData["boss_grade_checks"];
         }
         public int RungunGradeChecks {
-            get => (rungunGradeChecks.HasValue)?(int)rungunGradeChecks:(int)(long)slotData["rungun_grade_checks"];
+            get => rungunGradeChecks.HasValue?(int)rungunGradeChecks:(int)(long)slotData["rungun_grade_checks"];
         }
 
-        public int version {get; private set;}
-        public bool enabled;
-        public string address;
-        public string slot;
-        public string password;
-        public string seed;
-        public DataPackage data;
-        public Dictionary<string, object> slotData;
         public string DataSum {get => (data!=null&&slot!=null)?data.Games[slot].Checksum:"0";}
-
-        static APData() {
-            Initialized = false;
-            AP_SAVE_PATH = Environment.OSVersion.Platform==PlatformID.MacOSX?AP_SAVE_PATH_MAC:AP_SAVE_PATH_WIN;
-        }
-        public APData(bool enabled = false,
-                        string address = null,
-                        string slot = null,
-                        string password = null,
-                        string seed = null
-        ) {
-            this.version = AP_WORLD_VERSION;
-            this.enabled = enabled;
-            this.address = address;
-            this.slot = slot;
-            this.password = password;
-            this.seed = seed;
-            this.data = null;
-            this.slotData = null;
-        }
 
         public static void Init() {
             SData = new APData[3];
             for (int i=0;i<SData.Length;i++) {
-                SData[i] = new APData(false,"","","");
+                SData[i] = new APData();
             }
         }
 
@@ -96,8 +77,10 @@ namespace CupheadArchipelago.AP {
                     catch (Exception e) {
                         Plugin.Log($"[APData] Unable to read AP Save Data for {i}: " + e.StackTrace, LogLevel.Error);
                     }
-                    if (data == null)
-                        Plugin.Log((object) ("[APData] Data could not be unserialized for key: " + AP_SAVE_FILE_KEYS[i]), LogLevel.Error);
+                    if (data == null) {
+                        Plugin.Log("[APData] Data could not be unserialized for key: " + AP_SAVE_FILE_KEYS[i] + ". Loading defaults.", LogLevel.Error);
+                        SData[i] = new APData();
+                    }
                     else {
                         SData[i] = data;
                     }

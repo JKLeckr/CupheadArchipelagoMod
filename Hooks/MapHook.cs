@@ -78,10 +78,10 @@ namespace CupheadArchipelago.Hooks {
                                     if (Level.Difficulty >= normalMode) {
                                         Plugin.Log(Level.Grade, LoggingFlags.Debug);
                                         Plugin.Log(APData.CurrentSData.BossGradeChecks, LoggingFlags.Debug);
-                                        APClient.SendCheck(LevelLocationMap.GetLocationId(Level.PreviousLevel,0));
+                                        APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,0));
                                         if (APData.CurrentSData.BossGradeChecks>0) {
                                             if (Level.Grade>=(LevelScoringData.Grade.A+APData.CurrentSData.BossGradeChecks)) {
-                                                APClient.SendCheck(LevelLocationMap.GetLocationId(Level.PreviousLevel,1));
+                                                APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,1));
                                             }
                                         }
                                     }
@@ -92,10 +92,10 @@ namespace CupheadArchipelago.Hooks {
                                     Plugin.Log("Platforming", LoggingFlags.Debug);
                                     Plugin.Log(Level.Grade, LoggingFlags.Debug);
                                     Plugin.Log(APData.CurrentSData.RungunGradeChecks, LoggingFlags.Debug);
-                                    APClient.SendCheck(LevelLocationMap.GetLocationId(Level.PreviousLevel,0));
+                                    APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,0));
                                     if (APData.CurrentSData.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.APlus+(APData.CurrentSData.RungunGradeChecks>=2?1:0))) {
-                                            APClient.SendCheck(LevelLocationMap.GetLocationId(Level.PreviousLevel,APData.CurrentSData.RungunGradeChecks));
+                                            APClient.Check(LevelLocationMap.GetLocationId(Level.PreviousLevel,APData.CurrentSData.RungunGradeChecks));
                                         }
                                     }
                                     break;

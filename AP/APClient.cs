@@ -26,11 +26,10 @@ namespace CupheadArchipelago.AP {
         public static int HintPoints {get; private set;} = 0;
         public static Queue<NetworkItem> ItemReceiveQueue {get; private set;}
         public static Queue<NetworkItem> ItemReceiveLevelQueue {get; private set;}
-        private static bool queueLock = false;
-        private static bool levelQueueLock = false;
         private static bool IsTryingSessionConnect {get; set;} = false;
         private static string DataPackageChecksum {get => (RoomInfo!=null)?RoomInfo.DataPackageChecksums["Cuphead"]:"-1";}
-        private static List<long> locationSendQueue;
+        private static List<long> DoneChecks { get => APSessionSData.doneChecks; }
+        private static HashSet<long> doneChecksUnique;
         private static readonly Version AP_VERSION = new Version(0,4,2,0);
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
@@ -66,7 +65,6 @@ namespace CupheadArchipelago.AP {
                 }
             };
             APSession.Socket.PacketReceived += OnPacket;
-            locationSendQueue = new List<long>();
 
             res = ConnectArchipelagoSession(true);
 
@@ -110,10 +108,6 @@ namespace CupheadArchipelago.AP {
             }
             else {
                 Plugin.Log($"[APClient] Connected to {data.address} as {data.slot}");
-                if (locationSendQueue.Count>0) {
-                    Plugin.Log($"[APClient] Sending previously unsent checks...", LoggingFlags.Network);
-                    SendChecks(locationSendQueue.ToArray());
-                }
                 Enabled = true;
                 res = true;
             }
@@ -156,47 +150,51 @@ namespace CupheadArchipelago.AP {
             RoomInfo = null;
             ConnectionInfo = null;
             SessionDataPackage = null;
-            locationSendQueue = null;
+            doneChecksUnique = null;
             ResetQueues();
         }
 
         public static bool SetupArchipelagoGame() {
+            doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
             /* Send location checks of completed levels */
-            List<long> locs = new List<long>();
             PlayerData pd = PlayerData.Data;
             // Level Locations
             foreach (Levels level in LevelLocationMap.GetKeys()) {
-                if (pd.CheckLevelsHaveMinDifficulty(new Levels[]{level}, APSessionSData.Hard?Level.Mode.Hard:Level.Mode.Normal))  {
-                    locs.Add((long)LevelLocationMap.GetLocationId(level,0));
+                if (pd.CheckLevelsHaveMinDifficulty(new Levels[]{level}, APSessionSData.Hard?Level.Mode.Hard:Level.Mode.Normal)) {
+                    Check(LevelLocationMap.GetLocationId(level,0));
                     if (APSessionSData.BossGradeChecks>0&&Array.IndexOf(Level.platformingLevels, level)<0) {
                         if (pd.CheckLevelsHaveMinGrade(new Levels[]{level}, LevelScoringData.Grade.A+APSessionSData.BossGradeChecks)) {
-                            locs.Add((long)LevelLocationMap.GetLocationId(level,1));
+                            Check((long)LevelLocationMap.GetLocationId(level,1));
                         }
                     }
                     else if (APSessionSData.RungunGradeChecks>0) {
                         int rungunGradeChecks = APData.CurrentSData.RungunGradeChecks;
                         if (pd.CheckLevelsHaveMinGrade(new Levels[]{level}, LevelScoringData.Grade.APlus+(rungunGradeChecks>=2?2:0))) {
-                            locs.Add((long)LevelLocationMap.GetLocationId(level,(rungunGradeChecks>=2?2:1)));
+                            Check((long)LevelLocationMap.GetLocationId(level,rungunGradeChecks>=2?2:1));
                         }
                     }
                 }
             }
-            SendChecks(locs.ToArray());
-            /* Receive location checks (e.g. mark levels as complete) */
-            long[] checkedLocations = ConnectionInfo.LocationsChecked;
-            /* TODO: RECEIVE LOCATION CHECKS */
+            
             return true;
         }
 
-        public static void SendCheck(long loc) => SendChecks(new long[]{loc});
-        public static void SendChecks(long[] locs) {
-            if (locs.Length<1) return;
+        public static void Check(long loc) {
+            Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
+            if (!doneChecksUnique.Contains(loc)) {
+                doneChecksUnique.Add(loc);
+                DoneChecks.Add(loc);
+                SendChecks();
+            }
+        }
+        public static void SendChecks() {
+            if (DoneChecks.Count<1) return;
+            long[] locs = DoneChecks.ToArray();
             if (APSession.Socket.Connected) {
                 APSession.Locations.CompleteLocationChecksAsync((bool state) => OnLocationSendComplete(state, locs), locs);
             }
             else {
                 Plugin.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
-                locationSendQueue.AddRange(locs);
                 ReconnectArchipelagoSession();
             }
         }
@@ -270,15 +268,11 @@ namespace CupheadArchipelago.AP {
                 }
             }
         }
-        private static void ReceiveItem(NetworkItem item, bool noqueue=false) {
-            queueLock = true;
+        private static void ReceiveItem(NetworkItem item) {
             ItemReceiveQueue.Enqueue(item);
-            queueLock = false;
         }
         private static void ReceiveLevelItem(NetworkItem item) {
-            levelQueueLock = true;
             ItemReceiveLevelQueue.Enqueue(item);
-            levelQueueLock = false;
         }
 
         private static APData GetAPSessionData() {

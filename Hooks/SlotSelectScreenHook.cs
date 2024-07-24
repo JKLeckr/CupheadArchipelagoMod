@@ -155,7 +155,8 @@ namespace CupheadArchipelago.Hooks {
                         yield return null;
                     }
                     //Plugin.Log($"{APClient.SlotData["game_content"]} {APClient.SlotData["expert_mode"]} {APClient.SlotData["boss_grade_checks"]}");
-                    if (!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC) {
+                    //TODO: Update this later
+                    if (DLCManager.DLCEnabled()!=APClient.APSessionSData.UseDLC) { //!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC
                         Plugin.Log("[APClient] Content Mismatch! Cannot use a non-DLC client on a DLC Archipelago slot!", LogLevel.Error);
                         SetAPConStatusText("Connected!\nError: Content Mismatch!");
                         APClient.CloseArchipelagoSession();
