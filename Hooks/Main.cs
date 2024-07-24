@@ -6,23 +6,13 @@ namespace CupheadArchipelago.Hooks {
         public static void HookMain() {
             CupheadHook.Hook();
             StartScreenHook.Hook();
-            SlotSelectScreenHook.Hook();
-            SlotSelectScreenSlotHook.Hook();
             PlayerDataHook.Hook();
-            PlayerStatsManagerHook.Hook();
-            MapHook.Hook();
-            MapLevelDependentObstacleHook.Hook();
-            MapCoinHook.Hook();
-            MapNPCAppletravellerHook.Hook();
-            MapNPCCanteenHook.Hook();
-            MapDifficultySelectStartUIHook.Hook();
-            MapUICoinHook.Hook();
-            LevelHook.Hook();
-            TutorialLevelDoorHook.Hook();
-            PlatformingLevelHook.Hook();
-            LevelCoinHook.Hook();
-            MausoleumLevelHook.Hook();
-            DiceGateLevelHook.Hook();
+
+            MenuHooks.MenuMain.Hook();
+            PlayerHooks.PlayerMain.Hook();
+            MapHooks.MapMain.Hook();
+            LevelHooks.LevelMain.Hook();
+            ShopHooks.ShopMain.Hook();
         }
 
         public static void HookSaveKeyUpdater(string saveKeyName) {

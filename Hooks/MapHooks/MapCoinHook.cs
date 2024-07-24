@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using BepInEx.Logging;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapCoinHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start)); //Debug

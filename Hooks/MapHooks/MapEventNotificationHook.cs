@@ -3,7 +3,7 @@
 
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapEventNotificationHook {
         // TODO: Add notifications for sending and maybe receiving checks too!
         internal static void Hook() {}

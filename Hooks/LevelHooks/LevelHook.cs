@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class LevelHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));

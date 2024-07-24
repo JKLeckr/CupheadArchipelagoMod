@@ -1,7 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using CupheadArchipelago.Hooks;
+using CupheadArchipelago.Hooks.PlayerHooks;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {

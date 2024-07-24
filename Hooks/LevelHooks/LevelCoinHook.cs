@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class LevelCoinHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));

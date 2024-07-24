@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenSlotHook {
         private static SlotSelectScreenSlot[] instances;
         private static GameObject[] slotAPText = null;
@@ -39,7 +39,7 @@ namespace CupheadArchipelago.Hooks {
 
                 Label tgt_label = il.DefineLabel();
 
-                Plugin.Log(_fi_MapData_sessionStarted);
+                //Plugin.Log(_fi_MapData_sessionStarted);
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {

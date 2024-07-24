@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class PlayerStatsManagerHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(DebugFillSuper));

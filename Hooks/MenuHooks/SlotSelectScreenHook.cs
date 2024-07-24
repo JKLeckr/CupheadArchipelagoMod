@@ -13,7 +13,7 @@ using UnityEngine;
 using TMPro;
 using BepInEx.Logging;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenHook {
         private static Transform APInfoText;
         private static Transform APConStatusText;

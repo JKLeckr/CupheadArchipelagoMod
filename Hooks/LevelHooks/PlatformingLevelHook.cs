@@ -4,7 +4,7 @@
 using CupheadArchipelago.Auxiliary;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class PlatformingLevelHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));

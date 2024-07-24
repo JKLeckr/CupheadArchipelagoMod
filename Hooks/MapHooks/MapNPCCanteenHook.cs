@@ -81,24 +81,27 @@ namespace CupheadArchipelago.Hooks {
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
-                    if (codes[i].opcode == OpCodes.Call && codes[i+1].opcode == OpCodes.Ldc_I4_1 && codes[i+2].opcode == OpCodes.Callvirt &&
-                        (MethodInfo)codes[i+2].operand == _mi_Dialoguer_SetGlobalFloat) {
+                    if (!success && codes[i].opcode == OpCodes.Call && codes[i+1].opcode == OpCodes.Ldc_I4_1 && codes[i+2].opcode == OpCodes.Callvirt &&
+                        (MethodInfo)codes[i+2].operand == _mi_MapEventNotification_ShowTooltipEvent) {
+                            //codes[i+1] = CodeInstruction.Call(() => APEventType());
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APCheck()),
                                 new CodeInstruction(OpCodes.Brtrue, end_label),
                             ];
                             codes.InsertRange(i, ncodes);
+                            i+=ncodes.Count;
                             success = true;
                     }
-                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 
+                    if (!labelInserted && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 
                         (FieldInfo)codes[i+1].operand == _fi_dialoguerVariableID && codes[i+2].opcode == OpCodes.Ldc_R4 && 
                         (float)codes[i+2].operand == 1f && codes[i+3].opcode == OpCodes.Call && 
                         (MethodInfo)codes[i+3].operand == _mi_Dialoguer_SetGlobalFloat) {
                             codes[i].labels.Add(end_label);
                             labelInserted = true;
                     }
+                    if (labelInserted&&success) break;
                 }
-                if (!labelInserted||!success) throw new Exception($"{nameof(Start)}: Patch Failed!");
+                if (!labelInserted||!success) throw new Exception($"{nameof(Start)}: Patch Failed! {labelInserted}:{success}");
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -116,6 +119,7 @@ namespace CupheadArchipelago.Hooks {
                 }
                 return false;
             }
+            private static TooltipEvent APEventType() => TooltipEvent.Canteen;
         }
     }
 }

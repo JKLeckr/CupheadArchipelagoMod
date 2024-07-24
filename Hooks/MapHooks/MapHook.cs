@@ -5,7 +5,7 @@ using CupheadArchipelago.AP;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
