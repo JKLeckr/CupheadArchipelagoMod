@@ -1,11 +1,12 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using CupheadArchipelago.AP;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CupheadArchipelago.AP;
+using CupheadArchipelago.Auxiliary;
 using HarmonyLib;
 using static PlayerData;
 
@@ -18,6 +19,7 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));
             Harmony.CreateAndPatchAll(typeof(AddCurrency));
             Harmony.CreateAndPatchAll(typeof(ApplyLevelCoins));
+            Harmony.CreateAndPatchAll(typeof(NumWeapons));
             //PlayerInventoryHook.Hook();
             //PlayerCoinManagerHook.Hook();
         }
@@ -83,6 +85,13 @@ namespace CupheadArchipelago.Hooks {
                     ___levelCoinManager = new PlayerCoinManager();
                     return false;
                 } else return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerData), "NumWeapons")]
+        internal static class NumWeapons {
+            static void Postfix(PlayerId player, PlayerInventories ___inventories) {
+                Plugin.Log(Aux.CollectionToString(___inventories.GetPlayer(player)._weapons));
             }
         }
 

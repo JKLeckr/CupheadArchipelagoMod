@@ -1,14 +1,13 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using Archipelago.MultiClient.Net.Models;
-using CupheadArchipelago.AP;
 using System;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
+using CupheadArchipelago.AP;
 using HarmonyLib;
 using UnityEngine;
 using TMPro;
@@ -129,6 +128,7 @@ namespace CupheadArchipelago.Hooks {
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
+                    APClient.CloseArchipelagoSession(true);
                     if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
                         SetAPConStatusText("Initial setup...");
                         PlayerDataHook.APSanitizeSlot(_slotSelection);
