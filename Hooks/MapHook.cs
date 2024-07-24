@@ -51,7 +51,6 @@ namespace CupheadArchipelago.Hooks {
 
                 return codes;
             }
-            //TODO: Make these logs require the debug flag
             static void Postfix(Map __instance, CupheadMapCamera ___cupheadMapCamera) {
                 Plugin.Log(Level.Difficulty, LoggingFlags.Debug);
                 __instance.StartCoroutine(_mi_start_cr.Name);
