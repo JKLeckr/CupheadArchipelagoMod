@@ -203,7 +203,7 @@ namespace CupheadArchipelago.AP {
             doneChecksUnique = null;
         }
 
-        public static bool IsChecked(long loc) => doneChecksUnique.Contains(loc);
+        public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
         public static void Check(long loc, bool sendChecks = true) {
             Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
             Plugin.Log(doneChecksUnique.Count);
@@ -249,8 +249,6 @@ namespace CupheadArchipelago.AP {
             if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goal.Devil | Goal.Saltbaker);
             else return APSessionGSData.IsGoalsCompleted(Goal.Devil);
         }
-
-        public static bool IsLocationChecked(long loc) => APSession.Locations.AllLocationsChecked.Contains(loc);
 
         private static void OnMessageReceived(LogMessage message) {
             Plugin.Log($"[Archipelago] {message}");

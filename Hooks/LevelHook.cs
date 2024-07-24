@@ -13,6 +13,8 @@ namespace CupheadArchipelago.Hooks {
     internal class LevelHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
+            Harmony.CreateAndPatchAll(typeof(_OnLevelStart));
+            Harmony.CreateAndPatchAll(typeof(_OnLevelEnd));
             Harmony.CreateAndPatchAll(typeof(zHack_OnWin));
         }
 
@@ -26,8 +28,6 @@ namespace CupheadArchipelago.Hooks {
                 Plugin.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks();
-                    APManager apmngr = __instance.gameObject.AddComponent<APManager>();
-                    apmngr.Init(APManager.Type.Level);
                 }
             }
 
@@ -42,10 +42,20 @@ namespace CupheadArchipelago.Hooks {
             }*/
         }
 
-        [HarmonyPatch(typeof(Level), "_OnLose")]
-        internal static class _OnLose {
+        [HarmonyPatch(typeof(Level), "_OnLevelStart")]
+        internal static class _OnLevelStart {
+            static void Postfix(Level __instance) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    APManager apmngr = __instance.gameObject.AddComponent<APManager>();
+                    apmngr.Init(APManager.Type.Level);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Level), "_OnLevelEnd")]
+        internal static class _OnLevelEnd {
             static bool Prefix(Level __instance) {
-                Plugin.Log("_OnLose", LoggingFlags.Debug);
+                Plugin.Log("_OnLevelEnd", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
                     APManager.Current.SetActive(false);
                 return true;
