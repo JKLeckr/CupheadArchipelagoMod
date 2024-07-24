@@ -31,6 +31,7 @@ namespace CupheadArchipelago.AP {
         public string slot = "Player";
         public string password = "";
         public string seed = "";
+        public bool complete = false;
         public PlayerData playerData = new PlayerData();
         public Dictionary<string, object> slotData = null;
         public DataPackage dataPackage = null;
@@ -40,6 +41,7 @@ namespace CupheadArchipelago.AP {
         public Queue<NetworkItem> receivedLevelItemApplyQueue = new Queue<NetworkItem>();
         public List<NetworkItem> receivedItems = new List<NetworkItem>();
         public List<NetworkItem> appliedReceivedItems = new List<NetworkItem>();
+        private Goal goalsCompleted = Goal.None;
 
         static APData() {
             SData = new APData[3];
@@ -126,8 +128,15 @@ namespace CupheadArchipelago.AP {
             }
         }
 
+        public void AddGoals(Goal goals) => goalsCompleted |= goals;
+        public void RemoveGoals(Goal goals) => goalsCompleted &= ~goals;
+        public void ResetGoals() => goalsCompleted = Goal.None;
+        public bool IsGoalsCompleted(Goal goals) => (goals & goalsCompleted) >= goals;
+
         public class PlayerData {
+            [Flags]
             public enum SetTarget {
+                None = 0,
                 Essential = 1,
                 BasicAbilities = 2,
                 All = int.MaxValue,

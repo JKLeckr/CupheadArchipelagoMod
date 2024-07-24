@@ -10,8 +10,8 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace CupheadArchipelago.Hooks {
-    public class MapDifficultySelectStartUIHook {
-        public static void Hook() {
+    internal class MapDifficultySelectStartUIHook {
+        internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(SetDifficultyAvailability));
             Harmony.CreateAndPatchAll(typeof(Next));

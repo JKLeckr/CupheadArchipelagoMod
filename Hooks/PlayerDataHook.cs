@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 
 namespace CupheadArchipelago.Hooks {
-    public class PlayerDataHook {
-        public static void Hook() {
+    internal class PlayerDataHook {
+        internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(Init));
             Harmony.CreateAndPatchAll(typeof(OnLoaded));
             Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));

@@ -8,11 +8,11 @@ using BepInEx.Configuration;
 
 namespace CupheadArchipelago {
     [BepInPlugin("com.JKLeckr.CupheadArchipelago", "CupheadArchipelago", PluginInfo.PLUGIN_VERSION)]
-    [BepInDependency(DEP_CUPHEAD_SAVE_CONFIG_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(DEP_SAVECONFIG_MOD_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("Cuphead.exe")]
     public class Plugin : BaseUnityPlugin {
-        public const string VERSION = "20230928";
-        internal const string DEP_CUPHEAD_SAVE_CONFIG_GUID = "com.JKLeckr.CupheadSaveConfig";
+        public const string VERSION = "20240126";
+        internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
 
         public static Plugin Instance { get; private set; }
         public static bool ConfigSkipIntro => Instance.configSkipIntro.Value;
@@ -31,12 +31,11 @@ namespace CupheadArchipelago {
             configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
 
             if (configEnabled.Value) {
-                if (!IsPluginLoaded(DEP_CUPHEAD_SAVE_CONFIG_GUID)) {
-                    Hooks.SaveKeyUpdaterHook.SetSaveKeyBaseName(configSaveKeyName.Value);
-                    Hooks.SaveKeyUpdaterHook.Hook();
+                if (!IsPluginLoaded(DEP_SAVECONFIG_MOD_GUID)) {
+                    Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
                     Log("Using Save Key: " + configSaveKeyName.Value);
-                } else Log($"[CupheadArchipelago] Plugin {DEP_CUPHEAD_SAVE_CONFIG_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
-                Hook();
+                } else Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
+                Hooks.Main.Hook();
                 Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
             }
             else {
@@ -57,24 +56,6 @@ namespace CupheadArchipelago {
             }       
 
             return -1;
-        }
-
-        private void Hook() {
-            Hooks.CupheadHook.Hook();
-            Hooks.StartScreenHook.Hook();
-            Hooks.SlotSelectScreenHook.Hook();
-            Hooks.SlotSelectScreenSlotHook.Hook();
-            Hooks.PlayerDataHook.Hook();
-            Hooks.PlayerStatsManagerHook.Hook();
-            Hooks.MapHook.Hook();
-            Hooks.MapLevelDependentObstacleHook.Hook();
-            Hooks.MapCoinHook.Hook();
-            Hooks.MapNPCAppletravellerHook.Hook();
-            Hooks.MapDifficultySelectStartUIHook.Hook();
-            Hooks.LevelHook.Hook();
-            Hooks.PlatformingLevelHook.Hook();
-            Hooks.MausoleumLevelHook.Hook();
-            Hooks.LevelCoinHook.Hook();
         }
 
         public static void Log(object data) {

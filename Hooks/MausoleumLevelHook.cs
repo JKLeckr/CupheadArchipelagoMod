@@ -2,7 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 namespace CupheadArchipelago.Hooks {
-    public class MausoleumLevelHook {
-        public static void Hook() {}
+    internal class MausoleumLevelHook {
+        internal static void Hook() {}
     }
 }

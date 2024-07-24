@@ -9,8 +9,8 @@ using HarmonyLib;
 using BepInEx.Logging;
 
 namespace CupheadArchipelago.Hooks {
-    public class MapCoinHook {
-        public static void Hook() {
+    internal class MapCoinHook {
+        internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(Start));
         }
 

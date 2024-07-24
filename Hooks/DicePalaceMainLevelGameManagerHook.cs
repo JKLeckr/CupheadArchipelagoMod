@@ -4,8 +4,8 @@
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
-    public class DicePalaceMainLevelGameManagerHook {
-        public static void Hook() {}
+    internal class DicePalaceMainLevelGameManagerHook {
+        internal static void Hook() {}
 
         // SelectLevel
     }

@@ -5,8 +5,8 @@ using CupheadArchipelago.AP;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
-    public class StartScreenHook {
-        public static void Hook() {
+    internal class StartScreenHook {
+        internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
         }
 

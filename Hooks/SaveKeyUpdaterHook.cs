@@ -18,11 +18,11 @@ namespace CupheadArchipelago.Hooks {
             _fi_SAVE_FILE_KEYS = typeof(PlayerData).GetField("SAVE_FILE_KEYS", BindingFlags.NonPublic | BindingFlags.Static);
         }
 
-        public static void SetSaveKeyBaseName(string name) {
+        internal static void SetSaveKeyBaseName(string name) {
             if (!_nameLock) SaveKeyBaseName = name; else Plugin.Log("Cannot Set SaveKeyBaseName after Hook", LogLevel.Warning);
         }
 
-        public static void Hook() {
+        internal static void Hook() {
             _nameLock = true;
             SaveKeyNames = new string[3] {SaveKeyBaseName+0, SaveKeyBaseName+1, SaveKeyBaseName+2};
             Harmony.CreateAndPatchAll(typeof(OnCloudStorageInitialized));

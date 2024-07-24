@@ -10,8 +10,8 @@ using System.Reflection.Emit;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
-    public class LevelHook {
-        public static void Hook() {
+    internal class LevelHook {
+        internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(zHack_OnWin));
         }
@@ -114,7 +114,11 @@ namespace CupheadArchipelago.Hooks {
             private static void APCheck(Level instance) {
                 if (APData.IsCurrentSlotEnabled()) {
                     Plugin.Log($"[LevelHook] Level: {instance.CurrentLevel}");
-                    if (!Level.IsInBossesHub && instance.CurrentLevel != Levels.Mausoleum) {
+                    // For now, the final bosses are not checks because they are event locations
+                    if (instance.CurrentLevel == Levels.Devil || instance.CurrentLevel == Levels.Saltbaker) {
+                        APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goal.Saltbaker:Goal.Devil);
+                    }
+                    else if (!Level.IsInBossesHub && instance.CurrentLevel != Levels.Mausoleum) {
                         Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
                         if (Level.Difficulty >= normalMode) {
                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);

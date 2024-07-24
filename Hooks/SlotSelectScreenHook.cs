@@ -14,13 +14,13 @@ using TMPro;
 using BepInEx.Logging;
 
 namespace CupheadArchipelago.Hooks {
-    public class SlotSelectScreenHook {
+    internal class SlotSelectScreenHook {
         private static Transform APInfoText;
         private static Transform APConStatusText;
         private static bool _lockMenu = false;
         private static SlotSelectScreen _instance;
 
-        public static void Hook() {
+        internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(SetState));
             Harmony.CreateAndPatchAll(typeof(UpdateOptionsMenu));

@@ -4,8 +4,8 @@
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
-    public class CupheadHook {
-        public static void Hook() {}
+    internal class CupheadHook {
+        internal static void Hook() {}
 
         // TODO: Add a control panel attached to this.
 

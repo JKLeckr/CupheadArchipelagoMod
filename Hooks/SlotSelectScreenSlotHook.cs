@@ -7,14 +7,14 @@ using UnityEngine;
 using TMPro;
 
 namespace CupheadArchipelago.Hooks {
-    public class SlotSelectScreenSlotHook {
+    internal class SlotSelectScreenSlotHook {
         private static SlotSelectScreenSlot[] instances;
         private static GameObject[] slotAPText = null;
         private const int APTEXT_SIBLING_INDEX = 3;
         private static readonly Color hColor = new Color(.82f,.76f,.70f);
         private static readonly Color bColor = new Color(.18f,.18f,.18f);
 
-        public static void Hook() {
+        internal static void Hook() {
             instances = new SlotSelectScreenSlot[3];
             slotAPText = new GameObject[instances.Length];
             Harmony.CreateAndPatchAll(typeof(Init));

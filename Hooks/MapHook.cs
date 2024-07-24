@@ -3,15 +3,11 @@
 
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Unity;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
-    public class MapHook {
-        public static void Hook() {
+    internal class MapHook {
+        internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
         }
 

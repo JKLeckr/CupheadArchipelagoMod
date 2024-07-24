@@ -220,6 +220,12 @@ namespace CupheadArchipelago.AP {
             long[] locs = DoneChecks.ToArray();
             if (APSession.Socket.Connected) {
                 APSession.Locations.CompleteLocationChecksAsync((bool state) => OnLocationSendComplete(state, locs), locs);
+                if (IsAPGoalComplete()) {
+                    if (!APSessionGSData.complete) {
+                        StatusUpdatePacket statusUpdate = new StatusUpdatePacket() { Status = ArchipelagoClientState.ClientGoal };
+                        APSession.Socket.SendPacketAsync(statusUpdate, _ => {APSessionGSData.complete = true;});
+                    }
+                }
             }
             else {
                 Plugin.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
@@ -234,6 +240,14 @@ namespace CupheadArchipelago.AP {
                 if (i==locs.Length-1) locsstr += "]";
             }
             Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", LoggingFlags.Network, state?LogLevel.Info:LogLevel.Warning);
+        }
+
+        public static void GoalComplete(Goal goal) {
+            APSessionGSData.AddGoals(goal);
+        }
+        public static bool IsAPGoalComplete() {
+            if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goal.Devil | Goal.Saltbaker);
+            else return APSessionGSData.IsGoalsCompleted(Goal.Devil);
         }
 
         public static bool IsLocationChecked(long loc) => APSession.Locations.AllLocationsChecked.Contains(loc);
@@ -254,15 +268,16 @@ namespace CupheadArchipelago.AP {
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Plugin.Log("[APClient] OnItemReceived");
             NetworkItem item = helper.PeekItem();
+            string itemName = APItem.IdExists(item.Item)?APItem.IdToName(item.Item):item.Item.ToString();
             if (currentReceivedItemIndex>ReceivedItemsIndex) {
                 currentReceivedItemIndex=ReceivedItemsIndex;
                 Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
             }
             if (currentReceivedItemIndex==ReceivedItemsIndex) {
-                Plugin.Log($"Recieved {item.Item} from {item.Player}");
+                Plugin.Log($"Recieved {itemName} from {item.Player}");
                 ReceiveItem(item);
             } else {
-                Plugin.Log($"Skipping {item.Item}");
+                Plugin.Log($"Skipping {itemName}");
                 currentReceivedItemIndex++;
             }
             helper.DequeueItem();

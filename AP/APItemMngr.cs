@@ -73,9 +73,15 @@ namespace CupheadArchipelago.AP {
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 3);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 3);
                     }
-                    else if (item==APItem.contract) {Stub(item);}
-                    else if (item==APItem.dlc_boat) {Stub(item);}
-                    else if (item==APItem.dlc_ingredient) {Stub(item);}
+                    else if (item==APItem.contract) {
+                        APClient.APSessionGSPlayerData.contracts++;
+                    }
+                    else if (item==APItem.dlc_boat) {
+                        APClient.APSessionGSPlayerData.dlc_boat=true;
+                    }
+                    else if (item==APItem.dlc_ingredient) {
+                        APClient.APSessionGSPlayerData.dlc_ingredients++;
+                    }
                     break;
                 }
                 case ItemType.Special: {

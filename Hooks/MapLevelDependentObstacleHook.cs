@@ -7,8 +7,8 @@ using UnityEngine;
 using BepInEx.Logging;
 
 namespace CupheadArchipelago.Hooks {
-    public class MapLevelDependentObstacleHook {
-        public static void Hook() {
+    internal class MapLevelDependentObstacleHook {
+        internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));
             //Harmony.CreateAndPatchAll(typeof(OnConditionNotMet));
             //Harmony.CreateAndPatchAll(typeof(OnConditionMet));
