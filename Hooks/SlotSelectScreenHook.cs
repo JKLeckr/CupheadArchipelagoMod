@@ -136,19 +136,19 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator connect_and_start_cr() {
-                while (Status==1) {
+                while (Status==1||Status==2) {
                     yield return null;
                 }
-                if (Status==0) {
+                if (Status<0) {
                     SetAPConStatusText("Connection failed!");
                     APError();
                 }
                 else {
                     SetAPConStatusText("Connected!\nChecking...");
-                    while (Status==2) {
+                    while (Status==3) {
                         yield return null;
                     }
-                    if (Status==0) {
+                    if (Status<0) {
                         APErrorConnected("Check failed!");
                     }
                     while (APClient.SlotData==null) {

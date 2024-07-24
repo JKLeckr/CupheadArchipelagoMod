@@ -89,7 +89,7 @@ namespace CupheadArchipelago.AP {
             if (result.Successful)
             {
                 Plugin.Log($"[APClient] Connected to {data.address} as {data.slot}");
-                
+                SessionConnectPhase = 3;
                 doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
                 Enabled = true;
                 res = true;
@@ -109,7 +109,7 @@ namespace CupheadArchipelago.AP {
                 Plugin.Log(errorMessage, LogLevel.Error);
 
                 Reset();
-                SessionConnectPhase = 0;
+                SessionConnectPhase = -1;
                 res = false;
             }
             SessionConnectPhase = 0;
