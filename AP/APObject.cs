@@ -61,6 +61,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem weapon_spread = new APItem("Spread", 0xc4ead9);
 
         public static APItem FromId(long id) => id_map[id];
+        //TODO: Implement in generator
+        public static APItem FromName(string name) => FromId(NameToId(name));
         public static bool IdExists(long id) => id_map.ContainsKey(id);
         public static bool NameExists(string name) => name_to_id.ContainsKey(name);
         public static string IdToName(long id) => id_map[id].Name;
@@ -247,6 +249,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation shop_weapon5 = new APLocation("Porkrind's Emporium Weapon 5", 0xc4eb39);
 
         public static APLocation FromId(long id) => id_map[id];
+        //TODO: Implement in generator
+        public static APLocation FromName(string name) => FromId(NameToId(name));
         public static bool IdExists(long id) => id_map.ContainsKey(id);
         public static bool NameExists(string name) => name_to_id.ContainsKey(name);
         public static string IdToName(long id) => id_map[id].Name;

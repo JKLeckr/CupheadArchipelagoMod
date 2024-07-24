@@ -9,7 +9,7 @@ namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
         public string[] levels {get; private set;}
-        public string level_shuffle_map {get; private set;}
+        public LevelShuffleMap level_shuffle_map {get; private set;}
         public string shop_map {get; private set;}
         public bool use_dlc {get; private set;}
         public bool expert_mode {get; private set;}
@@ -21,8 +21,8 @@ namespace CupheadArchipelago.AP {
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
-            levels = null;
-            level_shuffle_map = (string)GetAPSlotData(slotData, "level_shuffle_map");
+            levels = GetAPSlotDataDeserialized<string[]>(slotData, "levels");
+            level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<string, string>>(slotData, "level_shuffle_map"));
             shop_map = GetAPSlotData(slotData, "shop_map").ToString();
             use_dlc = GetAPSlotDataBool(slotData, "use_dlc");
             expert_mode = GetAPSlotDataBool(slotData, "expert_mode");
