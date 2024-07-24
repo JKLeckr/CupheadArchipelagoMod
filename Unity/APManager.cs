@@ -48,6 +48,7 @@ namespace CupheadArchipelago.Unity {
                             if (timer>=applyInterval) {
                                 NetworkItem item = APClient.PopItemReceiveLevelQueue();
                                 APItemMngr.ApplyItem(item.Item);
+                                AudioManager.Play("level_coin_pickup"); //TEMP
                                 timer = 0f;
                             }
                         }
@@ -55,6 +56,7 @@ namespace CupheadArchipelago.Unity {
                     if (!APClient.ItemReceiveQueueIsEmpty()) {
                         NetworkItem item = APClient.PopItemReceiveQueue();
                         APItemMngr.ApplyItem(item.Item);
+                        AudioManager.Play("level_coin_pickup"); //TEMP
                     }
                 }
                 if (timer<applyInterval) timer += Time.deltaTime;
