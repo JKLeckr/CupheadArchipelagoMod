@@ -223,28 +223,50 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 bool debug = false;
                 byte successbits = 0;
                 MethodInfo crmethod = typeof(ShopScenePlayer).GetMethod("addNewItem_cr", BindingFlags.NonPublic | BindingFlags.Instance);
-                //Plugin.Log("crmethod" + crmethod?.ToString());
                 Type crtype = Reflection.GetEnumeratorType(crmethod);
-                FieldInfo _fi_this = crtype.GetField("$this");
-                FieldInfo _fi_i2 = crtype.GetField("<i>__2");
-                FieldInfo _fi_i6 = crtype.GetField("<i>__6");
+                FieldInfo _fi_this = crtype.GetField("$this", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_i2 = crtype.GetField("<i>__2", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_i6 = crtype.GetField("<i>__6", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data").GetGetMethod();
-                MethodInfo _mi_IsUnlocked = typeof(PlayerData).GetMethod("IsUnlocked");
+                MethodInfo _mi_IsUnlocked_c = GetMethod_IsUnlocked(typeof(Charm));
+                MethodInfo _mi_IsUnlocked_w = GetMethod_IsUnlocked(typeof(Weapon));
                 FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_charmItemPrefabs = typeof(ShopScenePlayer).GetField("charmItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                Label cvanilla = il.DefineLabel();
+                Label wvanilla = il.DefineLabel();
+                Label cifa = il.DefineLabel();
+                Label wifa = il.DefineLabel();
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
-                for (int i=0;i<codes.Count-14;i++) {
-                    if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_Data && 
-                        codes[i+2].opcode==OpCodes.Ldfld && (FieldInfo)codes[i+2].operand==_fi_this) {
-                            Plugin.Log($"Found {i}");
+                for (int i=0;i<codes.Count-13;i++) {
+                    if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_Data && codes[i+2].opcode==OpCodes.Ldfld && 
+                        (FieldInfo)codes[i+2].operand==_fi_this && codes[i+11].opcode==OpCodes.Callvirt && codes[i+12].opcode==OpCodes.Brtrue) {
+                            Label end = codes[i+12].labels[0];
+                            if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_c && (successbits&1)==0) {
+                                codes[i].labels.Add(cvanilla);
+                                codes[i+13].labels.Add(cifa);
+                                List<CodeInstruction> ncodes = [];
+                                codes.InsertRange(i, ncodes);
+                                i+=ncodes.Count;
+                                successbits|=1;
+                            }
+                            else if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_w && (successbits&2)==0) {
+                                codes[i].labels.Add(wvanilla);
+                                codes[i+13].labels.Add(wifa);
+                                List<CodeInstruction> ncodes = [];
+                                codes.InsertRange(i, ncodes);
+                                i+=ncodes.Count;
+                                successbits|=2;
+                            }
+                            else Plugin.LogWarning($"{nameof(addNewItem_cr)}: Cannot find IsUnlocked method!");
                     }
                 }
-                //if (successbits!=7) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}:{labelbits}");
+                //if (successbits!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}:{labelbits}");
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -253,6 +275,15 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
 
                 return codes;
+            }
+
+            private static MethodInfo GetMethod_IsUnlocked(Type type) {
+                return typeof(PlayerData).GetMethod("IsUnlocked", BindingFlags.Public | BindingFlags.Instance,
+                    null, new Type[] {typeof(PlayerId), type}, null);
+            }
+            private static bool IsAPChecked(ItemType itemType, Weapon weapon, Charm charm) {
+                long loc = ShopSceneItemHook.GetAPLocation(itemType, weapon, charm);
+                return APClient.IsLocationChecked(loc);
             }
         }
     }
