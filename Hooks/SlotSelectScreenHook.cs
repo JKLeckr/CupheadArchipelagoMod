@@ -78,7 +78,6 @@ namespace CupheadArchipelago.Hooks {
             private static int _slotSelection;
             private static MethodInfo _mi_game_start_cr;
             private static MethodInfo _mi_SetState;
-            private static Thread _ap_connect_thread = null;
             private static int Status => APClient.SessionStatus;
 
             static UpdatePlayerSelect() {
@@ -121,12 +120,11 @@ namespace CupheadArchipelago.Hooks {
             private static void ConnectAndStart() {
                 //Plugin.Log.LogInfo(_instance);
                 //Plugin.Log.LogInfo(__slotSelection);
-                _ap_connect_thread = new Thread(() => APClient.CreateAndStartArchipelagoSession(_slotSelection));
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
                     SetAPConStatusText("Connecting...");
-                    _ap_connect_thread.Start();
+                    ThreadPool.QueueUserWorkItem(_ => APClient.CreateAndStartArchipelagoSession(_slotSelection));
                     _instance.StartCoroutine(connect_and_start_cr());
                 }
                 else {
@@ -135,7 +133,7 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator connect_and_start_cr() {
-                while (Status==1||Status==2) {
+                while (Status>=0&&Status<=2) {
                     yield return null;
                 }
                 if (Status<0) {
@@ -143,8 +141,12 @@ namespace CupheadArchipelago.Hooks {
                     APError();
                 }
                 else {
+                    object a = APClient.APSessionGSData.slotData["use_dlc"];
+                    Plugin.Log(a.ToString());
+                    int test = (int)APClient.APSessionGSData.slotData["use_dlc"];
+                    Plugin.Log(test);
                     SetAPConStatusText("Connected!\nChecking...");
-                    while (Status==3) {
+                    while (Status>=0&&Status<=3) {
                         yield return null;
                     }
                     if (Status<0) {
@@ -155,9 +157,10 @@ namespace CupheadArchipelago.Hooks {
                         }
                         SetAPConStatusText("Disonnected!\nCheck failed!\n"+errorReasonString);
                         APError();
+                        yield break;
                     }
                     SetAPConStatusText("Connected!\nSetting Up...");
-                    while (Status==4) {
+                    while (Status<=4) {
                         yield return null;
                     }
                     if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);

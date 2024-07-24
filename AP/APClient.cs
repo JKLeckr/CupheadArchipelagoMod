@@ -12,6 +12,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
 using System.Net;
+using CupheadArchipelago.Auxiliary;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -93,17 +94,18 @@ namespace CupheadArchipelago.AP {
 
                 SessionStatus = 3;
                 Plugin.Log($"[APClient] Checking seed...");
-                if (APData.CurrentSData.seed != APSession.RoomState.Seed) {
+                string seed = APSession.RoomState.Seed;
+                if (APData.CurrentSData.seed != seed) {
                     if (APData.CurrentSData.seed != "") {
                         Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession();
                         SessionStatus = -2;
                         return false;
                     }
-                    APData.CurrentSData.seed = APSession.RoomState.Seed;
+                    APData.CurrentSData.seed = seed;
                 }
 
-                bool use_dlc = (bool)APSessionGSData.slotData["use_dlc"];
+                bool use_dlc = Aux.IntAsBool((int)APSessionGSData.slotData["use_dlc"]);
                 Plugin.Log($"[APClient] Checking settings...");
                 //TODO: Update this later
                 if (DLCManager.DLCEnabled() != use_dlc) { //!DLCManager.DLCEnabled()&&APClient.APSessionSData.UseDLC
@@ -117,11 +119,11 @@ namespace CupheadArchipelago.AP {
 
                 Plugin.Log($"[APClient] Applying settings...");
                 APSettings.UseDLC = use_dlc;
-                APSettings.Hard = (bool)APSessionGSData.slotData["expert_mode"];
-                APSettings.FreemoveIsles = (bool)APSessionGSData.slotData["freemove_isles"];
+                APSettings.Hard = Aux.IntAsBool((int)APSessionGSData.slotData["expert_mode"]);
+                APSettings.FreemoveIsles = Aux.IntAsBool((int)APSessionGSData.slotData["freemove_isles"]);
                 APSettings.BossGradeChecks = (GradeChecks)(int)APSessionGSData.slotData["boss_grade_checks"];
                 APSettings.RungunGradeChecks = (GradeChecks)(int)APSessionGSData.slotData["rungun_grade_checks"];
-                APSettings.DeathLink = (bool)APSessionGSData.slotData["deathlink"];
+                APSettings.DeathLink = Aux.IntAsBool((int)APSessionGSData.slotData["deathlink"]);
 
                 Plugin.Log($"[APClient] Setting up game...");
                 doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
@@ -195,6 +197,11 @@ namespace CupheadArchipelago.AP {
 
         public static void Check(long loc, bool sendChecks = true) {
             Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
+            Plugin.Log("0");
+            Plugin.Log(doneChecksUnique);
+            Plugin.Log("1");
+            Plugin.Log(DoneChecks);
+            Plugin.Log("2");
             if (!doneChecksUnique.Contains(loc)) {
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);

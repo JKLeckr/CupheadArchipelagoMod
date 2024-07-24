@@ -61,7 +61,6 @@ namespace CupheadArchipelago {
 
         private void Hook() {
             Hooks.CupheadHook.Hook();
-            Hooks.OnlineInterfaceHook.Hook();
             Hooks.StartScreenHook.Hook();
             Hooks.SlotSelectScreenHook.Hook();
             Hooks.SlotSelectScreenSlotHook.Hook();
