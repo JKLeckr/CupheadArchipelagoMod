@@ -193,12 +193,12 @@ namespace CupheadArchipelago.AP {
             ResetQueues();
         }
 
-        public static void Check(long loc) {
+        public static void Check(long loc, bool sendChecks = true) {
             Plugin.Log(string.Format("[APClient] Adding check \"{0}\"...", APLocation.IdToName(loc)));
             if (!doneChecksUnique.Contains(loc)) {
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);
-                SendChecks();
+                if (sendChecks) SendChecks();
             }
         }
         public static void SendChecks() {

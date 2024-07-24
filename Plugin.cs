@@ -61,6 +61,7 @@ namespace CupheadArchipelago {
 
         private void Hook() {
             Hooks.CupheadHook.Hook();
+            Hooks.OnlineInterfaceHook.Hook();
             Hooks.StartScreenHook.Hook();
             Hooks.SlotSelectScreenHook.Hook();
             Hooks.SlotSelectScreenSlotHook.Hook();
@@ -75,18 +76,24 @@ namespace CupheadArchipelago {
             Hooks.LevelCoinHook.Hook();
         }
 
-        public static void Log(object data, LogLevel logLevel = LogLevel.Info) {
-            Log(data, (logLevel==LogLevel.Fatal||logLevel==LogLevel.Error)?LoggingFlags.None:LoggingFlags.Info, logLevel);
+        public static void Log(object data, params object[] args) {
+            Log(data, LogLevel.Info, args);
         }
-        public static void Log(object data, LoggingFlags requiredFlags, LogLevel logLevel = LogLevel.Info) {
-            if (IsLoggingFlagsEnabled(requiredFlags)) Instance.Logger.Log(logLevel, data);
+        public static void Log(object data, LogLevel logLevel, params object[] args) {
+            Log(data, (logLevel==LogLevel.Fatal||logLevel==LogLevel.Error)?LoggingFlags.None:LoggingFlags.Info, logLevel, args);
         }
-        public static void LogWarning(object data, LoggingFlags requiredFlags) {
-            Log(data, LoggingFlags.Warning | requiredFlags, LogLevel.Warning);
+        public static void Log(object data, LoggingFlags requiredFlags, params object[] args) {
+            Log(data, requiredFlags, LogLevel.Info, args);
         }
-        public static void LogWarning(object data) => LogWarning(data, LoggingFlags.None);
-        public static void LogError(object data) => Log(data, LoggingFlags.None, LogLevel.Error);
-        public static void LogFatal(object data) => Log(data, LoggingFlags.None, LogLevel.Fatal);
+        public static void Log(object data, LoggingFlags requiredFlags, LogLevel logLevel, params object[] args) {
+            if (IsLoggingFlagsEnabled(requiredFlags)) Instance.Logger.Log(logLevel, string.Format(data.ToString(), args));
+        }
+        public static void LogWarning(object data, LoggingFlags requiredFlags, params object[] args) {
+            Log(data, LoggingFlags.Warning | requiredFlags, LogLevel.Warning, args);
+        }
+        public static void LogWarning(object data, params object[] args) => LogWarning(data, LoggingFlags.None, args);
+        public static void LogError(object data, params object[] args) => Log(data, LoggingFlags.None, LogLevel.Error, args);
+        public static void LogFatal(object data, params object[] args) => Log(data, LoggingFlags.None, LogLevel.Fatal, args);
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
             return (((int)flags)&(int)Instance.configLogging.Value)==(int)flags;
         }

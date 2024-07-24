@@ -46,8 +46,11 @@ namespace CupheadArchipelago.Hooks {
                 //bool debug = false;
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool success = false;
+                bool success2 = false;
                 MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode").GetGetMethod();
                 MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty").GetSetMethod(true);
+                MethodInfo _mi__OnLevelEnd = typeof(Level).GetMethod("_OnLevelEnd", BindingFlags.Instance | BindingFlags.NonPublic);
+                MethodInfo _mi_APCheck = typeof(zHack_OnWin).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
 
                 /*if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
@@ -63,10 +66,16 @@ namespace CupheadArchipelago.Hooks {
                         codes.Insert(i+1, CodeInstruction.Call(typeof(zHack_OnWin), "HackDifficulty"));
                         //Plugin.Log("Patch success");
                         success = true;
+                    }
+                    if (codes[i].opcode==OpCodes.Ldarg_0 && codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi__OnLevelEnd) {
+                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
+                        codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_APCheck));
+                        success2 = true;
                         break;
                     }
                 }
                 if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
+                if (!success2) throw new Exception($"{nameof(zHack_OnWin)}: Patch2 Failed!");
                 //if (!success) Plugin.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
                 /*if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
@@ -82,6 +91,10 @@ namespace CupheadArchipelago.Hooks {
                     return (APSettings.Hard&&mode<Level.Mode.Hard)?Level.Mode.Easy:mode;
                 }
                 else return mode;
+            }
+
+            private static void APCheck(Level instance) {
+                
             }
         }
 
