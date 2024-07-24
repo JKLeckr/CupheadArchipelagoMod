@@ -27,7 +27,7 @@ namespace CupheadArchipelago.Hooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks();
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
-                    apmngr.Init(APManager.Type.Normal);
+                    apmngr.Init(APManager.Type.Level);
                 }
             }
 
@@ -42,10 +42,22 @@ namespace CupheadArchipelago.Hooks {
             }*/
         }
 
+        [HarmonyPatch(typeof(Level), "_OnLose")]
+        internal static class _OnLose {
+            static bool Prefix(Level __instance) {
+                Plugin.Log("_OnLose", LoggingFlags.Debug);
+                if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
+                    APManager.Current.SetActive(false);
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(Level), "zHack_OnWin")]
         internal static class zHack_OnWin {
-            static bool Prefix() {
+            static bool Prefix(Level __instance) {
                 Plugin.Log("zHack_OnWin", LoggingFlags.Debug);
+                if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
+                    APManager.Current.SetActive(false);
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
@@ -136,13 +148,5 @@ namespace CupheadArchipelago.Hooks {
                 }
             }
         }
-
-        /*
-        if (APData.CurrentSData.Hard&&Level.Difficulty==Level.Mode.Normal) {
-                        _Difficulty = Level.Difficulty;
-                        Plugin.Log.LogInfo("_pi_LevelDifficulty");
-                        _pi_LevelDifficulty.SetValue(null, Level.Mode.Easy, null);
-                    }
-        */
     }
 }

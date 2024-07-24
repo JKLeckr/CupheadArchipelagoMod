@@ -13,7 +13,6 @@ namespace CupheadArchipelago.Hooks {
     public class MapHook {
         public static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
-            //Harmony.CreateAndPatchAll(typeof(Start));
         }
 
         [HarmonyPatch(typeof(Map), "Awake")]

@@ -21,7 +21,7 @@ namespace CupheadArchipelago.AP {
 
         public static bool Initialized { get; private set; } = false;
         public static APData[] SData { get; private set; }
-        public static APData CurrentSData { get => SData[PlayerData.CurrentSaveFileIndex]; }
+        public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionGSData; }
 
         public int version {get; private set;} = AP_WORLD_VERSION;
@@ -31,6 +31,7 @@ namespace CupheadArchipelago.AP {
         public string slot = "Player";
         public string password = "";
         public string seed = "";
+        public PlayerData playerData = new PlayerData();
         public Dictionary<string, object> slotData = null;
         public DataPackage dataPackage = null;
         public List<long> doneChecks = new List<long>();
@@ -92,7 +93,7 @@ namespace CupheadArchipelago.AP {
                 Save(i);
             }
         }
-        public static void SaveCurrent() => Save(PlayerData.CurrentSaveFileIndex);
+        public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
         public static void ResetData(int index, bool disable = true, bool resetSettings = false) {
             APData old_data = SData[index];
@@ -110,11 +111,11 @@ namespace CupheadArchipelago.AP {
         public static bool IsSlotEnabled(int index) {
             return Initialized&&SData[index].enabled;
         }
-        public static bool IsCurrentSlotEnabled() => IsSlotEnabled(PlayerData.CurrentSaveFileIndex);
+        public static bool IsCurrentSlotEnabled() => IsSlotEnabled(global::PlayerData.CurrentSaveFileIndex);
 
         private static bool SlotDataIsEmpty(int index) {
-            if (PlayerData.Initialized) {
-                PlayerData slotData = PlayerData.GetDataForSlot(index);
+            if (global::PlayerData.Initialized) {
+                global::PlayerData slotData = global::PlayerData.GetDataForSlot(index);
                 return !slotData.GetMapData(Scenes.scene_map_world_1).sessionStarted && 
                 !slotData.IsTutorialCompleted && 
                 slotData.CountLevelsCompleted(Level.world1BossLevels) == 0;
@@ -122,6 +123,27 @@ namespace CupheadArchipelago.AP {
             else {
                 Plugin.Log("[APData] PlayerData is not initialized!", LogLevel.Warning);
                 return true;
+            }
+        }
+
+        public class PlayerData {
+            public enum SetTarget {
+                BasicAbilities = 1,
+                All = int.MaxValue,
+            }
+            
+            public bool dash = false;
+            public bool duck = false;
+            public bool parry = false;
+            public bool plane_parry = false;
+            public bool plane_shrink = false;
+
+            public void SetValues(bool value, SetTarget setTarget) {
+                if ((setTarget&SetTarget.BasicAbilities)>0) dash = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) duck = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) parry = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) plane_parry = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) plane_shrink = value;
             }
         }
     }

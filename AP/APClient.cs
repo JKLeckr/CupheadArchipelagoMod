@@ -22,6 +22,7 @@ namespace CupheadArchipelago.AP {
         public static bool Enabled {get; private set;} = false;
         public static bool Connected {get => SessionStatus>=STATUS_CONNECTED;}
         public static APData APSessionGSData {get => GetAPSessionData();}
+        public static APData.PlayerData APSessionGSPlayerData {get => APSessionGSData.playerData;}
         public static string APSessionSlotName {get; private set;} = "";
         public static int APSessionDataSlotNum {get; private set;} = -1;
         public static ConnectedPacket ConnectionInfo {get; private set;}
@@ -89,8 +90,11 @@ namespace CupheadArchipelago.AP {
             {
                 Plugin.Log($"[APClient] Connected to {data.address} as {data.slot}");
 
+                Plugin.Log($"[APClient] Getting AP Data...");
+
                 LoginSuccessful loginData = (LoginSuccessful)result;
                 APSessionGSData.slotData = loginData.SlotData;
+                APSessionGSData.seed = APSession.RoomState.Seed;
 
                 SessionStatus = 4;
                 Plugin.Log($"[APClient] Checking seed...");
@@ -128,6 +132,7 @@ namespace CupheadArchipelago.AP {
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(APData.SData[APSessionDataSlotNum].doneChecks);
+                    if (true) APSessionGSData.playerData.SetValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
 
                     //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
@@ -267,7 +272,7 @@ namespace CupheadArchipelago.AP {
             if ((item.Flags&ItemFlags.Trap)>0) {
                 QueueItem(item, true);
             }
-            else if (item.Item==APItem.extrahealth.Id||item.Item==APItem.superrecharge.Id) {
+            else if (item.Item==APItem.lv_extrahealth.Id||item.Item==APItem.lv_superrecharge.Id) {
                 QueueItem(item, true);
             }
             else {
