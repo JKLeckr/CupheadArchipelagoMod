@@ -32,6 +32,7 @@ namespace CupheadArchipelago.AP {
         public string password = "";
         public string seed = "";
         public Dictionary<string, object> slotData = null;
+        public DataPackage dataPackage = null;
         public List<long> doneChecks = new List<long>();
         public List<NetworkItem> receivedItems = new List<NetworkItem>();
 

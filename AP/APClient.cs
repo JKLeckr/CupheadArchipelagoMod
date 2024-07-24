@@ -11,6 +11,7 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
+using System.Net;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -28,7 +29,7 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
-        private static readonly Version AP_VERSION = new Version(0,4,2,0);
+        private static readonly Version AP_VERSION = new Version(0,4,4,0);
         private const int STATUS_CONNECTED = 5;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
@@ -59,11 +60,13 @@ namespace CupheadArchipelago.AP {
             APSession.Socket.ErrorReceived += OnError;
             APSession.Socket.SocketClosed += OnSocketClosed;
             APSession.Items.ItemReceived += OnItemReceived;
+            APSession.Socket.PacketReceived += OnPacketReceived;
 
             res = ConnectArchipelagoSession();
 
             return res;
         }
+
         private static bool ConnectArchipelagoSession() {
             if (SessionStatus>1) {
                 Plugin.LogWarning($"[APClient] Already Trying to Connect. Aborting.");
@@ -252,6 +255,17 @@ namespace CupheadArchipelago.AP {
         }
         private static void ReceiveLevelItem(NetworkItem item) {
             ItemReceiveLevelQueue.Enqueue(item);
+        }
+
+        private static void OnPacketReceived(ArchipelagoPacketBase packet) {
+            switch (packet.PacketType) {
+                /*case ArchipelagoPacketType.DataPackage: {
+                    DataPackagePacket datapackagepkt = (DataPackagePacket)packet;
+                    APData.CurrentSData.dataPackage = datapackagepkt.DataPackage;
+                    break;
+                }*/
+                default: Plugin.Log(string.Format("Packet got: {0}", packet.PacketType)); break;
+            }
         }
 
         private static APData GetAPSessionData() {
