@@ -4,13 +4,14 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using CupheadArchipelago.Auxiliary;
+using System;
 
 namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
         public string[] levels {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
-        public string shop_map {get; private set;}
+        public ShopSet[] shop_map {get; private set;}
         public bool use_dlc {get; private set;}
         public bool expert_mode {get; private set;}
         public APItem start_weapon {get; private set;}
@@ -21,9 +22,11 @@ namespace CupheadArchipelago.AP {
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
-            levels = GetAPSlotDataDeserialized<string[]>(slotData, "levels");
+            //Plugin.Log($"levels: {GetAPSlotData(slotData, "levels")}");
+            levels = GetAPSlotDataDeserialized<List<string>>(slotData, "levels").ToArray();
             level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<string, string>>(slotData, "level_shuffle_map"));
-            shop_map = GetAPSlotData(slotData, "shop_map").ToString();
+            shop_map = GetAPShopMap(slotData);
+            //Plugin.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataBool(slotData, "use_dlc");
             expert_mode = GetAPSlotDataBool(slotData, "expert_mode");
             start_weapon = GetAPSlotDataLong(slotData, "start_weapon") switch {
@@ -54,6 +57,15 @@ namespace CupheadArchipelago.AP {
             } catch (KeyNotFoundException) {
                 throw new KeyNotFoundException($"GetAPSlotData: {key} is not a valid key!");
             }
+        }
+        private static ShopSet[] GetAPShopMap(Dictionary<string, object> slotData) {
+            string shopMapKey = "shop_map";
+            List<List<int>> map_raw = GetAPSlotDataDeserialized<List<List<int>>>(slotData, shopMapKey);
+            ShopSet[] map = new ShopSet[map_raw.Count];
+            for (int i=0;i<map.Length;i++) {
+                map[i] = new ShopSet(map_raw[i][0], map_raw[i][1]);
+            }
+            return map;
         }
     }
 }
