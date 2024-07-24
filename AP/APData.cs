@@ -43,7 +43,7 @@ namespace CupheadArchipelago.AP {
         }
 
         public static void LoadData() {
-            Plugin.Log($"[APData] Loading Data");
+            Plugin.Log($"[APData] Loading Data from {AP_SAVE_PATH}");
             for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
                 string filename = AP_SAVE_PATH + AP_SAVE_FILE_KEYS[i]+".sav";
                 if (File.Exists(filename)) {

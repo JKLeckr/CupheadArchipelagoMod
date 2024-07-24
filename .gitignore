@@ -311,6 +311,9 @@ tools/
 # Windows Shortcuts
 *.lnk
 
+# Vim files
+*.swp
+
 # OS General Files
 .DS_Store
 .AppleDouble
