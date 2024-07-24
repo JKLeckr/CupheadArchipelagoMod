@@ -63,7 +63,7 @@ The config file is in the game directory's `BepInEx/config` folder. The file is 
 *Note: This is the temporary method while the mod is WIP. For now, just deal with this until the legit way is added.*
 
 1. Make sure the game isn't running.
-2. Go to the Cuphead saves folder (on Windows it should be in %AppData%).
+2. Go to the Cuphead saves folder (on Windows it should be in `%AppData%`).
 3. Open the apdata save file for the save slot you want to use.
 4. In the beginning of the file:
     - Set `"enabled":"true"`
