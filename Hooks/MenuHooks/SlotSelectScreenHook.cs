@@ -81,8 +81,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Now that I am much more familiar with the Transpiler, redo these parts.
             */
             private static int _slotSelection;
+            private static CupheadInput.AnyPlayerInput _input;
             private static MethodInfo _mi_game_start_cr;
             private static MethodInfo _mi_SetState;
+            private static MethodInfo _mi_GetButtonDown;
             private static int Status => APClient.SessionStatus;
 
             static UpdatePlayerSelect() {
@@ -90,8 +92,9 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 _mi_SetState = typeof(SlotSelectScreen).GetMethod("SetState", BindingFlags.NonPublic | BindingFlags.Instance);
             }
 
-            static bool Prefix(int ____slotSelection) {
+            static bool Prefix(int ____slotSelection, CupheadInput.AnyPlayerInput ___input) {
                 _slotSelection = ____slotSelection;
+                _input = ___input;
                 return !_lockMenu;
             }
 
@@ -162,13 +165,18 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             private static IEnumerator connect_and_start_cr() {
                 int displayState = 0;
-                while (Status!=1) {
+                while (!APClient.Ready) {
                     if (Status<0) {
                         APAbort();
                         yield break;
                     }
-                    if (Status>=5 && displayState<5) {
+                    else if (Status>=3 && Status<5 && displayState!=3) {
+                        SetAPConStatusText("Connected!\nChecking...");
+                        displayState = 3;
+                    }
+                    else if (Status>=5 && displayState!=5) {
                         SetAPConStatusText("Connected!\nSetting Up...");
+                        displayState = 5;
                     }
                     yield return null;
                 }
