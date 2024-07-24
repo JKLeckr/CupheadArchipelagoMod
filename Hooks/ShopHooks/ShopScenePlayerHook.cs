@@ -65,6 +65,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 bool debug = false;
                 byte successBit = 0;
                 FieldInfo _fi_Multiplayer = typeof(PlayerManager).GetField("Multiplayer", BindingFlags.Public | BindingFlags.Static);
+                FieldInfo _fi_player = typeof(ShopScenePlayer).GetField("player", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_items = typeof(ShopScenePlayer).GetField("items", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_charmItemPrefabs = typeof(ShopScenePlayer).GetField("charmItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -72,7 +73,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 MethodInfo _mi_gameObject_SetActive = typeof(GameObject).GetMethod("SetActive");
                 MethodInfo _mi_SetupItems = typeof(Awake).GetMethod(nameof(SetupItems), BindingFlags.NonPublic | BindingFlags.Static);
 
-                Label tgt_label = il.DefineLabel();
+                Label cifp = il.DefineLabel();
+                Label cmain = il.DefineLabel();
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
@@ -80,20 +82,18 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     }
                 }
                 for (int i=0;i<codes.Count-6;i++) {
-                    if ((successBit&1) == 0 && codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == _fi_Multiplayer && codes[i+1].opcode == OpCodes.Brtrue) {
-                        List<CodeInstruction> ncodes = [
-                            CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
-                            new CodeInstruction(OpCodes.Brtrue, tgt_label),
-                        ];
-                        codes.InsertRange(i, ncodes);
-                        i+=ncodes.Count;
-                        successBit|=1;
-                    }
-                    if ((successBit&2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_items &&
-                        codes[i+2].opcode == OpCodes.Ldc_I4_0 && codes[i+3].opcode == OpCodes.Callvirt && codes[i+4].opcode == OpCodes.Callvirt &&
-                        codes[i+5].opcode == OpCodes.Ldc_I4_0 && codes[i+6].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+6].operand == _mi_gameObject_SetActive) {
-                            codes[i].labels.Add(tgt_label);
-                            successBit|=2;
+                    if ((successBit&1) == 0 && codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == _fi_Multiplayer &&
+                        codes[i+1].opcode == OpCodes.Brtrue && codes[i+3].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+3].operand == _fi_player &&
+                        codes[i+4].opcode == OpCodes.Ldc_I4_1 && codes[i+5].opcode == OpCodes.Bne_Un) {
+                            codes[i+5].operand = cmain;
+                            codes[i+2].labels.Add(cifp);
+                            List<CodeInstruction> ncodes = [
+                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                new CodeInstruction(OpCodes.Brtrue, cifp),
+                            ];
+                            codes.InsertRange(i, ncodes);
+                            i+=ncodes.Count;
+                            successBit|=1;
                     }
                     if ((successBit&4) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i].labels.Count>0 && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
                         codes[i+2].opcode == OpCodes.Stfld && (FieldInfo)codes[i+2].operand == _fi_weaponIndex) {
@@ -109,13 +109,14 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 new CodeInstruction(OpCodes.Ldflda, _fi_charmItemPrefabs),
                                 new CodeInstruction(OpCodes.Call, _mi_SetupItems),
                             ];
+                            ncodes[0].labels.Add(cmain);
                             codes.InsertRange(i, ncodes);
                             i+=ncodes.Count;
                             successBit|=4;
                     }
-                    if (successBit>=7) break;
+                    if (successBit>=5) break;
                 }
-                if (successBit!=7) throw new Exception($"{nameof(Awake)}: Patch Failed! {successBit}");
+                if (successBit!=5) throw new Exception($"{nameof(Awake)}: Patch Failed! {successBit}");
                 if (debug) {
                     Plugin.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -160,10 +161,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     return;
                 }
 
-                Plugin.Log($"wp {ShopSceneItemsToString(weaponItemPrefabs)}");
+                /*Plugin.Log($"wp {ShopSceneItemsToString(weaponItemPrefabs)}");
                 Plugin.Log($"cp {ShopSceneItemsToString(charmItemPrefabs)}");
                 Plugin.Log($"wt {ShopSceneItemsToString(wtmp)}");
-                Plugin.Log($"ct {ShopSceneItemsToString(ctmp)}");
+                Plugin.Log($"ct {ShopSceneItemsToString(ctmp)}");*/
 
                 // Setting up indexes and counts
                 int shopIndex = worldIndexes[PlayerData.Data.CurrentMap];
@@ -173,14 +174,28 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 int weaponIndex = 0;
                 int charmIndex = 0;
 
+                Plugin.Log("0");
+
+                Plugin.Log($"w {shopMap[shopIndex].Weapons}");
+                Plugin.Log($"c {shopMap[shopIndex].Charms}");
+
                 for (int i=0;i<shopIndex;i++) {
                     weaponIndex+=shopMap[i].Weapons;
                     charmIndex+=shopMap[i].Charms;
                 }
+
+                Plugin.Log("1");
                 
                 // Set prefabs for shop
                 weaponItemPrefabs = Aux.ArrayRange(wtmp,weaponIndex,weaponIndex+weaponCount);
                 charmItemPrefabs = Aux.ArrayRange(ctmp,charmIndex,charmIndex+charmCount);
+
+                Plugin.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}");
+                Plugin.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}");
+                Plugin.Log($"wi {weaponIndex}");
+                Plugin.Log($"ci {charmIndex}");
+
+                Plugin.Log("2");
 
                 // Set items in shop
                 items.Clear();
@@ -189,11 +204,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 int ci = 0;
                 for (int i=0; i<Math.Min(totalCount,5); i++) {
                     if (charm) {
+                        Plugin.Log("3");
                         items.Add(charmItemPrefabs[ci]);
                         ci++;
                         charm=false;
                     }
                     else {
+                        Plugin.Log("4");
                         items.Add(weaponItemPrefabs[wi]);
                         wi++;
                         charm=true;
