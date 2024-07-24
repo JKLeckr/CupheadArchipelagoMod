@@ -45,7 +45,7 @@ namespace CupheadArchipelago.AP {
         public static void LoadData() {
             Plugin.Log($"[APData] Loading Data from {AP_SAVE_PATH}");
             for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
-                string filename = AP_SAVE_PATH + AP_SAVE_FILE_KEYS[i]+".sav";
+                string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[i]+".sav");
                 if (File.Exists(filename)) {
                     APData data = null;
                     try {
@@ -72,7 +72,7 @@ namespace CupheadArchipelago.AP {
         }
         public static void Save(int index) {
             Plugin.Log($"Saving slot {index}");
-            string filename = AP_SAVE_PATH + AP_SAVE_FILE_KEYS[index]+".sav";
+            string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
             APData data = SData[index];
             string sdata = JsonUtility.ToJson(SData[index]);
             try {
