@@ -12,6 +12,9 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.ShopHooks {
     internal class ShopSceneItemHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(DisplayName));
+            //Harmony.CreateAndPatchAll(typeof(SubText));
+            Harmony.CreateAndPatchAll(typeof(Value));
             Harmony.CreateAndPatchAll(typeof(isPurchased));
             Harmony.CreateAndPatchAll(typeof(Purchase));
         }
@@ -188,7 +191,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             private static bool APCheck(ShopSceneItem item) {
                 bool res = false;
                 long loc = GetAPLocation(item);
-                if (!APClient.IsLocationChecked(loc)) {
+                if (!APClient.IsLocationChecked(loc) && PlayerData.Data.GetCurrency(0) >= item.Value) {
+                    PlayerData.Data.AddCurrency(0, -item.Value);
                     APClient.Check(loc);
                     res = true;
                 }

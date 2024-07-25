@@ -284,7 +284,7 @@ namespace CupheadArchipelago.AP {
                 Plugin.LogError($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
-            string locName = !locMap.ContainsKey(loc) ? locMap[loc].LocationName : $"#{loc}";
+            string locName = locMap.ContainsKey(loc) ? locMap[loc].LocationName : $"#{loc}";
             Plugin.Log($"[APClient] Adding check \"{locName}\"...");
             //Plugin.Log(doneChecksUnique.Count);
             //Plugin.Log(DoneChecks.Count);
@@ -388,7 +388,7 @@ namespace CupheadArchipelago.AP {
             helper.DequeueItem();
         }
         public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
-        private static void ReceiveItem(ItemInfo item) {
+        internal static void ReceiveItem(ItemInfo item) {
             if (ItemMap.GetItemType(item.ItemId)==ItemType.Level) {
                 QueueItem(item, true);
             }
