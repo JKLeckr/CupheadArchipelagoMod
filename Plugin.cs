@@ -1,7 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using BepInEx.Configuration;
@@ -19,6 +19,7 @@ namespace CupheadArchipelago {
 
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<LoggingFlags> configLogging;
+        private ConfigEntry<LicenseLogModes> configLogLicense;
         private ConfigEntry<string> configSaveKeyName;
         private ConfigEntry<bool> configSkipIntro;
 
@@ -26,6 +27,7 @@ namespace CupheadArchipelago {
             Instance = this;
             configEnabled = Config.Bind("Main", "Enabled", true);
             configLogging = Config.Bind("Main", "Logging", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
+            configLogLicense = Config.Bind("Main", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used.");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves (Default: \"cuphead_player_data_v1_ap_slot_\", Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
@@ -39,6 +41,18 @@ namespace CupheadArchipelago {
                 LogFatal("[Log] Fatal", LoggingFlags.Debug);
                 LogMessage("[Log] Message", LoggingFlags.Debug);
                 LogDebug("[Log] Debug", LoggingFlags.Debug);
+
+                if (configLogLicense.Value>0) {
+                    string lictext = $"License:\n--- LICENSE ---\n{License.PLUGIN_LICENSE}\n";
+                    if (configLogLicense.Value == LicenseLogModes.All) {
+                        lictext += $"\n -- Third Party --\n{License.PLUGIN_LIB_LICENSE}\n\n -- End Third Party --";
+                    }
+                    else {
+                        lictext += $"\n{License.PLUGIN_LIB_NOTICE}"; 
+                    }
+                    lictext += "\n\n--- END LICENSE";
+                    Log(lictext);
+                }
 
                 if (!IsPluginLoaded(DEP_SAVECONFIG_MOD_GUID)) {
                     Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
