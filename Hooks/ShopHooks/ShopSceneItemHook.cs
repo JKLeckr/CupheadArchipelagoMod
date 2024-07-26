@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Reflection;
 using System.Reflection.Emit;
+using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using HarmonyLib;
@@ -12,8 +14,9 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.ShopHooks {
     internal class ShopSceneItemHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(Description));
             Harmony.CreateAndPatchAll(typeof(DisplayName));
-            //Harmony.CreateAndPatchAll(typeof(SubText));
+            Harmony.CreateAndPatchAll(typeof(Subtext));
             Harmony.CreateAndPatchAll(typeof(Value));
             Harmony.CreateAndPatchAll(typeof(isPurchased));
             Harmony.CreateAndPatchAll(typeof(Purchase));
@@ -67,6 +70,25 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         [HarmonyPatch(typeof(ShopSceneItem), "Init")]
         internal static class Init {}
 
+        [HarmonyPatch(typeof(ShopSceneItem), "Description", MethodType.Getter)]
+        internal static class Description {
+            static bool Prefix(ShopSceneItem __instance, ref string __result) {
+                if (!APData.IsCurrentSlotEnabled()) return true;
+                long loc = GetAPLocation(__instance);
+                if (loc<0) {
+                    __result = $"{__instance.itemType}";
+                    return false;
+                }
+                ScoutedItemInfo check = APClient.GetCheck(loc);
+                if (check != null) {
+                    __result = $"For {check.Player} from {check.ItemGame}.";
+                }
+                else __result = "Missing Location Scout Data.";
+
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(ShopSceneItem), "DisplayName", MethodType.Getter)]
         internal static class DisplayName {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
@@ -78,7 +100,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
-                    string name = check.ItemName;
+                    string name = "AP ITEM";
                     __result = name ?? $"APItem {check.ItemId}";
                 }
                 else __result = $"AP{loc}";
@@ -87,18 +109,27 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             }
         }
 
-        [HarmonyPatch(typeof(ShopSceneItem), "SubText", MethodType.Getter)]
-        internal static class SubText {
+        [HarmonyPatch(typeof(ShopSceneItem), "Subtext", MethodType.Getter)]
+        internal static class Subtext {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
                 long loc = GetAPLocation(__instance);
                 if (loc<0) {
-                    __result = $"{__instance.itemType}";
+                    __result = "Unknown type";
                     return false;
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
-                    __result = $"For {check.Player} from {check.ItemGame}.";
+                    string sres = "";
+                    if ((check.Flags&ItemFlags.Advancement)>0)
+                        sres = "Progression";
+                    else if ((check.Flags&ItemFlags.NeverExclude)>0)
+                        sres = "Useful";
+                    if ((check.Flags&ItemFlags.Trap)>0)
+                        sres = $"{((sres.Length>0)?$"{sres} ":"")}Trap";
+                    if (sres.Length==0)
+                        sres = "Filler";
+                    __result = sres;
                 }
                 else __result = "Missing Location Scout Data.";
 

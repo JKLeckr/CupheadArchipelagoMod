@@ -197,20 +197,20 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
                 ShopSceneItem[] ctmp = new ShopSceneItem[clen];
 
-                Plugin.Log("---SHOP---");
-                Plugin.Log("-items-");
+                Plugin.Log("---SHOP---", LoggingFlags.Debug);
+                Plugin.Log("-items-", LoggingFlags.Debug);
                 foreach (ShopSceneItem item in items) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("");
-                Plugin.Log("-charmItemPrefabs-");
+                Plugin.Log("", LoggingFlags.Debug);
+                Plugin.Log("-charmItemPrefabs-", LoggingFlags.Debug);
                 foreach (ShopSceneItem item in charmItemPrefabs) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("");
-                Plugin.Log("-weaponItemPrefabs-");
+                Plugin.Log("", LoggingFlags.Debug);
+                Plugin.Log("-weaponItemPrefabs-", LoggingFlags.Debug);
                 foreach (ShopSceneItem item in weaponItemPrefabs) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("");
-                Plugin.Log("---END SHOP---");
+                Plugin.Log("", LoggingFlags.Debug);
+                Plugin.Log("---END SHOP---", LoggingFlags.Debug);
                 
                 // Setting order of prefabs for all shops
                 for (int i=0; i<wlen; i++) {
@@ -242,7 +242,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (APSettings.UseDLC && PlayerData.Data.GetMapData(Scenes.scene_map_world_DLC).sessionStarted)
                     shopLevel++;
 
-                Plugin.Log($"0: {shopLevel}");
+                Plugin.Log($"0: {shopLevel}", LoggingFlags.Debug);
 
                 int weaponCount = 0;
                 int charmCount = 0;
@@ -254,10 +254,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 int totalCount = weaponCount + charmCount;
 
-                Plugin.Log($"wc {weaponCount}");
-                Plugin.Log($"cc {charmCount}");
+                Plugin.Log($"wc {weaponCount}", LoggingFlags.Debug);
+                Plugin.Log($"cc {charmCount}", LoggingFlags.Debug);
 
-                Plugin.Log("1");
+                Plugin.Log("1", LoggingFlags.Debug);
                 
                 // Set prefabs for shop
                 weaponItemPrefabs = Aux.ArrayRange(wtmp, weaponCount);
@@ -265,10 +265,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 HashSet<Weapon> weaponSet = GetWeaponSet(weaponItemPrefabs);
                 HashSet<Charm> charmSet = GetCharmSet(charmItemPrefabs);
 
-                Plugin.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}");
-                Plugin.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}");
+                Plugin.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}", LoggingFlags.Debug);
+                Plugin.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}", LoggingFlags.Debug);
 
-                Plugin.Log("2");
+                Plugin.Log("2", LoggingFlags.Debug);
 
                 // Set items in shop
                 List<ShopSceneItem> nitems = new();
@@ -277,13 +277,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 int ci = 0;
                 for (int i=0; i<Math.Min(totalCount,5); i++) {
                     if (charm) {
-                        Plugin.Log("3");
+                        Plugin.Log("3", LoggingFlags.Debug);
                         nitems.Add(charmItemPrefabs[ci]);
                         ci++;
                         charm=false;
                     }
                     else {
-                        Plugin.Log("4");
+                        Plugin.Log("4", LoggingFlags.Debug);
                         nitems.Add(weaponItemPrefabs[wi]);
                         wi++;
                         charm=true;
@@ -302,17 +302,17 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     items.Add(nitem);
                 }
 
-                Plugin.Log("---SHOP AP---");
-                Plugin.Log("-items-");
+                Plugin.Log("---SHOP AP---", LoggingFlags.Debug);
+                Plugin.Log("-items-", LoggingFlags.Debug);
                 foreach (ShopSceneItem item in items) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("\n-charmItemPrefabs-");
+                Plugin.Log("\n-charmItemPrefabs-", LoggingFlags.Debug);
                 foreach (ShopSceneItem item in charmItemPrefabs) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("\n-weaponItemPrefabs-");
+                Plugin.Log("\n-weaponItemPrefabs-", LoggingFlags.Debug);
                 foreach (ShopSceneItem item in weaponItemPrefabs) 
                     Plugin.Log(item.ToString());
-                Plugin.Log("\n---END SHOP AP---");
+                Plugin.Log("\n---END SHOP AP---", LoggingFlags.Debug);
             }
             private static HashSet<Weapon> GetWeaponSet(IEnumerable<ShopSceneItem> items) {
                 HashSet<Weapon> wset = new();
