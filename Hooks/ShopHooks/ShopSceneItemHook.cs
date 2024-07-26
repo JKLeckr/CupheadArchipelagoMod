@@ -10,6 +10,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.ShopHooks {
     internal class ShopSceneItemHook {
@@ -81,7 +82,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
-                    __result = $"For {check.Player} from {check.ItemGame}.";
+                    string res = check.ItemName ?? $"#{check.ItemId}";
+                    if (res.Length>64)
+                        res = $"{res.Substring(0, 64)}...";
+                    __result = res;
                 }
                 else __result = "Missing Location Scout Data.";
 
@@ -100,7 +104,16 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
-                    string name = "AP ITEM";
+                    string sres = "";
+                    if ((check.Flags&ItemFlags.Advancement)>0)
+                        sres = "P";
+                    else if ((check.Flags&ItemFlags.NeverExclude)>0)
+                        sres = "U";
+                    if ((check.Flags&ItemFlags.Trap)>0)
+                        sres = $"{sres}T";
+                    if (sres.Length==0)
+                        sres = "F";
+                    string name = $"AP ITEM ({sres})";
                     __result = name ?? $"APItem {check.ItemId}";
                 }
                 else __result = $"AP{loc}";
@@ -120,16 +133,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
-                    string sres = "";
-                    if ((check.Flags&ItemFlags.Advancement)>0)
-                        sres = "Progression";
-                    else if ((check.Flags&ItemFlags.NeverExclude)>0)
-                        sres = "Useful";
-                    if ((check.Flags&ItemFlags.Trap)>0)
-                        sres = $"{((sres.Length>0)?$"{sres} ":"")}Trap";
-                    if (sres.Length==0)
-                        sres = "Filler";
-                    __result = sres;
+                    __result = $"For {check.Player}";
                 }
                 else __result = "Missing Location Scout Data.";
 
