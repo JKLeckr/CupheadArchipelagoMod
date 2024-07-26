@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Reflection;
 using System.Reflection.Emit;
 using Archipelago.MultiClient.Net.Enums;
