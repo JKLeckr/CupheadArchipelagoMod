@@ -6,7 +6,7 @@ using HarmonyLib;
 using UnityEngine;
 using BepInEx.Logging;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapLevelDependentObstacleHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));
