@@ -4,7 +4,7 @@
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.MapHooks {
+namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCMusicHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(OnDialoguerMessageEvent));
@@ -12,16 +12,16 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
         [HarmonyPatch(typeof(MapNPCMusic), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
-            static void Postfix(string message, ref MapNPCMusic.MusicType __musicType) {
-                if (message == "MinimalistMusic" && __musicType == MapNPCMusic.MusicType.Minimalist) {
+            static void Postfix(string message, ref MapNPCMusic.MusicType ___musicType) {
+                if (message == "MinimalistMusic" && ___musicType == MapNPCMusic.MusicType.Minimalist) {
                     Plugin.Log("Music M");
 	            }
-	            else if (message == "RegularMusic" && __musicType == MapNPCMusic.MusicType.Regular) {
+	            else if (message == "RegularMusic" && ___musicType == MapNPCMusic.MusicType.Regular) {
                     Plugin.Log("Music R");
                 }
             }
             private static void APCheck() {
-                if (APData.IsCurrentSlotEnabled()) {
+                if (APData.IsCurrentSlotEnabled() && !APClient.IsLocationChecked(APLocation.quest_music)) {
                     APClient.Check(APLocation.quest_music);
                 }
             }

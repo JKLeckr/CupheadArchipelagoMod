@@ -9,7 +9,6 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using HarmonyLib;
-using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.ShopHooks {
     internal class ShopSceneItemHook {

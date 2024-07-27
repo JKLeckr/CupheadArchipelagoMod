@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Packets;
@@ -12,7 +13,6 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
-using System.Linq;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -162,6 +162,9 @@ namespace CupheadArchipelago.AP {
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
+                    APSettings.QuestPacifist = SlotData.pacifist_quest;
+                    APSettings.QuestProfessional = SlotData.pacifist_quest;
+                    APSettings.QuestJuggler = true;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Plugin.Log($"[APClient] Setting up game...");
@@ -294,7 +297,7 @@ namespace CupheadArchipelago.AP {
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Plugin.LogWarning($"[APClient] \"{locName}\" is already Checked!");
+                Plugin.LogWarning($"[APClient] \"{locName}\" is already checked.");
             }
             return true;
         }
@@ -307,7 +310,7 @@ namespace CupheadArchipelago.AP {
         public static void CatchUpChecks() {
             if (session.Socket.Connected) {
                 ReadOnlyCollection<long> checkedLocations = session.Locations.AllLocationsChecked;
-                if (DoneChecks.Count<checkedLocations.Count) {
+                if (DoneChecks.Count > 0 && DoneChecks.Count<checkedLocations.Count) {
                     for (int i=DoneChecks.Count-1;i<checkedLocations.Count;i++) {
                         Check(checkedLocations[i], false);
                     }

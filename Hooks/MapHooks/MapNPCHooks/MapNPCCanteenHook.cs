@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.MapHooks {
+namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCCanteenHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));
@@ -113,7 +113,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             }
 
             private static bool APCheck() {
-                if (APData.IsCurrentSlotEnabled()) {
+                if (APData.IsCurrentSlotEnabled() && !APClient.IsLocationChecked(locationId)) {
                     APClient.Check(locationId);
                     return true;
                 }
