@@ -17,6 +17,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenHook {
         private static Transform APInfoText;
         private static Transform APConStatusText;
+        private static bool _cancelPlayerSelection = false;
         private static bool _lockMenu = false;
         private static SlotSelectScreen _instance;
 
@@ -58,9 +59,9 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         [HarmonyPatch(typeof(SlotSelectScreen), "SetState")]
         internal static class SetState {
             static bool Prefix(ref SlotSelectScreen.State state) {
-                if (!(state==SlotSelectScreen.State.SlotSelect||state==SlotSelectScreen.State.ConfirmDelete||state==SlotSelectScreen.State.PlayerSelect)) {
+                /*if (!(state==SlotSelectScreen.State.SlotSelect||state==SlotSelectScreen.State.ConfirmDelete||state==SlotSelectScreen.State.PlayerSelect)) {
                     SetAPConStatusText("");
-                }
+                }*/
                 return true;
             }
         }
@@ -98,29 +99,51 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return !_lockMenu;
             }
 
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-                bool success = false;
+                int success = 0;
+                bool debug = false;
 
-                /*foreach (CodeInstruction code in codes) {
-                    Plugin.Log.LogInfo($"{code.opcode}: {code.operand}");
-                }
-                Plugin.Log.LogInfo($"--------------------------------------------");*/
+                MethodInfo _mi_GetButtonDown = typeof(SlotSelectScreen).GetMethod("GetButtonDown", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                for (int i=0;i<codes.Count-5;i++) {
-                    if (codes[i].opcode==OpCodes.Ldarg_0 && codes[i+1].opcode==OpCodes.Ldarg_0
-                        && codes[i+2].opcode==OpCodes.Call && (MethodInfo)codes[i+2].operand==_mi_game_start_cr) {
-                            codes.RemoveRange(i,5);
-                            codes.Insert(i, CodeInstruction.Call(() => ConnectAndStart()));
-                            success = true;
-                            break;
+                Label cblock = il.DefineLabel();
+
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log($"{code.opcode}: {code.operand}");
                     }
                 }
-                if (!success) throw new Exception($"{nameof(UpdatePlayerSelect)}: Patch Failed!");
+                for (int i=0;i<codes.Count-5;i++) {
+                    if ((success&1) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldarg_0 &&
+                        codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_game_start_cr) {
+                            codes.RemoveRange(i,5);
+                            codes.Insert(i, CodeInstruction.Call(() => ConnectAndStart()));
+                            success |= 1;
+                            i++;
+                    }
+                    if ((success&2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S &&
+                        (sbyte)codes[i+1].operand == (int)CupheadButton.Cancel && codes[i+2].opcode == OpCodes.Call &&
+                        (MethodInfo)codes[i+2].operand == _mi_GetButtonDown && codes[i+3].opcode == OpCodes.Brfalse) {
+                            Label cpass = (Label)codes[i+3].operand;
+                            codes[i+4].labels.Add(cblock);
+                            codes[i+3] = new CodeInstruction(OpCodes.Brtrue, cblock);
+                            List<CodeInstruction> ncodes = [
+                                CodeInstruction.Call(() => IsAPCancelPlayerSelection()),
+                                new CodeInstruction(OpCodes.Brfalse, cpass),
+                            ];
+                            codes.InsertRange(i+4, ncodes);
+                            i+=ncodes.Count;
+                            success |= 2;
+                    }
+                }
+                if (success!=3) throw new Exception($"{nameof(UpdatePlayerSelect)}: Patch Failed! {success}");
 
-                /*foreach (CodeInstruction code in codes) {
-                    Plugin.Log.LogInfo($"{code.opcode}: {code.operand}");
-                }*/
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log("---");
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
 
                 return codes;
             }
@@ -128,6 +151,13 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static void ConnectAndStart() {
                 //Plugin.Log.LogInfo(_instance);
                 //Plugin.Log.LogInfo(__slotSelection);
+
+                if (APData.SData[_slotSelection].error>0) {
+                    Plugin.LogError($"Bad file! E{APData.SData[_slotSelection].error}");
+                    SetAPConStatusText("AP data Error!\nFailed to load!\nCheck Log!");
+                    APAbort(false);
+                    return;
+                }
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
@@ -216,16 +246,20 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     }
                 }
                 APClient.ResetSessionError();
-                //FIXME: Fix visual glitch with reverting
-                _mi_SetState.Invoke(_instance, [SlotSelectScreen.State.SlotSelect]);
-                _lockMenu = false;
-                AudioManager.Play("level_menu_select");
+                _cancelPlayerSelection = true;
             }
             private static void APErrorConnected(string message) {
                 SetAPConStatusText("Connected!\n"+message);
                 APClient.CloseArchipelagoSession();
                 SetAPConStatusText("Disconnected.\n"+message);
                 APAbort();
+            }
+            private static bool IsAPCancelPlayerSelection() {
+                if (_cancelPlayerSelection) {
+                    _cancelPlayerSelection = false;
+                    _lockMenu = false;
+                    return true;
+                } else return false;
             }
         }
 

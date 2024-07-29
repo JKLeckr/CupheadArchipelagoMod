@@ -1,14 +1,13 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.Hooks.PlayerHooks;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
-        public static void ApplyItem(ItemInfo item) {
-            long itemId = item.ItemId;
-            string itemName = item.ItemName ?? $"#{itemId}";
+        public static void ApplyItem(APItemInfo item) {
+            long itemId = item.Id;
+            string itemName = item.Name;
             Plugin.Log($"[APItemMngr] Applying item {itemName}...");
 
             switch (ItemMap.GetItemType(itemId)) {

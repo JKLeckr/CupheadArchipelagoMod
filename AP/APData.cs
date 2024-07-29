@@ -11,12 +11,11 @@ using BepInEx.Logging;
 namespace CupheadArchipelago.AP {
     public class APData {
         internal const int AP_DATA_VERSION = 0;
-        private static readonly string[] AP_SAVE_FILE_KEYS = new string[3]
-        {
+        private static readonly string[] AP_SAVE_FILE_KEYS = [
             "cuphead_player_data_v1_ap_slot_0_apdata",
             "cuphead_player_data_v1_ap_slot_1_apdata",
             "cuphead_player_data_v1_ap_slot_2_apdata"
-        };
+        ];
         private static readonly string AP_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
 
         public static bool Initialized { get; private set; } = false;
@@ -25,6 +24,8 @@ namespace CupheadArchipelago.AP {
         public static APData SessionSData { get => APClient.APSessionGSData; }
 
         public long version {get; private set;} = AP_DATA_VERSION;
+        [JsonIgnore]
+        public int error {get; private set;} = 0;
         public bool enabled = false;
         public string address = "archipelago.gg";
         public int port = 38281;
@@ -35,10 +36,10 @@ namespace CupheadArchipelago.AP {
         public DataPackage dataPackage = new DataPackage();
         public List<long> doneChecks = new List<long>();
         public long receivedItemIndex {get => receivedItems.Count;}
-        public Queue<ItemInfo> receivedItemApplyQueue = new Queue<ItemInfo>();
-        public Queue<ItemInfo> receivedLevelItemApplyQueue = new Queue<ItemInfo>();
-        public List<ItemInfo> receivedItems = new List<ItemInfo>();
-        public List<ItemInfo> appliedItems = new List<ItemInfo>();
+        public Queue<APItemInfo> receivedItemApplyQueue = new();
+        public Queue<APItemInfo> receivedLevelItemApplyQueue = new();
+        public List<APItemInfo> receivedItems = new();
+        public List<APItemInfo> appliedItems = new();
         private Goal goalsCompleted = Goal.None;
 
         static APData() {
@@ -63,7 +64,9 @@ namespace CupheadArchipelago.AP {
                     }
                     if (data == null) {
                         Plugin.Log("[APData] Data could not be unserialized for key: " + AP_SAVE_FILE_KEYS[i] + ". Loading defaults.", LogLevel.Error);
-                        SData[i] = new APData();
+                        SData[i] = new APData {
+                            error = 1
+                        };
                     }
                     else {
                         SData[i] = data;
@@ -103,6 +106,7 @@ namespace CupheadArchipelago.AP {
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
         public static void ResetData(int index, bool disable = false, bool resetSettings = false) { // TODO: disable is false by default for testing purposes
+            Plugin.Log("[APData] Resetting Data...");
             APData old_data = SData[index];
             SData[index] = new APData();
             APData data = SData[index];

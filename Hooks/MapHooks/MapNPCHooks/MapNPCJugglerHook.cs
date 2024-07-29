@@ -45,6 +45,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 }
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
+                        Plugin.Log("---");
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }

@@ -49,8 +49,17 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Plugin.Log("_OnLevelStart", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
-                    apmngr.Init(APManager.Type.Level);
+                    apmngr.Init(IsValidLevel(__instance.LevelType) ? APManager.Type.Level : APManager.Type.Normal);
                 }
+            }
+
+            private static bool IsValidLevel(Level.Type levelType) {
+                Plugin.Log($"LevelType: {levelType}");
+                return levelType switch
+                {
+                    Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
+                    _ => false,
+                };
             }
         }
 

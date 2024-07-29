@@ -116,7 +116,8 @@ namespace CupheadArchipelago {
             Log(data, requiredFlags, LogLevel.Debug);
         }
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
-            return (((int)flags)&(int)Instance.configLogging.Value)==(int)flags;
+            return (((int)flags)&((int)Instance.configLogging.Value))==(int)flags;
         }
+        public static bool IsDebug() => IsLoggingFlagsEnabled(LoggingFlags.Debug);
     }
 }

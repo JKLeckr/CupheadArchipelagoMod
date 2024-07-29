@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Unity;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
@@ -54,6 +55,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             private static void APCheck(bool isChaliceTutorial) {
                 Plugin.Log("[TutorialLevelDoor] APCheck");
                 if (APData.IsCurrentSlotEnabled()) {
+                    APManager.Current?.SetActive(false);
                     if (!isChaliceTutorial) {
                         APClient.Check(APLocation.level_tutorial);
                     }

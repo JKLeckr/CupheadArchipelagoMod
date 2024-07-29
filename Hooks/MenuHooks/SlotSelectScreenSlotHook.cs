@@ -78,7 +78,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 return codes;
             }
-            static void Postfix(SlotSelectScreenSlot __instance, ref int slotNumber) {
+            static void Postfix(SlotSelectScreenSlot __instance, int slotNumber) {
                 //Plugin.Log.LogInfo("Init");
                 //Plugin.Log.LogInfo(__instance.gameObject.name);
                 instances[slotNumber] = __instance;

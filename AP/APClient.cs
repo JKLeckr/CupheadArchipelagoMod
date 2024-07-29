@@ -29,9 +29,9 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; }
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
-        private static Queue<ItemInfo> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
-        private static Queue<ItemInfo> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
-        private static List<ItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
+        private static Queue<APItemInfo> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
+        private static Queue<APItemInfo> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
+        private static List<APItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
         private static long ReceivedItemsIndex { get => APSessionGSData.receivedItemIndex; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
@@ -373,6 +373,7 @@ namespace CupheadArchipelago.AP {
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Plugin.Log("[APClient] OnItemReceived");
+            Plugin.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
             ItemInfo item = helper.PeekItem();
             long itemId = item.ItemId;
             string itemName = item.ItemName ?? $"APItem {itemId}";
@@ -382,7 +383,8 @@ namespace CupheadArchipelago.AP {
             }
             else if (currentReceivedItemIndex==ReceivedItemsIndex && item.ItemId!=APSettings.StartWeapon) {
                 Plugin.Log($"Recieved {itemName} from {item.Player}");
-                ReceiveItem(item);
+                APItemInfo nitem = new APItemInfo(item);
+                ReceiveItem(nitem);
                 currentReceivedItemIndex++;
             } else {
                 Plugin.Log($"Skipping {itemName}");
@@ -391,37 +393,38 @@ namespace CupheadArchipelago.AP {
             helper.DequeueItem();
         }
         public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
-        internal static void ReceiveItem(ItemInfo item) {
-            if (ItemMap.GetItemType(item.ItemId)==ItemType.Level) {
+        internal static void ReceiveItem(APItemInfo item) {
+            if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
                 QueueItem(item, true);
             }
             else {
                 QueueItem(item, false);
             }
         }
-        private static void QueueItem(ItemInfo item, bool isLevelItem) {
+        private static void QueueItem(APItemInfo item, bool isLevelItem) {
             if (isLevelItem) ItemReceiveLevelQueue.Enqueue(item);
             else ItemReceiveQueue.Enqueue(item);
             Plugin.Log("[APClient] Queue Push");
             ReceivedItems.Add(item);
+            Plugin.Log("[APClient] Item Received");
             LogQueueItemCounts();
         }
         internal static void LogQueueItemCounts() {
-            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);
+            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}"); //, LoggingFlags.Debug
         }
         public static bool ItemReceiveQueueIsEmpty() => ItemReceiveQueue.Count==0;
         public static bool ItemReceiveLevelQueueIsEmpty() => ItemReceiveLevelQueue.Count==0;
         public static int ItemReceiveQueueCount() => ItemReceiveQueue.Count;
         public static int ItemReceiveLevelQueueCount() => ItemReceiveLevelQueue.Count;
-        public static ItemInfo PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
-        public static ItemInfo PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
-        private static ItemInfo PopItemQueue(Queue<ItemInfo> itemQueue) {
-            ItemInfo item = itemQueue.Peek();
+        public static APItemInfo PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
+        public static APItemInfo PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
+        private static APItemInfo PopItemQueue(Queue<APItemInfo> itemQueue) {
+            APItemInfo item = itemQueue.Peek();
             APItemMngr.ApplyItem(item);
             APSessionGSData.appliedItems.Add(item);
             Plugin.Log("[APClient] Queue Pop");
             itemQueue.Dequeue();
-            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}", LoggingFlags.Debug);
+            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}");
             return item;
         }
 
