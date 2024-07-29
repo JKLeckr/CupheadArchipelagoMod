@@ -61,12 +61,13 @@ namespace CupheadArchipelago.AP {
                     }
                     catch (Exception e) {
                         Plugin.Log($"[APData] Unable to read AP Save Data for {i}: " + e.StackTrace, LogLevel.Error);
-                    }
-                    if (data == null) {
-                        Plugin.Log("[APData] Data could not be unserialized for key: " + AP_SAVE_FILE_KEYS[i] + ". Loading defaults.", LogLevel.Error);
                         SData[i] = new APData {
                             error = 1
                         };
+                    }
+                    if (data == null) {
+                        Plugin.Log("[APData] Data could not be unserialized for key: " + AP_SAVE_FILE_KEYS[i] + ". Loading defaults.", LogLevel.Error);
+                        SData[i] = new APData();
                     }
                     else {
                         SData[i] = data;
