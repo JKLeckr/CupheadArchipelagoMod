@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CupheadArchipelago.AP;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class PlayerStatsManagerHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(CalculateHealthMax));
             Harmony.CreateAndPatchAll(typeof(DebugFillSuper));
         }
 
@@ -20,14 +22,25 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
 
+        private static MethodInfo _mi_set_HealthMax = typeof(PlayerStatsManager).GetProperty("HealthMax").GetSetMethod(true);
         private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter").GetSetMethod(true);
         private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        [HarmonyPatch(typeof(PlayerStatsManager), "CalculateHealthMax")]
+        internal static class CalculateHealthMax {
+            static bool Prefix(PlayerStatsManager __instance) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    _mi_set_HealthMax.Invoke(__instance, [9]);
+                    return false;
+                } else return true;
+            }
+        }
+        
         [HarmonyPatch(typeof(PlayerStatsManager), "DebugFillSuper")]
         internal static class DebugFillSuper {
             static bool Prefix(PlayerStatsManager __instance) {
-                _mi_set_SuperMeter.Invoke(__instance, new object[]{superFillAmount});
-                _mi_OnSuperChanged.Invoke(__instance, new object[]{playSuperChangedEffect});
+                _mi_set_SuperMeter.Invoke(__instance, [superFillAmount]);
+                _mi_OnSuperChanged.Invoke(__instance, [playSuperChangedEffect]);
                 return false;
             }
         }

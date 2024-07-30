@@ -45,24 +45,26 @@ namespace CupheadArchipelago.Unity {
                     Destroy(this);
                 }
                 else if (active) {
+                    if (debug) Plugin.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
+                    APClient.ItemUpdate();
                     if (type == Type.Level) {
-                        if (debug) Plugin.Log($"ItemLevelQueue {APClient.ItemReceiveLevelQueueCount()}");
-                        if (!APClient.ItemReceiveLevelQueueIsEmpty()) {
+                        if (debug) Plugin.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
+                        if (!APClient.ItemApplyLevelQueueIsEmpty()) {
                             if (debug) Plugin.Log($"ItemLevelQueue has item");
                             if (timer>=applyInterval) {
                                 if (debug) Plugin.Log($"ItemLevelQueue is applying");
-                                APClient.PopItemReceiveLevelQueue();
+                                APClient.PopItemApplyLevelQueue();
                                 AudioManager.Play("level_coin_pickup"); //TEMP
                                 timer = 0f;
                             }
                         }
                     }
-                    if (debug) Plugin.Log($"ItemQueue {APClient.ItemReceiveQueueCount()}");
-                    if (!APClient.ItemReceiveQueueIsEmpty()) {
+                    if (debug) Plugin.Log($"ItemQueue {APClient.ItemApplyQueueCount()}");
+                    if (!APClient.ItemApplyQueueIsEmpty()) {
                         if (debug) Plugin.Log($"ItemQueue has item");
                         if (timer>=applyInterval) {
                             if (debug) Plugin.Log($"ItemQueue is applying");
-                            APClient.PopItemReceiveQueue();
+                            APClient.PopItemApplyQueue();
                             AudioManager.Play("level_coin_pickup"); //TEMP
                             timer = 0f;
                         }

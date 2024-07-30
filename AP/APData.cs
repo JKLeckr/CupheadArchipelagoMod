@@ -23,24 +23,34 @@ namespace CupheadArchipelago.AP {
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionGSData; }
 
+        [JsonProperty("version")]
         public long version {get; private set;} = AP_DATA_VERSION;
         [JsonIgnore]
         public int error {get; private set;} = 0;
+        [JsonProperty("enabled")]
         public bool enabled = false;
+        [JsonProperty("address")]
         public string address = "archipelago.gg";
+        [JsonProperty("port")]
         public int port = 38281;
+        [JsonProperty("slot")]
         public string slot = "Player";
+        [JsonProperty("password")]
         public string password = "";
+        [JsonProperty("seed")]
         public string seed = "";
+        [JsonProperty("playerData")]
         public PlayerData playerData = new PlayerData();
+        [JsonIgnore]
         public DataPackage dataPackage = new DataPackage();
+        [JsonProperty("doneChecks")]
         public List<long> doneChecks = new List<long>();
-        public long receivedItemIndex {get => receivedItems.Count;}
-        public Queue<APItemInfo> receivedItemApplyQueue = new();
-        public Queue<APItemInfo> receivedLevelItemApplyQueue = new();
+        [JsonProperty("receivedItems")]
         public List<APItemInfo> receivedItems = new();
-        public List<APItemInfo> appliedItems = new();
+        [JsonProperty("goalsCompleted")]
         private Goal goalsCompleted = Goal.None;
+        [JsonIgnore]
+        internal bool dlock = false;
 
         static APData() {
             SData = new APData[3];
@@ -55,19 +65,20 @@ namespace CupheadArchipelago.AP {
                 string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[i]+".sav");
                 if (File.Exists(filename)) {
                     APData data = null;
+                    int error = 0;
                     try {
                         string sdata = File.ReadAllText(filename);
                         data = JsonConvert.DeserializeObject<APData>(sdata);
                     }
                     catch (Exception e) {
-                        Plugin.Log($"[APData] Unable to read AP Save Data for {i}: " + e.StackTrace, LogLevel.Error);
-                        SData[i] = new APData {
-                            error = 1
-                        };
+                        Plugin.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
+                        error = 1;
                     }
                     if (data == null) {
-                        Plugin.Log("[APData] Data could not be unserialized for key: " + AP_SAVE_FILE_KEYS[i] + ". Loading defaults.", LogLevel.Error);
-                        SData[i] = new APData();
+                        Plugin.LogError($"[APData] Data could not be unserialized for key: {AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
+                        SData[i] = new APData {
+                            error = error
+                        };
                     }
                     else {
                         SData[i] = data;
@@ -84,19 +95,24 @@ namespace CupheadArchipelago.AP {
             Initialized = true;
         }
         public static void Save(int index) {
-            Plugin.Log($"Saving slot {index}");
+            Plugin.Log($"[APData] Saving slot {index}");
             APData data = SData[index];
             if (data.version != AP_DATA_VERSION) {
                 Plugin.LogError($"[APData] Slot {index} Data version mismatch. {data.version} != {AP_DATA_VERSION}. Skipping.");
                 return;
             }
+            if (data.dlock) {
+                Plugin.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
+                return;
+            }
             string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
-            string sdata = JsonConvert.SerializeObject(data);
             try {
+                string sdata = JsonConvert.SerializeObject(data);
                 File.WriteAllText(filename, sdata);
             }
             catch (Exception e) {
-                Plugin.Log($"Unable to save AP Save Data for {index}: " + e.StackTrace, LogLevel.Error);
+                Plugin.LogError($"[APData] Error while saving AP Save Data for {index}: {e}");
+                return;
             }
         }
         public static void SaveAll() {
@@ -124,6 +140,10 @@ namespace CupheadArchipelago.AP {
             return Initialized&&SData[index].enabled;
         }
         public static bool IsCurrentSlotEnabled() => IsSlotEnabled(global::PlayerData.CurrentSaveFileIndex);
+        public static bool IsSlotLocked(int index) {
+            return Initialized&&SData[index].dlock;
+        }
+        public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
         public static bool IsSlotEmpty(int index) {
             if (global::PlayerData.Initialized) {
@@ -149,14 +169,22 @@ namespace CupheadArchipelago.AP {
                 All = int.MaxValue,
             }
             
+            [JsonProperty("contracts")]
             public int contracts = 0;
+            [JsonProperty("dlc_ingredients")]
             public int dlc_ingredients = 0;
 
+            [JsonProperty("dash")]
             public bool dash = false;
+            [JsonProperty("duck")]
             public bool duck = false;
+            [JsonProperty("parry")]
             public bool parry = false;
+            [JsonProperty("plane_parry")]
             public bool plane_parry = false;
+            [JsonProperty("plane_shrink")]
             public bool plane_shrink = false;
+            [JsonProperty("dlc_boat")]
             public bool dlc_boat = false;
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
@@ -172,6 +200,7 @@ namespace CupheadArchipelago.AP {
                 if ((setTarget&SetTarget.Essential)>0) dlc_ingredients = value;
             }
 
+            [JsonProperty("got_start_weapon")]
             private bool got_start_weapon = false;
             public bool HasStartWeapon() => got_start_weapon;
             public void GotStartWeapon() => got_start_weapon = true;

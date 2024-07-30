@@ -29,12 +29,14 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; }
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
-        private static Queue<APItemInfo> ItemReceiveQueue { get => APSessionGSData.receivedItemApplyQueue; }
-        private static Queue<APItemInfo> ItemReceiveLevelQueue { get => APSessionGSData.receivedLevelItemApplyQueue; }
         private static List<APItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
-        private static long ReceivedItemsIndex { get => APSessionGSData.receivedItemIndex; }
+        private static long ReceivedItemsIndex { get => ReceivedItems.Count + receivedItemsQueue.Count; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
+        private static bool receivedItemsQueueLock = false;
+        private static Queue<APItemInfo> receivedItemsQueue = new();
+        private static Queue<int> itemApplyQueue = new();
+        private static Queue<int> itemApplyLevelQueue = new();
         private static bool complete = false;
         private static int scoutMapStatus = 0;
         private static long currentReceivedItemIndex = 0;
@@ -163,13 +165,28 @@ namespace CupheadArchipelago.AP {
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
                     APSettings.QuestPacifist = SlotData.pacifist_quest;
-                    APSettings.QuestProfessional = SlotData.pacifist_quest;
+                    APSettings.QuestProfessional = SlotData.agrade_quest;
                     APSettings.QuestJuggler = true;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
                     if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
+
+                    Plugin.Log($"[APClient] Setting up items...");
+                    if (APSessionGSData.dlock) {
+                        Plugin.Log($"[APClient] Waiting for AP save data unlock...");
+                        while (APSessionGSData.dlock) {
+                            Thread.Sleep(100);
+                        }
+                    }
+                    APSessionGSData.dlock = true;
+                    foreach (APItemInfo item in ReceivedItems) {
+                        if (item.State==0) {
+                            QueueItem(item);
+                        }
+                    }
+                    APSessionGSData.dlock = false;
 
                     Plugin.Log($"[APClient] Catching up...");
                     CatchUpChecks();
@@ -264,6 +281,10 @@ namespace CupheadArchipelago.AP {
             doneChecksUnique = null;
             scoutMapStatus = 0;
             locMap.Clear();
+            receivedItemsQueueLock = false;
+            receivedItemsQueue = new();
+            itemApplyQueue = new();
+            itemApplyLevelQueue = new();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
@@ -310,8 +331,8 @@ namespace CupheadArchipelago.AP {
         public static void CatchUpChecks() {
             if (session.Socket.Connected) {
                 ReadOnlyCollection<long> checkedLocations = session.Locations.AllLocationsChecked;
-                if (DoneChecks.Count > 0 && DoneChecks.Count<checkedLocations.Count) {
-                    for (int i=DoneChecks.Count-1;i<checkedLocations.Count;i++) {
+                if (DoneChecks.Count<checkedLocations.Count) {
+                    for (int i=DoneChecks.Count;i<checkedLocations.Count;i++) {
                         Check(checkedLocations[i], false);
                     }
                 }
@@ -382,10 +403,16 @@ namespace CupheadArchipelago.AP {
                 Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
             }
             else if (currentReceivedItemIndex==ReceivedItemsIndex && item.ItemId!=APSettings.StartWeapon) {
-                Plugin.Log($"Recieved {itemName} from {item.Player}");
+                Plugin.Log($"[APClient] Recieving {itemName}...");
                 APItemInfo nitem = new APItemInfo(item);
-                ReceiveItem(nitem);
-                currentReceivedItemIndex++;
+                if (!receivedItemsQueueLock) {
+                    receivedItemsQueueLock = true;
+                    receivedItemsQueue.Enqueue(nitem);
+                    currentReceivedItemIndex++;
+                    receivedItemsQueueLock = false;
+                } else {
+                    Plugin.Log("[APClient] Item Queue is locked. Will try again next time.");
+                }
             } else {
                 Plugin.Log($"Skipping {itemName}");
                 currentReceivedItemIndex++;
@@ -393,39 +420,69 @@ namespace CupheadArchipelago.AP {
             helper.DequeueItem();
         }
         public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
-        internal static void ReceiveItem(APItemInfo item) {
-            if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
-                QueueItem(item, true);
-            }
-            else {
-                QueueItem(item, false);
+        public static void ItemUpdate() {
+            if (!receivedItemsQueueLock && !APSessionGSData.dlock) {
+                if (receivedItemsQueue.Count>0) {
+                    receivedItemsQueueLock = true;
+                    APSessionGSData.dlock = true;
+                    APItemInfo item = receivedItemsQueue.Peek();
+                    ReceiveItem(item);
+                    receivedItemsQueue.Dequeue();
+                    APSessionGSData.dlock = false;
+                    receivedItemsQueueLock = false;
+                }
             }
         }
-        private static void QueueItem(APItemInfo item, bool isLevelItem) {
-            if (isLevelItem) ItemReceiveLevelQueue.Enqueue(item);
-            else ItemReceiveQueue.Enqueue(item);
-            Plugin.Log("[APClient] Queue Push");
+        internal static void ReceiveItem(APItemInfo item) {
             ReceivedItems.Add(item);
-            Plugin.Log("[APClient] Item Received");
+            Plugin.Log($"[APClient] Received {item.Name} from {item.Player}");
+            QueueItem(item);
+        }
+        private static void QueueItem(APItemInfo item) {
+            int index = ReceivedItems.Count-1;
+            if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
+                QueueItem(itemApplyLevelQueue, index);
+            }
+            else {
+                QueueItem(itemApplyQueue, index);
+            }
+        }
+        private static void QueueItem(Queue<int> itemQueue, int itemIndex) {
+            itemQueue.Enqueue(itemIndex);
+            Plugin.Log("[APClient] Queue Push");
             LogQueueItemCounts();
         }
         internal static void LogQueueItemCounts() {
-            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}"); //, LoggingFlags.Debug
+            Plugin.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}"); //, LoggingFlags.Debug
         }
-        public static bool ItemReceiveQueueIsEmpty() => ItemReceiveQueue.Count==0;
-        public static bool ItemReceiveLevelQueueIsEmpty() => ItemReceiveLevelQueue.Count==0;
-        public static int ItemReceiveQueueCount() => ItemReceiveQueue.Count;
-        public static int ItemReceiveLevelQueueCount() => ItemReceiveLevelQueue.Count;
-        public static APItemInfo PopItemReceiveQueue() => PopItemQueue(ItemReceiveQueue);
-        public static APItemInfo PopItemReceiveLevelQueue() => PopItemQueue(ItemReceiveLevelQueue);
-        private static APItemInfo PopItemQueue(Queue<APItemInfo> itemQueue) {
-            APItemInfo item = itemQueue.Peek();
-            APItemMngr.ApplyItem(item);
-            APSessionGSData.appliedItems.Add(item);
-            Plugin.Log("[APClient] Queue Pop");
-            itemQueue.Dequeue();
-            Plugin.Log($"[APClient] Current ItemQueue Counts: {ItemReceiveQueue.Count}, {ItemReceiveLevelQueue.Count}");
-            return item;
+        public static APItemInfo GetReceivedItem(int index) {
+            if (index >= 0 && index < ReceivedItems.Count) { 
+                return ReceivedItems[index];
+            } else {
+                throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
+            }
+        }
+        public static bool ItemReceiveQueueIsEmpty() => receivedItemsQueue.Count==0;
+        public static bool ItemApplyQueueIsEmpty() => itemApplyQueue.Count==0;
+        public static bool ItemApplyLevelQueueIsEmpty() => itemApplyLevelQueue.Count==0;
+        public static int ItemReceiveQueueCount() => receivedItemsQueue.Count;
+        public static int ItemApplyQueueCount() => itemApplyQueue.Count;
+        public static int ItemApplyLevelQueueCount() => itemApplyLevelQueue.Count;
+        public static APItemInfo PopItemApplyQueue() => PopItemQueue(itemApplyQueue);
+        public static APItemInfo PopItemApplyLevelQueue() => PopItemQueue(itemApplyLevelQueue);
+        private static APItemInfo PopItemQueue(Queue<int> itemQueue) {
+            int index = itemQueue.Peek();
+            if (index >= 0 && index < ReceivedItems.Count) { 
+                APItemInfo item = ReceivedItems[index];
+                APItemMngr.ApplyItem(item);
+                item.State = 1;
+                Plugin.Log("[APClient] Queue Pop");
+                itemQueue.Dequeue();
+                Plugin.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}");
+                return item;
+            } else {
+                throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
+            }
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
