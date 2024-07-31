@@ -177,6 +177,10 @@ namespace CupheadArchipelago.AP {
                     if (APSessionGSData.dlock) {
                         Plugin.Log($"[APClient] Waiting for AP save data unlock...");
                         while (APSessionGSData.dlock) {
+                            if (SessionStatus<=0) {
+                                Plugin.Log($"[APClient] Cancelled.");
+                                return false;
+                            }
                             Thread.Sleep(100);
                         }
                     }

@@ -22,17 +22,63 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
 
-        private static MethodInfo _mi_set_HealthMax = typeof(PlayerStatsManager).GetProperty("HealthMax").GetSetMethod(true);
         private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter").GetSetMethod(true);
         private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [HarmonyPatch(typeof(PlayerStatsManager), "CalculateHealthMax")]
         internal static class CalculateHealthMax {
-            static bool Prefix(PlayerStatsManager __instance) {
-                if (APData.IsCurrentSlotEnabled()) {
-                    _mi_set_HealthMax.Invoke(__instance, [9]);
-                    return false;
-                } else return true;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                List<CodeInstruction> codes = new(instructions);
+                bool success = false;
+                bool debug = false;
+
+                PropertyInfo _pi_HealthMax = typeof(PlayerStatsManager).GetProperty("HealthMax", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo _mi_get_HealthMax = _pi_HealthMax.GetGetMethod();
+                MethodInfo _mi_set_HealthMax = _pi_HealthMax.GetSetMethod(true);
+                MethodInfo _mi_get_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
+                MethodInfo _mi_APCalcMaxHealth = typeof(CalculateHealthMax).GetMethod("APCalcMaxHealth", BindingFlags.NonPublic | BindingFlags.Static);
+
+                Label cvanilla = il.DefineLabel();
+
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+                for (int i=0;i<codes.Count-3;i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_get_HealthMax &&
+                        codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == 9 && codes[i+3].opcode == OpCodes.Ble) {
+                            codes[i].labels.Add(cvanilla);
+                            List<CodeInstruction> ncodes = [
+                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                                new CodeInstruction(OpCodes.Brfalse, cvanilla),
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Dup),
+                                new CodeInstruction(OpCodes.Call, _mi_get_Health),
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Call, _mi_get_HealthMax),
+                                new CodeInstruction(OpCodes.Call, _mi_APCalcMaxHealth),
+                                new CodeInstruction(OpCodes.Call, _mi_set_HealthMax),
+                            ];
+                            codes.InsertRange(i, ncodes);
+                            i+= ncodes.Count;
+                            success = true;
+                            break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed!");
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log("---");
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+
+                return codes;
+            }
+
+            private static int APCalcMaxHealth(int health, int healthMax) {
+                return (health>healthMax)?health:healthMax;
             }
         }
         

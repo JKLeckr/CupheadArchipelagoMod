@@ -137,7 +137,6 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     }
                 }
                 if (success!=3) throw new Exception($"{nameof(UpdatePlayerSelect)}: Patch Failed! {success}");
-
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
                         Plugin.Log("---");

@@ -79,6 +79,7 @@ namespace CupheadArchipelago.AP {
                     }
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
+                        Plugin.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
                     }
                     else if (itemId==APItem.dlc_boat) {
                         APClient.APSessionGSPlayerData.dlc_boat=true;
@@ -96,9 +97,15 @@ namespace CupheadArchipelago.AP {
                     AbstractPlayerController p2 = PlayerManager.GetPlayer(PlayerId.PlayerTwo);
                     PlayerStatsManager stats1 = p1.stats;
                     PlayerStatsManager stats2 = p2?.stats;
+                    PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(p1.id);
+                    PlayersStatsBossesHub bstats2 = Level.GetPlayerStats(p2.id);
                     
                     if (itemId==APItem.level_extrahealth) {
                         AudioManager.Play("pop_up");
+                        if (Level.IsInBossesHub) {
+                            bstats1.BonusHP++;
+                            if (bstats2!=null) bstats2.BonusHP++;
+                        }
                         stats1.SetHealth(stats1.Health + 1);
                         stats2?.SetHealth(stats2.Health + 1);
                     }
@@ -107,12 +114,18 @@ namespace CupheadArchipelago.AP {
                         if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                     }
                     else if (itemId==APItem.level_trap_fingerjam) {Stub(itemName);}
-                    else if (itemId==APItem.level_trap_envirotrap) {Stub(itemName);}
                     else if (itemId==APItem.level_trap_slowfire) {Stub(itemName);}
                     else if (itemId==APItem.level_trap_superdrain) {
+                        AudioManager.Play("level_menu_select");
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
                         if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
                     }
+                    else if (itemId==APItem.level_trap_reversal) {
+                        AudioManager.Play("level_menu_select");
+                        stats1.ReverseControls(5f);
+                        stats2?.ReverseControls(5f);
+                    }
+                    else if (itemId==APItem.level_trap_envirotrap) {Stub(itemName);}
                     break;
                 }
                 default: break;

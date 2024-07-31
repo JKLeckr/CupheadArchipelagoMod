@@ -69,6 +69,8 @@ namespace CupheadArchipelago.AP {
                     try {
                         string sdata = File.ReadAllText(filename);
                         data = JsonConvert.DeserializeObject<APData>(sdata);
+                        //Plugin.Log($"Dump:\n{sdata}");
+                        //Plugin.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");
                     }
                     catch (Exception e) {
                         Plugin.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
