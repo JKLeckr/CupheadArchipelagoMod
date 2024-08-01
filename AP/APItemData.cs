@@ -29,8 +29,26 @@ namespace CupheadArchipelago.AP {
             State = 0;
         }
 
-        public bool Equals(APItemData item) {
-            return Id == item.Id && Location == item.Location && Player == item.Player;
+        public override string ToString() {
+            return Id + ": " + Location + " - \"" + Player + "\"";
+        }
+        public override bool Equals(object obj) {
+            if (obj is APItemData item) {
+                return Id == item.Id && Location == item.Location && Player == item.Player;
+            } else return false;
+        }
+        public override int GetHashCode() => GetHashCode(true);
+        public int GetHashCode(bool useId) {
+            unchecked {
+                int hash = 17;
+                if (useId) hash *= 29 + Id.GetHashCode();
+                hash *= 29 + Location.GetHashCode();
+                if (Player == null) {
+                    Plugin.LogWarning("[APItemData] GetHashCode: Player is null!");
+                }
+                hash *= 29 + (Player?.GetHashCode() ?? 0);
+                return hash;
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ namespace CupheadArchipelago.AP {
         private static long ReceivedItemsIndex { get => ReceivedItems.Count + receivedItemsQueue.Count; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
+        private static HashSet<APItemData> receivedItemsUnique;
         private static bool receivedItemsQueueLock = false;
         private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
@@ -173,6 +174,7 @@ namespace CupheadArchipelago.AP {
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
+                    receivedItemsUnique = new HashSet<APItemData>(ReceivedItems, new APItemDataComparer(false));
                     if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
 
                     Plugin.Log($"[APClient] Setting up items...");
@@ -187,23 +189,6 @@ namespace CupheadArchipelago.AP {
                         }
                     }
                     APSessionGSData.dlock = true;
-                    Dictionary<string, HashSet<long>> occurance = new();
-                    for (int i=0; i<ReceivedItems.Count; i++) {
-                        APItemData item = ReceivedItems[i];
-                        if (occurance.ContainsKey(item.Player) && occurance[item.Player].Contains(item.Location)) {
-                            Plugin.LogWarning($"[APClient] Duplicate item entry! Removing...");
-                            ReceivedItems.RemoveAt(i);
-                            i--;
-                        }
-                        else {
-                            if (occurance.ContainsKey(item.Player)) {
-                                occurance[item.Player].Add(item.Location);
-                            }
-                            else {
-                                occurance[item.Player] = [item.Location];
-                            }
-                        }
-                    }
                     foreach (APItemData item in ReceivedItems) {
                         if (item.State==0) {
                             QueueItem(item);
@@ -305,6 +290,7 @@ namespace CupheadArchipelago.AP {
             APSessionDataSlotNum = -1;
             ConnectionInfo = null;
             doneChecksUnique = null;
+            receivedItemsUnique = null;
             scoutMapStatus = 0;
             locMap.Clear();
             itemMap.Clear();
@@ -473,9 +459,15 @@ namespace CupheadArchipelago.AP {
             }
         }
         internal static void ReceiveItem(APItemData item) {
-            ReceivedItems.Add(item);
-            Plugin.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
-            QueueItem(item);
+            if (!receivedItemsUnique.Contains(item)) {
+                ReceivedItems.Add(item);
+                receivedItemsUnique.Add(item);
+                Plugin.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
+                QueueItem(item);
+            }
+            else {
+                Plugin.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} already exists! Skipping!");
+            }
         }
         private static void QueueItem(APItemData item) {
             int index = ReceivedItems.Count-1;
