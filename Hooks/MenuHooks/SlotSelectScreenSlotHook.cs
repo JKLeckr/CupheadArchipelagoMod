@@ -17,6 +17,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         private const int APTEXT_SIBLING_INDEX = 3;
         private static readonly Color hColor = new Color(.82f,.76f,.70f);
         private static readonly Color bColor = new Color(.18f,.18f,.18f);
+        private static readonly Color ehColor = new Color(.32f,.18f,.18f);
+        private static readonly Color ebColor = new Color(.82f,.18f,.18f);
+
+        private static byte state = 0;
 
         internal static void Hook() {
             instances = new SlotSelectScreenSlot[3];
@@ -103,12 +107,20 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Transform slotAPText_inst = __instance.transform.GetChild(APTEXT_SIBLING_INDEX);
                 if (slotAPText_inst!=null) {
                     TextMeshProUGUI txt = slotAPText_inst.GetComponent<TextMeshProUGUI>();
-                    if (APData.SData[slot].enabled) {
+                    if (state!=1 && APData.SData[slot].enabled && APData.SData[slot].error==0) {
                         txt.color = selected?hColor:bColor;
                         slotAPText_inst.gameObject.SetActive(true);
+                        state = 1;
                     }
-                    else {
+                    else if (state!=2 && APData.SData[slot].error>0) {
+                        txt.color = selected?ehColor:ebColor;
+                        txt.text = "E" + APData.SData[slot].error;
+                        slotAPText_inst.gameObject.SetActive(true);
+                        state = 2;
+                    }
+                    else if (state!=0) {
                         slotAPText_inst.gameObject.SetActive(false);
+                        state = 0;
                     }
                 }
             }
