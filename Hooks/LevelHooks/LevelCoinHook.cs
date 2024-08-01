@@ -37,15 +37,16 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(LevelCoin), "Collect")]
         internal static class Collect {
-            static bool Prefix(LevelCoin __instance, ref bool ____collected) {
+            static bool Prefix(LevelCoin __instance) {
                 if (APData.IsCurrentSlotEnabled())
                     Plugin.Log($"Coin Collected: {APClient.GetCheck(CoinIdMap.GetAPLocation(__instance.GlobalID)).LocationName}");
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 bool success = false;
+                
                 FieldInfo _fi__collected = typeof(LevelCoin).GetField("_collected", BindingFlags.Instance | BindingFlags.NonPublic);
                 MethodInfo _mi_APCheck = typeof(Collect).GetMethod("APCheck", BindingFlags.Static | BindingFlags.NonPublic);
 

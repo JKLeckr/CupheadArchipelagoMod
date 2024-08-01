@@ -46,7 +46,7 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("doneChecks")]
         public List<long> doneChecks = new List<long>();
         [JsonProperty("receivedItems")]
-        public List<APItemInfo> receivedItems = new();
+        public List<APItemData> receivedItems = new();
         [JsonProperty("goalsCompleted")]
         private Goal goalsCompleted = Goal.None;
         [JsonIgnore]

@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class PlatformingLevelHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Start));
+            //Harmony.CreateAndPatchAll(typeof(Start));
         }
 
         [HarmonyPatch(typeof(PlatformingLevel), "Start")]

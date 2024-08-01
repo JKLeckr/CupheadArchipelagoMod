@@ -59,7 +59,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 {
                     Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                     _ => false,
-                } && instance.CurrentLevel != Levels.House;
+                } && instance.CurrentLevel != Levels.House && instance.CurrentLevel != Levels.ShmupTutorial;
             }
         }
 

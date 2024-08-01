@@ -39,6 +39,53 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             }
         }
 
+        [HarmonyPatch(typeof(MapDifficultySelectStartUI), "CheckInput")]
+        internal static class CheckInput {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new(instructions);
+                bool debug = false;
+                bool success = false;
+
+                MethodInfo _mi_GetButtonDown = typeof(AbstractMapSceneStartUI).GetMethod("GetButtonDown", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+                for (int i=0;i<codes.Count-3;i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+1].operand == 13 &&
+                        codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_GetButtonDown && codes[i+3].opcode == OpCodes.Brfalse) {
+                            Label end = (Label)codes[i+3].operand;
+                            List<CodeInstruction> ncodes = [
+                                new CodeInstruction(OpCodes.Brfalse, end),
+                                CodeInstruction.Call(() => APCanDoLevel()),
+                            ];
+                            codes.InsertRange(i+3, ncodes);
+                            i+= ncodes.Count;
+                            success = true;
+                            break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(CheckInput)}: Patch Failed!");
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log("---");
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+
+                return codes;
+            }
+
+            private static bool APCanDoLevel() {
+                if (APData.IsCurrentSlotEnabled()) {
+                    //
+                    return true;
+                } else return true;
+            }
+        }
+
         [HarmonyPatch(typeof(MapDifficultySelectStartUI), "SetDifficultyAvailability")]
         internal static class SetDifficultyAvailability {
             //FIXME: Eventually do better with this code.
@@ -49,14 +96,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (APSettings.Hard || PlayerData.Data.CurrentMap == Scenes.scene_map_world_4 || __instance.level == "Saltbaker") {
                     if (APSettings.Hard)
                         if (PlayerData.Data.CurrentMap == Scenes.scene_map_world_4) {
-                            ___options = new Level.Mode[1] {Level.Mode.Hard};
+                            ___options = [Level.Mode.Hard];
                             hardonly = true;
                         }
                         else {
-                            ___options = new Level.Mode[2] {Level.Mode.Normal, Level.Mode.Hard};
+                            ___options = [Level.Mode.Normal, Level.Mode.Hard];
                         }
                     else
-                        ___options = new Level.Mode[1] {Level.Mode.Normal};
+                        ___options = [Level.Mode.Normal];
                     ___easy.gameObject.SetActive(false);
                     ___normalSeparator.gameObject.SetActive(false);
                 }

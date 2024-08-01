@@ -1,15 +1,19 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using CupheadArchipelago.Hooks.PlayerHooks;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
-        public static void ApplyItem(APItemInfo item) {
+        public static bool ApplyItem(APItemData item) {
             long itemId = item.Id;
-            string itemName = item.Name;
+            string itemName = APClient.GetItemName(item.Id);
             Plugin.Log($"[APItemMngr] Applying item {itemName}...");
 
+            ItemMap.GetItemType(itemId);
+
+            try{
             switch (ItemMap.GetItemType(itemId)) {
                 case ItemType.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
@@ -93,15 +97,12 @@ namespace CupheadArchipelago.AP {
                     break;
                 }
                 case ItemType.Level: {
-                    AbstractPlayerController p1 = PlayerManager.GetPlayer(PlayerId.PlayerOne);
-                    AbstractPlayerController p2 = PlayerManager.GetPlayer(PlayerId.PlayerTwo);
-                    PlayerStatsManager stats1 = p1.stats;
-                    PlayerStatsManager stats2 = p2?.stats;
-                    PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(p1.id);
-                    PlayersStatsBossesHub bstats2 = Level.GetPlayerStats(p2.id);
+                    PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
+                    PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
+                    PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
+                    PlayersStatsBossesHub bstats2 = (stats2!=null) ? Level.GetPlayerStats(stats2.basePlayer.id) : null;
                     
                     if (itemId==APItem.level_extrahealth) {
-                        AudioManager.Play("pop_up");
                         if (Level.IsInBossesHub) {
                             bstats1.BonusHP++;
                             if (bstats2!=null) bstats2.BonusHP++;
@@ -110,15 +111,18 @@ namespace CupheadArchipelago.AP {
                         stats2?.SetHealth(stats2.Health + 1);
                     }
                     else if (itemId==APItem.level_superrecharge) {
-                        if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
-                        if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                        if (stats1.CanGainSuperMeter) {
+                            Plugin.Log("Can gain super");
+                            PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                        }
+                        if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                     }
                     else if (itemId==APItem.level_trap_fingerjam) {Stub(itemName);}
                     else if (itemId==APItem.level_trap_slowfire) {Stub(itemName);}
                     else if (itemId==APItem.level_trap_superdrain) {
                         AudioManager.Play("level_menu_select");
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
-                        if (p2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
+                        if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
                     }
                     else if (itemId==APItem.level_trap_reversal) {
                         AudioManager.Play("level_menu_select");
@@ -130,6 +134,8 @@ namespace CupheadArchipelago.AP {
                 }
                 default: break;
             }
+            } catch (Exception e) {Plugin.LogError(e); return false;}
+            return true;
         }
 
         private static void Stub(string itemName) => Plugin.LogWarning($"Item handling unimplemented: {itemName}");

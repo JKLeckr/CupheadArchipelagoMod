@@ -9,6 +9,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             MapHook.Hook();
             MapLevelDependentObstacleHook.Hook();
             MapCoinHook.Hook();
+            MapLevelLoaderHook.Hook();
             MapDifficultySelectStartUIHook.Hook();
             MapUICoinHook.Hook();
             MapNPCMain.Hook();

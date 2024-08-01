@@ -11,6 +11,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class PlayerStatsManagerHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(OnAwake));
             Harmony.CreateAndPatchAll(typeof(CalculateHealthMax));
             Harmony.CreateAndPatchAll(typeof(DebugFillSuper));
         }
@@ -19,12 +20,28 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         public const float DEFAULT_SUPER_FILL_AMOUNT = 50f;
         public const bool DEFAULT_PLAY_SUPER_CHANGED_EFFECT = true;
 
+        public static PlayerStatsManager CurrentStatMngr1 { get; private set; } = null;
+        public static PlayerStatsManager CurrentStatMngr2 { get; private set; } = null;
+
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
 
         private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter").GetSetMethod(true);
         private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        [HarmonyPatch(typeof(PlayerStatsManager), "OnAwake")]
+        internal static class OnAwake {
+            static bool Prefix(PlayerStatsManager __instance) {
+                Plugin.Log("PlayerStatsManager OnAwake");
+                if (__instance.basePlayer.id==PlayerId.PlayerTwo) {
+                    CurrentStatMngr2 = __instance;
+                } else {
+                    CurrentStatMngr1 = __instance;
+                }
+                return true;
+            }
+        }
+        
         [HarmonyPatch(typeof(PlayerStatsManager), "CalculateHealthMax")]
         internal static class CalculateHealthMax {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {

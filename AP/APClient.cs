@@ -29,14 +29,16 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; }
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
-        private static List<APItemInfo> ReceivedItems { get => APSessionGSData.receivedItems; }
+        private static Dictionary<long, APItemInfo> itemMap = new();
+        private static List<APItemData> ReceivedItems { get => APSessionGSData.receivedItems; }
         private static long ReceivedItemsIndex { get => ReceivedItems.Count + receivedItemsQueue.Count; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static bool receivedItemsQueueLock = false;
-        private static Queue<APItemInfo> receivedItemsQueue = new();
+        private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
         private static Queue<int> itemApplyLevelQueue = new();
+        private static int itemApplyIndex = 0;
         private static bool complete = false;
         private static int scoutMapStatus = 0;
         private static long currentReceivedItemIndex = 0;
@@ -143,9 +145,9 @@ namespace CupheadArchipelago.AP {
                     APData.CurrentSData.seed = seed;
                 }
 
-                Plugin.Log($"[APClient] Checking settings...");
                 try {
                     // Probably handle this better later
+                    Plugin.Log($"[APClient] Checking settings...");
                     if (DLCManager.DLCEnabled()!=SlotData.use_dlc) {
                         Plugin.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
                         if (DLCManager.DLCEnabled())
@@ -185,9 +187,29 @@ namespace CupheadArchipelago.AP {
                         }
                     }
                     APSessionGSData.dlock = true;
-                    foreach (APItemInfo item in ReceivedItems) {
+                    Dictionary<string, HashSet<long>> occurance = new();
+                    for (int i=0; i<ReceivedItems.Count; i++) {
+                        APItemData item = ReceivedItems[i];
+                        if (occurance.ContainsKey(item.Player) && occurance[item.Player].Contains(item.Location)) {
+                            Plugin.LogWarning($"[APClient] Duplicate item entry! Removing...");
+                            ReceivedItems.RemoveAt(i);
+                            i--;
+                        }
+                        else {
+                            if (occurance.ContainsKey(item.Player)) {
+                                occurance[item.Player].Add(item.Location);
+                            }
+                            else {
+                                occurance[item.Player] = [item.Location];
+                            }
+                        }
+                    }
+                    foreach (APItemData item in ReceivedItems) {
                         if (item.State==0) {
                             QueueItem(item);
+                        }
+                        else if (itemApplyIndex < item.State) {
+                            itemApplyIndex = item.State;
                         }
                     }
                     APSessionGSData.dlock = false;
@@ -285,6 +307,7 @@ namespace CupheadArchipelago.AP {
             doneChecksUnique = null;
             scoutMapStatus = 0;
             locMap.Clear();
+            itemMap.Clear();
             receivedItemsQueueLock = false;
             receivedItemsQueue = new();
             itemApplyQueue = new();
@@ -348,6 +371,13 @@ namespace CupheadArchipelago.AP {
             else
                 throw new KeyNotFoundException($"[APClient] GetCheck: Invalid location id {loc}.");
         }
+        public static APItemInfo GetItemInfo(long item) {
+            if (itemMap.ContainsKey(item))
+                return itemMap[item];
+            else
+                throw new KeyNotFoundException($"[APClient] GetItemInfo: Invalid item id {item}.");
+        }
+        public static string GetItemName(long item) => GetItemInfo(item).Name ?? $"Item id:{item}";
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
@@ -399,29 +429,34 @@ namespace CupheadArchipelago.AP {
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Plugin.Log("[APClient] OnItemReceived");
             Plugin.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
-            ItemInfo item = helper.PeekItem();
-            long itemId = item.ItemId;
-            string itemName = item.ItemName ?? $"APItem {itemId}";
-            if (currentReceivedItemIndex>ReceivedItemsIndex) {
-                currentReceivedItemIndex=ReceivedItemsIndex;
-                Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
-            }
-            else if (currentReceivedItemIndex==ReceivedItemsIndex && item.ItemId!=APSettings.StartWeapon) {
-                Plugin.Log($"[APClient] Recieving {itemName}...");
-                APItemInfo nitem = new APItemInfo(item);
-                if (!receivedItemsQueueLock) {
-                    receivedItemsQueueLock = true;
-                    receivedItemsQueue.Enqueue(nitem);
-                    currentReceivedItemIndex++;
-                    receivedItemsQueueLock = false;
-                } else {
-                    Plugin.Log("[APClient] Item Queue is locked. Will try again next time.");
+            try {
+                ItemInfo item = helper.PeekItem();
+                long itemId = item.ItemId;
+                string itemName = item.ItemName ?? $"APItem {itemId}";
+                if (currentReceivedItemIndex>ReceivedItemsIndex) {
+                    currentReceivedItemIndex=ReceivedItemsIndex;
+                    Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
                 }
-            } else {
-                Plugin.Log($"Skipping {itemName}");
-                currentReceivedItemIndex++;
+                else if (currentReceivedItemIndex==ReceivedItemsIndex && item.ItemId!=APSettings.StartWeapon) {
+                    Plugin.Log($"[APClient] Recieving {itemName}...");
+                    APItemData nitem = new APItemData(item);
+                    if (!receivedItemsQueueLock) {
+                        receivedItemsQueueLock = true;
+                        receivedItemsQueue.Enqueue(nitem);
+                        currentReceivedItemIndex++;
+                        receivedItemsQueueLock = false;
+                    } else {
+                        Plugin.Log("[APClient] Item Queue is locked. Will try again next time.");
+                    }
+                } else {
+                    Plugin.Log($"Skipping {itemName}");
+                    currentReceivedItemIndex++;
+                }
+                helper.DequeueItem();
+            } catch (Exception e) {
+                Plugin.LogError($"[APClient] Error receiving item: {e.Message}");
+                return;
             }
-            helper.DequeueItem();
         }
         public static bool AreItemsUpToDate() => currentReceivedItemIndex==ReceivedItemsIndex;
         public static void ItemUpdate() {
@@ -429,7 +464,7 @@ namespace CupheadArchipelago.AP {
                 if (receivedItemsQueue.Count>0) {
                     receivedItemsQueueLock = true;
                     APSessionGSData.dlock = true;
-                    APItemInfo item = receivedItemsQueue.Peek();
+                    APItemData item = receivedItemsQueue.Peek();
                     ReceiveItem(item);
                     receivedItemsQueue.Dequeue();
                     APSessionGSData.dlock = false;
@@ -437,12 +472,12 @@ namespace CupheadArchipelago.AP {
                 }
             }
         }
-        internal static void ReceiveItem(APItemInfo item) {
+        internal static void ReceiveItem(APItemData item) {
             ReceivedItems.Add(item);
-            Plugin.Log($"[APClient] Received {item.Name} from {item.Player}");
+            Plugin.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
             QueueItem(item);
         }
-        private static void QueueItem(APItemInfo item) {
+        private static void QueueItem(APItemData item) {
             int index = ReceivedItems.Count-1;
             if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
                 QueueItem(itemApplyLevelQueue, index);
@@ -459,7 +494,7 @@ namespace CupheadArchipelago.AP {
         internal static void LogQueueItemCounts() {
             Plugin.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}"); //, LoggingFlags.Debug
         }
-        public static APItemInfo GetReceivedItem(int index) {
+        public static APItemData GetReceivedItem(int index) {
             if (index >= 0 && index < ReceivedItems.Count) { 
                 return ReceivedItems[index];
             } else {
@@ -472,14 +507,15 @@ namespace CupheadArchipelago.AP {
         public static int ItemReceiveQueueCount() => receivedItemsQueue.Count;
         public static int ItemApplyQueueCount() => itemApplyQueue.Count;
         public static int ItemApplyLevelQueueCount() => itemApplyLevelQueue.Count;
-        public static APItemInfo PopItemApplyQueue() => PopItemQueue(itemApplyQueue);
-        public static APItemInfo PopItemApplyLevelQueue() => PopItemQueue(itemApplyLevelQueue);
-        private static APItemInfo PopItemQueue(Queue<int> itemQueue) {
+        public static APItemData PopItemApplyQueue() => PopItemQueue(itemApplyQueue);
+        public static APItemData PopItemApplyLevelQueue() => PopItemQueue(itemApplyLevelQueue);
+        private static APItemData PopItemQueue(Queue<int> itemQueue) {
             int index = itemQueue.Peek();
             if (index >= 0 && index < ReceivedItems.Count) { 
-                APItemInfo item = ReceivedItems[index];
-                APItemMngr.ApplyItem(item);
-                item.State = 1;
+                APItemData item = ReceivedItems[index];
+                bool success = APItemMngr.ApplyItem(item);
+                if (!success) return item;
+                item.State = ++itemApplyIndex;
                 Plugin.Log("[APClient] Queue Pop");
                 itemQueue.Dequeue();
                 Plugin.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}");
@@ -522,6 +558,10 @@ namespace CupheadArchipelago.AP {
                                 
                                     Plugin.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                                     locMap.Add(loc, item);
+
+                                    if (!itemMap.ContainsKey(item.ItemId)) {
+                                        itemMap.Add(item.ItemId, new APItemInfo(item.ItemId, item.ItemName, item.Flags));
+                                    }
                                 }
                             } catch (Exception e) {
                                 err = true;

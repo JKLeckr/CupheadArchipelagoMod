@@ -220,6 +220,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 return codes;
             }
+            // TODO: Eventually use transpipler which is more elegant.
+            static void Postfix() {
+                if (APData.IsCurrentSlotEnabled() && PlayerData.Data.shouldShowShopkeepTooltip) {
+                    PlayerData.Data.shouldShowShopkeepTooltip = false;
+                }
+            }
 
             private static bool APCheck(ShopSceneItem item) {
                 bool res = false;
