@@ -69,10 +69,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_gameObject_SetActive = typeof(GameObject).GetMethod("SetActive");
-                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
                 MethodInfo _mi_IsUnlocked_c = GetMethod_IsUnlocked(typeof(Charm));
                 MethodInfo _mi_IsUnlocked_w = GetMethod_IsUnlocked(typeof(Weapon));
-                MethodInfo _mi_item_IsAvailable = typeof(ShopSceneItem).GetProperty("IsAvailable", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
+                MethodInfo _mi_item_IsAvailable = typeof(ShopSceneItem).GetProperty("IsAvailable", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
                 MethodInfo _mi_SetupItems = typeof(Awake).GetMethod(nameof(SetupItems), BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_IsAPWeaponChecked = typeof(ShopScenePlayerHook).GetMethod(nameof(IsAPWeaponChecked), BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_IsAPCharmChecked = typeof(ShopScenePlayerHook).GetMethod(nameof(IsAPCharmChecked), BindingFlags.NonPublic | BindingFlags.Static);
@@ -412,7 +412,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 FieldInfo _fi_this = crtype.GetField("$this", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_i2 = crtype.GetField("<i>__2", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_i6 = crtype.GetField("<i>__6", BindingFlags.NonPublic | BindingFlags.Instance);
-                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
                 MethodInfo _mi_IsUnlocked_c = GetMethod_IsUnlocked(typeof(Charm));
                 MethodInfo _mi_IsUnlocked_w = GetMethod_IsUnlocked(typeof(Weapon));
                 FieldInfo _fi_charmItemPrefabs = typeof(ShopScenePlayer).GetField("charmItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);

@@ -26,7 +26,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
 
-        private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter").GetSetMethod(true);
+        private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter")?.GetSetMethod(true);
         private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [HarmonyPatch(typeof(PlayerStatsManager), "OnAwake")]
@@ -50,9 +50,9 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 bool debug = false;
 
                 PropertyInfo _pi_HealthMax = typeof(PlayerStatsManager).GetProperty("HealthMax", BindingFlags.Public | BindingFlags.Instance);
-                MethodInfo _mi_get_HealthMax = _pi_HealthMax.GetGetMethod();
-                MethodInfo _mi_set_HealthMax = _pi_HealthMax.GetSetMethod(true);
-                MethodInfo _mi_get_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
+                MethodInfo _mi_get_HealthMax = _pi_HealthMax?.GetGetMethod();
+                MethodInfo _mi_set_HealthMax = _pi_HealthMax?.GetSetMethod(true);
+                MethodInfo _mi_get_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
                 MethodInfo _mi_APCalcMaxHealth = typeof(CalculateHealthMax).GetMethod("APCalcMaxHealth", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label cvanilla = il.DefineLabel();

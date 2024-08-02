@@ -23,8 +23,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 int insertCount = 0;
                 MethodInfo _mi_IsCurrentSlotEnabled = typeof(APData).GetMethod("IsCurrentSlotEnabled", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_IsChecked = typeof(Awake).GetMethod("IsChecked", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
-                MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
+                MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
+                MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
                 MethodInfo _mi_IsUnlocked = typeof(PlayerData).GetMethod(
                     "IsUnlocked", BindingFlags.Public | BindingFlags.Instance, null, new Type[] {typeof(PlayerId), typeof(Super)}, null);
                 FieldInfo _fi_noChalice = typeof(MausoleumLevel).GetField("noChalice", BindingFlags.NonPublic | BindingFlags.Instance);

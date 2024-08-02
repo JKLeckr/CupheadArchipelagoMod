@@ -5,6 +5,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using BepInEx.Configuration;
+using System;
 
 namespace CupheadArchipelago {
     [BepInPlugin("com.JKLeckr.CupheadArchipelago", "CupheadArchipelago", PluginInfo.PLUGIN_VERSION)]
@@ -16,6 +17,7 @@ namespace CupheadArchipelago {
         public static Plugin Instance { get; private set; }
         public static bool ConfigSkipIntro => Instance.configSkipIntro.Value;
         public static string Version => PluginInfo.PLUGIN_VERSION;
+        public static int State { get; private set; } = 0;
 
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<LoggingFlags> configLogging;
@@ -55,10 +57,27 @@ namespace CupheadArchipelago {
                 }
 
                 if (!IsPluginLoaded(DEP_SAVECONFIG_MOD_GUID)) {
-                    Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
-                    Log($"Using Save Key: {configSaveKeyName.Value}");
+                    try {
+                        Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
+                        Log($"Using Save Key: {configSaveKeyName.Value}");
+                    } catch (Exception e) {
+                        LogError("An exception occured while loading.");
+                        LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
+                        State = -2;
+                        LogFatal("Throwing Exception.");
+                        throw e;
+                    }
                 } else Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
-                Hooks.Main.HookMain();
+                try {
+                    Hooks.Main.HookMain();
+                } catch (Exception e) {
+                    LogError("An exception occured while loading.");
+                    LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
+                    State = -1;
+                    LogFatal("Throwing Exception.");
+                    throw e;
+                }
+                State = 1;
                 Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
             }
             else {

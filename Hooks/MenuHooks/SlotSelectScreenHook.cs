@@ -25,6 +25,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(SetState));
             Harmony.CreateAndPatchAll(typeof(UpdateOptionsMenu));
+            Harmony.CreateAndPatchAll(typeof(UpdateSlotSelect));
             Harmony.CreateAndPatchAll(typeof(UpdatePlayerSelect));
             Harmony.CreateAndPatchAll(typeof(UpdateConfirmDelete));
             Harmony.CreateAndPatchAll(typeof(EnterGame));
@@ -85,7 +86,6 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static CupheadInput.AnyPlayerInput _input;
             private static MethodInfo _mi_game_start_cr;
             private static MethodInfo _mi_SetState;
-            //private static MethodInfo _mi_GetButtonDown;
             private static int Status => APClient.SessionStatus;
 
             static UpdatePlayerSelect() {
@@ -259,6 +259,58 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     _lockMenu = false;
                     return true;
                 } else return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(SlotSelectScreen), "UpdateSlotSelect")]
+        internal static class UpdateSlotSelect {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new(instructions);
+                bool debug = false;
+                int success = 0;
+                
+                FieldInfo _fi_slots = typeof(SlotSelectScreen).GetField("slots", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi__slotSelection = typeof(SlotSelectScreen).GetField("_slotSelection", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo _mi_get_IsEmpty = typeof(SlotSelectScreenSlot).GetProperty("IsEmpty", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
+                MethodInfo _mi_GetButtonDown = typeof(SlotSelectScreen).GetMethod("GetButtonDown", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo _mi_IsAPEmpty = typeof(UpdateSlotSelect).GetMethod("IsAPEmpty", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+                for (int i=0;i<codes.Count-10;i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_slots &&
+                        codes[i+2].opcode == OpCodes.Ldarg_0 && codes[i+3].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+3].operand == _fi__slotSelection &&
+                        codes[i+4].opcode == OpCodes.Ldelem_Ref && codes[i+5].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+5].operand == _mi_get_IsEmpty &&
+                        codes[i+6].opcode == OpCodes.Brtrue && codes[i+7].opcode == OpCodes.Ldarg_0 && codes[i+8].opcode == OpCodes.Ldc_I4_S &&
+                        (sbyte)codes[i+8].operand == (sbyte)CupheadButton.EquipMenu && codes[i+9].opcode == OpCodes.Call &&
+                        (MethodInfo)codes[i+9].operand == _mi_GetButtonDown && codes[i+10].opcode == OpCodes.Brfalse) {
+                            codes[i+4] = new CodeInstruction(OpCodes.Call, _mi_IsAPEmpty);
+                            codes.RemoveAt(i+5);
+                            success++;
+                            break;
+                    }
+                }
+                if (success!=1) throw new Exception($"{nameof(SlotSelectScreen)}: Patch Failed! {success}");
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Plugin.Log("---");
+                        Plugin.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+
+                return codes;
+            }
+
+            private static bool DT(int num) {
+                Plugin.Log($"T:{num}");
+                return true;
+            }
+
+            private static bool IsAPEmpty(SlotSelectScreenSlot[] slots, int slotnum) {
+                return APData.IsSlotEnabled(slotnum) ? APData.IsSlotEmpty(slotnum) : slots[slotnum].IsEmpty;
             }
         }
 

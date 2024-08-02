@@ -154,8 +154,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;
                 bool success = false;
-                MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode").GetGetMethod();
-                MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty").GetSetMethod(true);
+                MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode")?.GetGetMethod();
+                MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty")?.GetSetMethod(true);
                 MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {

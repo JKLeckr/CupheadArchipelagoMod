@@ -42,7 +42,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 
                 FieldInfo _fi_coinID = typeof(MapCoin).GetField("coinID", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_SaveCurrentFile = typeof(PlayerData).GetMethod("SaveCurrentFile", BindingFlags.Public | BindingFlags.Static);
-                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
                 MethodInfo _mi_AddCurrency = typeof(PlayerData).GetMethod("AddCurrency", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_APCheck = typeof(OnTriggerEnter2D).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
 

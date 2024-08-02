@@ -22,7 +22,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 int index = 0;
                 int req_index = 0;
                 int insertCount = 0;
-                MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
                 MethodInfo _mi_CheckLevelCompleted = typeof(PlayerData).GetMethod("CheckLevelCompleted", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_CheckLevelsCompleted = typeof(PlayerData).GetMethod("CheckLevelsCompleted", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_APCondition = typeof(Start).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);

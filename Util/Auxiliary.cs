@@ -46,6 +46,11 @@ namespace CupheadArchipelago.Util {
         }
         public static T[] ArrayRange<T>(T[] arr, int end) => ArrayRange(arr, 0, end);
 
+        private static bool DbgT(int num) {
+            Plugin.Log($"T:{num}");
+            return true;
+        }
+
         private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {
             foreach (CodeInstruction code in codes) {
                 Plugin.Log(code.opcode + " -: " + code.operand, LoggingFlags.Transpiler);

@@ -24,7 +24,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 bool debug = false;
                 bool success = false;
                 FieldInfo _fi_platformingLevels = typeof(Level).GetField("platformingLevels", BindingFlags.Public | BindingFlags.Static);
-                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
                 MethodInfo _mi_CheckLevelsHaveMinGrade = typeof(PlayerData).GetMethod("CheckLevelsHaveMinGrade", BindingFlags.Public | BindingFlags.Instance);
 
                 if (debug) {
