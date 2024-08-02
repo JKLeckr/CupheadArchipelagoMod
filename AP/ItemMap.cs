@@ -12,10 +12,12 @@ namespace CupheadArchipelago.AP {
             {APItem.level_trap_envirotrap, ItemType.Level},
             {APItem.level_trap_slowfire, ItemType.Level},
             {APItem.level_trap_superdrain, ItemType.Level},
+            {APItem.level_trap_reversal, ItemType.Level},
             {APItem.coin, ItemType.Essential},
             {APItem.coin2, ItemType.Essential},
             {APItem.coin3, ItemType.Essential},
             {APItem.contract, ItemType.Essential},
+            {APItem.plane_super, ItemType.Essential},
             {APItem.dlc_boat, ItemType.Essential},
             {APItem.dlc_ingredient, ItemType.Essential},
 

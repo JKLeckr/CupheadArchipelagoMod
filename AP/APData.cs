@@ -173,9 +173,10 @@ namespace CupheadArchipelago.AP {
             
             [JsonProperty("contracts")]
             public int contracts = 0;
+            [JsonProperty("plane_super")]
+            public bool plane_super = false;
             [JsonProperty("dlc_ingredients")]
             public int dlc_ingredients = 0;
-
             [JsonProperty("dash")]
             public bool dash = false;
             [JsonProperty("duck")]

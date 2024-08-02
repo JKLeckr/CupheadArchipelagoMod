@@ -19,17 +19,17 @@ namespace CupheadArchipelago.AP {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
                     PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
                     PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
-                    if (APSettings.UseDLC) {
-                        if (itemId==APItem.plane_gun) {
-                            PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way);
-                            PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_3way);
-                        }
-                        else if (itemId==APItem.plane_bombs) {
-                            PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb);
-                            PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_bomb);
-                            PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).HasEquippedSecondarySHMUPWeapon = true;
-                            PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).HasEquippedSecondarySHMUPWeapon = true;
-                        }
+                    if (itemId==APItem.plane_gun) {
+                        PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way);
+                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_3way);
+                    }
+                    else if (itemId==APItem.plane_bombs) {
+                        PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb);
+                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_bomb);
+                    }
+                    if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) {
+                        PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).HasEquippedSecondarySHMUPWeapon = true;
+                        PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).HasEquippedSecondarySHMUPWeapon = true;
                     }
                     break;
                 }
@@ -45,11 +45,11 @@ namespace CupheadArchipelago.AP {
                         PlayerData.Data.Gift(PlayerId.PlayerOne, Super.level_super_chalice_vert_beam);
                         PlayerData.Data.Gift(PlayerId.PlayerTwo, Super.level_super_chalice_vert_beam);
                     }
-                    else if (itemId==APItem.super_i) {
+                    else if (itemId==APItem.super_ii) {
                         PlayerData.Data.Gift(PlayerId.PlayerOne, Super.level_super_chalice_shield);
                         PlayerData.Data.Gift(PlayerId.PlayerTwo, Super.level_super_chalice_shield);
                     }
-                    else if (itemId==APItem.super_i) {
+                    else if (itemId==APItem.super_iii) {
                         PlayerData.Data.Gift(PlayerId.PlayerOne, Super.level_super_chalice_iii);
                         PlayerData.Data.Gift(PlayerId.PlayerTwo, Super.level_super_chalice_iii);
                     }
@@ -85,6 +85,8 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.contracts++;
                         Plugin.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
                     }
+                    else if (itemId==APItem.plane_super)
+                        APClient.APSessionGSPlayerData.plane_super=true;
                     else if (itemId==APItem.dlc_boat) {
                         APClient.APSessionGSPlayerData.dlc_boat=true;
                     }

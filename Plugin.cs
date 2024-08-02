@@ -64,7 +64,7 @@ namespace CupheadArchipelago {
                         LogError("An exception occured while loading.");
                         LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
                         State = -2;
-                        LogFatal("Throwing Exception.");
+                        LogFatal("Throwing Exception...");
                         throw e;
                     }
                 } else Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
@@ -74,7 +74,7 @@ namespace CupheadArchipelago {
                     LogError("An exception occured while loading.");
                     LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
                     State = -1;
-                    LogFatal("Throwing Exception.");
+                    LogFatal("Throwing Exception...");
                     throw e;
                 }
                 State = 1;
