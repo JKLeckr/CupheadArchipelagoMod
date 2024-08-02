@@ -302,13 +302,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return codes;
             }
 
-            private static bool DT(int num) {
-                Plugin.Log($"T:{num}");
-                return true;
-            }
-
             private static bool IsAPEmpty(SlotSelectScreenSlot[] slots, int slotnum) {
-                return APData.IsSlotEnabled(slotnum) ? APData.IsSlotEmpty(slotnum) : slots[slotnum].IsEmpty;
+                return slots[slotnum].IsEmpty && APData.IsSlotEmpty(slotnum);
             }
         }
 
