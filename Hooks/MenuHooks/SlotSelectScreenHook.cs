@@ -280,13 +280,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                         Plugin.Log($"{code.opcode}: {code.operand}");
                     }
                 }
-                for (int i=0;i<codes.Count-10;i++) {
+                for (int i=0;i<codes.Count-6;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_slots &&
                         codes[i+2].opcode == OpCodes.Ldarg_0 && codes[i+3].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+3].operand == _fi__slotSelection &&
                         codes[i+4].opcode == OpCodes.Ldelem_Ref && codes[i+5].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+5].operand == _mi_get_IsEmpty &&
-                        codes[i+6].opcode == OpCodes.Brtrue && codes[i+7].opcode == OpCodes.Ldarg_0 && codes[i+8].opcode == OpCodes.Ldc_I4_S &&
-                        (sbyte)codes[i+8].operand == (sbyte)CupheadButton.EquipMenu && codes[i+9].opcode == OpCodes.Call &&
-                        (MethodInfo)codes[i+9].operand == _mi_GetButtonDown && codes[i+10].opcode == OpCodes.Brfalse) {
+                        codes[i+6].opcode == OpCodes.Brtrue) {
                             codes[i+4] = new CodeInstruction(OpCodes.Call, _mi_IsAPEmpty);
                             codes.RemoveAt(i+5);
                             success++;
