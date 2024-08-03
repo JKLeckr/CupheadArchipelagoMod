@@ -69,7 +69,7 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_peashooter, Weapon.level_weapon_peashot},
             {APItem.weapon_spread, Weapon.level_weapon_spreadshot},
             {APItem.weapon_chaser, Weapon.level_weapon_homing},
-            {APItem.weapon_lobber, Weapon.level_weapon_arc},
+            {APItem.weapon_lobber, Weapon.level_weapon_bouncer},
             {APItem.weapon_charge, Weapon.level_weapon_charge},
             {APItem.weapon_roundabout, Weapon.level_weapon_boomerang},
             {APItem.weapon_dlc_crackshot, Weapon.level_weapon_crackshot},
