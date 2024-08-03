@@ -51,20 +51,23 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                         codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_get_SuperMeter && codes[i+4].opcode == OpCodes.Ldarg_0 &&
                         codes[i+5].opcode == OpCodes.Call && codes[i+6].opcode == OpCodes.Callvirt && codes[i+7].opcode == OpCodes.Callvirt &&
                         (MethodInfo)codes[i+7].operand == _mi_get_SuperMeterMax && codes[i+8].opcode == OpCodes.Blt_Un) {
+                            List<Label> orig_labels = codes[i].labels;
+                            codes[i].labels = [];
                             Label lskip = (Label)codes[i+8].operand;
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APCanSuper()),
                                 new CodeInstruction(OpCodes.Brfalse, lskip),
                             ];
                             codes.InsertRange(i, ncodes);
+                            codes[i].labels = orig_labels;
                             success = true;
                             break;
                     }
                 }
                 if (!success) throw new Exception($"{nameof(HandleWeaponSwitch)}: Patch Failed!");
                 if (debug) {
+                    Plugin.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
                         Plugin.Log($"{code.opcode}: {code.operand}");
                     }
                 }
