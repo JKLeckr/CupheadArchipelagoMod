@@ -70,7 +70,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         if (!APClient.IsLocationChecked(locationId))
                             APClient.Check(locationId);
                         PlayerData.SaveCurrentFile();
-                        MapEventNotification.Current.ShowEvent(MapEventNotification.Type.Coin);
+                        //MapEventNotification.Current.ShowEvent(MapEventNotification.Type.Coin);
                     }
                     return false;
                 }
