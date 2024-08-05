@@ -65,7 +65,6 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_get_HealthMax &&
                         codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == 9 && codes[i+3].opcode == OpCodes.Ble) {
-                            codes[i].labels.Add(cvanilla);
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, cvanilla),
@@ -77,6 +76,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                                 new CodeInstruction(OpCodes.Call, _mi_APCalcMaxHealth),
                                 new CodeInstruction(OpCodes.Call, _mi_set_HealthMax),
                             ];
+                            ncodes[0].labels = codes[i].labels;
+                            codes[i].labels = [cvanilla];
                             codes.InsertRange(i, ncodes);
                             i+= ncodes.Count;
                             success = true;
