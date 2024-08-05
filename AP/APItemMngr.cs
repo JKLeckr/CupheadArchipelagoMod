@@ -9,7 +9,7 @@ namespace CupheadArchipelago.AP {
         public static bool ApplyItem(APItemData item) {
             long itemId = item.Id;
             string itemName = APClient.GetItemName(item.Id);
-            Plugin.Log($"[APItemMngr] Applying item {itemName}...");
+            Plugin.Log($"[APItemMngr] Applying item {itemName} ({item.Id})...");
 
             ItemMap.GetItemType(itemId);
 

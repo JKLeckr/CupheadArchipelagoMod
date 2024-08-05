@@ -258,7 +258,6 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation dlc_cookie = new APLocation(0xc4fb03);
         public static readonly APLocation dlc_npc_newscat = new APLocation(0xc4fb04);
         public static readonly APLocation dlc_coin_isle4_secret = new APLocation(0xc4fb05);
-        public static readonly APLocation event_dlc_curse_complete = new APLocation(0xc4fb06);
         public static readonly APLocation dlc_quest_cactusgirl = new APLocation(0xc4fb07);
 
         public static APLocation FromId(long id) => id_map[id];

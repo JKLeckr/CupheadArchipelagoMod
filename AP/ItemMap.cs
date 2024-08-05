@@ -96,14 +96,13 @@ namespace CupheadArchipelago.AP {
             {APItem.super_i, Super.level_super_beam},
             {APItem.super_ii, Super.level_super_invincible},
             {APItem.super_iii, Super.level_super_ghost},
-
-            // Plane Supers??
         };
         public static Super GetSuper(long item) => idToSuper[item];
 
         private static readonly HashSet<long> planeItems = new() {
             APItem.plane_gun,
             APItem.plane_bombs,
+            APItem.plane_super,
             APItem.ability_plane_parry,
             APItem.ability_plane_shrink,
         };

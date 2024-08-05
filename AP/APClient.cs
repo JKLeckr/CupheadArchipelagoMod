@@ -189,9 +189,10 @@ namespace CupheadArchipelago.AP {
                         }
                     }
                     APSessionGSData.dlock = true;
-                    foreach (APItemData item in ReceivedItems) {
+                    for (int i=0; i<ReceivedItems.Count;i++) {
+                        APItemData item = ReceivedItems[i];
                         if (item.State==0) {
-                            QueueItem(item);
+                            QueueItem(item, i);
                         }
                         else if (itemApplyIndex < item.State) {
                             itemApplyIndex = item.State;
@@ -360,10 +361,12 @@ namespace CupheadArchipelago.AP {
         public static APItemInfo GetItemInfo(long item) {
             if (itemMap.ContainsKey(item))
                 return itemMap[item];
-            else
-                throw new KeyNotFoundException($"[APClient] GetItemInfo: Invalid item id {item}.");
+            else {
+                Plugin.LogWarning($"[APClient] GetItemInfo: No information on item id {item}. Item must not exist in this world!");
+                return null;
+            }
         }
-        public static string GetItemName(long item) => GetItemInfo(item).Name ?? $"Item id:{item}";
+        public static string GetItemName(long item) => GetItemInfo(item)?.Name ?? $"Item id:{item}";
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
@@ -469,13 +472,13 @@ namespace CupheadArchipelago.AP {
                 Plugin.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} already exists! Skipping!");
             }
         }
-        private static void QueueItem(APItemData item) {
-            int index = ReceivedItems.Count-1;
+        private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
+        private static void QueueItem(APItemData item, int itemIndex) {
             if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
-                QueueItem(itemApplyLevelQueue, index);
+                QueueItem(itemApplyLevelQueue, itemIndex);
             }
             else {
-                QueueItem(itemApplyQueue, index);
+                QueueItem(itemApplyQueue, itemIndex);
             }
         }
         private static void QueueItem(Queue<int> itemQueue, int itemIndex) {
