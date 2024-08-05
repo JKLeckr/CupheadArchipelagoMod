@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Util {
-    public class Aux {
+    public static class Aux {
         public static string BlankIsNull(string str) => str.Length>0?str:null;
 
         public static bool IntAsBool(long i) => i != 0;
@@ -45,6 +45,18 @@ namespace CupheadArchipelago.Util {
             return res;
         }
         public static T[] ArrayRange<T>(T[] arr, int end) => ArrayRange(arr, 0, end);
+
+        public static void Shuffle<T>(this IList<T> list, Random rand=null) {  
+            if (rand==null) rand = new Random();
+            int n = list.Count;  
+            while (n > 1) {  
+                n--;  
+                int k = rand.Next(n + 1);  
+                T value = list[k];  
+                list[k] = list[n];  
+                list[n] = value;  
+            }
+        }
 
         private static bool DbgT(int num) {
             Plugin.Log($"T:{num}");
