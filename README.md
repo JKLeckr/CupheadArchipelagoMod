@@ -15,17 +15,24 @@ This mod is currently in the development phase and it is very very incomplete, s
 ## Install
 *Note: The install process is WIP, so it is not the most user-friendly. Also, during this stage of development there are no binary builds. See "Building."*
 
-1. Extract BepInEx 5.x x64 for your OS (PC or mac) into the Cuphead installation folder. (NOTE: macOS isn't tested)
+### Prerequisites
+- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x
+
+### Instructions
+1. Extract BepInEx 5.x x64 for your OS (PC or mac) into the Cuphead installation folder.
 
 2. Place the contents of the extracted CupheadArchipelagoMod folder into the BepInEx/plugins folder.
 
 3. Launch game.
 
+### Extra Notes
+- macOS isn't tested
+- If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
+
 ## Building
 *Note: These instructions assume you know what you are doing with building projects and terminals and stuff.*
 
 ### Prerequisites
-- [BepInEx 5.x](https://github.com/BepInEx/BepInEx/releases) x64 for your platform.
 - [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your PATH.
 
 ### Instructions
