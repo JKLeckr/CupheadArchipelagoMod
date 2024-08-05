@@ -44,7 +44,7 @@ namespace CupheadArchipelago.Unity {
                     init = false;
                     Destroy(this);
                 }
-                else if (active) {
+                else if (active && PauseManager.state != PauseManager.State.Paused) {
                     if (debug) Plugin.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
                     APClient.ItemUpdate();
                     if (type == Type.Level) {
