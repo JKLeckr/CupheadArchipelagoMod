@@ -61,6 +61,7 @@ namespace CupheadArchipelago.AP {
                 if (session.Socket.Connected) {
                     Plugin.Log($"[APClient] Already Connected. Disconnecting...", LogLevel.Warning);
                     session.Socket.Disconnect();
+                    Reset(false);
                 }
             }
             bool res = false;
@@ -285,12 +286,13 @@ namespace CupheadArchipelago.AP {
             if (SessionStatus<=0) SessionStatus = 0;
             else Plugin.LogWarning("[APClient] Cannot Reset an active session. Close the session first! ");
         }
-        private static void Reset() {
+        private static void Reset(bool resetSessionStatus=true) {
             session = null;
-            if (SessionStatus>0) SessionStatus = 0;
+            if (resetSessionStatus && SessionStatus>0) SessionStatus = 0;
             APSessionSlotName = "";
             APSessionDataSlotNum = -1;
             ConnectionInfo = null;
+            currentReceivedItemIndex = 0;
             doneChecksUnique = null;
             receivedItemsUnique = null;
             scoutMapStatus = 0;
