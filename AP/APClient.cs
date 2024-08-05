@@ -174,7 +174,6 @@ namespace CupheadArchipelago.AP {
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
-                    receivedItemsUnique = new HashSet<APItemData>(ReceivedItems, new APItemDataComparer(false));
                     if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
 
                     Plugin.Log($"[APClient] Setting up items...");
@@ -189,6 +188,7 @@ namespace CupheadArchipelago.AP {
                         }
                     }
                     APSessionGSData.dlock = true;
+                    receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
                     for (int i=0; i<ReceivedItems.Count;i++) {
                         APItemData item = ReceivedItems[i];
                         if (item.State==0) {
@@ -197,6 +197,7 @@ namespace CupheadArchipelago.AP {
                         else if (itemApplyIndex < item.State) {
                             itemApplyIndex = item.State;
                         }
+                        if (item.Location>=0) receivedItemsUnique.Add(item);
                     }
                     APSessionGSData.dlock = false;
 
@@ -464,7 +465,7 @@ namespace CupheadArchipelago.AP {
         internal static void ReceiveItem(APItemData item) {
             if (!receivedItemsUnique.Contains(item)) {
                 ReceivedItems.Add(item);
-                receivedItemsUnique.Add(item);
+                if (item.Location>=0) receivedItemsUnique.Add(item);
                 Plugin.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
                 QueueItem(item);
             }
