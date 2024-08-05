@@ -373,16 +373,19 @@ namespace CupheadArchipelago.AP {
             long[] locs = DoneChecks.ToArray();
             if (session.Socket.Connected) {
                 session.Locations.CompleteLocationChecksAsync((bool state) => OnLocationSendComplete(state, locs), locs);
-                if (IsAPGoalComplete()) {
-                    if (!complete) {
-                        StatusUpdatePacket statusUpdate = new StatusUpdatePacket() { Status = ArchipelagoClientState.ClientGoal };
-                        session.Socket.SendPacketAsync(statusUpdate, _ => {complete = true;});
-                    }
-                }
+                UpdateGoal();
             }
             else {
                 Plugin.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
                 ReconnectArchipelagoSession();
+            }
+        }
+        public static void UpdateGoal() {
+            if (IsAPGoalComplete()) {
+                if (!complete) {
+                    StatusUpdatePacket statusUpdate = new StatusUpdatePacket() { Status = ArchipelagoClientState.ClientGoal };
+                    session.Socket.SendPacketAsync(statusUpdate, _ => {complete = true;});
+                }
             }
         }
         private static void OnLocationSendComplete(bool state, long[] locs) {
@@ -397,6 +400,7 @@ namespace CupheadArchipelago.AP {
 
         public static void GoalComplete(Goal goal) {
             APSessionGSData.AddGoals(goal);
+            UpdateGoal();
         }
         public static bool IsAPGoalComplete() {
             if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goal.Devil | Goal.Saltbaker);
