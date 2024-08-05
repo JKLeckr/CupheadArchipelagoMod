@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Hooks {
             MapHooks.MapMain.Hook();
             LevelHooks.LevelMain.Hook();
             ShopHooks.ShopMain.Hook();
+            CutsceneHooks.CutsceneMain.Hook();
         }
 
         public static void HookSaveKeyUpdater(string saveKeyName) {

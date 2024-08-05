@@ -55,7 +55,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
-
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_1 &&
                         codes[i+2].opcode == OpCodes.Stfld && (FieldInfo)codes[i+2].operand == _fi__collected) {
@@ -70,7 +69,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (!success) {
                     throw new Exception("[LevelCoinHook] Failed to Patch Collect");
                 }
-
                 if (debug) {
                     Plugin.Log($"===");
                     for (int i = 0; i < codes.Count; i++) {

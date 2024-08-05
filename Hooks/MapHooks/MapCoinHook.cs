@@ -73,8 +73,8 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 }
                 if (success!=3) throw new Exception($"{nameof(OnTriggerEnter2D)}: Patch Failed! {success}");
                 if (debug) {
+                    Plugin.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
                         Plugin.Log($"{code.opcode}: {code.operand}");
                     }
                 }

@@ -108,10 +108,10 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     ___normalSeparator.gameObject.SetActive(false);
                 }
                 else {
-                    ___options = new Level.Mode[2] {
+                    ___options = [
                         Level.Mode.Easy,
                         Level.Mode.Normal
-                    };
+                    ];
                     ___easy.gameObject.SetActive(true);
                     ___normalSeparator.gameObject.SetActive(true);
                 }
