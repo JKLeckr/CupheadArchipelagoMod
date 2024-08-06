@@ -24,6 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="README.md" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="NOTICE.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="LICENSE.3rd-party.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>.\ref\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
