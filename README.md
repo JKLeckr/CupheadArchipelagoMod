@@ -33,7 +33,7 @@ This mod is currently in the development phase and it is very very incomplete, s
 *Note: These instructions assume you know what you are doing with building projects and terminals and stuff.*
 
 ### Prerequisites
-- [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your PATH.
+- [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your path.
 
 ### Instructions
 #### 1. Install BepInEx:
