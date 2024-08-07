@@ -132,6 +132,7 @@ namespace CupheadArchipelago.AP {
             if (!disable) data.enabled = old_data.enabled;
             if (!resetSettings) {
                 data.address = old_data.address;
+                data.port = old_data.port;
                 data.slot = old_data.slot;
                 data.password = old_data.password;
             }

@@ -87,9 +87,8 @@ namespace CupheadArchipelago.AP {
                 Plugin.LogWarning("[APClient] Already Trying to Connect. Aborting.");
                 return false;
             }
-            SessionStatus = 3;
             APData data = APData.SData[APSessionDataSlotNum];
-            Plugin.Log($"[APClient] Connecting to {data.address} as {data.slot}...");
+            Plugin.Log($"[APClient] Connecting to {data.address}:{data.port} as {data.slot}...");
             LoginResult result;
             try {
                 string passwd = data.password.Length>0?data.password:null;
@@ -100,8 +99,8 @@ namespace CupheadArchipelago.AP {
 
             if (result.Successful)
             {
-                Plugin.Log($"[APClient] Connected to {data.address} as {data.slot}");
-
+                Plugin.Log($"[APClient] Connected to {data.address}:{data.port} as {data.slot}");
+                SessionStatus = 3;
                 Plugin.Log($"[APClient] Getting AP Data...");
 
                 try {
@@ -236,7 +235,7 @@ namespace CupheadArchipelago.AP {
             }
             else {
                 LoginFailure failure = (LoginFailure)result;
-                string errorMessage = $"[APClient] Failed to Connect to {data.address} as {data.slot}:";
+                string errorMessage = $"[APClient] Failed to Connect to {data.address}:{data.port} as {data.slot}:";
                 foreach (string error in failure.Errors)
                 {
                     errorMessage += $"\n    {error}";
