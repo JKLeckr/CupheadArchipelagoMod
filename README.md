@@ -16,24 +16,27 @@ This mod is currently in the development phase and it is very very incomplete, s
 *Note: The install process is WIP, so it is not the most user-friendly. Also, during this stage of development there are no binary builds. See "Building."*
 
 ### Prerequisites
+- A copy of Cuphead
 - [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x
 
 ### Instructions
-1. Extract BepInEx 5.x x64 for your OS (PC or mac) into the Cuphead installation folder.
+1. Extract BepInEx 5.x x64 for your OS into the Cuphead installation folder.
 
 2. Place the contents of the extracted CupheadArchipelagoMod folder into the BepInEx/plugins folder.
 
 3. Launch game.
 
 ### Extra Notes
-- macOS isn't tested
+- There are no binary builds of CupheadArchipelago for macOS. You can build from source, but you are on your own. 
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
 
 ## Building
 *Note: These instructions assume you know what you are doing with building projects and terminals and stuff.*
 
 ### Prerequisites
+- A copy of Cuphead
 - [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your path.
+- [c-wspp websocket-sharp](https://github.com/black-sliver/c-wspp-websocket-sharp). Note that it must be the windows version. If you are running the macOS version, you have to build this yourself.
 
 ### Instructions
 #### 1. Install BepInEx:
@@ -43,6 +46,16 @@ Extract BepInEx 5.x x64 for your OS (PC or mac) into the Cuphead installation fo
 `git clone https://github.com/JKLeckr/CupheadArchipelagoMod.git -b main`
     
 (Replace `main` with `dev` if you want more cutting edge but definately more broken changes included)
+
+#### 3. Copy the required files
+Note the `ref` folder in the project directory you just clone.
+
+1. Copy the following dll files from `Cuphead_Data/Managed` in the game directory to the `ref` folder mentioned before:
+    - `Assembly-CSharp.dll`
+    - `UnityEngine.dll`
+    - `UnityEngine.UI.dll`
+
+2. Copy the dll files from the extracted `c-wspp-websocket-sharp_windows-clang64` to the `ref` folder.
 
 #### 3. Build the project:
 In the directory, on the terminal:
@@ -56,10 +69,11 @@ In the game directory:
 1. In the `BepInEx/plugins` folder, create a `CupheadArchipelago` folder.
 
 2. Copy the following newly built DLL's to the newly created folder:
-    - Newtonsoft.Json.dll
-    - websocket-sharp.dll
-    - Archipelago.MultiClient.Net.dll
-    - CupheadArchipelago.dll
+    - `Newtonsoft.Json.dll`
+    - `Archipelago.MultiClient.Net.dll`
+    - `CupheadArchipelago.dll`
+    - `websocket-sharp.dll`
+    - `c-wspp.dll` (or `c-wspp.dylib` if on macOS)
 
 3. Launch Game.
 

@@ -30,6 +30,12 @@
     <None Update="LICENSE.3rd-party.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">
+    <Delete Files="$(OutputPath)websocket-sharp.dll" />
+    <Copy SourceFiles="$(ProjectDir)ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)ref/c-wspp.dll" DestinationFolder="$(OutputPath)" />
+  </Target>
+
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>.\ref\Assembly-CSharp.dll</HintPath>
