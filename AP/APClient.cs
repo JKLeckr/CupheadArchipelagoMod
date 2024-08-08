@@ -13,6 +13,7 @@ using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
+using Archipelago.MultiClient.Net.Exceptions;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -43,6 +44,7 @@ namespace CupheadArchipelago.AP {
         private static bool complete = false;
         private static int scoutMapStatus = 0;
         private static long currentReceivedItemIndex = 0;
+        private static bool sending = false;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,5,0,0);
         internal const long AP_SLOTDATA_VERSION = 0;
@@ -368,13 +370,20 @@ namespace CupheadArchipelago.AP {
                 return null;
             }
         }
-        public static string GetItemName(long item) => GetItemInfo(item)?.Name ?? $"Item id:{item}";
+        public static string GetItemName(long item) => GetItemInfo(item)?.Name ?? $"APItem {item}";
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
             if (session.Socket.Connected) {
-                session.Locations.CompleteLocationChecksAsync((bool state) => OnLocationSendComplete(state, locs), locs);
+                Plugin.Log($"[APClient] Sending Checks...");
+                if (!sending) {
+                    sending = true;
+                    ThreadPool.QueueUserWorkItem(_ => SendChecksThread(locs));
+                }
+                else
+                    Plugin.LogWarning("[APClient] Already sending checks.");
                 UpdateGoal();
+                Plugin.Log($"[APClient] Done");
             }
             else {
                 Plugin.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
@@ -389,14 +398,26 @@ namespace CupheadArchipelago.AP {
                 }
             }
         }
-        private static void OnLocationSendComplete(bool state, long[] locs) {
-            string locsstr = "[";
-            for (int i=0;i<locs.Length;i++) {
-                if (i>0) locsstr += ","; 
-                locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
-                if (i==locs.Length-1) locsstr += "]";
+        private static bool SendChecksThread(long[] locs) {
+            bool state = false;
+            try {
+                session.Locations.CompleteLocationChecks(locs);
+                state = true;
+            } catch (ArchipelagoSocketClosedException e) {
+                Plugin.LogWarning($"[APClient] Failed to send checks! {e.Message}");
             }
-            Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", LoggingFlags.Network, state?LogLevel.Info:LogLevel.Warning);
+            LoggingFlags loggingFlags = LoggingFlags.Network | (state?LoggingFlags.Info:LoggingFlags.Warning);
+            if (Plugin.IsLoggingFlagsEnabled(loggingFlags)) {
+                string locsstr = "[";
+                for (int i=0;i<locs.Length;i++) {
+                    if (i>0) locsstr += ","; 
+                    locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
+                    if (i==locs.Length-1) locsstr += "]";
+                }
+                Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", loggingFlags, state?LogLevel.Info:LogLevel.Warning);
+            }
+            sending = false;
+            return state;
         }
 
         public static void GoalComplete(Goal goal) {
@@ -412,7 +433,7 @@ namespace CupheadArchipelago.AP {
             Plugin.Log($"[Archipelago] {message}");
         }
         private static void OnError(Exception e, string message) {
-            Plugin.Log($"[APClient] {message}", LogLevel.Error);
+            Plugin.Log($"[APClient] {message}: {e}", LogLevel.Error);
         }
         private static void OnSocketClosed(string reason) {
             Plugin.Log("[APClient] Disconnected.");
@@ -426,8 +447,11 @@ namespace CupheadArchipelago.AP {
             Plugin.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
             try {
                 ItemInfo item = helper.PeekItem();
+                if (!itemMap.ContainsKey(item.ItemId)) {
+                    itemMap.Add(item.ItemId, new APItemInfo(item.ItemId, item.ItemName, item.Flags));
+                }
                 long itemId = item.ItemId;
-                string itemName = item.ItemName ?? $"APItem {itemId}";
+                string itemName = GetItemName(itemId);
                 if (currentReceivedItemIndex>ReceivedItemsIndex) {
                     currentReceivedItemIndex=ReceivedItemsIndex;
                     Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
@@ -559,10 +583,6 @@ namespace CupheadArchipelago.AP {
                                 
                                     Plugin.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                                     locMap.Add(loc, item);
-
-                                    if (!itemMap.ContainsKey(item.ItemId)) {
-                                        itemMap.Add(item.ItemId, new APItemInfo(item.ItemId, item.ItemName, item.Flags));
-                                    }
                                 }
                             } catch (Exception e) {
                                 err = true;
