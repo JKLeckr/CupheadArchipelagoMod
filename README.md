@@ -1,4 +1,4 @@
-# CupheadArchipelago Mod
+# CupheadArchipelago
 
 *Mod Created by JKLeckr*
 

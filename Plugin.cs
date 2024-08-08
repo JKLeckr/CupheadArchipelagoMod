@@ -29,13 +29,13 @@ namespace CupheadArchipelago {
             Instance = this;
             configEnabled = Config.Bind("Main", "Enabled", true);
             configLogging = Config.Bind("Main", "Logging", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
-            configLogLicense = Config.Bind("Main", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used.");
+            configLogLicense = Config.Bind("Main", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves (Default: \"cuphead_player_data_v1_ap_slot_\", Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
 
             if (configEnabled.Value) {
-                Log($"CupheadArchipelago Mod by JKLeckr");
+                Log($"CupheadArchipelago {Version} by JKLeckr");
                 
                 Log("[Log] Info", LoggingFlags.Debug);
                 LogWarning("[Log] Warning", LoggingFlags.Debug);
@@ -45,12 +45,14 @@ namespace CupheadArchipelago {
                 LogDebug("[Log] Debug", LoggingFlags.Debug);
 
                 if (configLogLicense.Value>0) {
-                    string lictext = $"License:\n--- LICENSE ---\n{License.PLUGIN_LICENSE}\n";
+                    ModLicense license = new();
+                    string lictext = $"License:\n--- LICENSE ---\n{license.PLUGIN_NOTICE}\n";
                     if (configLogLicense.Value == LicenseLogModes.All) {
-                        lictext += $"\n -- Third Party --\n{License.PLUGIN_LIB_LICENSE}\n\n -- End Third Party --";
+                        ModLicenseThirdParty license3rdParty = new();
+                        lictext += $"\n -- Third Party --\n{license3rdParty.PLUGIN_LIB_FULL_NOTICE}\n\n -- End Third Party --";
                     }
                     else {
-                        lictext += $"\n{License.PLUGIN_LIB_NOTICE}"; 
+                        lictext += $"\n{license.PLUGIN_LIB_NOTICE}"; 
                     }
                     lictext += "\n\n--- END LICENSE";
                     Log(lictext);
