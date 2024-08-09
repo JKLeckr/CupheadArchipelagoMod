@@ -23,8 +23,8 @@ namespace CupheadArchipelago.AP {
         public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapStatus==1; }
         public static APData APSessionGSData { get => GetAPSessionData(); }
         public static APData.PlayerData APSessionGSPlayerData { get => APSessionGSData.playerData; }
-        public static string APSessionSlotName { get; private set; } = "";
-        public static int APSessionDataSlotNum { get; private set; } = -1;
+        public static string APSessionPlayerSlot { get; private set; } = "";
+        public static int APSessionGSDataSlot { get; private set; } = -1;
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
@@ -70,8 +70,8 @@ namespace CupheadArchipelago.AP {
 
             APData data = APData.SData[index];
             session = ArchipelagoSessionFactory.CreateSession(data.address, data.port);
-            APSessionSlotName = data.slot;
-            APSessionDataSlotNum = index;
+            APSessionPlayerSlot = data.slot;
+            APSessionGSDataSlot = index;
             session.MessageLog.OnMessageReceived += OnMessageReceived;
             session.Socket.ErrorReceived += OnError;
             session.Socket.SocketClosed += OnSocketClosed;
@@ -89,7 +89,7 @@ namespace CupheadArchipelago.AP {
                 Plugin.LogWarning("[APClient] Already Trying to Connect. Aborting.");
                 return false;
             }
-            APData data = APData.SData[APSessionDataSlotNum];
+            APData data = APData.SData[APSessionGSDataSlot];
             Plugin.Log($"[APClient] Connecting to {data.address}:{data.port} as {data.slot}...");
             LoginResult result;
             try {
@@ -138,14 +138,16 @@ namespace CupheadArchipelago.AP {
                 }
                 Plugin.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
-                if (APData.CurrentSData.seed != seed) {
-                    if (APData.CurrentSData.seed != "") {
+                //Plugin.Log($"Seed: {seed}");
+                //Plugin.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
+                if (APSessionGSData.seed != seed) {
+                    if (APSessionGSData.seed != "") {
                         Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -4;
                         return false;
                     }
-                    APData.CurrentSData.seed = seed;
+                    APSessionGSData.seed = seed;
                 }
 
                 try {
@@ -290,8 +292,8 @@ namespace CupheadArchipelago.AP {
         private static void Reset(bool resetSessionStatus=true) {
             session = null;
             if (resetSessionStatus && SessionStatus>0) SessionStatus = 0;
-            APSessionSlotName = "";
-            APSessionDataSlotNum = -1;
+            APSessionPlayerSlot = "";
+            APSessionGSDataSlot = -1;
             ConnectionInfo = null;
             currentReceivedItemIndex = 0;
             doneChecksUnique = null;
@@ -555,7 +557,7 @@ namespace CupheadArchipelago.AP {
             switch (packet.PacketType) {
                 /*case ArchipelagoPacketType.DataPackage: {
                     DataPackagePacket datapackagepkt = (DataPackagePacket)packet;
-                    APData.CurrentSData.dataPackage = datapackagepkt.DataPackage;
+                    APSessionGSData.dataPackage = datapackagepkt.DataPackage;
                     break;
                 }*/
                 case ArchipelagoPacketType.Connected: {
@@ -616,8 +618,8 @@ namespace CupheadArchipelago.AP {
         }
 
         private static APData GetAPSessionData() {
-            if (session!=null&&APSessionDataSlotNum>=0) {
-                return APData.SData[APSessionDataSlotNum];
+            if (session!=null&&APSessionGSDataSlot>=0) {
+                return APData.SData[APSessionGSDataSlot];
             }
             else {
                 Plugin.Log("[APClient] Cannot get APSessionData", LogLevel.Error);

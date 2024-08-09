@@ -147,8 +147,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             }
 
             private static void ConnectAndStart() {
-                //Plugin.Log.LogInfo(_instance);
-                //Plugin.Log.LogInfo(__slotSelection);
+                Plugin.Log($"Starting slot {_slotSelection}");
 
                 if (APData.SData[_slotSelection].error>0) {
                     Plugin.LogError($"Bad file! E{APData.SData[_slotSelection].error}");
