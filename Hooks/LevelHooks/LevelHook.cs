@@ -107,7 +107,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 break;
 		                }
                     }
-                    else if (!Level.IsInBossesHub) {
+                    else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain) {
                         Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
                         if (Level.Difficulty >= normalMode) {
                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);

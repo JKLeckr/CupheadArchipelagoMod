@@ -70,14 +70,17 @@ namespace CupheadArchipelago.AP {
                 }
                 case ItemType.Essential: {
                     if (itemId==APItem.coin) {
+                        Plugin.Log("AddCurrency");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 1);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 1);
                     }
                     else if (itemId==APItem.coin2) {
+                        Plugin.Log("AddCurrency x2");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 2);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 2);
                     }
                     else if (itemId==APItem.coin3) {
+                        Plugin.Log("AddCurrency x3");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 3);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 3);
                     }

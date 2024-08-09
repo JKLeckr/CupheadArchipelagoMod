@@ -16,8 +16,8 @@ namespace CupheadArchipelago.Hooks {
             //Harmony.CreateAndPatchAll(typeof(Init));
             Harmony.CreateAndPatchAll(typeof(ClearSlot));
             Harmony.CreateAndPatchAll(typeof(OnLoaded));
-            Harmony.CreateAndPatchAll(typeof(SaveCurrentFile));
-            Harmony.CreateAndPatchAll(typeof(AddCurrency));
+            Harmony.CreateAndPatchAll(typeof(Save));
+            //Harmony.CreateAndPatchAll(typeof(AddCurrency));
             Harmony.CreateAndPatchAll(typeof(ApplyLevelCoins));
             //Harmony.CreateAndPatchAll(typeof(NumWeapons));
             //PlayerInventoryHook.Hook();
@@ -60,19 +60,23 @@ namespace CupheadArchipelago.Hooks {
             }
         }
 
-        [HarmonyPatch(typeof(PlayerData), "SaveCurrentFile")]
-        internal static class SaveCurrentFile {
-            static void Postfix() {
-                int index = CurrentSaveFileIndex;
-                Debug.Log($"[APData] Saving to slot {index}");
-                APData.Save(index);
+        [HarmonyPatch(typeof(PlayerData), "Save")]
+        internal static class Save {
+            static bool Prefix(int fileIndex) {
+                Plugin.Log($"Save {fileIndex}");
+                Debug.Log($"Saving to slot {fileIndex}...");
+                return true;
+            }
+            static void Postfix(int fileIndex) {
+                Debug.Log($"Saving APData to slot {fileIndex}...");
+                APData.Save(fileIndex);
             }
         }
 
         [HarmonyPatch(typeof(PlayerData), "AddCurrency")]
         internal static class AddCurrency {
             static bool Prefix() {
-                Plugin.Log("AddCurrency.");
+                Plugin.Log("AddCurrency");
                 return true;
             }
         }

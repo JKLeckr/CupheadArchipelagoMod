@@ -336,7 +336,7 @@ namespace CupheadArchipelago.AP {
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Plugin.LogWarning($"[APClient] \"{locName}\" is already checked.");
+                Plugin.Log($"[APClient] \"{locName}\" is already checked.");
             }
             return true;
         }
