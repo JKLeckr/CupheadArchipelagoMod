@@ -49,12 +49,12 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
         [HarmonyPatch(typeof(SlotSelectScreen), "Update")]
         internal static class Update {
-            static bool Prefix(SlotSelectScreen __instance) {
+            static bool Prefix() {
                 return true;
             }
-            /*static void Postfix(SlotSelectScreen __instance, int ____slotSelection) {
-                slotSelection = ____slotSelection;
-            }*/
+            static void Postfix(SlotSelectScreen.State ___state) {
+                if (___state != SlotSelectScreen.State.PlayerSelect && _cancelPlayerSelection) _cancelPlayerSelection = false;
+            }
         }
 
         [HarmonyPatch(typeof(SlotSelectScreen), "SetState")]
@@ -98,7 +98,6 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 _input = ___input;
                 return !_lockMenu;
             }
-
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 int success = 0;
@@ -246,6 +245,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 }
                 APClient.ResetSessionError();
                 _cancelPlayerSelection = true;
+                _lockMenu = false;
             }
             private static void APErrorConnected(string message) {
                 SetAPConStatusText("Connected!\n"+message);
@@ -256,7 +256,6 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static bool IsAPCancelPlayerSelection() {
                 if (_cancelPlayerSelection) {
                     _cancelPlayerSelection = false;
-                    _lockMenu = false;
                     return true;
                 } else return false;
             }
