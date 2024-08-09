@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCProfessionalHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Start));
+            //Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(OnDialoguerMessageEvent));
         }
 
@@ -17,7 +17,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         internal static class Start {
             static bool Prefix(int ___dialoguerVariableID) {
                 LogDialoguerGlobalFloat(___dialoguerVariableID);
-                if (APData.IsCurrentSlotEnabled()) {
+                if (APData.IsCurrentSlotEnabled() && APSettings.QuestProfessional) {
                     if (APClient.IsLocationChecked(locationId)) {
                         Dialoguer.SetGlobalFloat(___dialoguerVariableID, 3f);
                         LogDialoguerGlobalFloat(___dialoguerVariableID);
@@ -30,7 +30,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         [HarmonyPatch(typeof(MapNPCProfessional), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
             static bool Prefix(string message, bool ___SkipDialogueEvent) {
-                if (APData.IsCurrentSlotEnabled()) {
+                if (APData.IsCurrentSlotEnabled() && APSettings.QuestProfessional) {
                     if (___SkipDialogueEvent) return false;
                     if (message == "RetroColorUnlock") {
                         MapEventNotification.Current.ShowTooltipEvent(TooltipEvent.Professional);
@@ -40,6 +40,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         PlayerData.SaveCurrentFile();
                         MapUI.Current.Refresh();
                     }
+                    return false;
                 }
                 return true;
             }

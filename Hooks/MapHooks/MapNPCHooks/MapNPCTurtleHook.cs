@@ -11,7 +11,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCTurtleHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Start));
+            //Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(OnDialoguerMessageEvent));
         }
 
@@ -71,7 +71,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         [HarmonyPatch(typeof(MapNPCTurtle), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
             static bool Prefix(string message, bool ___SkipDialogueEvent) {
-                if (APData.IsCurrentSlotEnabled()) {
+                if (APData.IsCurrentSlotEnabled() && APSettings.QuestPacifist) {
                     if (___SkipDialogueEvent) return false;
                     if (message == "Pacifist") {
                         MapEventNotification.Current.ShowTooltipEvent(TooltipEvent.Turtle);
@@ -81,6 +81,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         PlayerData.SaveCurrentFile();
                         MapUI.Current.Refresh();
                     }
+                    return false;
                 }
                 return true;
             }
