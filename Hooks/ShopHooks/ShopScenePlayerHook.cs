@@ -499,11 +499,15 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         }
         private static bool IsAPCharmChecked(Charm charm) {
             long loc = ShopSceneItemHook.charmLocations[charm];
-            return APClient.IsLocationChecked(loc);
+            bool res = APClient.IsLocationChecked(loc);
+            Plugin.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
+            return res;
         }
         private static bool IsAPWeaponChecked(Weapon weapon) {
             long loc = ShopSceneItemHook.weaponLocations[weapon];
-            return APClient.IsLocationChecked(loc);
+            bool res = APClient.IsLocationChecked(loc);
+            Plugin.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
+            return res;
         }
         private static bool IsAPLocationChecked(ShopSceneItem item) => 
             ShopSceneItemHook.IsAPLocationChecked(item);

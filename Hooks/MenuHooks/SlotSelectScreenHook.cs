@@ -301,6 +301,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             }
 
             private static bool IsAPEmpty(SlotSelectScreenSlot[] slots, int slotnum) {
+                //Plugin.Log($"Prompt delete {slotnum}");
                 return slots[slotnum].IsEmpty && APData.IsSlotEmpty(slotnum);
             }
         }
