@@ -58,7 +58,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             List<CodeInstruction> ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_1),
                                 new CodeInstruction(OpCodes.Call, _mi_IsAPEmpty),
-                                new CodeInstruction(OpCodes.Brfalse, tgt_label),
+                                new CodeInstruction(OpCodes.Brtrue, tgt_label),
                             ];
                             codes.InsertRange(i, ncodes);
                             i+=ncodes.Count;

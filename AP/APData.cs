@@ -150,7 +150,7 @@ namespace CupheadArchipelago.AP {
 
         public static bool IsSlotEmpty(int index) {
             if (global::PlayerData.Initialized) {
-                return SData[index].playerData.HasStartWeapon();
+                return !SData[index].playerData.HasStartWeapon();
             }
             else {
                 Plugin.Log("[APData] PlayerData is not initialized!", LogLevel.Warning);
