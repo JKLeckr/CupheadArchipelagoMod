@@ -34,7 +34,7 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("port")]
         public int port = 38281;
         [JsonProperty("slot")]
-        public string slot = "Player";
+        public string player = "Player";
         [JsonProperty("password")]
         public string password = "";
         [JsonProperty("seed")]
@@ -133,7 +133,7 @@ namespace CupheadArchipelago.AP {
             if (!resetSettings) {
                 data.address = old_data.address;
                 data.port = old_data.port;
-                data.slot = old_data.slot;
+                data.player = old_data.player;
                 data.password = old_data.password;
             }
             Save(index);

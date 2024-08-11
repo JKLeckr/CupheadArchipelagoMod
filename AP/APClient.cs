@@ -14,6 +14,8 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using BepInEx.Logging;
 using Archipelago.MultiClient.Net.Exceptions;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -23,7 +25,9 @@ namespace CupheadArchipelago.AP {
         public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapStatus==1; }
         public static APData APSessionGSData { get => GetAPSessionData(); }
         public static APData.PlayerData APSessionGSPlayerData { get => APSessionGSData.playerData; }
-        public static string APSessionPlayerSlot { get; private set; } = "";
+        public static int APSessionPlayerTeam { get; private set; }
+        public static int APSessionPlayerSlot { get; private set; } = 0;
+        public static string APSessionPlayerName { get; private set; } = "";
         public static int APSessionGSDataSlot { get; private set; } = -1;
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
@@ -31,6 +35,7 @@ namespace CupheadArchipelago.AP {
         public static APSlotData SlotData { get; private set; }
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
+        public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
         private static List<APItemData> ReceivedItems { get => APSessionGSData.receivedItems; }
         private static long ReceivedItemsIndex { get => ReceivedItems.Count + receivedItemsQueue.Count; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
@@ -45,6 +50,7 @@ namespace CupheadArchipelago.AP {
         private static int scoutMapStatus = 0;
         private static long currentReceivedItemIndex = 0;
         private static bool sending = false;
+        private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,5,0,0);
         internal const long AP_SLOTDATA_VERSION = 0;
@@ -70,7 +76,7 @@ namespace CupheadArchipelago.AP {
 
             APData data = APData.SData[index];
             session = ArchipelagoSessionFactory.CreateSession(data.address, data.port);
-            APSessionPlayerSlot = data.slot;
+            APSessionPlayerName = data.player;
             APSessionGSDataSlot = index;
             session.MessageLog.OnMessageReceived += OnMessageReceived;
             session.Socket.ErrorReceived += OnError;
@@ -90,26 +96,29 @@ namespace CupheadArchipelago.AP {
                 return false;
             }
             APData data = APData.SData[APSessionGSDataSlot];
-            Plugin.Log($"[APClient] Connecting to {data.address}:{data.port} as {data.slot}...");
+            Plugin.Log($"[APClient] Connecting to {data.address}:{data.port} as {data.player}...");
             LoginResult result;
             try {
                 string passwd = data.password.Length>0?data.password:null;
-                result = session.TryConnectAndLogin("Cuphead", data.slot, ItemsHandlingFlags.AllItems, AP_VERSION, null, null, passwd); //FIXME: Use better Item Handling Later
+                result = session.TryConnectAndLogin("Cuphead", data.player, ItemsHandlingFlags.AllItems, AP_VERSION, null, null, passwd); //FIXME: Use better Item Handling Later
             } catch (Exception e) {
                 result = new LoginFailure(e.GetBaseException().Message);
             }
 
             if (result.Successful)
             {
-                Plugin.Log($"[APClient] Connected to {data.address}:{data.port} as {data.slot}");
+                Plugin.Log($"[APClient] Connected to {data.address}:{data.port} as {data.player}");
                 SessionStatus = 3;
                 Plugin.Log($"[APClient] Getting AP Data...");
 
                 try {
                     LoginSuccessful loginData = (LoginSuccessful)result;
+                    APSessionPlayerTeam = loginData.Team;
+                    APSessionPlayerSlot = loginData.Slot;
                     if (APSessionGSData.seed.Length==0)
                         APSessionGSData.seed = session.RoomState.Seed;
                     SlotData = new APSlotData(loginData.SlotData);
+                    APSessionPlayerInfo = session.Players.GetPlayerInfo(APSessionPlayerTeam, APSessionPlayerSlot);
                 } catch (Exception e) {
                     Plugin.LogError($"[APClient] Exception: {e.Message}");
                     Plugin.LogError(e.ToString());
@@ -179,6 +188,11 @@ namespace CupheadArchipelago.AP {
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
                     if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
+                    if (APSettings.DeathLink) {
+                        Plugin.Log($"[APClient] Setting up DeathLink...");
+                        deathLinkService = session.CreateDeathLinkService();
+                        deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
+                    }
 
                     Plugin.Log($"[APClient] Setting up items...");
                     if (APSessionGSData.dlock) {
@@ -239,7 +253,7 @@ namespace CupheadArchipelago.AP {
             }
             else {
                 LoginFailure failure = (LoginFailure)result;
-                string errorMessage = $"[APClient] Failed to Connect to {data.address}:{data.port} as {data.slot}:";
+                string errorMessage = $"[APClient] Failed to Connect to {data.address}:{data.port} as {data.player}:";
                 foreach (string error in failure.Errors)
                 {
                     errorMessage += $"\n    {error}";
@@ -292,15 +306,19 @@ namespace CupheadArchipelago.AP {
         private static void Reset(bool resetSessionStatus=true) {
             session = null;
             if (resetSessionStatus && SessionStatus>0) SessionStatus = 0;
-            APSessionPlayerSlot = "";
+            APSessionPlayerName = "";
+            APSessionPlayerSlot = -1;
+            APSessionPlayerTeam = -1;
             APSessionGSDataSlot = -1;
             ConnectionInfo = null;
+            APSessionPlayerInfo = null;
             currentReceivedItemIndex = 0;
             doneChecksUnique = null;
             receivedItemsUnique = null;
             scoutMapStatus = 0;
             locMap.Clear();
             itemMap.Clear();
+            deathLinkService = null;
             receivedItemsQueueLock = false;
             receivedItemsQueue = new();
             itemApplyQueue = new();
@@ -550,6 +568,39 @@ namespace CupheadArchipelago.AP {
             } else {
                 throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
             }
+        }
+
+        private static void OnDeathLinkReceived(DeathLink deathLink) {
+            Plugin.Log($"[APClient] DeathLink: {deathLink.Cause}");
+            Plugin.Log($"[APClient] Death received from {deathLink.Source}");
+            if (APManager.Current!=null) {
+                Plugin.Log($"[APClient] Commencing...");
+                APManager.Current.TriggerDeath(deathLink.Cause);
+                Plugin.Log($"[APClient] Enjoy your death!");
+            }
+            else {
+                Plugin.Log($"[APClient] Death avoided because level conditions were not met.");
+            }
+        }
+        public static bool IsDeathLinkActive() => deathLinkService != null;
+        public static void SendDeathLink(string cause=null, DeathLinkCauseType causeType=DeathLinkCauseType.Normal) {
+            if (!IsDeathLinkActive()) return;
+            Plugin.Log("[APClient] Sharing your death...");
+            string player = APSessionPlayerInfo.Alias;
+            string deathTxt = "walloped";
+            string chessDeathTxt = "beaten";
+            string causeMessage = causeType switch
+            {
+                DeathLinkCauseType.Boss => player + " got " + deathTxt + (cause != null ? " by " + cause : "" + "!"),
+                DeathLinkCauseType.Mausoleum => player + " failed to protect the Chalice" + (cause != null ? " at " + cause : "" + "!"),
+                DeathLinkCauseType.Tutorial => player + " died in a tutorial level!",
+                DeathLinkCauseType.ChessCastle => player + " was " + chessDeathTxt + " at The King's Leap" + (cause != null ? " by " + cause : "" + "!"),
+                DeathLinkCauseType.Graveyard => player + " got taken for a ride in the graveyard!",
+                _ => player + " was " + deathTxt + (cause != null ? " at " + cause : "" + "!"),
+            };
+            Plugin.Log($"[APClient] Your message: \"{causeMessage}\"");
+            deathLinkService.SendDeathLink(new DeathLink(APSessionPlayerName, causeMessage));
+            Plugin.Log("[APClient] Shared. They are enjoying your death probably...");
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {

@@ -19,6 +19,57 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             Harmony.CreateAndPatchAll(typeof(zHack_OnWin));
         }
 
+        private static readonly Dictionary<Levels, string> bossNames = new() {
+            {Levels.Veggies, "The Root Pack"},
+            {Levels.Slime, "Goopy Le Grande"},
+            {Levels.FlyingBlimp, "Hilda Berg"},
+            {Levels.Flower, "Cagney Carnation"},
+            {Levels.Frogs, "Ribby and Croaks"},
+            {Levels.Baroness, "Barnoness Von Bon Bon"},
+            {Levels.Clown, "Beppi the Clown"},
+            {Levels.FlyingGenie, "Djimmi the Great"},
+            {Levels.Dragon, "Grim Matchstick"},
+            {Levels.FlyingBird, "Wally Warbles"},
+            {Levels.Bee, "Rumor Honeybottoms"},
+            {Levels.Pirate, "Captain Brineybeard"},
+            {Levels.SallyStagePlay, "Sally Stageplay"},
+            {Levels.Mouse, "Werner Werman"},
+            {Levels.Robot, "Dr. Kahl's Robot"},
+            {Levels.FlyingMermaid, "Cala Maria"},
+            {Levels.Train, "The Phanton Express"},
+            {Levels.DicePalaceBooze, "The Tipsy Troop"},
+            {Levels.DicePalaceChips, "Chips Bettigan"},
+            {Levels.DicePalaceCigar, "Mr. Wheezy"},
+            {Levels.DicePalaceDomino, "Pip and Dot"},
+            {Levels.DicePalaceRabbit, "Hopus Pocus"},
+            {Levels.DicePalaceFlyingHorse, "Phear Lap"},
+            {Levels.DicePalaceRoulette, "Pirouletta"},
+            {Levels.DicePalaceEightBall, "Mangosteen"},
+            {Levels.DicePalaceFlyingMemory, "Mr. Chimes"},
+            {Levels.DicePalaceMain, "King Dice"},
+            {Levels.Devil, "The Devil"},
+            {Levels.OldMan, "Glumstone the Giant"},
+            {Levels.SnowCult, "Mortimer Freeze"},
+            {Levels.RumRunners, "The Moonshine Mob"},
+            {Levels.FlyingCowboy, "Esther Winchester"},
+            {Levels.Airplane, "The Howling Aces"},
+            {Levels.Saltbaker, "Chef Saltbaker"},
+            {Levels.Graveyard, "The Angel and The Demon"},
+            {Levels.ChessPawn, "The Pawns"},
+            {Levels.ChessKnight, "The Knight"},
+            {Levels.ChessBishop, "The Bishop"},
+            {Levels.ChessRook, "The Rook"},
+            {Levels.ChessQueen, "The Queen"},
+        };
+        private static readonly Dictionary<Levels, string> platformLevelNames = new() {
+            {Levels.Platforming_Level_1_1, "Forest Follies"},
+            {Levels.Platforming_Level_1_2, "Treetop Trouble"},
+            {Levels.Platforming_Level_2_1, "Funhouse Frazzle"},
+            {Levels.Platforming_Level_2_2, "Funfair Fever"},
+            {Levels.Platforming_Level_3_1, "Perilous Piers"},
+            {Levels.Platforming_Level_3_2, "Rugged Ridge"},
+        };
+
         [HarmonyPatch(typeof(Level), "Awake")]
         internal static class Awake {
             /*static bool Prefix() {
@@ -59,7 +110,10 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 {
                     Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                     _ => false,
-                } && instance.CurrentLevel != Levels.House && instance.CurrentLevel != Levels.ShmupTutorial && instance.CurrentLevel != Levels.DiceGate;
+                } && instance.CurrentLevel switch {
+                    Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.ChessCastle => false,
+                    _ => true,
+                };
             }
         }
 
@@ -139,6 +193,37 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         }
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Level), "_OnPreLose")]
+        internal static class _OnLose {
+            static bool Prefix(Level __instance) {
+                if (APData.IsCurrentSlotEnabled() && APClient.IsDeathLinkActive()) {
+                    if (APManager.Current != null && !APManager.Current.IsDeathTriggered()) {
+                        if (__instance.LevelType == Level.Type.Platforming) {
+                            APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Normal);
+                        }
+                        else if (__instance.LevelType == Level.Type.Tutorial) {
+                            APClient.SendDeathLink(__instance.CurrentLevel.ToString(), DeathLinkCauseType.Tutorial);
+                        }
+                        else {
+                            if (__instance.CurrentLevel == Levels.Mausoleum) {
+                                APClient.SendDeathLink("Mausoleum", DeathLinkCauseType.Mausoleum);
+                            }
+                            else if (Array.Exists(Level.kingOfGamesLevels, (Levels level) => __instance.CurrentLevel == level)) {
+                                APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.ChessCastle);
+                            }
+                            else if (__instance.CurrentLevel == Levels.Graveyard) {
+                                APClient.SendDeathLink(platformLevelNames[Levels.Graveyard], DeathLinkCauseType.Graveyard);
+                            }
+                            else {
+                                APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Boss);
+                            }
+                        }
+                    }
+                }
+                return true;
             }
         }
 

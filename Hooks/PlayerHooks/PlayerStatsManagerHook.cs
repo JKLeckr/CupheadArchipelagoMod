@@ -25,9 +25,17 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
+        private static StatsCommands statCommand = StatsCommands.Orig;
 
+        private static MethodInfo _mi_set_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
         private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter")?.GetSetMethod(true);
-        private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static MethodInfo _mi_OnStatsDeath = typeof(PlayerStatsManager).GetMethod("OnStatsDeath", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private enum StatsCommands {
+            Orig,
+            Death,
+        }
 
         [HarmonyPatch(typeof(PlayerStatsManager), "OnAwake")]
         internal static class OnAwake {
@@ -109,6 +117,22 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             }
         }
 
+        [HarmonyPatch(typeof(PlayerStatsManager), "DebugAddSuper")]
+        internal static class DebugAddSuper {
+            static bool Prefix(PlayerStatsManager __instance) {
+                switch (statCommand) {
+                    case StatsCommands.Death:
+                        _mi_set_Health.Invoke(__instance, [0]);
+                        Vibrator.Vibrate(1f, 0.2f, __instance.basePlayer.id);
+                        _mi_OnStatsDeath.Invoke(__instance, []);
+                        break;
+                    default:
+                        return true;
+                }
+                return false;
+            }
+        }
+
         public static float GetSuperFillAmount() => superFillAmount;
         public static void SetSuperFillAmount(float set) => superFillAmount = set;
 
@@ -120,6 +144,14 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             superFillAmount = set;
             instance.DebugFillSuper();
             superFillAmount = orig;
+        }
+        public static void KillPlayer(PlayerId playerId) {
+            statCommand = StatsCommands.Death;
+            if (playerId == PlayerId.PlayerOne || playerId == PlayerId.Any)
+                CurrentStatMngr1.DebugAddSuper();
+            if (playerId == PlayerId.PlayerTwo || playerId == PlayerId.Any)
+                CurrentStatMngr2.DebugAddSuper();
+            statCommand = StatsCommands.Orig;
         }
     }
 }
