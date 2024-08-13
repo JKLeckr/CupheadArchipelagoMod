@@ -7,6 +7,7 @@ namespace CupheadArchipelago.AP {
         public static bool Hard { get; internal set; } = false;
         public static APItem StartWeapon { get; internal set; } = APItem.weapon_peashooter;
         public static bool FreemoveIsles { get; internal set; } = false;
+        public static bool RandomizeAbilities { get; internal set; } = false;
         public static GradeChecks BossGradeChecks { get; internal set; } = GradeChecks.Disabled;
         public static GradeChecks RungunGradeChecks { get; internal set; } = GradeChecks.Disabled;
         public static bool DeathLink { get; internal set; } = false;

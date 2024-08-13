@@ -187,7 +187,8 @@ namespace CupheadArchipelago.AP {
                     
                     Plugin.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
-                    if (true) APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All); // Implement ability workings later
+                    if (!APSettings.RandomizeAbilities)
+                        APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All);
                     if (APSettings.DeathLink) {
                         Plugin.Log($"[APClient] Setting up DeathLink...");
                         deathLinkService = session.CreateDeathLinkService();
