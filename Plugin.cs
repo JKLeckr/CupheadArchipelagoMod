@@ -6,6 +6,7 @@ using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using System;
+using System.IO;
 
 namespace CupheadArchipelago {
     [BepInPlugin("com.JKLeckr.CupheadArchipelago", "CupheadArchipelago", PluginInfo.PLUGIN_VERSION)]
@@ -14,13 +15,15 @@ namespace CupheadArchipelago {
     public class Plugin : BaseUnityPlugin {
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
 
-        public static Plugin Instance { get; private set; }
+        private static Plugin Instance { get; set;}
         public static bool ConfigSkipIntro => Instance.configSkipIntro.Value;
+        public static string Name => PluginInfo.PLUGIN_NAME;
         public static string Version => PluginInfo.PLUGIN_VERSION;
         public static int State { get; private set; } = 0;
 
         private ConfigEntry<bool> configEnabled;
-        private ConfigEntry<LoggingFlags> configLogging;
+        private ConfigEntry<bool> configModLogs;
+        private ConfigEntry<LoggingFlags> configLoggingFlags;
         private ConfigEntry<LicenseLogModes> configLogLicense;
         private ConfigEntry<string> configSaveKeyName;
         private ConfigEntry<bool> configSkipIntro;
@@ -28,13 +31,15 @@ namespace CupheadArchipelago {
         private void Awake() {
             Instance = this;
             configEnabled = Config.Bind("Main", "Enabled", true);
-            configLogging = Config.Bind("Main", "Logging", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
-            configLogLicense = Config.Bind("Main", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
+            configModLogs = Config.Bind("Logging", "ModLogFiles", true, "Writes mod logs to files. They are not overwritten on startup unlike the main BepInEx log (unless configured not to).");
+            configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
+            configLogLicense = Config.Bind("Logging", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves (Default: \"cuphead_player_data_v1_ap_slot_\", Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
 
             if (configEnabled.Value) {
+                if (configModLogs.Value) SetupLogging();
                 Log($"CupheadArchipelago {Version} by JKLeckr");
                 
                 Log("[Log] Info", LoggingFlags.Debug);
@@ -102,6 +107,11 @@ namespace CupheadArchipelago {
             return -1;
         }
 
+        private static void SetupLogging() {
+            ModLogListener listener = new("CupheadAPLog", Instance.Logger.SourceName);
+            BepInEx.Logging.Logger.Listeners.Add(listener);
+        }
+
         public static void Log(object data) {
             Log(data, LogLevel.Info);
         }
@@ -137,7 +147,7 @@ namespace CupheadArchipelago {
             Log(data, requiredFlags, LogLevel.Debug);
         }
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
-            return (((int)flags)&((int)Instance.configLogging.Value))==(int)flags;
+            return (((int)flags)&((int)Instance.configLoggingFlags.Value))==(int)flags;
         }
         public static bool IsDebug() => IsLoggingFlagsEnabled(LoggingFlags.Debug);
     }
