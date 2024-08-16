@@ -441,13 +441,13 @@ namespace CupheadArchipelago.AP {
             return state;
         }
 
-        public static void GoalComplete(Goal goal) {
+        public static void GoalComplete(Goals goal) {
             APSessionGSData.AddGoals(goal);
             UpdateGoal();
         }
         public static bool IsAPGoalComplete() {
-            if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goal.Devil | Goal.Saltbaker);
-            else return APSessionGSData.IsGoalsCompleted(Goal.Devil);
+            if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goals.Devil | Goals.Saltbaker);
+            else return APSessionGSData.IsGoalsCompleted(Goals.Devil);
         }
 
         private static void OnMessageReceived(LogMessage message) {

@@ -141,7 +141,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     // For now, the final bosses are not checks because they are event locations
                     if (instance.CurrentLevel == Levels.Devil || instance.CurrentLevel == Levels.Saltbaker) {
                         Plugin.Log("[LevelHook] Goal");
-                        APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goal.Saltbaker:Goal.Devil);
+                        APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goals.Saltbaker:Goals.Devil);
                     }
                     else if (instance.CurrentLevel == Levels.Mausoleum) {
                         Plugin.Log("[LevelHook] Mausoleum Type");
@@ -169,7 +169,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 case Level.Type.Battle: {
                                     Plugin.Log("[LevelHook] Battle Type");
                                     if (APSettings.BossGradeChecks>0)
-                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.BossGradeChecks))) {
+                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,1), false);
                                         }
                                     break;
@@ -177,7 +177,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 case Level.Type.Platforming: {
                                     Plugin.Log("[LevelHook] Platforming Type");
                                     if (APSettings.RungunGradeChecks>0) {
-                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+((int)APSettings.RungunGradeChecks))) {
+                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.RungunGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,((int)APSettings.RungunGradeChecks>3)?2:1), false);
                                         }
                                     }

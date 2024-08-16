@@ -48,7 +48,7 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("receivedItems")]
         public List<APItemData> receivedItems = new();
         [JsonProperty("goalsCompleted")]
-        private Goal goalsCompleted = Goal.None;
+        private Goals goalsCompleted = Goals.None;
         [JsonIgnore]
         internal bool dlock = false;
 
@@ -158,10 +158,10 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        public void AddGoals(Goal goals) => goalsCompleted |= goals;
-        public void RemoveGoals(Goal goals) => goalsCompleted &= ~goals;
-        public void ResetGoals() => goalsCompleted = Goal.None;
-        public bool IsGoalsCompleted(Goal goals) => (goals & goalsCompleted) >= goals;
+        public void AddGoals(Goals goals) => goalsCompleted |= goals;
+        public void RemoveGoals(Goals goals) => goalsCompleted &= ~goals;
+        public void ResetGoals() => goalsCompleted = Goals.None;
+        public bool IsGoalsCompleted(Goals goals) => (goals & goalsCompleted) >= goals;
 
         public class PlayerData {
             [Flags]
