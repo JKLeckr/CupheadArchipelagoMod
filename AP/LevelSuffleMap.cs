@@ -5,12 +5,17 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.AP {
     public class LevelShuffleMap {
-        private Dictionary<string, string> shuffleMap;
+        private static Dictionary<long, Level> levelMap = new() {};
 
-        public LevelShuffleMap(IDictionary<string, string> map) {
-            this.shuffleMap = new(map);
+        private Dictionary<Level, Level> shuffleMap;
+
+        public LevelShuffleMap(IDictionary<long, long> map) {
+            shuffleMap = new();
+            foreach (KeyValuePair<long, long> items in map) {
+                shuffleMap.Add(levelMap[items.Key], levelMap[items.Value]);
+            }
         }
 
-        public string GetShuffledLevel(string orig) => shuffleMap[orig];
+        public Level GetShuffledLevel(Level orig) => shuffleMap[orig];
     }
 }

@@ -138,13 +138,6 @@ namespace CupheadArchipelago.AP {
                     SessionStatus = -3;
                     return false;
                 }
-                Plugin.Log($"[APClient] Checking ID version...");
-                if (SlotData.id_version != AP_SLOTDATA_VERSION) {
-                    Plugin.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
-                    CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -3;
-                    return false;
-                }
                 Plugin.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
                 //Plugin.Log($"Seed: {seed}");
@@ -178,6 +171,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
+                    APSettings.RandomizeAbilities = SlotData.randomize_abilities;
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
                     APSettings.QuestPacifist = SlotData.pacifist_quest;

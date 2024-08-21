@@ -14,6 +14,7 @@ namespace CupheadArchipelago {
     [BepInProcess("Cuphead.exe")]
     public class Plugin : BaseUnityPlugin {
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
+        private const long CONFIG_VERSION = 1;
 
         private static Plugin Instance { get; set;}
         public static bool ConfigSkipIntro => Instance.configSkipIntro.Value;
@@ -21,6 +22,7 @@ namespace CupheadArchipelago {
         public static string Version => PluginInfo.PLUGIN_VERSION;
         public static int State { get; private set; } = 0;
 
+        private ConfigEntry<long> configVersion;
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<bool> configModLogs;
         private ConfigEntry<LoggingFlags> configLoggingFlags;
@@ -30,6 +32,7 @@ namespace CupheadArchipelago {
 
         private void Awake() {
             Instance = this;
+            configVersion = Config.Bind("Main", "version", CONFIG_VERSION);
             configEnabled = Config.Bind("Main", "Enabled", true);
             configModLogs = Config.Bind("Logging", "ModLogFiles", true, "Writes mod logs to files. They are not overwritten on startup unlike the main BepInEx log (unless configured not to).");
             configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
@@ -48,6 +51,11 @@ namespace CupheadArchipelago {
                 LogFatal("[Log] Fatal", LoggingFlags.Debug);
                 LogMessage("[Log] Message", LoggingFlags.Debug);
                 LogDebug("[Log] Debug", LoggingFlags.Debug);
+
+                if (configVersion.Value != CONFIG_VERSION) {
+                    LogWarning("Config version changed! You may want to check the config.");
+                    configVersion.Value = CONFIG_VERSION;
+                }
 
                 if (configLogLicense.Value>0) {
                     ModLicense license = new();

@@ -8,7 +8,6 @@ using CupheadArchipelago.Util;
 namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
-        public long id_version {get; private set;}
         public double world_version {get; private set;}
         public string[] levels {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
@@ -17,6 +16,7 @@ namespace CupheadArchipelago.AP {
         public bool expert_mode {get; private set;}
         public APItem start_weapon {get; private set;}
         public bool freemove_isles {get; private set;}
+        public bool randomize_abilities {get; private set;}
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
         public bool agrade_quest {get; private set;}
@@ -25,11 +25,8 @@ namespace CupheadArchipelago.AP {
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
-            id_version = GetAPSlotDataLong(slotData, "id_version");
             world_version = GetAPSlotDataFloat(slotData, "world_version");
-            //Plugin.Log($"levels: {GetAPSlotData(slotData, "levels")}");
-            levels = GetAPSlotDataDeserialized<List<string>>(slotData, "levels").ToArray();
-            level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<string, string>>(slotData, "level_shuffle_map"));
+            level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<long, long>>(slotData, "level_shuffle_map"));
             shop_map = GetAPShopMap(slotData);
             //Plugin.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataBool(slotData, "use_dlc");
@@ -46,6 +43,7 @@ namespace CupheadArchipelago.AP {
                 _ => APItem.weapon_peashooter,
             };
             freemove_isles = GetAPSlotDataBool(slotData, "freemove_isles");
+            randomize_abilities = GetAPSlotDataBool(slotData, "randomize_abilities");
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             agrade_quest = GetAPSlotDataBool(slotData, "agrade_quest");
