@@ -3,6 +3,7 @@
 
 using System;
 using CupheadArchipelago.Hooks.PlayerHooks;
+using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
@@ -122,8 +123,14 @@ namespace CupheadArchipelago.AP {
                         }
                         if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                     }
-                    else if (itemId==APItem.level_trap_fingerjam) {Stub(itemName);}
-                    else if (itemId==APItem.level_trap_slowfire) {Stub(itemName);}
+                    else if (itemId==APItem.level_trap_fingerjam) {
+                        AudioManager.Play("level_menu_select");
+                        APManager.Current.FingerJam();
+                    }
+                    else if (itemId==APItem.level_trap_slowfire) {
+                        AudioManager.Play("level_menu_select");
+                        APManager.Current.SlowFire();
+                    }
                     else if (itemId==APItem.level_trap_superdrain) {
                         AudioManager.Play("level_menu_select");
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
@@ -131,8 +138,7 @@ namespace CupheadArchipelago.AP {
                     }
                     else if (itemId==APItem.level_trap_reversal) {
                         AudioManager.Play("level_menu_select");
-                        stats1.ReverseControls(5f);
-                        stats2?.ReverseControls(5f);
+                        PlayerStatsManagerHook.ReverseControls();
                     }
                     else if (itemId==APItem.level_trap_envirotrap) {Stub(itemName);}
                     break;

@@ -1,6 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using CupheadArchipelago.Util;
@@ -8,8 +9,7 @@ using CupheadArchipelago.Util;
 namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
-        public double world_version {get; private set;}
-        public string[] levels {get; private set;}
+        public Version world_version {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
         public ShopSet[] shop_map {get; private set;}
         public bool use_dlc {get; private set;}
@@ -25,7 +25,7 @@ namespace CupheadArchipelago.AP {
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
-            world_version = GetAPSlotDataFloat(slotData, "world_version");
+            world_version = GetAPSlotDataVersion(slotData, "world_version");
             level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<long, long>>(slotData, "level_shuffle_map"));
             shop_map = GetAPShopMap(slotData);
             //Plugin.Log($"shop_map: {shop_map}");
@@ -63,6 +63,17 @@ namespace CupheadArchipelago.AP {
             } catch (KeyNotFoundException) {
                 throw new KeyNotFoundException($"GetAPSlotData: {key} is not a valid key!");
             }
+        }
+        private static Version GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
+            string vraw = GetAPSlotDataString(slotData, key);
+            Version res;
+            try {
+                res = new Version(vraw);
+            } catch (Exception) {
+                Plugin.LogWarning($"[APSlotData] Invalid version {vraw}");
+                res = new Version();
+            }
+            return res;
         }
         private static ShopSet[] GetAPShopMap(Dictionary<string, object> slotData) {
             string shopMapKey = "shop_map";

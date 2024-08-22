@@ -1,12 +1,11 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using BepInEx.Configuration;
-using System;
-using System.IO;
 
 namespace CupheadArchipelago {
     [BepInPlugin("com.JKLeckr.CupheadArchipelago", "CupheadArchipelago", PluginInfo.PLUGIN_VERSION)]

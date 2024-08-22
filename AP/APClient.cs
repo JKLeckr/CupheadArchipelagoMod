@@ -461,17 +461,14 @@ namespace CupheadArchipelago.AP {
             Plugin.Log("[APClient] OnItemReceived");
             Plugin.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
             try {
+                bool recover = helper.Index < ReceivedItemsIndex;
                 ItemInfo item = helper.PeekItem();
                 if (!itemMap.ContainsKey(item.ItemId)) {
                     itemMap.Add(item.ItemId, new APItemInfo(item.ItemId, item.ItemName, item.Flags));
                 }
                 long itemId = item.ItemId;
                 string itemName = GetItemName(itemId);
-                if (currentReceivedItemIndex>ReceivedItemsIndex) {
-                    currentReceivedItemIndex=ReceivedItemsIndex;
-                    Plugin.LogWarning("[APClient] currentReceivedItemIndex is greater than ReceivedItemIndex!");
-                }
-                else if (currentReceivedItemIndex==ReceivedItemsIndex && item.ItemId!=APSettings.StartWeapon) {
+                if ((currentReceivedItemIndex>=ReceivedItemsIndex || recover) && item.ItemId!=APSettings.StartWeapon) {
                     Plugin.Log($"[APClient] Recieving {itemName}...");
                     APItemData nitem = new APItemData(item);
                     if (!receivedItemsQueueLock) {
@@ -514,7 +511,7 @@ namespace CupheadArchipelago.AP {
                 QueueItem(item);
             }
             else {
-                Plugin.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} already exists! Skipping!");
+                Plugin.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} ({item.GetHashCode()}) already exists. Skipping.");
             }
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);

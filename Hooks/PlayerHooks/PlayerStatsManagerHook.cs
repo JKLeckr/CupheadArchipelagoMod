@@ -19,6 +19,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         public const float DEFAULT_SUPER_ADD_AMOUNT = 10f;
         public const float DEFAULT_SUPER_FILL_AMOUNT = 50f;
         public const bool DEFAULT_PLAY_SUPER_CHANGED_EFFECT = true;
+        public const float REVERSE_CONTROLS_TIME = 10f;
 
         public static PlayerStatsManager CurrentStatMngr1 { get; private set; } = null;
         public static PlayerStatsManager CurrentStatMngr2 { get; private set; } = null;
@@ -26,8 +27,10 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
         private static StatsCommands statCommand = StatsCommands.Orig;
+        private static object[] statCommandArgs = [];
 
         private static MethodInfo _mi_set_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
+        private static MethodInfo _mi_set_ReverseTime = typeof(PlayerStatsManager).GetProperty("ReverseTime", BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
         private static MethodInfo _mi_set_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter")?.GetSetMethod(true);
         private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo _mi_OnStatsDeath = typeof(PlayerStatsManager).GetMethod("OnStatsDeath", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -35,6 +38,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private enum StatsCommands {
             Orig,
             Death,
+            ReverseControls,
         }
 
         [HarmonyPatch(typeof(PlayerStatsManager), "OnAwake")]
@@ -119,12 +123,16 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
         [HarmonyPatch(typeof(PlayerStatsManager), "DebugAddSuper")]
         internal static class DebugAddSuper {
-            static bool Prefix(PlayerStatsManager __instance) {
+            static bool Prefix(PlayerStatsManager __instance, ref float ___timeSinceReversed) {
                 switch (statCommand) {
                     case StatsCommands.Death:
                         _mi_set_Health.Invoke(__instance, [0]);
                         Vibrator.Vibrate(1f, 0.2f, __instance.basePlayer.id);
                         _mi_OnStatsDeath.Invoke(__instance, []);
+                        break;
+                    case StatsCommands.ReverseControls:
+                        _mi_set_ReverseTime.Invoke(__instance, [__instance.ReverseTime]);
+                        ___timeSinceReversed = 0f;
                         break;
                     default:
                         return true;
@@ -151,6 +159,12 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 CurrentStatMngr1.DebugAddSuper();
             if (playerId == PlayerId.PlayerTwo || playerId == PlayerId.Any)
                 CurrentStatMngr2.DebugAddSuper();
+            statCommand = StatsCommands.Orig;
+        }
+        public static void ReverseControls() {
+            statCommand = StatsCommands.ReverseControls;
+            CurrentStatMngr1.DebugAddSuper();
+            CurrentStatMngr2?.DebugAddSuper();
             statCommand = StatsCommands.Orig;
         }
     }

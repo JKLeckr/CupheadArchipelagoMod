@@ -12,6 +12,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class PlanePlayerWeaponManagerHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));
+            Harmony.CreateAndPatchAll(typeof(CheckBasic));
             Harmony.CreateAndPatchAll(typeof(CheckEx));
             Harmony.CreateAndPatchAll(typeof(HandleWeaponSwitch));
         }
@@ -25,6 +26,13 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 else if (!PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_bomb)) {
                     ___currentWeapon = Weapon.plane_weapon_bomb;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "CheckBasic")]
+        internal static class CheckBasic {
+            static bool Prefix(PlanePlayerWeaponManager __instance) {
+                return PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_peashot) || PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_bomb);
             }
         }
 

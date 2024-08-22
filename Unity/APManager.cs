@@ -25,6 +25,10 @@ namespace CupheadArchipelago.Unity {
         private bool death = false;
         private string deathCause = "";
         private bool deathExecuted = false;
+        [SerializeField]
+        private float fingerJam = 0f;
+        [SerializeField]
+        private float slowFire = 0f;
         
         public void Init(Type type = Type.Normal) {
             if (init) return;
@@ -39,6 +43,7 @@ namespace CupheadArchipelago.Unity {
         }
         public bool IsActive() => active;
         public void SetActive(bool active) => this.active = active;
+        
         public bool IsDeathTriggered() => death;
         public void TriggerDeath(string deathCause = null) {
             if (IsDeathTriggered()) {
@@ -49,7 +54,16 @@ namespace CupheadArchipelago.Unity {
             this.deathCause = deathCause ?? "";
         }
 
-        //void Awake() {}
+        public bool IsFingerJammed() => fingerJam > 0;
+        public void FingerJam(float addTime = 5) {
+            if (fingerJam<0) fingerJam = 0;
+            fingerJam += addTime;
+        }
+        public bool IsSlowFired() => slowFire > 0;
+        public void SlowFire(float addTime = 8) {
+            if (slowFire<0) slowFire = 0;
+            slowFire += addTime;
+        }
 
         void Update() {
             if (init) {
@@ -65,6 +79,14 @@ namespace CupheadArchipelago.Unity {
                         deathExecuted = true;
                         active = false;
                         return;
+                    }
+                    if (fingerJam>0) {
+                        fingerJam -= Time.deltaTime;
+                        if (fingerJam<0) fingerJam = 0;
+                    }
+                    if (slowFire>0) {
+                        slowFire -= Time.deltaTime;
+                        if (slowFire<0) slowFire = 0;
                     }
                     APClient.ItemUpdate();
                     if (type == Type.Level) {
