@@ -24,10 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="README.md" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="NOTICE.txt" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="LICENSE.3rd-party.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="README.md" CopyToOutputDirectory="Always" />
+    <None Update="LICENSE.txt" CopyToOutputDirectory="Always" />
+    <None Update="NOTICE.txt" CopyToOutputDirectory="Always" />
+    <None Update="LICENSE.3rd-party.txt" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">
