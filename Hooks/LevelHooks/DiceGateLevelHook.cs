@@ -63,6 +63,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
             private static bool APCondition(bool vanillaCondition, int testCount) {
                 if (APData.IsCurrentSlotEnabled()) {
+                    Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
                     return APClient.APSessionGSPlayerData.contracts>=testCount;
                 }
                 else return vanillaCondition;

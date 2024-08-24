@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using BepInEx;
@@ -19,36 +20,17 @@ namespace CupheadArchipelago {
 
         public bool WriteFromUnityLog { get; set; }
 
-        public ModLogListener(string logName, string logSourceName, LogLevel displayedLogLevel = LogLevel.All, bool includeUnityLog = true) {
+        public ModLogListener(string logFile, string logPath, string logSourceName, LogLevel displayedLogLevel = LogLevel.All, bool includeUnityLog = true) {
             LogSourceName = logSourceName;
             WriteFromUnityLog = includeUnityLog;
             DisplayedLogLevel = displayedLogLevel;
 
-            string logPath = Path.Combine(Paths.BepInExRootPath, "logs");
-            Directory.CreateDirectory(logPath);
-            string modLogPath = Path.Combine(logPath, Plugin.Name);
-            Directory.CreateDirectory(modLogPath);
-            
-            int num = 0;
-            string filename;
-            do {
-                filename = $"{logName}.{num++}.log";
-            } while (File.Exists(Path.Combine(modLogPath, filename)));
-            Logging.Log($"Logging to {filename}");
-            
-            int startnum = num;
-            
-            FileStream fileStream;
-            while (!Utility.TryOpenFileStream(Path.Combine(modLogPath, filename), FileMode.Create, out fileStream, FileAccess.Write)) {
-                if (num >= startnum+5) {
-                    Logging.LogError("5 attempts of opening files for mod logging failed. Not logging.");
-                    return;
-                }
-
-                Logging.LogWarning($"Could not open \"{filename}\" for writing.");
-                filename = $"{logName}.{num++}.log";
-                Logging.Log($"Trying {filename}...");
+            if (!Utility.TryOpenFileStream(Path.Combine(logPath, logFile), FileMode.Create, out FileStream fileStream, FileAccess.Write)) {
+                Logging.LogError($"Could not open \"{logFile}\" for writing. Not logging.");
+                return;
             }
+
+            Logging.Log($"Logging to {logFile}");
 
             LogWriter = TextWriter.Synchronized(new StreamWriter(fileStream, Utility.UTF8NoBom));
             FlushTimer = new Timer(delegate {

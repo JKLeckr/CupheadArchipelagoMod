@@ -22,6 +22,7 @@ namespace CupheadArchipelago {
         private ConfigEntry<long> configVersion;
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<bool> configModLogs;
+        private ConfigEntry<int> configModFileMax;
         private ConfigEntry<LoggingFlags> configLoggingFlags;
         private ConfigEntry<LicenseLogModes> configLogLicense;
         private ConfigEntry<string> configSaveKeyName;
@@ -31,6 +32,7 @@ namespace CupheadArchipelago {
             configVersion = Config.Bind("Main", "version", CONFIG_VERSION);
             configEnabled = Config.Bind("Main", "Enabled", true);
             configModLogs = Config.Bind("Logging", "ModLogFiles", true, "Writes mod logs to files. They are not overwritten on startup unlike the main BepInEx log (unless configured not to).");
+            configModFileMax = Config.Bind("Logging", "ModLogFileMax", 10, "The maxmum amount of mod logs that can be in the mod logs folder at once. Oldest gets deleted when max is reached.");
             configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
             configLogLicense = Config.Bind("Logging", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
@@ -115,8 +117,16 @@ namespace CupheadArchipelago {
         private static void SetupLogging(Plugin instance) {
             Logging.Init(instance.Logger, instance.configLoggingFlags.Value);
             if (instance.configModLogs.Value) {
-                ModLogListener listener = new("CupheadAPLog", instance.Logger.SourceName);
+                Logging.Log("Setting up mod logging...");
+                try {
+                    LogFiles.Setup("CupheadAPLog", PluginInfo.PLUGIN_NAME, instance.configModFileMax.Value);
+                } catch (Exception e) {
+                    Logging.LogError($"Mod logging set up failure: {e.Message}");
+                    return;
+                }
+                ModLogListener listener = new(LogFiles.LogFile, LogFiles.LogDirPath, instance.Logger.SourceName);
                 BepInEx.Logging.Logger.Listeners.Add(listener);
+                Logging.Log("Mod logging started");
             }
         }
     }
