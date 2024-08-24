@@ -28,7 +28,7 @@ namespace CupheadArchipelago.AP {
             world_version = GetAPSlotDataVersion(slotData, "world_version");
             level_shuffle_map = new LevelShuffleMap(GetAPSlotDataDeserialized<Dictionary<long, long>>(slotData, "level_shuffle_map"));
             shop_map = GetAPShopMap(slotData);
-            //Plugin.Log($"shop_map: {shop_map}");
+            //Logging.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataBool(slotData, "use_dlc");
             expert_mode = GetAPSlotDataBool(slotData, "expert_mode");
             start_weapon = GetAPSlotDataLong(slotData, "start_weapon") switch {
@@ -70,7 +70,7 @@ namespace CupheadArchipelago.AP {
             try {
                 res = new Version(vraw);
             } catch (Exception) {
-                Plugin.LogWarning($"[APSlotData] Invalid version {vraw}");
+                Logging.LogWarning($"[APSlotData] Invalid version {vraw}");
                 res = new Version();
             }
             return res;

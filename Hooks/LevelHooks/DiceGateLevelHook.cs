@@ -29,7 +29,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
@@ -47,9 +47,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
                 if (insertCount!=12) throw new Exception($"{nameof(Start)}: Patch Failed! insertCount: {insertCount}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 

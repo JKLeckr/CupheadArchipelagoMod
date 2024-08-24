@@ -55,7 +55,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(PlayerData), "OnLoaded")]
         internal static class OnLoaded {
             static void Postfix() {
-                Plugin.Log("Loading...");
+                Logging.Log("Loading...");
                 APData.LoadData();
             }
         }
@@ -63,7 +63,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(PlayerData), "Save")]
         internal static class Save {
             static bool Prefix(int fileIndex) {
-                Plugin.Log($"Save {fileIndex}");
+                Logging.Log($"Save {fileIndex}");
                 Debug.Log($"Saving to slot {fileIndex}...");
                 return true;
             }
@@ -76,7 +76,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(PlayerData), "AddCurrency")]
         internal static class AddCurrency {
             static bool Prefix() {
-                Plugin.Log("AddCurrency");
+                Logging.Log("AddCurrency");
                 return true;
             }
         }
@@ -85,7 +85,7 @@ namespace CupheadArchipelago.Hooks {
         internal static class ApplyLevelCoins {
             static bool Prefix(PlayerCoinManager ___coinManager, ref PlayerCoinManager ___levelCoinManager) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Plugin.Log("[ApplyLevelCoins] Disabled.");
+                    Logging.Log("[ApplyLevelCoins] Disabled.");
                     ___levelCoinManager = new PlayerCoinManager();
                     return false;
                 } else return true;
@@ -95,7 +95,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(PlayerData), "NumWeapons")]
         internal static class NumWeapons {
             static void Postfix(PlayerId player, PlayerInventories ___inventories) {
-                Plugin.Log(Aux.CollectionToString(___inventories.GetPlayer(player)._weapons));
+                Logging.Log(Aux.CollectionToString(___inventories.GetPlayer(player)._weapons));
             }
         }
 
@@ -117,7 +117,7 @@ namespace CupheadArchipelago.Hooks {
 
                     if (debug) {
                         for (int i = 0; i < codes.Count; i++) {
-                            Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                            Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                         }
                     }
                     for (int i = 0; i < codes.Count - 3; i++) {
@@ -140,9 +140,9 @@ namespace CupheadArchipelago.Hooks {
                     }
                     if (!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
                     if (debug) {
-                        Plugin.Log("---");
+                        Logging.Log("---");
                         for (int i = 0; i < codes.Count; i++) {
-                            Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                            Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                         }
                     }
 
@@ -180,7 +180,7 @@ namespace CupheadArchipelago.Hooks {
                             break;
                         }
                     }
-                    if (found) Plugin.Log("[GetCoinCollected] Successfully patched", LoggingFlags.Transpiler);
+                    if (found) Logging.Log("[GetCoinCollected] Successfully patched", LoggingFlags.Transpiler);
 
                     /*foreach (CodeInstruction code in codes)
                         Console.WriteLine(code);*/

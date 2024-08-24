@@ -25,7 +25,7 @@ namespace CupheadArchipelago.Util {
 
                 if (first != null && !first.Name.Contains(enumerator.Name))
                 {
-                    Plugin.LogWarning($"{nameof(GetEnumeratorType)}: First Var name invalid: {first.Name}");
+                    Logging.LogWarning($"{nameof(GetEnumeratorType)}: First Var name invalid: {first.Name}");
                     return null;
                 }
 
@@ -37,7 +37,7 @@ namespace CupheadArchipelago.Util {
                 iLCursor.GotoNext((Instruction i) => i.MatchNewobj(out ctor));
 
                 if (ctor == null || ctor.Name != ".ctor") {
-                    Plugin.LogWarning($"{nameof(GetEnumeratorType)}: Invalid enumerator ctor: {enumerator.FullDescription()}");
+                    Logging.LogWarning($"{nameof(GetEnumeratorType)}: Invalid enumerator ctor: {enumerator.FullDescription()}");
                 }
 
                 res = ctor.DeclaringType.ResolveReflection();

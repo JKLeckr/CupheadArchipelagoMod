@@ -36,7 +36,7 @@ namespace CupheadArchipelago.Unity {
                 if (Current!=null) Destroy(Current);
                 Current = this;
             }
-            Plugin.Log($"[APManager] Initialized as Current {type}");
+            Logging.Log($"[APManager] Initialized as Current {type}");
             this.type = type;
             active = true;
             init = true;
@@ -47,7 +47,7 @@ namespace CupheadArchipelago.Unity {
         public bool IsDeathTriggered() => death;
         public void TriggerDeath(string deathCause = null) {
             if (IsDeathTriggered()) {
-                Plugin.LogWarning("[APManager] Death already triggered!");
+                Logging.LogWarning("[APManager] Death already triggered!");
                 return;
             }
             death = true;
@@ -72,9 +72,9 @@ namespace CupheadArchipelago.Unity {
                     Destroy(this);
                 }
                 else if (active && PauseManager.state != PauseManager.State.Paused) {
-                    if (debug) Plugin.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
+                    if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
                     if (death && !deathExecuted) {
-                        Plugin.Log($"[APManager] Killing Players.");
+                        Logging.Log($"[APManager] Killing Players.");
                         PlayerStatsManagerHook.KillPlayer(PlayerId.Any);
                         deathExecuted = true;
                         active = false;
@@ -90,22 +90,22 @@ namespace CupheadArchipelago.Unity {
                     }
                     APClient.ItemUpdate();
                     if (type == Type.Level) {
-                        if (debug) Plugin.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
+                        if (debug) Logging.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
                         if (!APClient.ItemApplyLevelQueueIsEmpty()) {
-                            if (debug) Plugin.Log($"ItemLevelQueue has item");
+                            if (debug) Logging.Log($"ItemLevelQueue has item");
                             if (timer>=applyInterval) {
-                                if (debug) Plugin.Log($"ItemLevelQueue is applying");
+                                if (debug) Logging.Log($"ItemLevelQueue is applying");
                                 APClient.PopItemApplyLevelQueue();
                                 AudioManager.Play("level_coin_pickup"); //TEMP
                                 timer = 0f;
                             }
                         }
                     }
-                    if (debug) Plugin.Log($"ItemQueue {APClient.ItemApplyQueueCount()}");
+                    if (debug) Logging.Log($"ItemQueue {APClient.ItemApplyQueueCount()}");
                     if (!APClient.ItemApplyQueueIsEmpty()) {
-                        if (debug) Plugin.Log($"ItemQueue has item");
+                        if (debug) Logging.Log($"ItemQueue has item");
                         if (timer>=applyInterval) {
-                            if (debug) Plugin.Log($"ItemQueue is applying");
+                            if (debug) Logging.Log($"ItemQueue is applying");
                             APClient.PopItemApplyQueue();
                             AudioManager.Play("level_coin_pickup"); //TEMP
                             timer = 0f;
@@ -117,7 +117,7 @@ namespace CupheadArchipelago.Unity {
         }
 
         void OnDestroy() {
-            Plugin.Log("[APManager] Destroyed");
+            Logging.Log("[APManager] Destroyed");
             init = false;
             Current = null;
         }

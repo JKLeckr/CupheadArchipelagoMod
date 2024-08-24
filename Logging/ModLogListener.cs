@@ -34,20 +34,20 @@ namespace CupheadArchipelago {
             do {
                 filename = $"{logName}.{num++}.log";
             } while (File.Exists(Path.Combine(modLogPath, filename)));
-            Plugin.Log($"Logging to {filename}");
+            Logging.Log($"Logging to {filename}");
             
             int startnum = num;
             
             FileStream fileStream;
             while (!Utility.TryOpenFileStream(Path.Combine(modLogPath, filename), FileMode.Create, out fileStream, FileAccess.Write)) {
                 if (num >= startnum+5) {
-                    Plugin.LogError("5 attempts of opening files for mod logging failed. Not logging.");
+                    Logging.LogError("5 attempts of opening files for mod logging failed. Not logging.");
                     return;
                 }
 
-                Plugin.LogWarning($"Could not open \"{filename}\" for writing.");
+                Logging.LogWarning($"Could not open \"{filename}\" for writing.");
                 filename = $"{logName}.{num++}.log";
-                Plugin.Log($"Trying {filename}...");
+                Logging.Log($"Trying {filename}...");
             }
 
             LogWriter = TextWriter.Synchronized(new StreamWriter(fileStream, Utility.UTF8NoBom));

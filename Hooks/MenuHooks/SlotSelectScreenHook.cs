@@ -38,10 +38,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return true;
             }
             static void Postfix(SlotSelectScreen __instance) {
-                //Plugin.Log.LogInfo("Awake");
-                //Plugin.Log.LogInfo(__instance.gameObject.name);
-                //Plugin.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().renderMode);
-                //Plugin.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().worldCamera);
+                //Logging.Log.LogInfo("Awake");
+                //Logging.Log.LogInfo(__instance.gameObject.name);
+                //Logging.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().renderMode);
+                //Logging.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().worldCamera);
                 CreateAPInfoText(__instance.transform);
                 CreateAPConStatusText(__instance.transform);
             }
@@ -109,7 +109,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-5;i++) {
@@ -138,8 +138,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (success!=3) throw new Exception($"{nameof(UpdatePlayerSelect)}: Patch Failed! {success}");
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log("---");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 
@@ -147,10 +147,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             }
 
             private static void ConnectAndStart() {
-                Plugin.Log($"Starting slot {_slotSelection}");
+                Logging.Log($"Starting slot {_slotSelection}");
 
                 if (APData.SData[_slotSelection].error>0) {
-                    Plugin.LogError($"Bad file! E{APData.SData[_slotSelection].error}");
+                    Logging.LogError($"Bad file! E{APData.SData[_slotSelection].error}");
                     SetAPConStatusText("AP data Error!\nFailed to load!\nCheck Log!");
                     APAbort(false);
                     return;
@@ -159,7 +159,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
                     if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
-                        Plugin.Log("Cleaning APData...");
+                        Logging.Log("Cleaning APData...");
                         APData.ResetData(_slotSelection, false, false);
                     }
                     if (Status!=0) {
@@ -168,11 +168,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             APClient.CloseArchipelagoSession(true);
                         }
                         else if (Status<0) {
-                            Plugin.LogWarning($"Client Status is not reset correctly! S:{Status}");
+                            Logging.LogWarning($"Client Status is not reset correctly! S:{Status}");
                             APClient.ResetSessionError();
                         }
                         else {
-                            Plugin.LogWarning($"Client Status is not reset correctly! S:{Status}");
+                            Logging.LogWarning($"Client Status is not reset correctly! S:{Status}");
                             APClient.CloseArchipelagoSession(true);
                         }
                     }
@@ -221,7 +221,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 _lockMenu = false;
             }
             private static void APAbort(bool displayError = true) {
-                Plugin.Log($"Abort! Client Status {Status}");
+                Logging.Log($"Abort! Client Status {Status}");
                 if (displayError) {
                     switch (Status) {
                         case -1: {
@@ -275,7 +275,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-6;i++) {
@@ -292,8 +292,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (success!=1) throw new Exception($"{nameof(SlotSelectScreen)}: Patch Failed! {success}");
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log("---");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 
@@ -301,7 +301,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             }
 
             private static bool IsAPEmpty(SlotSelectScreenSlot[] slots, int slotnum) {
-                //Plugin.Log($"Prompt delete {slotnum}");
+                //Logging.Log($"Prompt delete {slotnum}");
                 return slots[slotnum].IsEmpty && APData.IsSlotEmpty(slotnum);
             }
         }
@@ -320,7 +320,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 MethodInfo _mi_ClearSlot = typeof(PlayerData).GetMethod("ClearSlot", BindingFlags.Public | BindingFlags.Static);
 
                 /*foreach (CodeInstruction code in codes) {
-                    Plugin.Log.LogInfo($"{code.opcode}: {code.operand}");
+                    Logging.Log.LogInfo($"{code.opcode}: {code.operand}");
                 }*/
 
                 for (int i=0;i<codes.Count;i++) {
@@ -353,14 +353,14 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 bool success = false;
 
                 /*foreach (CodeInstruction code in codes) {
-                    Plugin.Log.LogInfo($"{code.opcode}: {code.operand}");
+                    Logging.Log.LogInfo($"{code.opcode}: {code.operand}");
                 }
-                Plugin.Log.LogInfo("------------------------------------------------------");*/
+                Logging.Log.LogInfo("------------------------------------------------------");*/
                 
                 for (int i=0;i<codes.Count-6;i++) {
                     if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 50) {
                         /*for (int j=0;j<6;j++) {
-                            Plugin.Log.LogInfo($"REMOVING {codes[i+j].opcode}: {codes[i+j].operand}");
+                            Logging.Log.LogInfo($"REMOVING {codes[i+j].opcode}: {codes[i+j].operand}");
                         }*/
                         codes.RemoveRange(i,6);
                         codes.Insert(i, CodeInstruction.Call(() => LoadSceneNewSave()));
@@ -371,14 +371,14 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (!success) throw new Exception($"{nameof(EnterGame)}: Patch Failed!");
 
                 /*foreach (CodeInstruction code in codes) {
-                    Plugin.Log.LogInfo($"{code.opcode}: {code.operand}");
+                    Logging.Log.LogInfo($"{code.opcode}: {code.operand}");
                 }*/
 
                 return codes;
             }
 
             private static void LoadSceneNewSave() {
-                Plugin.Log("Loading Scene", LoggingFlags.Debug);
+                Logging.Log("Loading Scene", LoggingFlags.Debug);
                 if (APData.SData[_slotSelection].enabled&&!Plugin.ConfigSkipIntro) {
                     Cutscene.Load(Scenes.scene_level_house_elder_kettle, Scenes.scene_cutscene_intro, SceneLoader.Transition.Fade, SceneLoader.Transition.Fade);
                 }
@@ -448,14 +448,14 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 TextMeshProUGUI txt = APConStatusText.GetComponent<TextMeshProUGUI>();
                 txt.SetText(str);
             }
-            else Plugin.Log("Error: APStatus Text is NULL!", LogLevel.Error);
+            else Logging.Log("Error: APStatus Text is NULL!", LogLevel.Error);
         }
         private static string GetAPConStatusText() {
             if (APConStatusText!=null) {
                 TextMeshProUGUI txt = APConStatusText.GetComponent<TextMeshProUGUI>();
                 return txt.text;
             }
-            else Plugin.Log("Error: APStatus Text is NULL!", LogLevel.Error);
+            else Logging.Log("Error: APStatus Text is NULL!", LogLevel.Error);
             return "";
         }
     }

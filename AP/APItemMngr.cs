@@ -10,7 +10,7 @@ namespace CupheadArchipelago.AP {
         public static bool ApplyItem(APItemData item) {
             long itemId = item.Id;
             string itemName = APClient.GetItemName(item.Id);
-            Plugin.Log($"[APItemMngr] Applying item {itemName} ({item.Id})...");
+            Logging.Log($"[APItemMngr] Applying item {itemName} ({item.Id})...");
 
             ItemMap.GetItemType(itemId);
 
@@ -71,23 +71,23 @@ namespace CupheadArchipelago.AP {
                 }
                 case ItemType.Essential: {
                     if (itemId==APItem.coin) {
-                        Plugin.Log("AddCurrency");
+                        Logging.Log("AddCurrency");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 1);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 1);
                     }
                     else if (itemId==APItem.coin2) {
-                        Plugin.Log("AddCurrency x2");
+                        Logging.Log("AddCurrency x2");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 2);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 2);
                     }
                     else if (itemId==APItem.coin3) {
-                        Plugin.Log("AddCurrency x3");
+                        Logging.Log("AddCurrency x3");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 3);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 3);
                     }
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
-                        Plugin.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
+                        Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
                     }
                     else if (itemId==APItem.plane_super)
                         APClient.APSessionGSPlayerData.plane_super=true;
@@ -118,7 +118,7 @@ namespace CupheadArchipelago.AP {
                     }
                     else if (itemId==APItem.level_superrecharge) {
                         if (stats1.CanGainSuperMeter) {
-                            Plugin.Log("Can gain super");
+                            Logging.Log("Can gain super");
                             PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                         }
                         if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
@@ -145,10 +145,10 @@ namespace CupheadArchipelago.AP {
                 }
                 default: break;
             }
-            } catch (Exception e) {Plugin.LogError(e); return false;}
+            } catch (Exception e) {Logging.LogError(e); return false;}
             return true;
         }
 
-        private static void Stub(string itemName) => Plugin.LogWarning($"Item handling unimplemented: {itemName}");
+        private static void Stub(string itemName) => Logging.LogWarning($"Item handling unimplemented: {itemName}");
     }
 }

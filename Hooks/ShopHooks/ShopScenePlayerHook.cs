@@ -52,7 +52,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
             static bool Prefix() {
-                Plugin.Log("Shop");
+                Logging.Log("Shop");
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
@@ -86,7 +86,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-11;i++) {
@@ -170,16 +170,16 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 successBit|=8;
                             }
                             else {
-                                Plugin.LogWarning($"{nameof(Awake)}: Found cluster bit 12, but bits 4 and 8 not found!");
+                                Logging.LogWarning($"{nameof(Awake)}: Found cluster bit 12, but bits 4 and 8 not found!");
                             }
                     }
                     if (successBit>=15) break;
                 }
                 if (successBit!=15) throw new Exception($"{nameof(Awake)}: Patch Failed! {successBit}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 
@@ -192,21 +192,21 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
                 ShopSceneItem[] ctmp = new ShopSceneItem[clen];
 
-                if (Plugin.IsDebug()) {
-                    Plugin.Log("---SHOP---", LoggingFlags.Debug);
-                    Plugin.Log("-items-", LoggingFlags.Debug);
+                if (Logging.IsInDebugMode()) {
+                    Logging.Log("---SHOP---", LoggingFlags.Debug);
+                    Logging.Log("-items-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in items) 
-                        Plugin.Log(item.ToString(), LoggingFlags.Debug);
-                    Plugin.Log("", LoggingFlags.Debug);
-                    Plugin.Log("-charmItemPrefabs-", LoggingFlags.Debug);
+                        Logging.Log(item.ToString(), LoggingFlags.Debug);
+                    Logging.Log("", LoggingFlags.Debug);
+                    Logging.Log("-charmItemPrefabs-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in charmItemPrefabs) 
-                        Plugin.Log(item.ToString(), LoggingFlags.Debug);
-                    Plugin.Log("", LoggingFlags.Debug);
-                    Plugin.Log("-weaponItemPrefabs-", LoggingFlags.Debug);
+                        Logging.Log(item.ToString(), LoggingFlags.Debug);
+                    Logging.Log("", LoggingFlags.Debug);
+                    Logging.Log("-weaponItemPrefabs-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in weaponItemPrefabs) 
-                        Plugin.Log(item.ToString(), LoggingFlags.Debug);
-                    Plugin.Log("", LoggingFlags.Debug);
-                    Plugin.Log("---END SHOP---", LoggingFlags.Debug);
+                        Logging.Log(item.ToString(), LoggingFlags.Debug);
+                    Logging.Log("", LoggingFlags.Debug);
+                    Logging.Log("---END SHOP---", LoggingFlags.Debug);
                 }
                 
                 // Setting order of prefabs for all shops
@@ -221,14 +221,14 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 int wnullc = Aux.ArrayNullCount(wtmp);
                 int cnullc = Aux.ArrayNullCount(ctmp);
                 if (wnullc+cnullc>0) {
-                    Plugin.LogError($"[ShopScenePlayerHook] Null Prefabs! w:{wnullc} c:{cnullc}");
+                    Logging.LogError($"[ShopScenePlayerHook] Null Prefabs! w:{wnullc} c:{cnullc}");
                     return;
                 }
 
-                /*Plugin.Log($"wp {ShopSceneItemsToString(weaponItemPrefabs)}");
-                Plugin.Log($"cp {ShopSceneItemsToString(charmItemPrefabs)}");
-                Plugin.Log($"wt {ShopSceneItemsToString(wtmp)}");
-                Plugin.Log($"ct {ShopSceneItemsToString(ctmp)}");*/
+                /*Logging.Log($"wp {ShopSceneItemsToString(weaponItemPrefabs)}");
+                Logging.Log($"cp {ShopSceneItemsToString(charmItemPrefabs)}");
+                Logging.Log($"wt {ShopSceneItemsToString(wtmp)}");
+                Logging.Log($"ct {ShopSceneItemsToString(ctmp)}");*/
 
                 // Setting up indexes and counts
                 int shopLevel = 0;
@@ -239,7 +239,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (APSettings.UseDLC && PlayerData.Data.GetMapData(Scenes.scene_map_world_DLC).sessionStarted)
                     shopLevel++;
 
-                Plugin.Log($"0: {shopLevel}", LoggingFlags.Debug);
+                Logging.Log($"0: {shopLevel}", LoggingFlags.Debug);
 
                 int weaponCount = 0;
                 int charmCount = 0;
@@ -251,10 +251,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 int totalCount = weaponCount + charmCount;
 
-                Plugin.Log($"wc {weaponCount}", LoggingFlags.Debug);
-                Plugin.Log($"cc {charmCount}", LoggingFlags.Debug);
+                Logging.Log($"wc {weaponCount}", LoggingFlags.Debug);
+                Logging.Log($"cc {charmCount}", LoggingFlags.Debug);
 
-                Plugin.Log("1", LoggingFlags.Debug);
+                Logging.Log("1", LoggingFlags.Debug);
                 
                 // Set prefabs for shop
                 weaponItemPrefabs = Aux.ArrayRange(wtmp, weaponCount);
@@ -262,10 +262,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 HashSet<Weapon> weaponSet = GetWeaponSet(weaponItemPrefabs);
                 HashSet<Charm> charmSet = GetCharmSet(charmItemPrefabs);
 
-                Plugin.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}", LoggingFlags.Debug);
-                Plugin.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}", LoggingFlags.Debug);
+                Logging.Log($"wps {ShopSceneItemsToString(weaponItemPrefabs)}", LoggingFlags.Debug);
+                Logging.Log($"cps {ShopSceneItemsToString(charmItemPrefabs)}", LoggingFlags.Debug);
 
-                Plugin.Log("2", LoggingFlags.Debug);
+                Logging.Log("2", LoggingFlags.Debug);
 
                 // Set items in shop
                 List<ShopSceneItem> nitems = new();
@@ -274,13 +274,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 int ci = 0;
                 for (int i=0; i<Math.Min(totalCount,5); i++) {
                     if (charm) {
-                        Plugin.Log("3", LoggingFlags.Debug);
+                        Logging.Log("3", LoggingFlags.Debug);
                         nitems.Add(charmItemPrefabs[ci]);
                         ci++;
                         charm=false;
                     }
                     else {
-                        Plugin.Log("4", LoggingFlags.Debug);
+                        Logging.Log("4", LoggingFlags.Debug);
                         nitems.Add(weaponItemPrefabs[wi]);
                         wi++;
                         charm=true;
@@ -299,18 +299,18 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     items.Add(nitem);
                 }
                 
-                if (Plugin.IsDebug()) {
-                    Plugin.Log("---SHOP AP---", LoggingFlags.Debug);
-                    Plugin.Log("-items-", LoggingFlags.Debug);
+                if (Logging.IsInDebugMode()) {
+                    Logging.Log("---SHOP AP---", LoggingFlags.Debug);
+                    Logging.Log("-items-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in items) 
-                        Plugin.Log(item.ToString(), LoggingFlags.Debug);
-                    Plugin.Log("\n-charmItemPrefabs-", LoggingFlags.Debug);
+                        Logging.Log(item.ToString(), LoggingFlags.Debug);
+                    Logging.Log("\n-charmItemPrefabs-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in charmItemPrefabs) 
-                        Plugin.Log(item.ToString(), LoggingFlags.Debug);
-                    Plugin.Log("\n-weaponItemPrefabs-", LoggingFlags.Debug);
+                        Logging.Log(item.ToString(), LoggingFlags.Debug);
+                    Logging.Log("\n-weaponItemPrefabs-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in weaponItemPrefabs) 
-                        Plugin.Log(item.ToString(), LoggingFlags.Debug);
-                    Plugin.Log("\n---END SHOP AP---", LoggingFlags.Debug);
+                        Logging.Log(item.ToString(), LoggingFlags.Debug);
+                    Logging.Log("\n---END SHOP AP---", LoggingFlags.Debug);
                 }
             }
             private static HashSet<Weapon> GetWeaponSet(IEnumerable<ShopSceneItem> items) {
@@ -319,7 +319,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     if (!wset.Contains(item.weapon)) 
                         wset.Add(item.weapon);
                     else
-                        Plugin.LogWarning($"[SetupItems] {item.weapon} already exists in set!");
+                        Logging.LogWarning($"[SetupItems] {item.weapon} already exists in set!");
                 }
                 return wset;
             }
@@ -329,7 +329,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     if (!cset.Contains(item.charm)) 
                         cset.Add(item.charm);
                     else
-                        Plugin.LogWarning($"[SetupItems] {item.charm} already exists in set!");
+                        Logging.LogWarning($"[SetupItems] {item.charm} already exists in set!");
                 }
                 return cset;
             }
@@ -373,7 +373,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 codes[codes.Count-1].labels.Add(end);
@@ -391,9 +391,9 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 if (!success) throw new Exception($"{nameof(UpdateSelection)}: Patch Failed!");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 
@@ -429,7 +429,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-13;i++) {
@@ -478,14 +478,14 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 i+=ncodes.Count;
                                 successbits|=2;
                             }
-                            else Plugin.LogWarning($"{nameof(addNewItem_cr)}: Cannot find IsUnlocked method!");
+                            else Logging.LogWarning($"{nameof(addNewItem_cr)}: Cannot find IsUnlocked method!");
                     }
                 }
                 if (successbits!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {successbits}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 
@@ -500,13 +500,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         private static bool IsAPCharmChecked(Charm charm) {
             long loc = ShopSceneItemHook.charmLocations[charm];
             bool res = APClient.IsLocationChecked(loc);
-            Plugin.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
+            Logging.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
             return res;
         }
         private static bool IsAPWeaponChecked(Weapon weapon) {
             long loc = ShopSceneItemHook.weaponLocations[weapon];
             bool res = APClient.IsLocationChecked(loc);
-            Plugin.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
+            Logging.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
             return res;
         }
         private static bool IsAPLocationChecked(ShopSceneItem item) => 

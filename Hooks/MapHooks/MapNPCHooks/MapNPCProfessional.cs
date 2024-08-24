@@ -47,6 +47,6 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         }
 
         private static void LogDialoguerGlobalFloat(int floatId) => 
-            Plugin.Log($"{nameof(MapNPCProfessional)}: {Dialoguer.GetGlobalFloat(floatId)}");
+            Logging.Log($"{nameof(MapNPCProfessional)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

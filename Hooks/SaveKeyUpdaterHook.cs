@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Hooks {
         }
 
         internal static void SetSaveKeyBaseName(string name) {
-            if (!_nameLock) SaveKeyBaseName = name; else Plugin.Log("Cannot Set SaveKeyBaseName after Hook", LogLevel.Warning);
+            if (!_nameLock) SaveKeyBaseName = name; else Logging.Log("Cannot Set SaveKeyBaseName after Hook", LogLevel.Warning);
         }
 
         internal static void Hook() {

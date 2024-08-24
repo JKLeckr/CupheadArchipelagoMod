@@ -14,10 +14,10 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         internal static class OnDialoguerMessageEvent {
             static void Postfix(string message, ref MapNPCMusic.MusicType ___musicType) {
                 if (message == "MinimalistMusic" && ___musicType == MapNPCMusic.MusicType.Minimalist) {
-                    Plugin.Log("Music M");
+                    Logging.Log("Music M");
 	            }
 	            else if (message == "RegularMusic" && ___musicType == MapNPCMusic.MusicType.Regular) {
-                    Plugin.Log("Music R");
+                    Logging.Log("Music R");
                 }
             }
             private static void APCheck() {

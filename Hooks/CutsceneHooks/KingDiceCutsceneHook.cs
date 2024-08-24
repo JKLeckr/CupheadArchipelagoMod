@@ -29,7 +29,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-5;i++) {
@@ -60,9 +60,9 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
                 }
                 if (success!=3) throw new Exception($"{nameof(Awake)}: Patch Failed! {success}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 

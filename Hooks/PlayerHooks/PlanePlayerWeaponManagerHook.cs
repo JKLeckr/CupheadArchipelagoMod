@@ -51,7 +51,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-8;i++) {
@@ -74,9 +74,9 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 }
                 if (!success) throw new Exception($"{nameof(HandleWeaponSwitch)}: Patch Failed!");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 
@@ -102,7 +102,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-8;i++) {
@@ -126,8 +126,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 if (!success) throw new Exception($"{nameof(HandleWeaponSwitch)}: Patch Failed!");
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log("---");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 

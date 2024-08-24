@@ -24,7 +24,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     return false;
                 }
                 else {
-                    if (!APData.Initialized) {Plugin.Log("[MapLevelDependentObstacleHook] APData is not Initialized!", LogLevel.Warning);}
+                    if (!APData.Initialized) {Logging.Log("[MapLevelDependentObstacleHook] APData is not Initialized!", LogLevel.Warning);}
                     return true;
                 }
             }
@@ -34,7 +34,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         internal static class OnConditionNotMet {
             static bool Prefix(MapLevelDependentObstacle __instance) {
                 if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
-                    Plugin.Log(__instance+" OnConditionNotMet", LoggingFlags.Debug);
+                    Logging.Log(__instance+" OnConditionNotMet", LoggingFlags.Debug);
                 }
                 return true;
             }
@@ -44,7 +44,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         internal static class OnConditionMet {
             static bool Prefix(MapLevelDependentObstacle __instance) {
                 if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
-                    Plugin.Log(__instance+" OnConditionMet", LoggingFlags.Debug);
+                    Logging.Log(__instance+" OnConditionMet", LoggingFlags.Debug);
                 }
                 return true;
             }
@@ -54,7 +54,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         internal static class OnConditionAlreadyMet {
             static bool Prefix(MapLevelDependentObstacle __instance) {
                 if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
-                    Plugin.Log(__instance+" OnConditionAlreadyMet", LoggingFlags.Debug);
+                    Logging.Log(__instance+" OnConditionAlreadyMet", LoggingFlags.Debug);
                 }
                 return true;
             }
@@ -64,7 +64,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         internal static class DoTransition {
             static bool Prefix(MapLevelDependentObstacle __instance) {
                 if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
-                    Plugin.Log(__instance+" DoTransition", LoggingFlags.Debug);
+                    Logging.Log(__instance+" DoTransition", LoggingFlags.Debug);
                 }
                 return !(APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles);
             }
@@ -74,7 +74,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         internal static class OnChange {
             static bool Prefix(MapLevelDependentObstacle __instance) {
                 if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
-                    Plugin.Log(__instance+" OnChange", LoggingFlags.Debug);
+                    Logging.Log(__instance+" OnChange", LoggingFlags.Debug);
                 }
                 return true;
             }

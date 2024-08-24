@@ -25,7 +25,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
@@ -45,8 +45,8 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 }
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log("---");
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log("---");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 if (success!=1) throw new Exception($"{nameof(Start)}: Patch Failed! {success}");
@@ -79,6 +79,6 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         }
 
         private static void LogDialoguerGlobalFloat(int floatId) => 
-            Plugin.Log($"{nameof(MapNPCJuggler)}: {Dialoguer.GetGlobalFloat(floatId)}");
+            Logging.Log($"{nameof(MapNPCJuggler)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

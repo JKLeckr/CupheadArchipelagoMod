@@ -36,7 +36,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i = 0; i < codes.Count - 3; i++) {
@@ -60,15 +60,15 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             codes[i].labels.Add(tgt_label);
                             insertCount++;
                     }
-                    /*Plugin.Log(i);
+                    /*Logging.Log(i);
                     for (int j=0;j<4;j++) {
-                        Plugin.Log($"{codes[i+j].opcode}: {codes[i+j].operand}");
+                        Logging.Log($"{codes[i+j].opcode}: {codes[i+j].operand}");
                     }
-                    Plugin.Log(codes[i+1].opcode == OpCodes.Ldarg_0);
-                    Plugin.Log(codes[i+2].opcode == OpCodes.Call);
-                    Plugin.Log(codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_base_Awake);
-                    Plugin.Log(codes[i+3].opcode == OpCodes.Ret);
-                    Plugin.Log("-");*/
+                    Logging.Log(codes[i+1].opcode == OpCodes.Ldarg_0);
+                    Logging.Log(codes[i+2].opcode == OpCodes.Call);
+                    Logging.Log(codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_base_Awake);
+                    Logging.Log(codes[i+3].opcode == OpCodes.Ret);
+                    Logging.Log("-");*/
                     if (codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Call &&
                         (MethodInfo)codes[i+2].operand == _mi_base_Awake && codes[i+3].opcode == OpCodes.Ret) {
                             codes[i+1].labels.Add(after_label);
@@ -77,9 +77,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
                 if (insertCount!=3) throw new Exception($"{nameof(Awake)}: Patch Failed! insertCount: {insertCount}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 

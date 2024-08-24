@@ -25,12 +25,12 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 return true;
             }
             static void Postfix(int ___index) {
-                Plugin.Log($"Index: {___index}", LoggingFlags.Debug);
+                Logging.Log($"Index: {___index}", LoggingFlags.Debug);
             }
 
             private static Level.Mode GetClamppedCurrentLevelMode() {
                 if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
-                    //Plugin.Log.LogInfo("Clamping mode");
+                    //Logging.Log.LogInfo("Clamping mode");
                     if (APSettings.Hard||Level.CurrentMode>0) {
                         return (Level.Mode)(APSettings.Hard?2:1);
                     } else return 0;
@@ -50,7 +50,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
@@ -70,8 +70,8 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (!success) throw new Exception($"{nameof(CheckInput)}: Patch Failed!");
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log("---");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 
@@ -126,11 +126,11 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapDifficultySelectStartUI), "Next")]
         internal static class Next {
             static bool Prefix(int ___index) {
-                Plugin.Log($"[Next] Index: {___index}", LoggingFlags.Debug);
+                Logging.Log($"[Next] Index: {___index}", LoggingFlags.Debug);
                 return true;
             }
             static void Postfix(int ___index) {
-                Plugin.Log($"[Next] New Index: {___index}", LoggingFlags.Debug);
+                Logging.Log($"[Next] New Index: {___index}", LoggingFlags.Debug);
             }
         }
 
@@ -152,7 +152,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 FieldInfo _fi_normal = typeof(MapDifficultySelectStartUI).GetField("normal", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 /*for (int i = 0; i < codes.Count; i++) {
-                    Plugin.Log.LogInfo($"{codes[i].opcode}: {codes[i].operand}");
+                    Logging.Log.LogInfo($"{codes[i].opcode}: {codes[i].operand}");
                 }*/
 
                 for (int i = 0; i < codes.Count - 3; i++) {
@@ -167,7 +167,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (!success) throw new Exception($"{nameof(UpdateCursor)}: Patch Failed!");
 
                 /*for (int i = 0; i < codes.Count; i++) {
-                    Plugin.Log.LogInfo($"{codes[i].opcode}: {codes[i].operand}");
+                    Logging.Log.LogInfo($"{codes[i].opcode}: {codes[i].operand}");
                 }*/
 
                 return codes;

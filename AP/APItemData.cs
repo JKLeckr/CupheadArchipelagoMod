@@ -45,7 +45,7 @@ namespace CupheadArchipelago.AP {
                 if (useId) hash *= 29 + Id.GetHashCode();
                 hash *= 29 + Location.GetHashCode();
                 if (Player == null) {
-                    Plugin.LogWarning("[APItemData] GetHashCode: Player is null!");
+                    Logging.LogWarning("[APItemData] GetHashCode: Player is null!");
                 }
                 hash *= 29 + (Player?.GetHashCode() ?? 0);
                 return hash;

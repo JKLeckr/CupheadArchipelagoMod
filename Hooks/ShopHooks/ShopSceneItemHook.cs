@@ -48,16 +48,16 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     if (weaponLocations.ContainsKey(item.weapon)) {
                         loc = weaponLocations[item.weapon];                
                     }
-                    else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {item.weapon}");
+                    else Logging.LogWarning($"[ShopSceneItem] Unknown item: {item.weapon}");
                     break;
                 case ItemType.Charm: 
                     if (charmLocations.ContainsKey(item.charm)) {
                         loc = charmLocations[item.charm];
                     }
-                    else Plugin.LogWarning($"[ShopSceneItem] Unknown item: {item.charm}");
+                    else Logging.LogWarning($"[ShopSceneItem] Unknown item: {item.charm}");
                     break;
                 default:
-                    Plugin.LogWarning($"[ShopSceneItem] Cannot get item. Invalid Type {item.itemType}");
+                    Logging.LogWarning($"[ShopSceneItem] Cannot get item. Invalid Type {item.itemType}");
                     break;
             }
             return loc;
@@ -181,7 +181,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=codes.Count-2;i>=0;i--) {
@@ -212,9 +212,9 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 if (!success||labelbits!=7) throw new Exception($"{nameof(Purchase)}: Patch Failed! {success}:{labelbits}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 

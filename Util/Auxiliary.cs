@@ -59,13 +59,13 @@ namespace CupheadArchipelago.Util {
         }
 
         private static bool DbgT(int num) {
-            Plugin.Log($"T:{num}");
+            Logging.Log($"T:{num}");
             return true;
         }
 
         private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {
             foreach (CodeInstruction code in codes) {
-                Plugin.Log(code.opcode + " -: " + code.operand, LoggingFlags.Transpiler);
+                Logging.Log(code.opcode + " -: " + code.operand, LoggingFlags.Transpiler);
             }
         }
     }

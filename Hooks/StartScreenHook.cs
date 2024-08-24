@@ -28,7 +28,7 @@ namespace CupheadArchipelago.Hooks {
         internal static class Start {
             static bool Prefix() {
                 if (Plugin.State<0) {
-                    Plugin.LogFatal("Errors occured. Aborting to prevent damage!");
+                    Logging.LogFatal("Errors occured. Aborting to prevent damage!");
                     CreateModErrorText();
                     return false;
                 }

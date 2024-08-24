@@ -28,7 +28,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i = 0; i < codes.Count - 2; i++) {
@@ -41,11 +41,11 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     }
                 }
                 if (!success) throw new Exception($"{nameof(Activate)}: Patch Failed!");
-                //if (!success) Plugin.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
+                //if (!success) Logging.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 
@@ -53,7 +53,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static void APCheck(bool isChaliceTutorial) {
-                Plugin.Log("[TutorialLevelDoor] APCheck");
+                Logging.Log("[TutorialLevelDoor] APCheck");
                 if (APData.IsCurrentSlotEnabled()) {
                     APManager.Current?.SetActive(false);
                     if (!isChaliceTutorial) {

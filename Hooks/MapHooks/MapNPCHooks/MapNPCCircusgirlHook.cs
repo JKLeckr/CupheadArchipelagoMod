@@ -34,7 +34,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         [HarmonyPatch(typeof(MapNPCCircusgirl), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
             static bool Prefix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
-                Plugin.Log($"CircusGirl: \"{message}\" {___SkipDialogueEvent}");
+                Logging.Log($"CircusGirl: \"{message}\" {___SkipDialogueEvent}");
                 if (APData.IsCurrentSlotEnabled()) {
                     if (___SkipDialogueEvent) return false;
                     if (message == "GingerbreadCoin") {
@@ -52,6 +52,6 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         }
 
         private static void LogDialoguerGlobalFloat(int floatId) => 
-            Plugin.Log($"{nameof(MapNPCCircusgirl)}: {Dialoguer.GetGlobalFloat(floatId)}");
+            Logging.Log($"{nameof(MapNPCCircusgirl)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

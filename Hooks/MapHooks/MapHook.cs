@@ -14,7 +14,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(Map), "Awake")]
         internal static class Awake {
             static void Postfix(Map __instance, CupheadMapCamera ___cupheadMapCamera) {
-                Plugin.Log(Level.Difficulty, LoggingFlags.Debug);
+                Logging.Log(Level.Difficulty, LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks();
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();

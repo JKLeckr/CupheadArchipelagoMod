@@ -60,7 +60,7 @@ namespace CupheadArchipelago.AP {
         }
 
         public static void LoadData() {
-            Plugin.Log($"[APData] Loading Data from {AP_SAVE_PATH}");
+            Logging.Log($"[APData] Loading Data from {AP_SAVE_PATH}");
             for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
                 string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[i]+".sav");
                 if (File.Exists(filename)) {
@@ -69,15 +69,15 @@ namespace CupheadArchipelago.AP {
                     try {
                         string sdata = File.ReadAllText(filename);
                         data = JsonConvert.DeserializeObject<APData>(sdata);
-                        //Plugin.Log($"Dump:\n{sdata}");
-                        //Plugin.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");
+                        //Logging.Log($"Dump:\n{sdata}");
+                        //Logging.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");
                     }
                     catch (Exception e) {
-                        Plugin.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
+                        Logging.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
                         error = 1;
                     }
                     if (data == null) {
-                        Plugin.LogError($"[APData] Data could not be unserialized for key: {AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
+                        Logging.LogError($"[APData] Data could not be unserialized for key: {AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
                         SData[i] = new APData {
                             error = error
                         };
@@ -85,26 +85,26 @@ namespace CupheadArchipelago.AP {
                     else {
                         SData[i] = data;
                         if (data.version != AP_DATA_VERSION) {
-                            Plugin.LogWarning($"[APData] Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                            Logging.LogWarning($"[APData] Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
                         }
                     }
                 }
                 else {
-                    Plugin.Log($"[APData] No data. Saving default data for slot {i}", LogLevel.Warning);
+                    Logging.Log($"[APData] No data. Saving default data for slot {i}", LogLevel.Warning);
                     Save(i);
                 }
             }
             Initialized = true;
         }
         public static void Save(int index) {
-            Plugin.Log($"[APData] Saving slot {index}");
+            Logging.Log($"[APData] Saving slot {index}");
             APData data = SData[index];
             if (data.version != AP_DATA_VERSION) {
-                Plugin.LogError($"[APData] Slot {index} Data version mismatch. {data.version} != {AP_DATA_VERSION}. Skipping.");
+                Logging.LogError($"[APData] Slot {index} Data version mismatch. {data.version} != {AP_DATA_VERSION}. Skipping.");
                 return;
             }
             if (data.dlock) {
-                Plugin.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
+                Logging.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
                 return;
             }
             string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
@@ -113,7 +113,7 @@ namespace CupheadArchipelago.AP {
                 File.WriteAllText(filename, sdata);
             }
             catch (Exception e) {
-                Plugin.LogError($"[APData] Error while saving AP Save Data for {index}: {e}");
+                Logging.LogError($"[APData] Error while saving AP Save Data for {index}: {e}");
                 return;
             }
         }
@@ -125,7 +125,7 @@ namespace CupheadArchipelago.AP {
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
         public static void ResetData(int index, bool disable = false, bool resetSettings = false) { // TODO: disable is false by default for testing purposes
-            Plugin.Log("[APData] Resetting Data...");
+            Logging.Log("[APData] Resetting Data...");
             APData old_data = SData[index];
             SData[index] = new APData();
             APData data = SData[index];
@@ -153,7 +153,7 @@ namespace CupheadArchipelago.AP {
                 return !SData[index].playerData.HasStartWeapon();
             }
             else {
-                Plugin.Log("[APData] PlayerData is not initialized!", LogLevel.Warning);
+                Logging.Log("[APData] PlayerData is not initialized!", LogLevel.Warning);
                 return true;
             }
         }

@@ -61,13 +61,13 @@ namespace CupheadArchipelago.AP {
 
         public static bool CreateAndStartArchipelagoSession(int index) {
             if (IsTryingSessionConnect) {
-                Plugin.Log($"[APClient] Already Trying to Connect. Aborting.", LogLevel.Error);
+                Logging.Log($"[APClient] Already Trying to Connect. Aborting.", LogLevel.Error);
                 return false;
             }
             SessionStatus = 2;
             if (session!=null) {
                 if (session.Socket.Connected) {
-                    Plugin.Log($"[APClient] Already Connected. Disconnecting...", LogLevel.Warning);
+                    Logging.Log($"[APClient] Already Connected. Disconnecting...", LogLevel.Warning);
                     session.Socket.Disconnect();
                     Reset(false);
                 }
@@ -83,7 +83,7 @@ namespace CupheadArchipelago.AP {
             session.Socket.SocketClosed += OnSocketClosed;
             session.Items.ItemReceived += OnItemReceived;
             session.Socket.PacketReceived += OnPacketReceived;
-            session.Socket.SocketOpened += () => {Plugin.Log("Socket Opened");};
+            session.Socket.SocketOpened += () => {Logging.Log("Socket Opened");};
 
             res = ConnectArchipelagoSession();
 
@@ -92,11 +92,11 @@ namespace CupheadArchipelago.AP {
 
         private static bool ConnectArchipelagoSession(bool resetOnFail = true) {
             if (SessionStatus > 2) {
-                Plugin.LogWarning("[APClient] Already Trying to Connect. Aborting.");
+                Logging.LogWarning("[APClient] Already Trying to Connect. Aborting.");
                 return false;
             }
             APData data = APData.SData[APSessionGSDataSlot];
-            Plugin.Log($"[APClient] Connecting to {data.address}:{data.port} as {data.player}...");
+            Logging.Log($"[APClient] Connecting to {data.address}:{data.port} as {data.player}...");
             LoginResult result;
             try {
                 string passwd = data.password.Length>0?data.password:null;
@@ -107,9 +107,9 @@ namespace CupheadArchipelago.AP {
 
             if (result.Successful)
             {
-                Plugin.Log($"[APClient] Connected to {data.address}:{data.port} as {data.player}");
+                Logging.Log($"[APClient] Connected to {data.address}:{data.port} as {data.player}");
                 SessionStatus = 3;
-                Plugin.Log($"[APClient] Getting AP Data...");
+                Logging.Log($"[APClient] Getting AP Data...");
 
                 try {
                     LoginSuccessful loginData = (LoginSuccessful)result;
@@ -120,31 +120,31 @@ namespace CupheadArchipelago.AP {
                     SlotData = new APSlotData(loginData.SlotData);
                     APSessionPlayerInfo = session.Players.GetPlayerInfo(APSessionPlayerTeam, APSessionPlayerSlot);
                 } catch (Exception e) {
-                    Plugin.LogError($"[APClient] Exception: {e.Message}");
-                    Plugin.LogError(e.ToString());
-                    //Plugin.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
+                    Logging.LogError($"[APClient] Exception: {e.Message}");
+                    Logging.LogError(e.ToString());
+                    //Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -2;
                     return false;
                 }
 
-                //Plugin.Log($"[APClient] APWorld version {SlotData.world_version}");
+                //Logging.Log($"[APClient] APWorld version {SlotData.world_version}");
 
                 SessionStatus = 4;
-                Plugin.Log($"[APClient] Checking SlotData version...");
+                Logging.Log($"[APClient] Checking SlotData version...");
                 if (SlotData.version != AP_SLOTDATA_VERSION) {
-                    Plugin.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
+                    Logging.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -3;
                     return false;
                 }
-                Plugin.Log($"[APClient] Checking seed...");
+                Logging.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
-                //Plugin.Log($"Seed: {seed}");
-                //Plugin.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
+                //Logging.Log($"Seed: {seed}");
+                //Logging.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
                 if (APSessionGSData.seed != seed) {
                     if (APSessionGSData.seed != "") {
-                        Plugin.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
+                        Logging.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -4;
                         return false;
@@ -154,11 +154,11 @@ namespace CupheadArchipelago.AP {
 
                 try {
                     // Probably handle this better later
-                    Plugin.Log($"[APClient] Checking settings...");
+                    Logging.Log($"[APClient] Checking settings...");
                     if (DLCManager.DLCEnabled()!=SlotData.use_dlc) {
-                        Plugin.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
+                        Logging.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
                         if (DLCManager.DLCEnabled())
-                            Plugin.LogError($"[APClient] Note: You can disable the DLC if you have to.");
+                            Logging.LogError($"[APClient] Note: You can disable the DLC if you have to.");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -5;
                         return false;
@@ -166,7 +166,7 @@ namespace CupheadArchipelago.AP {
 
                     SessionStatus = 5;
 
-                    Plugin.Log($"[APClient] Applying settings...");
+                    Logging.Log($"[APClient] Applying settings...");
                     APSettings.UseDLC = SlotData.use_dlc;
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
@@ -179,22 +179,22 @@ namespace CupheadArchipelago.AP {
                     APSettings.QuestJuggler = true;
                     APSettings.DeathLink = SlotData.deathlink;
                     
-                    Plugin.Log($"[APClient] Setting up game...");
+                    Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new HashSet<long>(DoneChecks);
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All);
                     if (APSettings.DeathLink) {
-                        Plugin.Log($"[APClient] Setting up DeathLink...");
+                        Logging.Log($"[APClient] Setting up DeathLink...");
                         deathLinkService = session.CreateDeathLinkService();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
                     }
 
-                    Plugin.Log($"[APClient] Setting up items...");
+                    Logging.Log($"[APClient] Setting up items...");
                     if (APSessionGSData.dlock) {
-                        Plugin.Log($"[APClient] Waiting for AP save data unlock...");
+                        Logging.Log($"[APClient] Waiting for AP save data unlock...");
                         while (APSessionGSData.dlock) {
                             if (SessionStatus<=0) {
-                                Plugin.Log($"[APClient] Cancelled.");
+                                Logging.Log($"[APClient] Cancelled.");
                                 return false;
                             }
                             Thread.Sleep(100);
@@ -214,13 +214,13 @@ namespace CupheadArchipelago.AP {
                     }
                     APSessionGSData.dlock = false;
 
-                    Plugin.Log($"[APClient] Catching up...");
+                    Logging.Log($"[APClient] Catching up...");
                     CatchUpChecks();
 
                     //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
-                    Plugin.LogError($"[APClient] Exception: {e.Message}");
-                    Plugin.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
+                    Logging.LogError($"[APClient] Exception: {e.Message}");
+                    Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -6;
                     return false;
@@ -230,12 +230,12 @@ namespace CupheadArchipelago.AP {
 
                 SessionStatus = 6;
 
-                if (scoutMapStatus==0) Plugin.Log($"[APClient] Waiting for location scout...");
+                if (scoutMapStatus==0) Logging.Log($"[APClient] Waiting for location scout...");
                 while (scoutMapStatus==0) {
                     Thread.Sleep(100);
                 }
                 if (scoutMapStatus<0) {
-                    Plugin.LogError($"[APClient] Scout failed!");
+                    Logging.LogError($"[APClient] Scout failed!");
                     SessionStatus = -7;
                     return false;
                 }
@@ -243,7 +243,7 @@ namespace CupheadArchipelago.AP {
                 Enabled = true;
                 SessionStatus = 1;
 
-                Plugin.Log($"[APClient] Done!");
+                Logging.Log($"[APClient] Done!");
                 return true;
             }
             else {
@@ -258,7 +258,7 @@ namespace CupheadArchipelago.AP {
                     errorMessage += $"\n    {error}";
                 }
 
-                Plugin.LogError(errorMessage);
+                Logging.LogError(errorMessage);
 
                 if (resetOnFail) Reset();
                 SessionStatus = -1;
@@ -270,14 +270,14 @@ namespace CupheadArchipelago.AP {
             ThreadPool.QueueUserWorkItem(_ => {
                 int chances = RECONNECT_MAX_RETRIES;
                 while (chances<0||chances>0) {
-                    Plugin.Log($"[APClient] Waiting {RECONNECT_RETRY_WAIT}...");
+                    Logging.Log($"[APClient] Waiting {RECONNECT_RETRY_WAIT}...");
                     Thread.Sleep(RECONNECT_RETRY_WAIT);
-                    Plugin.Log("[APClient] Reconnecting...");
+                    Logging.Log("[APClient] Reconnecting...");
                     bool result = ConnectArchipelagoSession(false);
                     if (result) return;
                     chances--;
                 }
-                Plugin.LogError("[APClient] Failed to reconnect!");
+                Logging.LogError("[APClient] Failed to reconnect!");
             });
         }
         public static bool CloseArchipelagoSession(bool reset = true) {
@@ -285,7 +285,7 @@ namespace CupheadArchipelago.AP {
             Enabled = false;
             if (session!=null) {
                 if (session.Socket.Connected) {
-                    Plugin.Log($"[APClient] Disconnecting APSession...");
+                    Logging.Log($"[APClient] Disconnecting APSession...");
                     session.Socket.Disconnect();
                     SessionStatus = 0;
                     res = true;
@@ -296,7 +296,7 @@ namespace CupheadArchipelago.AP {
         }
         public static void ResetSessionError() {
             if (SessionStatus<=0) SessionStatus = 0;
-            else Plugin.LogWarning("[APClient] Cannot Reset an active session. Close the session first! ");
+            else Logging.LogWarning("[APClient] Cannot Reset an active session. Close the session first! ");
         }
         private static void Reset(bool resetSessionStatus=true) {
             session = null;
@@ -338,20 +338,20 @@ namespace CupheadArchipelago.AP {
         }
         public static bool Check(long loc, bool sendChecks = true) {
             if (!locMap.ContainsKey(loc)) {
-                Plugin.LogError($"[APClient] Location {loc} is missing. Skipping.");
+                Logging.LogError($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
             string locName = locMap.ContainsKey(loc) ? locMap[loc].LocationName : $"#{loc}";
-            Plugin.Log($"[APClient] Adding check \"{locName}\"...");
-            //Plugin.Log(doneChecksUnique.Count);
-            //Plugin.Log(DoneChecks.Count);
+            Logging.Log($"[APClient] Adding check \"{locName}\"...");
+            //Logging.Log(doneChecksUnique.Count);
+            //Logging.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);
                 //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Plugin.Log($"[APClient] \"{locName}\" is already checked.");
+                Logging.Log($"[APClient] \"{locName}\" is already checked.");
             }
             return true;
         }
@@ -381,7 +381,7 @@ namespace CupheadArchipelago.AP {
             if (itemMap.ContainsKey(item))
                 return itemMap[item];
             else {
-                Plugin.LogWarning($"[APClient] GetItemInfo: No information on item id {item}. Item must not exist in this world!");
+                Logging.LogWarning($"[APClient] GetItemInfo: No information on item id {item}. Item must not exist in this world!");
                 return null;
             }
         }
@@ -390,18 +390,18 @@ namespace CupheadArchipelago.AP {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
             if (session.Socket.Connected) {
-                Plugin.Log($"[APClient] Sending Checks...");
+                Logging.Log($"[APClient] Sending Checks...");
                 if (!sending) {
                     sending = true;
                     ThreadPool.QueueUserWorkItem(_ => SendChecksThread(locs));
                 }
                 else
-                    Plugin.LogWarning("[APClient] Already sending checks.");
+                    Logging.LogWarning("[APClient] Already sending checks.");
                 UpdateGoal();
-                Plugin.Log($"[APClient] Done");
+                Logging.Log($"[APClient] Done");
             }
             else {
-                Plugin.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
+                Logging.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
                 ReconnectArchipelagoSession();
             }
         }
@@ -419,17 +419,17 @@ namespace CupheadArchipelago.AP {
                 session.Locations.CompleteLocationChecks(locs);
                 state = true;
             } catch (ArchipelagoSocketClosedException e) {
-                Plugin.LogWarning($"[APClient] Failed to send checks! {e.Message}");
+                Logging.LogWarning($"[APClient] Failed to send checks! {e.Message}");
             }
             LoggingFlags loggingFlags = LoggingFlags.Network | (state?LoggingFlags.Info:LoggingFlags.Warning);
-            if (Plugin.IsLoggingFlagsEnabled(loggingFlags)) {
+            if (Logging.IsLoggingFlagsEnabled(loggingFlags)) {
                 string locsstr = "[";
                 for (int i=0;i<locs.Length;i++) {
                     if (i>0) locsstr += ","; 
                     locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
                     if (i==locs.Length-1) locsstr += "]";
                 }
-                Plugin.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", loggingFlags, state?LogLevel.Info:LogLevel.Warning);
+                Logging.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", loggingFlags, state?LogLevel.Info:LogLevel.Warning);
             }
             sending = false;
             return state;
@@ -445,21 +445,21 @@ namespace CupheadArchipelago.AP {
         }
 
         private static void OnMessageReceived(LogMessage message) {
-            Plugin.Log($"[Archipelago] {message}");
+            Logging.Log($"[Archipelago] {message}");
         }
         private static void OnError(Exception e, string message) {
-            Plugin.Log($"[APClient] {message}: {e}", LogLevel.Error);
+            Logging.Log($"[APClient] {message}: {e}", LogLevel.Error);
         }
         private static void OnSocketClosed(string reason) {
-            Plugin.Log("[APClient] Disconnected.");
-            Plugin.Log($"[APClient] Disconnect Reason: {reason}", LoggingFlags.Network);
+            Logging.Log("[APClient] Disconnected.");
+            Logging.Log($"[APClient] Disconnect Reason: {reason}", LoggingFlags.Network);
             if (Enabled) {
                 ReconnectArchipelagoSession();
             }
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
-            Plugin.Log("[APClient] OnItemReceived");
-            Plugin.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
+            Logging.Log("[APClient] OnItemReceived");
+            Logging.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
             try {
                 bool recover = helper.Index < ReceivedItemsIndex;
                 ItemInfo item = helper.PeekItem();
@@ -469,7 +469,7 @@ namespace CupheadArchipelago.AP {
                 long itemId = item.ItemId;
                 string itemName = GetItemName(itemId);
                 if ((currentReceivedItemIndex>=ReceivedItemsIndex || recover) && item.ItemId!=APSettings.StartWeapon) {
-                    Plugin.Log($"[APClient] Recieving {itemName}...");
+                    Logging.Log($"[APClient] Recieving {itemName}...");
                     APItemData nitem = new APItemData(item);
                     if (!receivedItemsQueueLock) {
                         receivedItemsQueueLock = true;
@@ -477,15 +477,15 @@ namespace CupheadArchipelago.AP {
                         currentReceivedItemIndex++;
                         receivedItemsQueueLock = false;
                     } else {
-                        Plugin.Log("[APClient] Item Queue is locked. Will try again next time.");
+                        Logging.Log("[APClient] Item Queue is locked. Will try again next time.");
                     }
                 } else {
-                    Plugin.Log($"Skipping {itemName}");
+                    Logging.Log($"Skipping {itemName}");
                     currentReceivedItemIndex++;
                 }
                 helper.DequeueItem();
             } catch (Exception e) {
-                Plugin.LogError($"[APClient] Error receiving item: {e.Message}");
+                Logging.LogError($"[APClient] Error receiving item: {e.Message}");
                 return;
             }
         }
@@ -507,11 +507,11 @@ namespace CupheadArchipelago.AP {
             if (!receivedItemsUnique.Contains(item)) {
                 ReceivedItems.Add(item);
                 if (item.Location>=0) receivedItemsUnique.Add(item);
-                Plugin.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
+                Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
                 QueueItem(item);
             }
             else {
-                Plugin.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} ({item.GetHashCode()}) already exists. Skipping.");
+                Logging.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} ({item.GetHashCode()}) already exists. Skipping.");
             }
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
@@ -525,11 +525,11 @@ namespace CupheadArchipelago.AP {
         }
         private static void QueueItem(Queue<int> itemQueue, int itemIndex) {
             itemQueue.Enqueue(itemIndex);
-            Plugin.Log("[APClient] Queue Push");
+            Logging.Log("[APClient] Queue Push");
             LogQueueItemCounts();
         }
         internal static void LogQueueItemCounts() {
-            Plugin.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}"); //, LoggingFlags.Debug
+            Logging.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}"); //, LoggingFlags.Debug
         }
         public static APItemData GetReceivedItem(int index) {
             if (index >= 0 && index < ReceivedItems.Count) { 
@@ -553,9 +553,9 @@ namespace CupheadArchipelago.AP {
                 bool success = APItemMngr.ApplyItem(item);
                 if (!success) return item;
                 item.State = ++itemApplyIndex;
-                Plugin.Log("[APClient] Queue Pop");
+                Logging.Log("[APClient] Queue Pop");
                 itemQueue.Dequeue();
-                Plugin.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}");
+                Logging.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}");
                 return item;
             } else {
                 throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
@@ -563,21 +563,21 @@ namespace CupheadArchipelago.AP {
         }
 
         private static void OnDeathLinkReceived(DeathLink deathLink) {
-            Plugin.Log($"[APClient] DeathLink: {deathLink.Cause}");
-            Plugin.Log($"[APClient] Death received from {deathLink.Source}");
+            Logging.Log($"[APClient] DeathLink: {deathLink.Cause}");
+            Logging.Log($"[APClient] Death received from {deathLink.Source}");
             if (APManager.Current!=null) {
-                Plugin.Log($"[APClient] Commencing...");
+                Logging.Log($"[APClient] Commencing...");
                 APManager.Current.TriggerDeath(deathLink.Cause);
-                Plugin.Log($"[APClient] Enjoy your death!");
+                Logging.Log($"[APClient] Enjoy your death!");
             }
             else {
-                Plugin.Log($"[APClient] Death avoided because level conditions were not met.");
+                Logging.Log($"[APClient] Death avoided because level conditions were not met.");
             }
         }
         public static bool IsDeathLinkActive() => deathLinkService != null;
         public static void SendDeathLink(string cause=null, DeathLinkCauseType causeType=DeathLinkCauseType.Normal) {
             if (!IsDeathLinkActive()) return;
-            Plugin.Log("[APClient] Sharing your death...");
+            Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
             string deathTxt = "walloped";
             string chessDeathTxt = "beaten";
@@ -590,13 +590,13 @@ namespace CupheadArchipelago.AP {
                 DeathLinkCauseType.Graveyard => player + " got taken for a ride in the graveyard!",
                 _ => player + " was " + deathTxt + (cause != null ? " at " + cause : "" + "!"),
             };
-            Plugin.Log($"[APClient] Your message: \"{causeMessage}\"");
+            Logging.Log($"[APClient] Your message: \"{causeMessage}\"");
             deathLinkService.SendDeathLink(new DeathLink(APSessionPlayerName, causeMessage));
-            Plugin.Log("[APClient] Shared. They are enjoying your death probably...");
+            Logging.Log("[APClient] Shared. They are enjoying your death probably...");
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
-            Plugin.Log(string.Format("Packet got: {0}", packet.PacketType));
+            Logging.Log(string.Format("Packet got: {0}", packet.PacketType));
             switch (packet.PacketType) {
                 /*case ArchipelagoPacketType.DataPackage: {
                     DataPackagePacket datapackagepkt = (DataPackagePacket)packet;
@@ -605,15 +605,15 @@ namespace CupheadArchipelago.AP {
                 }*/
                 case ArchipelagoPacketType.Connected: {
                     if (scoutMapStatus!=1) {
-                        Plugin.Log($"[APClient] Getting location data...");
+                        Logging.Log($"[APClient] Getting location data...");
                         session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
-                            Plugin.Log($" [APClient] Processing {si.Count} locations...");
+                            Logging.Log($" [APClient] Processing {si.Count} locations...");
                             locMap.Clear();
                             bool err = false;
                             try {
                                 foreach (ScoutedItemInfo item in si.Values) {
                                     if (SessionStatus<0) {
-                                        Plugin.LogError($" [APClient] Aborted due to session error.");
+                                        Logging.LogError($" [APClient] Aborted due to session error.");
                                         locMap.Clear();
                                         return;
                                     }
@@ -623,33 +623,33 @@ namespace CupheadArchipelago.AP {
                                     bool loc_cond = APLocation.IdExists(loc);
                                     if (!loc_cond) {
                                         err = true;
-                                        Plugin.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
+                                        Logging.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
                                     }
                                 
-                                    Plugin.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
+                                    Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                                     locMap.Add(loc, item);
                                 }
                             } catch (Exception e) {
                                 err = true;
-                                Plugin.LogError($" [APClient] Exception: {e.Message}");
+                                Logging.LogError($" [APClient] Exception: {e.Message}");
                             }
                             if (locMap.Count<1) {
                                 scoutMapStatus = -1;
-                                Plugin.LogError(" [APClient] scoutMap is empty!");
+                                Logging.LogError(" [APClient] scoutMap is empty!");
                                 return;
                             }
                             if (err) {
                                 scoutMapStatus = -2;
-                                Plugin.LogError(" [APClient] Errors occured during processing.");
+                                Logging.LogError(" [APClient] Errors occured during processing.");
                                 return;
                             }
-                            Plugin.Log($" [APClient] Processed location data.");
+                            Logging.Log($" [APClient] Processed location data.");
                             if ((debug&4)>0) {
-                                Plugin.Log(" -- Location data dump: --");
+                                Logging.Log(" -- Location data dump: --");
                                 foreach (KeyValuePair<long, ScoutedItemInfo> entry in locMap) {
-                                    Plugin.Log($"  {entry.Key}: {entry.Value.ItemId}: {entry.Value.LocationId}: {entry.Value.ItemName}: {entry.Value.LocationName}");
+                                    Logging.Log($"  {entry.Key}: {entry.Value.ItemId}: {entry.Value.LocationId}: {entry.Value.ItemName}: {entry.Value.LocationName}");
                                 }
-                                Plugin.Log(" -- End Location data dump --");
+                                Logging.Log(" -- End Location data dump --");
                             }
                             scoutMapStatus = 1;
                         }, session.Locations.AllLocations.ToArray());
@@ -665,7 +665,7 @@ namespace CupheadArchipelago.AP {
                 return APData.SData[APSessionGSDataSlot];
             }
             else {
-                Plugin.Log("[APClient] Cannot get APSessionData", LogLevel.Error);
+                Logging.Log("[APClient] Cannot get APSessionData", LogLevel.Error);
                 return null;
             }
         }

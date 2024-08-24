@@ -19,13 +19,13 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapCoin), "Start")]
         internal static class Start {
             static bool Prefix(MapCoin __instance) {
-                Plugin.Log("Coin: "+__instance.coinID);
+                Logging.Log("Coin: "+__instance.coinID);
                 return false;
             }
             static void Postfix(MapCoin __instance) {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (APClient.IsLocationChecked(CoinIdMap.GetAPLocation(__instance.coinID))) {
-                        Plugin.Log("[MapCoin] Already checked, bye.");
+                        Logging.Log("[MapCoin] Already checked, bye.");
                         PlayerData.Data.coinManager.SetCoinValue(__instance.coinID, true, PlayerId.PlayerOne);
                         UnityEngine.Object.Destroy(__instance.gameObject);
                     }
@@ -50,7 +50,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
@@ -73,9 +73,9 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 }
                 if (success!=3) throw new Exception($"{nameof(OnTriggerEnter2D)}: Patch Failed! {success}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 
@@ -84,7 +84,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
             private static bool APCheck(string coinID) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Plugin.Log($"Check: {coinID}");
+                    Logging.Log($"Check: {coinID}");
                     APClient.Check(CoinIdMap.GetAPLocation(coinID));
                     return true;
                 } else return false;

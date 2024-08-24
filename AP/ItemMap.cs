@@ -60,7 +60,7 @@ namespace CupheadArchipelago.AP {
             if (itemTypes.ContainsKey(item))
                 return itemTypes[item];
             else {
-                Plugin.LogWarning($"[APItemMngr] Item Id: {item} does not exist!");
+                Logging.LogWarning($"[APItemMngr] Item Id: {item} does not exist!");
                 return ItemType.NoType;
             }
         }

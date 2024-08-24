@@ -44,11 +44,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 Label tgt_label = il.DefineLabel();
 
-                //Plugin.Log(_fi_MapData_sessionStarted);
+                //Logging.Log(_fi_MapData_sessionStarted);
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-4;i++) {
@@ -75,17 +75,17 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 }
                 if (!labelPlaced||!success) throw new Exception($"{nameof(Init)}: Patch Failed! {labelPlaced}||{success}");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 
                 return codes;
             }
             static void Postfix(SlotSelectScreenSlot __instance, int slotNumber) {
-                //Plugin.Log.LogInfo("Init");
-                //Plugin.Log.LogInfo(__instance.gameObject.name);
+                //Logging.Log.LogInfo("Init");
+                //Logging.Log.LogInfo(__instance.gameObject.name);
                 instances[slotNumber] = __instance;
                 states[slotNumber] = 0;
 
@@ -102,8 +102,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         [HarmonyPatch(typeof(SlotSelectScreenSlot), "SetSelected")]
         internal static class SetSelected {
             static void Postfix(SlotSelectScreenSlot __instance, ref bool selected) {
-                //Plugin.Log.LogInfo("SetSelected");
-                //Plugin.Log.LogInfo(__instance.gameObject.name);
+                //Logging.Log.LogInfo("SetSelected");
+                //Logging.Log.LogInfo(__instance.gameObject.name);
                 int slot = GetSlotNumber(__instance);
                 //Transform slotAPText_inst = __instance.transform.GetChild(__instance.transform.childCount-1);
                 Transform slotAPText_inst = __instance.transform.GetChild(APTEXT_SIBLING_INDEX);

@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(PlatformingLevel), "Start")]
         internal static class Start {
             static void Postfix(PlatformingLevel __instance) {
-                Plugin.Log("[PlatformingLevel] Coins: "+Aux.CollectionToString(__instance.LevelCoinsIDs));
+                Logging.Log("[PlatformingLevel] Coins: "+Aux.CollectionToString(__instance.LevelCoinsIDs));
             }
         }
     }

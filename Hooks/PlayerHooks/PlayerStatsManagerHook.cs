@@ -44,7 +44,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         [HarmonyPatch(typeof(PlayerStatsManager), "OnAwake")]
         internal static class OnAwake {
             static bool Prefix(PlayerStatsManager __instance) {
-                Plugin.Log("PlayerStatsManager OnAwake");
+                Logging.Log("PlayerStatsManager OnAwake");
                 if (__instance.basePlayer.id==PlayerId.PlayerTwo) {
                     CurrentStatMngr2 = __instance;
                 } else {
@@ -71,7 +71,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
@@ -99,8 +99,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 if (!success) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed!");
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
-                        Plugin.Log("---");
-                        Plugin.Log($"{code.opcode}: {code.operand}");
+                        Logging.Log("---");
+                        Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
 

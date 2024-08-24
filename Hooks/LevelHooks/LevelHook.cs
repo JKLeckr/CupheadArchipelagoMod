@@ -77,7 +77,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 return true;
             }*/
             static void Postfix(Level __instance) {
-                Plugin.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
+                Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks();
                 }
@@ -85,7 +85,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
             /*private static Level.Mode GetClamppedCurrentLevelMode() {
                 if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
-                    //Plugin.Log.LogInfo("Clamping mode");
+                    //Logging.Log.LogInfo("Clamping mode");
                     if (APData.CurrentSData.Hard||Level.CurrentMode>0) {
                         return APData.CurrentSData.Hard?Level.Mode.Hard:Level.Mode.Normal;
                     } else return Level.Mode.Easy;
@@ -97,7 +97,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(Level), "_OnLevelStart")]
         internal static class _OnLevelStart {
             static void Postfix(Level __instance) {
-                Plugin.Log("_OnLevelStart", LoggingFlags.Debug);
+                Logging.Log("_OnLevelStart", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal);
@@ -105,7 +105,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static bool IsValidLevel(Level instance) {
-                Plugin.Log($"Level: {instance.CurrentLevel} LevelType: {instance.LevelType}");
+                Logging.Log($"Level: {instance.CurrentLevel} LevelType: {instance.LevelType}");
                 return instance.LevelType switch
                 {
                     Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
@@ -120,7 +120,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(Level), "_OnLevelEnd")]
         internal static class _OnLevelEnd {
             static bool Prefix(Level __instance) {
-                Plugin.Log("_OnLevelEnd", LoggingFlags.Debug);
+                Logging.Log("_OnLevelEnd", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
                     APManager.Current.SetActive(false);
                 return true;
@@ -130,21 +130,21 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(Level), "_OnPreWin")]
         internal static class _OnPreWin {
             static void Postfix(Level __instance) {
-                Plugin.Log("_OnPreWin", LoggingFlags.Debug);
+                Logging.Log("_OnPreWin", LoggingFlags.Debug);
                 APCheck(__instance);
             }
 
             private static void APCheck(Level instance) {
-                Plugin.Log("[LevelHook] APCheck");
+                Logging.Log("[LevelHook] APCheck");
                 if (APData.IsCurrentSlotEnabled()) {
-                    Plugin.Log($"[LevelHook] Level: {instance.CurrentLevel}");
+                    Logging.Log($"[LevelHook] Level: {instance.CurrentLevel}");
                     // For now, the final bosses are not checks because they are event locations
                     if (instance.CurrentLevel == Levels.Devil || instance.CurrentLevel == Levels.Saltbaker) {
-                        Plugin.Log("[LevelHook] Goal");
+                        Logging.Log("[LevelHook] Goal");
                         APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goals.Saltbaker:Goals.Devil);
                     }
                     else if (instance.CurrentLevel == Levels.Mausoleum) {
-                        Plugin.Log("[LevelHook] Mausoleum Type");
+                        Logging.Log("[LevelHook] Mausoleum Type");
                         switch (PlayerData.Data.CurrentMap)
 		                {
 		                    case Scenes.scene_map_world_1:
@@ -157,7 +157,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 			                    APClient.Check(APLocation.level_mausoleum_iii);
 			                    break;
                             default:
-                                Plugin.LogWarning($"[LevelHook] Invalid Mausoleum Map: {PlayerData.Data.CurrentMap}");
+                                Logging.LogWarning($"[LevelHook] Invalid Mausoleum Map: {PlayerData.Data.CurrentMap}");
                                 break;
 		                }
                     }
@@ -167,7 +167,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
                             switch (instance.LevelType) {
                                 case Level.Type.Battle: {
-                                    Plugin.Log("[LevelHook] Battle Type");
+                                    Logging.Log("[LevelHook] Battle Type");
                                     if (APSettings.BossGradeChecks>0)
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,1), false);
@@ -175,7 +175,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                     break;
                                 }
                                 case Level.Type.Platforming: {
-                                    Plugin.Log("[LevelHook] Platforming Type");
+                                    Logging.Log("[LevelHook] Platforming Type");
                                     if (APSettings.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.RungunGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,((int)APSettings.RungunGradeChecks>3)?2:1), false);
@@ -184,12 +184,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                     break;
                                 }
                                 default: {
-                                    Plugin.Log("[LevelHook] Other Level Type");
+                                    Logging.Log("[LevelHook] Other Level Type");
                                     break;
                                 }
                             }
                         } else {
-                            Plugin.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                            Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                         }
                     }
                 }
@@ -230,7 +230,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(Level), "zHack_OnWin")]
         internal static class zHack_OnWin {
             static bool Prefix(Level __instance) {
-                Plugin.Log("zHack_OnWin", LoggingFlags.Debug);
+                Logging.Log("zHack_OnWin", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
                     APManager.Current.SetActive(false);
                 return true;
@@ -245,23 +245,23 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i = 0; i < codes.Count - 2; i++) {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
                         codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
                         codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_HackDifficulty));
-                        if (debug) Plugin.Log("Patch success");
+                        if (debug) Logging.Log("Patch success");
                         success = true;
                         break;
                     }
                 }
                 if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
                 if (debug) {
-                    Plugin.Log("---");
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 

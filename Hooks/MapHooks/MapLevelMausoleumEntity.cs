@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelMausoleumEntity), "ValidateSucess")]
         internal static class ValidateSucess {
             static void Postfix(ref bool __result) {
-                Plugin.Log($"[MapLevelMausoleumEntity] ValidateSuccess: {__result}");
+                Logging.Log($"[MapLevelMausoleumEntity] ValidateSuccess: {__result}");
                 __result = false;
             }
         }
@@ -21,7 +21,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelMausoleumEntity), "ValidateCondition")]
         internal static class ValidateCondition {
             static void Postfix(ref bool __result) {
-                Plugin.Log($"[MapLevelMausoleumEntity] ValidateCondition: {__result}");
+                Logging.Log($"[MapLevelMausoleumEntity] ValidateCondition: {__result}");
                 __result = false;
             }
         }

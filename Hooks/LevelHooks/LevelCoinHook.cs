@@ -20,7 +20,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             // DEBUG
             /*static bool Prefix(LevelCoin __instance) {
                 Vector3 pos = __instance.transform.position;
-                Plugin.Log("Coin: "+pos.x+", "+pos.y+" : "+__instance.GlobalID);
+                Logging.Log("Coin: "+pos.x+", "+pos.y+" : "+__instance.GlobalID);
                 return true;
             }*/
             
@@ -39,7 +39,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class Collect {
             static bool Prefix(LevelCoin __instance) {
                 if (APData.IsCurrentSlotEnabled())
-                    Plugin.Log($"Coin Collected: {APClient.GetCheck(CoinIdMap.GetAPLocation(__instance.GlobalID)).LocationName}");
+                    Logging.Log($"Coin Collected: {APClient.GetCheck(CoinIdMap.GetAPLocation(__instance.GlobalID)).LocationName}");
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
@@ -52,7 +52,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
@@ -70,9 +70,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     throw new Exception("[LevelCoinHook] Failed to Patch Collect");
                 }
                 if (debug) {
-                    Plugin.Log($"===");
+                    Logging.Log($"===");
                     for (int i = 0; i < codes.Count; i++) {
-                        Plugin.Log($"{codes[i].opcode}: {codes[i].operand}");
+                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
 
