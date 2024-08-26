@@ -2,9 +2,12 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.IO;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using BepInEx.Logging;
+using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
     [BepInPlugin("com.JKLeckr.CupheadArchipelago", "CupheadArchipelago", PluginInfo.PLUGIN_VERSION)]
@@ -18,8 +21,9 @@ namespace CupheadArchipelago {
         public static string Name => PluginInfo.PLUGIN_NAME;
         public static string Version => PluginInfo.PLUGIN_VERSION;
         public static int State { get; private set; } = 0;
-
-        private ConfigEntry<long> configVersion;
+        
+        private static readonly string verPath = Path.Combine(Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_NAME), "configver");
+        private long configVer;
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<bool> configModLogs;
         private ConfigEntry<int> configModFileMax;
@@ -29,11 +33,11 @@ namespace CupheadArchipelago {
         private ConfigEntry<bool> configSkipIntro;
 
         private void Awake() {
-            configVersion = Config.Bind("Main", "version", CONFIG_VERSION);
-            configEnabled = Config.Bind("Main", "Enabled", true);
+            SetupConfigVersion(this);
+            configEnabled = Config.Bind("Main", "Enabled", true, "Mod Master Switch");
             configModLogs = Config.Bind("Logging", "ModLogFiles", true, "Writes mod logs to files. They are not overwritten on startup unlike the main BepInEx log (unless configured not to).");
             configModFileMax = Config.Bind("Logging", "ModLogFileMax", 10, "The maxmum amount of mod logs that can be in the mod logs folder at once. Oldest gets deleted when max is reached.");
-            configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo|LoggingFlags.Info|LoggingFlags.Message|LoggingFlags.Warning, "Set mod logging verbosity.");
+            configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo | LoggingFlags.Info | LoggingFlags.Message | LoggingFlags.Warning | LoggingFlags.Network, "Set mod logging verbosity.");
             configLogLicense = Config.Bind("Logging", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves (Default: \"cuphead_player_data_v1_ap_slot_\", Vanilla: \"cuphead_player_data_v1_slot_\")");
@@ -51,9 +55,9 @@ namespace CupheadArchipelago {
                 Logging.LogMessage("[Log] Message", LoggingFlags.Debug);
                 Logging.LogDebug("[Log] Debug", LoggingFlags.Debug);
 
-                if (configVersion.Value != CONFIG_VERSION) {
-                    Logging.LogWarning("Config version changed! You may want to check the config.");
-                    configVersion.Value = CONFIG_VERSION;
+                if (configVer != CONFIG_VERSION) {
+                    Logging.LogWarning($"Config version changed ({configVer} -> {CONFIG_VERSION})! You may want to check the config.");
+                    configVer = CONFIG_VERSION;
                 }
 
                 if (configLogLicense.Value>0) {
@@ -112,6 +116,29 @@ namespace CupheadArchipelago {
             }       
 
             return -1;
+        }
+
+        private static void SetupConfigVersion(Plugin instance) {
+            if (File.Exists(verPath)) {
+                try {
+                    string raw = File.ReadAllText(verPath);
+                    instance.configVer = (long)JsonConvert.DeserializeObject(raw);
+                    instance.Logger.Log(LogLevel.Info, $"Config version {instance.configVer}");
+                    return;
+                } catch (Exception) {
+                    instance.Logger.Log(LogLevel.Info, "Config version not found.");
+                }
+            }
+            instance.configVer = CONFIG_VERSION;
+            SaveConfigVersion(instance);
+            instance.Logger.Log(LogLevel.Info, $"Config version {instance.configVer}");
+        }
+        private static void SaveConfigVersion(Plugin instance) {
+            try {
+                File.WriteAllText(verPath, JsonConvert.SerializeObject(instance.configVer));
+            } catch (Exception) {
+                instance.Logger.Log(LogLevel.Info, "Config version could not be written.");
+            }
         }
 
         private static void SetupLogging(Plugin instance) {

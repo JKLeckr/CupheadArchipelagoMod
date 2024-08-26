@@ -6,14 +6,13 @@ using System;
 namespace CupheadArchipelago {
     [Flags]
     public enum LoggingFlags {
-        None = 0x0,
-        PluginInfo = 0x1,
-        Info = 0x2,
-        Message = 0x4,
-        Warning = 0x8,
-        Network = 0x16,
-        Debug = 0x32,
-        Transpiler = 0x64,
-        All = PluginInfo|Info|Message|Warning|Network|Debug|Transpiler
+        None = 0,
+        PluginInfo = 1,
+        Info = 2,
+        Message = 4,
+        Warning = 8,
+        Network = 16,
+        Debug = 32,
+        Transpiler = 64,
     }
 }
