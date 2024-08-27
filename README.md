@@ -13,7 +13,7 @@ This mod is designed to work with Archipelago, but it also adds extra features t
 This mod is currently in the development phase and it is very very incomplete, so do not expect to make it out alive if you use it. Caveat Emptor!
 
 ## Install
-*Note: The install process is WIP, so it is not the most user-friendly. Also, during this stage of development there are no binary builds. See "Building."*
+*Note: The install process is WIP, so it is not the most user-friendly. Also, during this stage of development there are no binary builds other than previews. See "Building."*
 
 ### Prerequisites
 - A copy of Cuphead
@@ -36,7 +36,7 @@ This mod is currently in the development phase and it is very very incomplete, s
 ### Prerequisites
 - A copy of Cuphead
 - [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your path.
-- [c-wspp websocket-sharp](https://github.com/black-sliver/c-wspp-websocket-sharp). Note that it must be the windows version. If you are running the macOS version, you have to build this yourself.
+- [c-wspp websocket-sharp](https://github.com/black-sliver/c-wspp-websocket-sharp). Note that it must be the windows version (even on Wine/Proton). If you are running the macOS version, you have to build this yourself.
 
 ### Instructions
 #### 1. Install BepInEx:
@@ -77,9 +77,6 @@ In the game directory:
 
 3. Launch Game.
 
-## Configuring
-The config file is in the game directory's `BepInEx/config` folder. The file is called `com.JKLeckr.CupheadArchipelago.cfg`. It might be useful for debugging to add more verbose logging flags in the config.
-
 ## Setting up Archipelago
 *Note: This is the temporary method while the mod is WIP. For now, just deal with this until the legit way is added.*
 
@@ -91,7 +88,25 @@ The config file is in the game directory's `BepInEx/config` folder. The file is 
     - Set `"address":"URL"` where `URL` is the URL to connect to Archipelago excluding the port.
     - Set `"port":PORT` where `PORT` is the port of the Archipelago server. (Note: no quotes around `PORT`)
     - Set `"slot":"PLAYER"` where `PLAYER` is your player slot name.
-    - Set `"password":"PASSWD"` where `PASSWD` is your player.
+    - Set `"password":"PASSWD"` where `PASSWD` is the server password.
 5. Save the file and launch the game.
 6. Pick the save slot you set up Archipelago with. (Note it says "AP" in the corner of the save file if it's enabled.)
 7. Have fun, and watch out for bugs!
+
+## Configuring
+The config files are in the game directory's `BepInEx/config` folder. The mod config file is called `com.JKLeckr.CupheadArchipelago.cfg`. It might be useful for debugging to add more verbose logging flags in the config.
+
+### Logging
+If you want to see what is going on behind the scenes (useful for diagnosing problems), you should check the logs.
+The logs are located in the `BepInEx` folder in the game directory.
+By default, the BepInEx console is disabled.
+
+These are notable config files and their settings for logging:
+
+- `BepInEx.cfg`
+    - Under `[Logging.Console]`, set `Enabled` to `true` to see the logging console window. Useful for seeing what's going on in real time. The log file might update regularly too, but it isn't as real time.
+    - Under `[Logging]`, setting `UnityLogListening` to `true` helps with logging what Cuphead itself is logging.
+
+- `com.JKLeckr.CupheadArchipelago.cfg`
+    - Adding `Network` to `Logging` will show more verbose network action logging.
+    - `Transpiler` and `Debug` are too verbose to be useful for most people currently. Logging is pretty verbose, even without `Debug` currently while the mod is in heavy development.
