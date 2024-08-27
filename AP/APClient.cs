@@ -12,9 +12,9 @@ using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
-using BepInEx.Logging;
 using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using BepInEx.Logging;
 using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
@@ -216,8 +216,6 @@ namespace CupheadArchipelago.AP {
 
                     Logging.Log($"[APClient] Catching up...");
                     CatchUpChecks();
-
-                    //TODO: Add randomize client-side stuff
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
@@ -266,7 +264,6 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static void ReconnectArchipelagoSession() {
-            /* TODO: Have a return result from the success of the connection instead of passively failing */
             ThreadPool.QueueUserWorkItem(_ => {
                 int chances = RECONNECT_MAX_RETRIES;
                 while (chances<0||chances>0) {
@@ -275,7 +272,7 @@ namespace CupheadArchipelago.AP {
                     Logging.Log("[APClient] Reconnecting...");
                     bool result = ConnectArchipelagoSession(false);
                     if (result) return;
-                    chances--;
+                    if (chances>0) chances--;
                 }
                 Logging.LogError("[APClient] Failed to reconnect!");
             });
