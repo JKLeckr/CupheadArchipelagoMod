@@ -22,7 +22,9 @@ namespace CupheadArchipelago.Unity {
         private bool active = false;
         private Type type = Type.Normal;
         private float timer = 0f;
+        [SerializeField]
         private bool death = false;
+        [SerializeField]
         private string deathCause = "";
         private bool deathExecuted = false;
         [SerializeField]
