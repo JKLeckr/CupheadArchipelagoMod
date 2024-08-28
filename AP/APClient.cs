@@ -422,7 +422,7 @@ namespace CupheadArchipelago.AP {
             if (Logging.IsLoggingFlagsEnabled(loggingFlags)) {
                 string locsstr = "[";
                 for (int i=0;i<locs.Length;i++) {
-                    if (i>0) locsstr += ","; 
+                    if (i>0) locsstr += ",";
                     locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
                     if (i==locs.Length-1) locsstr += "]";
                 }
