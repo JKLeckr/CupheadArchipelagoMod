@@ -87,7 +87,7 @@ In the game directory:
     - Set `"enabled":"true"`
     - Set `"address":"URL"` where `URL` is the URL to connect to Archipelago excluding the port.
     - Set `"port":PORT` where `PORT` is the port of the Archipelago server. (Note: no quotes around `PORT`)
-    - Set `"slot":"PLAYER"` where `PLAYER` is your player slot name.
+    - Set `"player":"PLAYER"` where `PLAYER` is your player slot name.
     - Set `"password":"PASSWD"` where `PASSWD` is the server password.
 5. Save the file and launch the game.
 6. Pick the save slot you set up Archipelago with. (Note it says "AP" in the corner of the save file if it's enabled.)

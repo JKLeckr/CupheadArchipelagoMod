@@ -33,7 +33,7 @@ namespace CupheadArchipelago.AP {
         public string address = "archipelago.gg";
         [JsonProperty("port")]
         public int port = 38281;
-        [JsonProperty("slot")]
+        [JsonProperty("player")]
         public string player = "Player";
         [JsonProperty("password")]
         public string password = "";
