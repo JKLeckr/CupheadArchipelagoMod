@@ -14,7 +14,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(Cuphead), "Awake")]
         internal static class Awake {
             static void Postfix() {
-                new GameObject("ControlBoard", typeof(ControlBoard));
+                new GameObject("ControlBoard", typeof(ControlBoard)).SetActive(false);
             }
         }
     }

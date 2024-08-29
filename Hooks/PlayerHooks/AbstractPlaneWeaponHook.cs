@@ -1,6 +1,7 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using CupheadArchipelago.AP;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 
@@ -8,6 +9,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class AbstractPlaneWeaponHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(rapidFireRate));
+            Harmony.CreateAndPatchAll(typeof(beginFiring));
         }
 
         // FIXME: Slowfire might be worked around by pressing the button repeatedly.
@@ -19,6 +21,13 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 if (APManager.Current?.IsSlowFired() ?? false) {
                     __result *= SLOWFIRE_RATE_MULTIPLIER;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(AbstractPlaneWeapon), "beginFiring")]
+        internal static class beginFiring {
+            static bool Prefix() {
+                return !APData.IsCurrentSlotEnabled() || !APManager.Current.IsFingerJammed();
             }
         }
     }
