@@ -98,8 +98,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 }
                 if (!success) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed!");
                 if (debug) {
+                    Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Logging.Log("---");
                         Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
