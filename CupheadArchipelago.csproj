@@ -9,7 +9,7 @@
     <LangVersion>latest</LangVersion>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DefaultItemExcludes>$(DefaultItemExcludes);ref/**;Excluded/**;Exclude/**;Restricted/**;excluded/**;exclude/**;restricted/**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);ref/**;Excluded/**;Exclude/**;Restricted/**;excluded/**;exclude/**;restricted/**;Templates/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
