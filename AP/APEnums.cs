@@ -10,6 +10,16 @@ namespace CupheadArchipelago.AP {
         ChessCastle = 4,
         Graveyard = 5,
     }
+
+    public enum GameMode {
+        BeatDevil = 0,
+        Contracts = 1,
+        DlcBeatDevil = 2,
+        DlcBeatSaltbaker = 3,
+        DlcBeatBoth = 4,
+        DlcBeatSaltbakerIsleFourOnly = 5,
+        DlcIngradients = 6,
+    }
     
     public enum GradeChecks {
         Disabled = 0,

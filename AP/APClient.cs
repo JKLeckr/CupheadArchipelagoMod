@@ -168,6 +168,7 @@ namespace CupheadArchipelago.AP {
 
                     Logging.Log($"[APClient] Applying settings...");
                     APSettings.UseDLC = SlotData.use_dlc;
+                    APSettings.Mode = SlotData.mode;
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;

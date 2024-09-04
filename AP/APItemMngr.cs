@@ -74,17 +74,26 @@ namespace CupheadArchipelago.AP {
                         Logging.Log("AddCurrency");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 1);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 1);
+                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
                     }
                     else if (itemId==APItem.coin2) {
                         Logging.Log("AddCurrency x2");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 2);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 2);
+                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
                     }
                     else if (itemId==APItem.coin3) {
                         Logging.Log("AddCurrency x3");
                         PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 3);
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 3);
+                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
                     }
+                    /*else if (itemId==APItem.coin4) {
+                        Logging.Log("AddCurrency x4");
+                        PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 4);
+                        PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 4);
+                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+                    }*/
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
@@ -96,6 +105,7 @@ namespace CupheadArchipelago.AP {
                     }
                     else if (itemId==APItem.dlc_ingredient) {
                         APClient.APSessionGSPlayerData.dlc_ingredients++;
+                        Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
                     }
                     break;
                 }

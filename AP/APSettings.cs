@@ -4,6 +4,7 @@
 namespace CupheadArchipelago.AP {
     public class APSettings {
         public static bool UseDLC { get; internal set; } = false;
+        public static GameMode Mode { get; internal set; } = GameMode.BeatDevil;
         public static bool Hard { get; internal set; } = false;
         public static APItem StartWeapon { get; internal set; } = APItem.weapon_peashooter;
         public static bool FreemoveIsles { get; internal set; } = false;

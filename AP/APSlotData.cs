@@ -13,6 +13,7 @@ namespace CupheadArchipelago.AP {
         public LevelShuffleMap level_shuffle_map {get; private set;}
         public ShopSet[] shop_map {get; private set;}
         public bool use_dlc {get; private set;}
+        public GameMode mode {get; private set;}
         public bool expert_mode {get; private set;}
         public APItem start_weapon {get; private set;}
         public bool freemove_isles {get; private set;}
@@ -30,6 +31,7 @@ namespace CupheadArchipelago.AP {
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataBool(slotData, "use_dlc");
+            mode = (GameMode)GetAPSlotDataLong(slotData, "mode");
             expert_mode = GetAPSlotDataBool(slotData, "expert_mode");
             start_weapon = GetAPSlotDataLong(slotData, "start_weapon") switch {
                 1 => APItem.weapon_spread,
