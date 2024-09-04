@@ -15,6 +15,7 @@ namespace CupheadArchipelago.AP {
         public static bool QuestJuggler { get; internal set; } = true;
         public static bool QuestPacifist { get; internal set; } = false;
         public static bool QuestProfessional { get; internal set; } = false;
+        public static int StartMaxHealth { get; internal set; } = 3;
         public static int[] RequiredContracts { get; internal set; } = [5,10,17];
         public static int RequiredIngredients { get; internal set; } = 5;
     }

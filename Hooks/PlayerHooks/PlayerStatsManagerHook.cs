@@ -58,7 +58,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         internal static class CalculateHealthMax {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new(instructions);
-                bool success = false;
+                int success = 0;
                 bool debug = false;
 
                 PropertyInfo _pi_HealthMax = typeof(PlayerStatsManager).GetProperty("HealthMax", BindingFlags.Public | BindingFlags.Instance);
@@ -75,7 +75,12 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                     }
                 }
                 for (int i=0;i<codes.Count-3;i++) {
-                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_get_HealthMax &&
+                    if ((success&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && codes[i+2].opcode == OpCodes.Call &&
+                        codes[i+2].operand == _mi_set_HealthMax) {
+                            codes[i+1] = CodeInstruction.Call(() => APGetStartMaxHealth());
+                            success |= 1;
+                    }
+                    if ((success&2)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_get_HealthMax &&
                         codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == 9 && codes[i+3].opcode == OpCodes.Ble) {
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
@@ -92,11 +97,11 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                             codes[i].labels = [cvanilla];
                             codes.InsertRange(i, ncodes);
                             i+= ncodes.Count;
-                            success = true;
-                            break;
+                            success |= 2;
                     }
+                    if (success==3) break;
                 }
-                if (!success) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed!");
+                if (success!=3) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
@@ -107,8 +112,14 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 return codes;
             }
 
+            private static int APGetStartMaxHealth() {
+                return APData.IsCurrentSlotEnabled() ? APSettings.StartMaxHealth : 3;
+            }
             private static int APCalcMaxHealth(int health, int healthMax) {
-                return (health>healthMax)?health:healthMax;
+                int nhealthMax = healthMax;
+                if (APData.IsCurrentSlotEnabled())
+                    nhealthMax += APData.CurrentSData.playerData.healthupgrades;
+                return (health>healthMax)?health:nhealthMax;
             }
         }
         
