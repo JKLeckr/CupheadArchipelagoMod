@@ -22,6 +22,7 @@ namespace CupheadArchipelago.AP {
         public GradeChecks rungun_grade_checks {get; private set;}
         public bool agrade_quest {get; private set;}
         public bool pacifist_quest {get; private set;}
+        public int start_maxhealth {get; private set;}
         public bool deathlink {get; private set;}
 
         public APSlotData(Dictionary<string, object> slotData) {
@@ -50,6 +51,7 @@ namespace CupheadArchipelago.AP {
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             agrade_quest = GetAPSlotDataBool(slotData, "agrade_quest");
             pacifist_quest = GetAPSlotDataBool(slotData, "pacifist_quest");
+            start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
             deathlink = GetAPSlotDataBool(slotData, "deathlink");
         }
 

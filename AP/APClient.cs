@@ -168,7 +168,7 @@ namespace CupheadArchipelago.AP {
 
                     Logging.Log($"[APClient] Applying settings...");
                     APSettings.UseDLC = SlotData.use_dlc;
-                    APSettings.Mode = SlotData.mode;
+                    APSettings.Mode = GameMode.BeatDevil; //SlotData.mode; //FIXME: Different modes
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
@@ -178,6 +178,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.QuestPacifist = SlotData.pacifist_quest;
                     APSettings.QuestProfessional = SlotData.agrade_quest;
                     APSettings.QuestJuggler = true;
+                    APSettings.StartMaxHealth = SlotData.start_maxhealth;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Logging.Log($"[APClient] Setting up game...");

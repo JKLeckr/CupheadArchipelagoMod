@@ -88,12 +88,6 @@ namespace CupheadArchipelago.AP {
                         PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 3);
                         Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
                     }
-                    /*else if (itemId==APItem.coin4) {
-                        Logging.Log("AddCurrency x4");
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 4);
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 4);
-                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
-                    }*/
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
@@ -102,6 +96,10 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.plane_super=true;
                     else if (itemId==APItem.dlc_boat) {
                         APClient.APSessionGSPlayerData.dlc_boat=true;
+                    }
+                    else if (itemId==APItem.healthupgrade) {
+                        APClient.APSessionGSPlayerData.healthupgrades++;
+                        Logging.Log($"Health Upgrades: {APClient.APSessionGSPlayerData.healthupgrades}");
                     }
                     else if (itemId==APItem.dlc_ingredient) {
                         APClient.APSessionGSPlayerData.dlc_ingredients++;
@@ -150,6 +148,7 @@ namespace CupheadArchipelago.AP {
                         AudioManager.Play("level_menu_select");
                         PlayerStatsManagerHook.ReverseControls();
                     }
+                    else if (itemId==APItem.level_trap_stun) {Stub(itemName);}
                     else if (itemId==APItem.level_trap_envirotrap) {Stub(itemName);}
                     break;
                 }

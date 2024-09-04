@@ -188,6 +188,8 @@ namespace CupheadArchipelago.AP {
             public bool plane_parry = false;
             [JsonProperty("plane_shrink")]
             public bool plane_shrink = false;
+            [JsonProperty("healthupgrades")]
+            public int healthupgrades = 0;
             [JsonProperty("dlc_boat")]
             public bool dlc_boat = false;
 
