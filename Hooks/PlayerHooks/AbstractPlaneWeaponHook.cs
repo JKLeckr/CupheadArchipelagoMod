@@ -13,11 +13,15 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         }
 
         // FIXME: Slowfire might be worked around by pressing the button repeatedly.
+        private const float FASTFIRE_RATE_MULTIPLIER = 0.7f;
         private const float SLOWFIRE_RATE_MULTIPLIER = 1.5f;
 
         [HarmonyPatch(typeof(AbstractPlaneWeapon), "rapidFireRate", MethodType.Getter)]
         internal static class rapidFireRate {
             static void Postfix(ref float __result) {
+                if (APManager.Current?.IsFastFired() ?? false) {
+                    __result *= FASTFIRE_RATE_MULTIPLIER;
+                }
                 if (APManager.Current?.IsSlowFired() ?? false) {
                     __result *= SLOWFIRE_RATE_MULTIPLIER;
                 }

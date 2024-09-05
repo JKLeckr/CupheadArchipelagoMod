@@ -131,6 +131,10 @@ namespace CupheadArchipelago.AP {
                         }
                         if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                     }
+                    else if (itemId==APItem.level_fastfire) {
+                        AudioManager.Play("pop_up");
+                        APManager.Current.SlowFire();
+                    }
                     else if (itemId==APItem.level_trap_fingerjam) {
                         AudioManager.Play("level_menu_select");
                         APManager.Current.FingerJam();
@@ -148,8 +152,6 @@ namespace CupheadArchipelago.AP {
                         AudioManager.Play("level_menu_select");
                         PlayerStatsManagerHook.ReverseControls();
                     }
-                    else if (itemId==APItem.level_trap_stun) {Stub(itemName);}
-                    else if (itemId==APItem.level_trap_envirotrap) {Stub(itemName);}
                     break;
                 }
                 default: break;

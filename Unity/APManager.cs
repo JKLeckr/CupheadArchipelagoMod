@@ -28,6 +28,8 @@ namespace CupheadArchipelago.Unity {
         private string deathCause = "";
         private bool deathExecuted = false;
         [SerializeField]
+        private float fastFire = 0f;
+        [SerializeField]
         private float fingerJam = 0f;
         [SerializeField]
         private float slowFire = 0f;
@@ -56,6 +58,11 @@ namespace CupheadArchipelago.Unity {
             this.deathCause = deathCause ?? "";
         }
 
+        public bool IsFastFired() => fastFire > 0;
+        public void FastFire(float addTime = 5) {
+            if (fastFire<0) fastFire = 0;
+            fastFire += addTime;
+        }
         public bool IsFingerJammed() => fingerJam > 0;
         public void FingerJam(float addTime = 5) {
             if (fingerJam<0) fingerJam = 0;
@@ -81,6 +88,10 @@ namespace CupheadArchipelago.Unity {
                         deathExecuted = true;
                         active = false;
                         return;
+                    }
+                    if (fastFire>0) {
+                        fastFire -= Time.deltaTime;
+                        if (fastFire<0) fastFire = 0;
                     }
                     if (fingerJam>0) {
                         fingerJam -= Time.deltaTime;
