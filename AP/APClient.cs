@@ -53,7 +53,7 @@ namespace CupheadArchipelago.AP {
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,5,0,0);
-        internal const long AP_SLOTDATA_VERSION = 0;
+        internal const long AP_SLOTDATA_VERSION = 1;
         internal const long AP_ID_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
@@ -176,7 +176,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
                     APSettings.QuestPacifist = SlotData.pacifist_quest;
-                    APSettings.QuestProfessional = SlotData.agrade_quest;
+                    APSettings.QuestProfessional = SlotData.silverworth_quest;
                     APSettings.QuestJuggler = true;
                     APSettings.StartMaxHealth = SlotData.start_maxhealth;
                     APSettings.DeathLink = SlotData.deathlink;
