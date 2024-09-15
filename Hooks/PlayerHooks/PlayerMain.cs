@@ -5,6 +5,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
     public class PlayerMain {
         public static void Hook() {
             PlayerStatsManagerHook.Hook();
+            LevelPlayerControllerHook.Hook();
             PlanePlayerControllerHook.Hook();
             LevelPlayerMotorHook.Hook();
             LevelPlayerAnimationControllerHook.Hook();
@@ -12,6 +13,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             PlanePlayerParryControllerHook.Hook();
             LevelPlayerWeaponManagerHook.Hook();
             PlanePlayerWeaponManagerHook.Hook();
+            LevelWeaponHook.Hook();
+            PlaneWeaponHook.Hook();
         }
     }
 }

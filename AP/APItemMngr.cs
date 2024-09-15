@@ -72,21 +72,15 @@ namespace CupheadArchipelago.AP {
                 case ItemType.Essential: {
                     if (itemId==APItem.coin) {
                         Logging.Log("AddCurrency");
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 1);
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 1);
-                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+                        AddCoins(1);
                     }
                     else if (itemId==APItem.coin2) {
                         Logging.Log("AddCurrency x2");
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 2);
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 2);
-                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+                        AddCoins(2);
                     }
                     else if (itemId==APItem.coin3) {
                         Logging.Log("AddCurrency x3");
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerOne, 3);
-                        PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, 3);
-                        Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+                        AddCoins(3);
                     }
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
@@ -158,6 +152,14 @@ namespace CupheadArchipelago.AP {
             }
             } catch (Exception e) {Logging.LogError(e); return false;}
             return true;
+        }
+
+        internal static void AddCoins(int count=1) {
+            PlayerData.Data.AddCurrency(PlayerId.PlayerOne, count);
+            PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, count);
+            Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+            APClient.APSessionGSPlayerData.coins_collected += count;
+            Logging.Log($"Total coins: {APClient.APSessionGSPlayerData.coins_collected}");
         }
 
         private static void Stub(string itemName) => Logging.LogWarning($"Item handling unimplemented: {itemName}");

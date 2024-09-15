@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "Start")]
         internal static class Start {
             static bool Prefix(MapLevelDependentObstacle __instance) {
-                if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
+                if (APFreeMoveCond()) {
                     __instance.OnConditionAlreadyMet();
                     return false;
                 }
@@ -33,7 +33,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "OnConditionNotMet")]
         internal static class OnConditionNotMet {
             static bool Prefix(MapLevelDependentObstacle __instance) {
-                if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
+                if (APFreeMoveCond()) {
                     Logging.Log(__instance+" OnConditionNotMet", LoggingFlags.Debug);
                 }
                 return true;
@@ -43,7 +43,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "OnConditionMet")]
         internal static class OnConditionMet {
             static bool Prefix(MapLevelDependentObstacle __instance) {
-                if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
+                if (APFreeMoveCond()) {
                     Logging.Log(__instance+" OnConditionMet", LoggingFlags.Debug);
                 }
                 return true;
@@ -53,7 +53,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "OnConditionAlreadyMet")]
         internal static class OnConditionAlreadyMet {
             static bool Prefix(MapLevelDependentObstacle __instance) {
-                if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
+                if (APFreeMoveCond()) {
                     Logging.Log(__instance+" OnConditionAlreadyMet", LoggingFlags.Debug);
                 }
                 return true;
@@ -63,21 +63,26 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "DoTransition")]
         internal static class DoTransition {
             static bool Prefix(MapLevelDependentObstacle __instance) {
-                if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
+                if (APFreeMoveCond()) {
                     Logging.Log(__instance+" DoTransition", LoggingFlags.Debug);
                 }
-                return !(APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles);
+                return !(APFreeMoveCond());
             }
         }
 
         [HarmonyPatch(typeof(MapLevelDependentObstacle), "OnChange")]
         internal static class OnChange {
             static bool Prefix(MapLevelDependentObstacle __instance) {
-                if (APData.IsCurrentSlotEnabled()&&APSettings.FreemoveIsles) {
+                if (APFreeMoveCond()) {
                     Logging.Log(__instance+" OnChange", LoggingFlags.Debug);
                 }
                 return true;
             }
         }
+
+        private static bool APFreeMoveCond() =>
+            APData.IsCurrentSlotEnabled() &&
+            APSettings.FreemoveIsles &&
+            PlayerData.Data.CurrentMap!=Scenes.scene_map_world_4;
     }
 }

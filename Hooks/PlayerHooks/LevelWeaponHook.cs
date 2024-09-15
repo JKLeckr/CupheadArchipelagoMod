@@ -6,17 +6,17 @@ using CupheadArchipelago.Unity;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.PlayerHooks {
-    internal class AbstractPlaneWeaponHook {
+    internal class LevelWeaponHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(rapidFireRate));
+            //Harmony.CreateAndPatchAll(typeof(rapidFireRate));
             Harmony.CreateAndPatchAll(typeof(beginFiring));
         }
 
         // FIXME: Slowfire might be worked around by pressing the button repeatedly.
         private const float FASTFIRE_RATE_MULTIPLIER = 0.7f;
-        private const float SLOWFIRE_RATE_MULTIPLIER = 1.5f;
+        private const float SLOWFIRE_RATE_MULTIPLIER = 1.3f;
 
-        [HarmonyPatch(typeof(AbstractPlaneWeapon), "rapidFireRate", MethodType.Getter)]
+        [HarmonyPatch(typeof(AbstractLevelWeapon), "rapidFireRate", MethodType.Getter)]
         internal static class rapidFireRate {
             static void Postfix(ref float __result) {
                 if (APManager.Current?.IsFastFired() ?? false) {
@@ -28,7 +28,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             }
         }
 
-        [HarmonyPatch(typeof(AbstractPlaneWeapon), "beginFiring")]
+        [HarmonyPatch(typeof(AbstractLevelWeapon), "beginFiring")]
         internal static class beginFiring {
             static bool Prefix() {
                 return !APData.IsCurrentSlotEnabled() || !APManager.Current.IsFingerJammed();
