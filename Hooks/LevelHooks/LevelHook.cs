@@ -149,35 +149,42 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 		                }
                     }
                     else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain) {
-                        Level.Mode normalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
-                        if (Level.Difficulty >= normalMode) {
-                            APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
-                            switch (instance.LevelType) {
-                                case Level.Type.Battle: {
-                                    Logging.Log("[LevelHook] Battle Type");
+                        switch (instance.LevelType) {
+                            case Level.Type.Battle: {
+                                Logging.Log("[LevelHook] Battle Type");
+                                Level.Mode battleNormalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
+                                if (Level.Difficulty >= battleNormalMode) {
+                                    APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
                                     if (APSettings.BossGradeChecks>0)
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,1), false);
                                         }
-                                    break;
+                                } else {
+                                    Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                                 }
-                                case Level.Type.Platforming: {
-                                    Logging.Log("[LevelHook] Platforming Type");
+                                break;
+                            }
+                            case Level.Type.Platforming: {
+                                Logging.Log("[LevelHook] Platforming Type");
+                                if (Level.Difficulty >= Level.Mode.Normal) {    
+                                    APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
                                     if (APSettings.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.RungunGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,((int)APSettings.RungunGradeChecks>3)?2:1), false);
                                         }
                                     }
-                                    break;
+                                } else {
+                                    Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                                 }
-                                default: {
-                                    Logging.Log("[LevelHook] Other Level Type");
-                                    break;
-                                }
+                                break;
                             }
-                        } else {
-                            Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                            default: {
+                                Logging.Log("[LevelHook] Other Level Type");
+                                break;
+                            }
                         }
+                    } else {
+                        Logging.Log("[LevelHook] Not a checkable level");
                     }
                 }
             }
