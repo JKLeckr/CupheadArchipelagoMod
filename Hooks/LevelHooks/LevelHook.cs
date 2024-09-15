@@ -15,6 +15,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(_OnLevelStart));
             Harmony.CreateAndPatchAll(typeof(_OnLevelEnd));
+            Harmony.CreateAndPatchAll(typeof(_OnLose));
             Harmony.CreateAndPatchAll(typeof(_OnPreWin));
             Harmony.CreateAndPatchAll(typeof(zHack_OnWin));
         }
@@ -80,6 +81,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks();
+                    APManager apmngr = __instance.gameObject.AddComponent<APManager>();
+                    apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal);
                 }
             }
 
@@ -98,22 +101,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class _OnLevelStart {
             static void Postfix(Level __instance) {
                 Logging.Log("_OnLevelStart", LoggingFlags.Debug);
-                if (APData.IsCurrentSlotEnabled()) {
-                    APManager apmngr = __instance.gameObject.AddComponent<APManager>();
-                    apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal);
-                }
-            }
-
-            private static bool IsValidLevel(Level instance) {
-                Logging.Log($"Level: {instance.CurrentLevel} LevelType: {instance.LevelType}");
-                return instance.LevelType switch
-                {
-                    Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
-                    _ => false,
-                } && instance.CurrentLevel switch {
-                    Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.ChessCastle => false,
-                    _ => true,
-                };
+                APManager.Current?.SetActive(true);
             }
         }
 
@@ -121,8 +109,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class _OnLevelEnd {
             static bool Prefix(Level __instance) {
                 Logging.Log("_OnLevelEnd", LoggingFlags.Debug);
-                if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
-                    APManager.Current.SetActive(false);
+                APManager.Current?.SetActive(false);
                 return true;
             }
         }
@@ -196,10 +183,11 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
         }
 
-        [HarmonyPatch(typeof(Level), "_OnPreLose")]
+        [HarmonyPatch(typeof(Level), "_OnLose")]
         internal static class _OnLose {
             static bool Prefix(Level __instance) {
                 if (APData.IsCurrentSlotEnabled() && APClient.IsDeathLinkActive()) {
+                    Logging.Log("DeathLink");
                     if (APManager.Current != null && !APManager.Current.IsDeathTriggered()) {
                         if (__instance.LevelType == Level.Type.Platforming) {
                             APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Normal);
@@ -212,13 +200,13 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 APClient.SendDeathLink("Mausoleum", DeathLinkCauseType.Mausoleum);
                             }
                             else if (Array.Exists(Level.kingOfGamesLevels, (Levels level) => __instance.CurrentLevel == level)) {
-                                APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.ChessCastle);
+                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseType.ChessCastle);
                             }
                             else if (__instance.CurrentLevel == Levels.Graveyard) {
-                                APClient.SendDeathLink(platformLevelNames[Levels.Graveyard], DeathLinkCauseType.Graveyard);
+                                APClient.SendDeathLink(bossNames[Levels.Graveyard], DeathLinkCauseType.Graveyard);
                             }
                             else {
-                                APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Boss);
+                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseType.Boss);
                             }
                         }
                     }
@@ -274,6 +262,17 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
                 else return mode;
             }
+        }
+
+        private static bool IsValidLevel(Level instance) {
+            Logging.Log($"Level: {instance.CurrentLevel} LevelType: {instance.LevelType}");
+            return instance.LevelType switch {
+                Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
+                _ => false,
+            } && instance.CurrentLevel switch {
+                Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.ChessCastle => false,
+                _ => true,
+            };
         }
     }
 }

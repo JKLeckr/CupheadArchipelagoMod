@@ -188,6 +188,7 @@ namespace CupheadArchipelago.AP {
                     if (APSettings.DeathLink) {
                         Logging.Log($"[APClient] Setting up DeathLink...");
                         deathLinkService = session.CreateDeathLinkService();
+                        deathLinkService.EnableDeathLink();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
                     }
 
@@ -337,7 +338,7 @@ namespace CupheadArchipelago.AP {
         }
         public static bool Check(long loc, bool sendChecks = true) {
             if (!locMap.ContainsKey(loc)) {
-                Logging.LogError($"[APClient] Location {loc} is missing. Skipping.");
+                Logging.LogWarning($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
             string locName = locMap.ContainsKey(loc) ? locMap[loc].LocationName : $"#{loc}";
@@ -590,8 +591,19 @@ namespace CupheadArchipelago.AP {
                 _ => player + " was " + deathTxt + (cause != null ? " at " + cause : "" + "!"),
             };
             Logging.Log($"[APClient] Your message: \"{causeMessage}\"");
-            deathLinkService.SendDeathLink(new DeathLink(APSessionPlayerName, causeMessage));
-            Logging.Log("[APClient] Shared. They are enjoying your death probably...");
+            DeathLink death = new DeathLink(APSessionPlayerName, causeMessage);
+            ThreadPool.QueueUserWorkItem(_ => SendDeathLinkThread(death));
+        }
+        private static bool SendDeathLinkThread(DeathLink death) {
+            bool state = false;
+            try {
+                deathLinkService.SendDeathLink(death);
+                Logging.Log("[APClient] Shared. They are enjoying your death probably...");
+                state = true;
+            } catch (ArchipelagoSocketClosedException e) {
+                Logging.LogWarning($"[APClient] Failed to share your death! {e.Message}");
+            }
+            return state;
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {

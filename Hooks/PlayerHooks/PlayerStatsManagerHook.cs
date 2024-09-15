@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(OnAwake));
             Harmony.CreateAndPatchAll(typeof(CalculateHealthMax));
+            Harmony.CreateAndPatchAll(typeof(DebugAddSuper));
             Harmony.CreateAndPatchAll(typeof(DebugFillSuper));
         }
 
@@ -169,7 +170,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             if (playerId == PlayerId.PlayerOne || playerId == PlayerId.Any)
                 CurrentStatMngr1.DebugAddSuper();
             if (playerId == PlayerId.PlayerTwo || playerId == PlayerId.Any)
-                CurrentStatMngr2.DebugAddSuper();
+                CurrentStatMngr2?.DebugAddSuper();
             statCommand = StatsCommands.Orig;
         }
         public static void ReverseControls() {

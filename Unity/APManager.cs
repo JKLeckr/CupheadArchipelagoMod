@@ -42,7 +42,6 @@ namespace CupheadArchipelago.Unity {
             }
             Logging.Log($"[APManager] Initialized as Current {type}");
             this.type = type;
-            active = true;
             init = true;
         }
         public bool IsActive() => active;
@@ -50,6 +49,7 @@ namespace CupheadArchipelago.Unity {
         
         public bool IsDeathTriggered() => death;
         public void TriggerDeath(string deathCause = null) {
+            if (type != Type.Level) return;
             if (IsDeathTriggered()) {
                 Logging.LogWarning("[APManager] Death already triggered!");
                 return;
@@ -82,8 +82,8 @@ namespace CupheadArchipelago.Unity {
                 }
                 else if (active && PauseManager.state != PauseManager.State.Paused) {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
-                    if (death && !deathExecuted) {
-                        Logging.Log($"[APManager] Killing Players.");
+                    if (type == Type.Level && death && !deathExecuted) {
+                        Logging.Log($"[APManager] Killing Players. Cause: \"{deathCause}\"");
                         PlayerStatsManagerHook.KillPlayer(PlayerId.Any);
                         deathExecuted = true;
                         active = false;

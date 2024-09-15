@@ -19,6 +19,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     APClient.SendChecks();
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(APManager.Type.Normal);
+                    apmngr.SetActive(true);
                 }
             }
         }

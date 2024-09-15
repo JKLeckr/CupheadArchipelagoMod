@@ -6,9 +6,9 @@ using CupheadArchipelago.Unity;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.PlayerHooks {
-    internal class AbstractLevelWeaponHook {
+    internal class PlaneWeaponHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(rapidFireRate));
+            //Harmony.CreateAndPatchAll(typeof(rapidFireRate));
             Harmony.CreateAndPatchAll(typeof(beginFiring));
         }
 
@@ -16,7 +16,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private const float FASTFIRE_RATE_MULTIPLIER = 0.7f;
         private const float SLOWFIRE_RATE_MULTIPLIER = 1.3f;
 
-        [HarmonyPatch(typeof(AbstractLevelWeapon), "rapidFireRate", MethodType.Getter)]
+        [HarmonyPatch(typeof(AbstractPlaneWeapon), "rapidFireRate", MethodType.Getter)]
         internal static class rapidFireRate {
             static void Postfix(ref float __result) {
                 if (APManager.Current?.IsFastFired() ?? false) {

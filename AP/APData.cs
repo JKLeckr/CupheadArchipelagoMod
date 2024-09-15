@@ -192,6 +192,8 @@ namespace CupheadArchipelago.AP {
             public int healthupgrades = 0;
             [JsonProperty("dlc_boat")]
             public bool dlc_boat = false;
+            [JsonProperty("stat_coins_collected")]
+            public int coins_collected = 0;
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget&SetTarget.BasicAbilities)>0) dash = value;
