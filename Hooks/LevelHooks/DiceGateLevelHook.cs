@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;
-                int index = 0;
+                int index = 1;
                 int req_index = 0;
                 int insertCount = 0;
                 MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
@@ -37,7 +37,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         codes[i+2].opcode == OpCodes.Callvirt && ((MethodInfo)codes[i+2].operand == _mi_CheckLevelCompleted || 
                         (MethodInfo)codes[i+2].operand == _mi_CheckLevelsCompleted) && codes[i+3].opcode == OpCodes.Brfalse) {
                             bool countCondition = codes[i+1].opcode == OpCodes.Ldsfld;
-                            int testCount = countCondition?APSettings.RequiredContracts[ClampReqIndex(req_index)]-1:index;
+                            int testCount = countCondition?APSettings.RequiredContracts[ClampReqIndex(req_index)]:index;
                             codes.Insert(i+3, new CodeInstruction(OpCodes.Ldc_I4, testCount));
                             codes.Insert(i+4, new CodeInstruction(OpCodes.Call, _mi_APCondition));
                             if (countCondition) req_index++;

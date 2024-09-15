@@ -17,7 +17,9 @@ namespace CupheadArchipelago.Unity {
         [SerializeField]
         private bool debug = false;
         [SerializeField]
-        private float applyInterval = 1f;
+        private float levelApplyInterval = 1f;
+        [SerializeField]
+        private float mapApplyInterval = 0.25f;
         private bool init = false;
         private bool active = false;
         private Type type = Type.Normal;
@@ -102,6 +104,7 @@ namespace CupheadArchipelago.Unity {
                         if (slowFire<0) slowFire = 0;
                     }
                     APClient.ItemUpdate();
+                    float applyInterval = type == Type.Level ? levelApplyInterval : mapApplyInterval;
                     if (type == Type.Level) {
                         if (debug) Logging.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
                         if (!APClient.ItemApplyLevelQueueIsEmpty()) {
