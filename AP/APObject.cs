@@ -62,6 +62,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem level_trap_slowfire = new APItem(12905210);
         public static readonly APItem level_trap_superdrain = new APItem(12905211);
         public static readonly APItem level_trap_reversal = new APItem(12905212);
+        public static readonly APItem level_trap_screen = new APItem(12905213);
         public static readonly APItem dlc_boat = new APItem(12909264);
         public static readonly APItem dlc_ingredient = new APItem(12909265);
         public static readonly APItem weapon_dlc_crackshot = new APItem(12909266);

@@ -9,7 +9,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class PlaneWeaponHook {
         internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(rapidFireRate));
-            Harmony.CreateAndPatchAll(typeof(beginFiring));
+            //Harmony.CreateAndPatchAll(typeof(beginFiring));
         }
 
         // FIXME: Slowfire might be worked around by pressing the button repeatedly.
