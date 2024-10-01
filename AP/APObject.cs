@@ -61,7 +61,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem level_trap_fingerjam = new APItem(12905209);
         public static readonly APItem level_trap_slowfire = new APItem(12905210);
         public static readonly APItem level_trap_superdrain = new APItem(12905211);
-        public static readonly APItem level_trap_reversal = new APItem(12905212);
+        public static readonly APItem level_trap_reverse = new APItem(12905212);
         public static readonly APItem level_trap_screen = new APItem(12905213);
         public static readonly APItem dlc_boat = new APItem(12909264);
         public static readonly APItem dlc_ingredient = new APItem(12909265);
@@ -200,7 +200,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation quest_4mel = new APLocation(12905288);
         public static readonly APLocation quest_lucien = new APLocation(12905289);
         public static readonly APLocation quest_pacifist = new APLocation(12905290);
-        public static readonly APLocation quest_15agrades = new APLocation(12905291);
+        public static readonly APLocation quest_silverworth = new APLocation(12905291);
         public static readonly APLocation quest_music = new APLocation(12905292);
         public static readonly APLocation level_dlc_tutorial = new APLocation(12909264);
         public static readonly APLocation level_dlc_tutorial_coin = new APLocation(12909265);

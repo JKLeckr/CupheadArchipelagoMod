@@ -11,7 +11,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             Harmony.CreateAndPatchAll(typeof(OnDialoguerMessageEvent));
         }
 
-        private static readonly long locationId = APLocation.quest_15agrades;
+        private static readonly long locationId = APLocation.quest_silverworth;
 
         [HarmonyPatch(typeof(MapNPCProfessional), "Start")]
         internal static class Start {
