@@ -142,7 +142,7 @@ namespace CupheadArchipelago.AP {
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
                         if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
                     }
-                    else if (itemId==APItem.level_trap_reversal) {
+                    else if (itemId==APItem.level_trap_reverse) {
                         AudioManager.Play("level_menu_select");
                         PlayerStatsManagerHook.ReverseControls();
                     }
