@@ -241,7 +241,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (APSettings.UseDLC && PlayerData.Data.GetMapData(Scenes.scene_map_world_DLC).sessionStarted)
                     shopLevel++;
 
-                Logging.Log($"0: {shopLevel}", LoggingFlags.Debug);
+                Logging.Log($"Shop Level: {shopLevel}");
 
                 int weaponCount = 0;
                 int charmCount = 0;

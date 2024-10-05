@@ -128,7 +128,7 @@ namespace CupheadArchipelago.AP {
                     return false;
                 }
 
-                //Logging.Log($"[APClient] APWorld version {SlotData.world_version}");
+                Logging.Log($"[APClient] APWorld version {SlotData.world_version}");
 
                 SessionStatus = 4;
                 Logging.Log($"[APClient] Checking SlotData version...");
@@ -634,7 +634,7 @@ namespace CupheadArchipelago.AP {
                                     bool loc_cond = APLocation.IdExists(loc);
                                     if (!loc_cond) {
                                         err = true;
-                                        Logging.LogError($" [APClient] Setup: Unknown Location: {locName}:{loc}");
+                                        Logging.LogError($" [APClient] Setup: Unknown Location: {locName??"MISSINGNAME"}:{loc}");
                                     }
                                 
                                     Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
