@@ -49,6 +49,8 @@ namespace CupheadArchipelago.AP {
         public List<APItemData> receivedItems = new();
         [JsonProperty("goalsCompleted")]
         private Goals goalsCompleted = Goals.None;
+        [JsonProperty("map")]
+        public int map = 0;
         [JsonIgnore]
         internal bool dlock = false;
 
