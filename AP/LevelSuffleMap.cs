@@ -48,7 +48,7 @@ namespace CupheadArchipelago.AP {
         private Dictionary<Levels, Levels> shuffleMap;
 
         public LevelShuffleMap(IDictionary<long, long> map) {
-            shuffleMap = new();
+            shuffleMap = [];
             foreach (KeyValuePair<long, long> items in map) {
                 shuffleMap.Add(levelMap[items.Key], levelMap[items.Value]);
             }

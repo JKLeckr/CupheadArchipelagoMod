@@ -12,7 +12,8 @@ namespace CupheadArchipelago.AP {
                 {Levels.Veggies, new APLocation[] {
                     APLocation.level_boss_veggies,
                     APLocation.level_boss_veggies_topgrade,
-                    APLocation.level_boss_veggies_dlc_chaliced
+                    APLocation.level_boss_veggies_dlc_chaliced,
+                    APLocation.level_boss_veggies_secret
                 }},
                 {Levels.Slime, new APLocation[] {
                     APLocation.level_boss_slime,
@@ -62,7 +63,8 @@ namespace CupheadArchipelago.AP {
                 {Levels.SallyStagePlay, new APLocation[] {
                     APLocation.level_boss_sallystageplay,
                     APLocation.level_boss_sallystageplay_topgrade,
-                    APLocation.level_boss_sallystageplay_dlc_chaliced
+                    APLocation.level_boss_sallystageplay_dlc_chaliced,
+                    APLocation.level_boss_sallystageplay_secret
                 }},
                 {Levels.Train, new APLocation[] {
                     APLocation.level_boss_train,
@@ -74,11 +76,11 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_boss_kingdice_topgrade,
                     APLocation.level_boss_kingdice_dlc_chaliced
                 }},
-                /*{Levels.Devil, new APLocation[] {
+                {Levels.Devil, new APLocation[] {
                     APLocation.level_boss_devil,
                     APLocation.level_boss_devil_topgrade,
                     APLocation.level_boss_devil_dlc_chaliced
-                }},*/
+                }},
                 {Levels.FlyingBlimp, new APLocation[] {
                     APLocation.level_boss_plane_blimp,
                     APLocation.level_boss_plane_blimp_topgrade,
@@ -87,7 +89,8 @@ namespace CupheadArchipelago.AP {
                 {Levels.FlyingGenie, new APLocation[] {
                     APLocation.level_boss_plane_genie,
                     APLocation.level_boss_plane_genie_topgrade,
-                    APLocation.level_boss_plane_genie_dlc_chaliced
+                    APLocation.level_boss_plane_genie_dlc_chaliced,
+                    APLocation.level_boss_plane_genie_secret
                 }},
                 {Levels.FlyingBird, new APLocation[] {
                     APLocation.level_boss_plane_bird,
@@ -159,11 +162,11 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_dlc_boss_plane_cowboy_topgrade,
                     APLocation.level_dlc_boss_plane_cowboy_dlc_chaliced
                 }},
-                /*{Levels.Saltbaker, new APLocation[] {
+                {Levels.Saltbaker, new APLocation[] {
                     APLocation.level_dlc_boss_saltbaker,
                     APLocation.level_dlc_boss_saltbaker_topgrade,
                     APLocation.level_dlc_boss_saltbaker_dlc_chaliced
-                }},*/
+                }},
             };
         }
 

@@ -116,12 +116,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(Level), "_OnPreWin")]
         internal static class _OnPreWin {
-            static void Postfix(Level __instance) {
+            static void Postfix(Level __instance, bool ___secretTriggered) {
                 Logging.Log("_OnPreWin", LoggingFlags.Debug);
-                APCheck(__instance);
+                APCheck(__instance, ___secretTriggered);
             }
 
-            private static void APCheck(Level instance) {
+            private static void APCheck(Level instance, bool secret = false) {
                 Logging.Log("[LevelHook] APCheck");
                 if (APData.IsCurrentSlotEnabled()) {
                     Logging.Log($"[LevelHook] Level: {instance.CurrentLevel}");
@@ -154,10 +154,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 Logging.Log("[LevelHook] Battle Type");
                                 Level.Mode battleNormalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
                                 if (Level.Difficulty >= battleNormalMode) {
-                                    APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
+                                    Levels clevel = instance.CurrentLevel;
+                                    bool vsecret = secret && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
+                                    APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret?3:0), false);
                                     if (APSettings.BossGradeChecks>0)
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,1), false);
+                                            APClient.Check(LevelLocationMap.GetLocationId(clevel,1), false);
                                         }
                                 } else {
                                     Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");

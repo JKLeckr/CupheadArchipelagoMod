@@ -19,6 +19,7 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(Save));
             //Harmony.CreateAndPatchAll(typeof(AddCurrency));
             Harmony.CreateAndPatchAll(typeof(ApplyLevelCoins));
+            Harmony.CreateAndPatchAll(typeof(TryActivateDjimmi));
             //Harmony.CreateAndPatchAll(typeof(NumWeapons));
             //PlayerInventoryHook.Hook();
             //PlayerCoinManagerHook.Hook();
@@ -96,6 +97,13 @@ namespace CupheadArchipelago.Hooks {
         internal static class NumWeapons {
             static void Postfix(PlayerId player, PlayerInventories ___inventories) {
                 Logging.Log(Aux.CollectionToString(___inventories.GetPlayer(player)._weapons));
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerData), "TryActivateDjimmi")]
+        internal static class TryActivateDjimmi {
+            static bool Prefix() {
+                return !APData.IsCurrentSlotEnabled() || APSettings.AllowGameDjimmi;
             }
         }
 

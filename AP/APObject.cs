@@ -22,6 +22,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem level_extrahealth = new APItem(12905169);
         public static readonly APItem level_superrecharge = new APItem(12905170);
         public static readonly APItem level_fastfire = new APItem(12905171);
+        public static readonly APItem level_4 = new APItem(12905172);
         public static readonly APItem coin = new APItem(12905173);
         public static readonly APItem coin2 = new APItem(12905174);
         public static readonly APItem coin3 = new APItem(12905175);
@@ -68,6 +69,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem weapon_dlc_crackshot = new APItem(12909266);
         public static readonly APItem weapon_dlc_converge = new APItem(12909267);
         public static readonly APItem weapon_dlc_twistup = new APItem(12909268);
+        public static readonly APItem charm_dlc_cookie = new APItem(12909269);
         public static readonly APItem charm_dlc_heartring = new APItem(12909270);
         public static readonly APItem charm_dlc_broken_relic = new APItem(12909271);
 
@@ -118,6 +120,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation level_boss_plane_mermaid_topgrade = new APLocation(12905204);
         public static readonly APLocation level_boss_plane_robot = new APLocation(12905205);
         public static readonly APLocation level_boss_plane_robot_topgrade = new APLocation(12905206);
+        public static readonly APLocation level_boss_devil = new APLocation(12905207);
+        public static readonly APLocation level_boss_devil_topgrade = new APLocation(12905208);
         public static readonly APLocation level_dicepalace_boss_booze = new APLocation(12905209);
         public static readonly APLocation level_dicepalace_boss_chips = new APLocation(12905210);
         public static readonly APLocation level_dicepalace_boss_cigar = new APLocation(12905211);
@@ -202,6 +206,9 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation quest_pacifist = new APLocation(12905290);
         public static readonly APLocation quest_silverworth = new APLocation(12905291);
         public static readonly APLocation quest_music = new APLocation(12905292);
+        public static readonly APLocation level_boss_veggies_secret = new APLocation(12905293);
+        public static readonly APLocation level_boss_plane_genie_secret = new APLocation(12905294);
+        public static readonly APLocation level_boss_sallystageplay_secret = new APLocation(12905295);
         public static readonly APLocation level_dlc_tutorial = new APLocation(12909264);
         public static readonly APLocation level_dlc_tutorial_coin = new APLocation(12909265);
         public static readonly APLocation level_boss_veggies_dlc_chaliced = new APLocation(12909266);
@@ -222,6 +229,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation level_boss_plane_bird_dlc_chaliced = new APLocation(12909281);
         public static readonly APLocation level_boss_plane_mermaid_dlc_chaliced = new APLocation(12909282);
         public static readonly APLocation level_boss_plane_robot_dlc_chaliced = new APLocation(12909283);
+        public static readonly APLocation level_boss_devil_dlc_chaliced = new APLocation(12909284);
         public static readonly APLocation level_dlc_boss_oldman = new APLocation(12909285);
         public static readonly APLocation level_dlc_boss_oldman_topgrade = new APLocation(12909286);
         public static readonly APLocation level_dlc_boss_oldman_dlc_chaliced = new APLocation(12909287);
@@ -237,6 +245,9 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation level_dlc_boss_plane_cowboy = new APLocation(12909297);
         public static readonly APLocation level_dlc_boss_plane_cowboy_topgrade = new APLocation(12909298);
         public static readonly APLocation level_dlc_boss_plane_cowboy_dlc_chaliced = new APLocation(12909299);
+        public static readonly APLocation level_dlc_boss_saltbaker = new APLocation(12909300);
+        public static readonly APLocation level_dlc_boss_saltbaker_topgrade = new APLocation(12909301);
+        public static readonly APLocation level_dlc_boss_saltbaker_dlc_chaliced = new APLocation(12909302);
         public static readonly APLocation level_dlc_chesscastle_run = new APLocation(12909303);
         public static readonly APLocation level_dlc_chesscastle_pawn = new APLocation(12909304);
         public static readonly APLocation level_dlc_chesscastle_knight = new APLocation(12909305);

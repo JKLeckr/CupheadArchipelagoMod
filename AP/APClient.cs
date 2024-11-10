@@ -167,12 +167,14 @@ namespace CupheadArchipelago.AP {
                     SessionStatus = 5;
 
                     Logging.Log($"[APClient] Applying settings...");
+                    APSettings.Init();
                     APSettings.UseDLC = SlotData.use_dlc;
                     APSettings.Mode = GameMode.BeatDevil; //SlotData.mode; //FIXME: Different modes
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
+                    APSettings.BossSecretChecks = SlotData.boss_secret_checks;
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
                     APSettings.QuestPacifist = SlotData.pacifist_quest;
@@ -318,6 +320,7 @@ namespace CupheadArchipelago.AP {
             receivedItemsQueue = new();
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
+            APSettings.Init();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
@@ -640,6 +643,7 @@ namespace CupheadArchipelago.AP {
                                     Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                                     locMap.Add(loc, item);
                                 }
+                                if (err) Logging.LogError(" [APClient] Setup: Missing Locations! Make sure that your settings and apworld version are compatible with this client!");
                             } catch (Exception e) {
                                 err = true;
                                 Logging.LogError($" [APClient] Exception: {e.Message}");

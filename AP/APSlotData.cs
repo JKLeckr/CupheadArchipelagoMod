@@ -18,6 +18,7 @@ namespace CupheadArchipelago.AP {
         public APItem start_weapon {get; private set;}
         public bool freemove_isles {get; private set;}
         public bool randomize_abilities {get; private set;}
+        public bool boss_secret_checks {get; private set;}
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
         public bool silverworth_quest {get; private set;}
@@ -47,6 +48,7 @@ namespace CupheadArchipelago.AP {
             };
             freemove_isles = GetAPSlotDataBool(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataBool(slotData, "randomize_abilities");
+            boss_secret_checks = GetAPSlotDataBool(slotData, "boss_secret_checks");
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             silverworth_quest = GetAPSlotDataBool(slotData, "silverworth_quest");
