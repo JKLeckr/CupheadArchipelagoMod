@@ -9,7 +9,7 @@ using CupheadArchipelago.Util;
 namespace CupheadArchipelago.AP {
     public class APSlotData {
         public long version {get; private set;}
-        public Version world_version {get; private set;}
+        public APVersion world_version {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
         public ShopSet[] shop_map {get; private set;}
         public bool use_dlc {get; private set;}
@@ -68,14 +68,14 @@ namespace CupheadArchipelago.AP {
                 throw new KeyNotFoundException($"GetAPSlotData: {key} is not a valid key!");
             }
         }
-        private static Version GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
+        private static APVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
             string vraw = GetAPSlotDataString(slotData, key);
-            Version res;
+            APVersion res;
             try {
-                res = new Version(vraw);
+                res = new APVersion(vraw);
             } catch (Exception) {
                 Logging.LogWarning($"[APSlotData] Invalid version {vraw}");
-                res = new Version();
+                res = new APVersion();
             }
             return res;
         }

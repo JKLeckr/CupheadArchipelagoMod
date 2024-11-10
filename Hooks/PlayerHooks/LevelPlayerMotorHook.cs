@@ -11,21 +11,9 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class LevelPlayerMotorHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Ducking));
             Harmony.CreateAndPatchAll(typeof(HandleDash));
-            //Harmony.CreateAndPatchAll(typeof(HandleLooking));
+            Harmony.CreateAndPatchAll(typeof(HandleLooking));
             Harmony.CreateAndPatchAll(typeof(HandleParry));
-        }
-
-        [HarmonyPatch(typeof(LevelPlayerMotor), "Ducking", MethodType.Getter)]
-        internal static class Ducking {
-            static bool Prefix(ref bool __result) {
-                if (APData.IsCurrentSlotEnabled() && !APData.CurrentSData.playerData.duck) {
-                    __result = false;
-                    return false;
-                }
-                return true;
-            }
         }
 
         [HarmonyPatch(typeof(LevelPlayerMotor), "HandleDash")]
@@ -70,8 +58,44 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
         [HarmonyPatch(typeof(LevelPlayerMotor), "HandleLooking")]
         internal static class HandleLooking {
-            static bool Prefix() {
-                return true;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new(instructions);
+                bool success = false;
+                bool debug = false;
+
+                MethodInfo _mi_set_LookDirection = typeof(LevelPlayerMotor).GetProperty("LookDirection", BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
+                MethodInfo _mi_DuckHack = typeof(HandleLooking).GetMethod("DuckHack", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Logging.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+                for (int i=0;i<codes.Count-4;i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldloc_0 && codes[i+2].opcode == OpCodes.Ldloc_1 &&
+                        codes[i+3].opcode == OpCodes.Newobj && codes[i+4].opcode == OpCodes.Call && (MethodInfo)codes[i+4].operand == _mi_set_LookDirection) {
+                            codes[i+3] = new CodeInstruction(OpCodes.Call, _mi_DuckHack);
+                            codes.Insert(i+3, new CodeInstruction(OpCodes.Ldarg_0));
+                            success = true;
+                            break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(HandleLooking)}: Patch Failed!");
+                if (debug) {
+                    Logging.Log("---");
+                    foreach (CodeInstruction code in codes) {
+                        Logging.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+
+                return codes;
+            }
+
+            private static Trilean2 DuckHack(int x, int y, LevelPlayerMotor instance) {
+                if (APData.IsCurrentSlotEnabled() && !APData.CurrentSData.playerData.duck && y < 0) {
+                    return new Trilean2(x, 0);
+                }
+                return new Trilean2(x, y);
             }
         }
 
