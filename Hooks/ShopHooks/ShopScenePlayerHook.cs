@@ -233,10 +233,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 // Setting up indexes and counts
                 int shopLevel = 0;
                 if (Ext.CheckAnyLevelComplete([Levels.FlyingBird, Levels.Dragon, Levels.Platforming_Level_2_1, Levels.Platforming_Level_2_2]) ||
-                    (APSettings.FreemoveIsles && PlayerData.Data.GetMapData(Scenes.scene_cutscene_world2).sessionStarted))
+                    (APSettings.FreemoveIsles && PlayerData.Data.GetMapData(Scenes.scene_map_world_2).sessionStarted))
                         shopLevel++;
                 if (Ext.CheckAnyLevelComplete([Levels.SallyStagePlay, Levels.Platforming_Level_3_1, Levels.Platforming_Level_3_2]) ||
-                    (APSettings.FreemoveIsles && PlayerData.Data.GetMapData(Scenes.scene_cutscene_world3).sessionStarted))
+                    (APSettings.FreemoveIsles && PlayerData.Data.GetMapData(Scenes.scene_map_world_3).sessionStarted))
                         shopLevel++;
                 if (APSettings.UseDLC && PlayerData.Data.GetMapData(Scenes.scene_map_world_DLC).sessionStarted)
                     shopLevel++;
