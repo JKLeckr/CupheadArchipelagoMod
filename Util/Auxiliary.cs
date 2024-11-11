@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Util {
@@ -14,14 +15,14 @@ namespace CupheadArchipelago.Util {
 
         public static string CollectionToString(IEnumerable collection) {
             bool first = true;
-            string res = "[";
+            StringBuilder res = new("[");
             foreach (var obj in collection) {
                 string prefix = !first?", ":"";
                 if (first) first = false;
-                res += prefix + obj.ToString();
+                res.Append(prefix + obj.ToString());
             }
-            res += "]";
-            return res;
+            res.Append("]");
+            return res.ToString();
         }
 
         public static int ArrayNullCount(object[] arr) {

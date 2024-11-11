@@ -1,6 +1,8 @@
 /// Copyright 2024 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Unity;
@@ -17,7 +19,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             Scenes.scene_map_world_2,
             Scenes.scene_map_world_3,
             Scenes.scene_map_world_4,
-            Scenes.scene_map_world_DLC,
+            Scenes.scene_map_world_DLC
+        ];
+        internal static readonly string[] mapNames = [
+            "w1",
+            "w2",
+            "w3",
+            "wh",
+            "w4"
         ];
 
         [HarmonyPatch(typeof(Map), "Awake")]
@@ -36,13 +45,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
             private static bool MapSessionStarted(Scenes mapScene) {
                 PlayerData.MapData mapData = PlayerData.Data.GetMapData(mapScene);
-                return mapData.sessionStarted;
+                return mapData?.sessionStarted ?? false;
             }
             private static void LogMapsVisited() {
                 StringBuilder res = new();
                 for (int i=0;i<mapScenes.Length;i++) {
-                    res.Append($"{mapScenes[i]}");
-                    if (i<mapScenes.Length-1) res.Append(",");
+                    if (MapSessionStarted(mapScenes[i])) {
+                        res.Append($"{mapNames[i]} ");
+                    }
                 }
                 Logging.Log($"Visited worlds: {res}");
             }
