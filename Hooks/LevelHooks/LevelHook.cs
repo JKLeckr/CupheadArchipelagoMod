@@ -153,6 +153,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             case Level.Type.Battle: {
                                 Logging.Log("[LevelHook] Battle Type");
                                 Level.Mode battleNormalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
+                                Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
                                 if (Level.Difficulty >= battleNormalMode) {
                                     Levels clevel = instance.CurrentLevel;
                                     bool vsecret = secret && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
@@ -168,6 +169,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             }
                             case Level.Type.Platforming: {
                                 Logging.Log("[LevelHook] Platforming Type");
+                                Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={Level.Mode.Normal}");
                                 if (Level.Difficulty >= Level.Mode.Normal) {    
                                     APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
                                     if (APSettings.RungunGradeChecks>0) {
@@ -237,6 +239,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 bool debug = false;
                 bool success = false;
                 MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode")?.GetGetMethod();
+                MethodInfo _mi_get_LevelType = typeof(Level).GetProperty("LevelType")?.GetGetMethod();
                 MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty")?.GetSetMethod(true);
                 MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -248,7 +251,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 for (int i = 0; i < codes.Count - 2; i++) {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
                         codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
-                        codes.Insert(i+1, new CodeInstruction(OpCodes.Call, _mi_HackDifficulty));
+                        List<CodeInstruction> ncodes = [
+                            new CodeInstruction(OpCodes.Ldarg_0),
+                            new CodeInstruction(OpCodes.Call, _mi_get_LevelType),
+                            new CodeInstruction(OpCodes.Call, _mi_HackDifficulty)
+                        ];
+                        codes.InsertRange(i+1, ncodes);
                         if (debug) Logging.Log("Patch success");
                         success = true;
                         break;
@@ -265,16 +273,16 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 return codes;
             }
 
-            private static Level.Mode HackDifficulty(Level.Mode mode) {
-                if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
-                    return (APSettings.Hard&&mode<Level.Mode.Hard)?Level.Mode.Easy:mode;
+            private static Level.Mode HackDifficulty(Level.Mode mode, Level.Type type) {
+                if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex) && type == Level.Type.Battle) {
+                    return (APSettings.Hard && mode < Level.Mode.Hard) ? Level.Mode.Easy : mode;
                 }
                 else return mode;
             }
         }
 
         private static bool IsValidLevel(Level instance) {
-            Logging.Log($"Level: {instance.CurrentLevel} LevelType: {instance.LevelType}");
+            Logging.Log($"Level: {instance.CurrentLevel} | LevelType: {instance.LevelType} | Difficulty: {instance.mode}");
             return instance.LevelType switch {
                 Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                 _ => false,
