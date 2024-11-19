@@ -6,6 +6,7 @@ namespace CupheadArchipelago.Hooks {
         public static void HookMain() {
             StartScreenHook.Hook();
             CupheadHook.Hook();
+            DLCManagerHook.Hook();
             PlayerDataHook.Hook();
 
             MenuHooks.MenuMain.Hook();

@@ -37,7 +37,7 @@ namespace CupheadArchipelago.AP {
         private static Dictionary<long, APItemInfo> itemMap = new();
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
         private static List<APItemData> ReceivedItems { get => APSessionGSData.receivedItems; }
-        private static long ReceivedItemsIndex { get => ReceivedItems.Count + receivedItemsQueue.Count; }
+        private static long ReceivedItemsIndex { get => ReceivedItems.Count; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static HashSet<APItemData> receivedItemsUnique;
@@ -155,7 +155,7 @@ namespace CupheadArchipelago.AP {
                 try {
                     // Probably handle this better later
                     Logging.Log($"[APClient] Checking settings...");
-                    if (DLCManager.DLCEnabled()!=SlotData.use_dlc) {
+                    if (DLCManager.DLCEnabled()!=SlotData.use_dlc) { // TODO: Remove this to test
                         Logging.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
                         if (DLCManager.DLCEnabled())
                             Logging.LogError($"[APClient] Note: You can disable the DLC if you have to.");
@@ -462,7 +462,7 @@ namespace CupheadArchipelago.AP {
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Logging.Log("[APClient] OnItemReceived");
-            Logging.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}");
+            Logging.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}; Received Item Index: {helper.Index}");
             try {
                 bool recover = helper.Index < ReceivedItemsIndex;
                 ItemInfo item = helper.PeekItem();
@@ -472,7 +472,7 @@ namespace CupheadArchipelago.AP {
                 long itemId = item.ItemId;
                 string itemName = GetItemName(itemId);
                 if ((currentReceivedItemIndex>=ReceivedItemsIndex || recover) && item.ItemId!=APSettings.StartWeapon) {
-                    Logging.Log($"[APClient] Recieving {itemName}...");
+                    Logging.Log($"[APClient] Receiving {itemName}...");
                     APItemData nitem = new APItemData(item);
                     if (!receivedItemsQueueLock) {
                         receivedItemsQueueLock = true;
