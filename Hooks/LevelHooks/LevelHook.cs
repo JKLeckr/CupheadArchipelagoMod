@@ -156,7 +156,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
                                 if (Level.Difficulty >= battleNormalMode) {
                                     Levels clevel = instance.CurrentLevel;
-                                    bool vsecret = secret && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
+                                    bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret?3:0), false);
                                     if (APSettings.BossGradeChecks>0)
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
