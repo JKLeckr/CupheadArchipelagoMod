@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks {
     internal class DLCManagerHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(DLCEnabled));
+            //Harmony.CreateAndPatchAll(typeof(DLCEnabled));
         }
     
         [HarmonyPatch(typeof(DLCManager), "DLCEnabled")]

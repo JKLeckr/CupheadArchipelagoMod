@@ -92,7 +92,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             }
 
             private static Trilean2 DuckHack(int x, int y, LevelPlayerMotor instance) {
-                if (APData.IsCurrentSlotEnabled() && !APData.CurrentSData.playerData.duck && y < 0) {
+                if (APData.IsCurrentSlotEnabled() && !APData.CurrentSData.playerData.duck && !instance.Locked && instance.Grounded && y < 0) {
                     return new Trilean2(x, 0);
                 }
                 return new Trilean2(x, y);
