@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks {
     internal class DLCManagerHook {
         internal static void Hook() {
-            //Harmony.CreateAndPatchAll(typeof(DLCEnabled));
+            Harmony.CreateAndPatchAll(typeof(DLCEnabled));
         }
     
         [HarmonyPatch(typeof(DLCManager), "DLCEnabled")]
@@ -16,7 +16,7 @@ namespace CupheadArchipelago.Hooks {
                 if (PlayerData.inGame && APData.IsCurrentSlotEnabled() && !APSettings.UseDLC) {
                     __result = false;
                 }
-                Logging.Log($"DLC: {(__result?"on":"off")}");
+                //Logging.Log($"DLC: {(__result?"on":"off")}");
             }
         }
     }

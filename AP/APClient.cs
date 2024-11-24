@@ -246,6 +246,8 @@ namespace CupheadArchipelago.AP {
                 Enabled = true;
                 SessionStatus = 1;
 
+                session.SetClientState(ArchipelagoClientState.ClientConnected);
+
                 Logging.Log($"[APClient] Done!");
                 return true;
             }
@@ -462,16 +464,17 @@ namespace CupheadArchipelago.AP {
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Logging.Log("[APClient] OnItemReceived");
-            Logging.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}; Received Item Index: {helper.Index}");
+            Logging.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}; Received Item Index: {helper.Index} All Items Received: {helper.AllItemsReceived.Count}");
             try {
-                bool recover = helper.Index < ReceivedItemsIndex;
+                bool recover = session.Items.AllItemsReceived.Count > ReceivedItemsIndex;
+                if (recover) Logging.Log("[APClient] In Item Recovery");
                 ItemInfo item = helper.PeekItem();
                 if (!itemMap.ContainsKey(item.ItemId)) {
                     itemMap.Add(item.ItemId, new APItemInfo(item.ItemId, item.ItemName, item.Flags));
                 }
                 long itemId = item.ItemId;
                 string itemName = GetItemName(itemId);
-                if ((currentReceivedItemIndex>=ReceivedItemsIndex || recover) && item.ItemId!=APSettings.StartWeapon) {
+                if (currentReceivedItemIndex>=ReceivedItemsIndex || recover) {
                     Logging.Log($"[APClient] Receiving {itemName}...");
                     APItemData nitem = new APItemData(item);
                     if (!receivedItemsQueueLock) {
@@ -597,6 +600,7 @@ namespace CupheadArchipelago.AP {
             DeathLink death = new DeathLink(APSessionPlayerName, causeMessage);
             ThreadPool.QueueUserWorkItem(_ => SendDeathLinkThread(death));
         }
+
         private static bool SendDeathLinkThread(DeathLink death) {
             bool state = false;
             try {
