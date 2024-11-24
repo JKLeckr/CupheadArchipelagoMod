@@ -20,6 +20,7 @@ namespace CupheadArchipelago.AP {
         public static int[] RequiredContracts { get; internal set; }
         public static int RequiredIngredients { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
+        public static bool ShowUnaccessibleIslesInList { get; internal set; }
 
         static APSettings() => Init();
         public static void Init() {
@@ -40,6 +41,7 @@ namespace CupheadArchipelago.AP {
             RequiredContracts = [5,10,17];
             RequiredIngredients = 5;
             AllowGameDjimmi = false;
+            ShowUnaccessibleIslesInList = false;
         }
     }
 }
