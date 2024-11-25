@@ -8,6 +8,8 @@ using CupheadArchipelago.Util;
 
 namespace CupheadArchipelago.AP {
     public class APSlotData {
+        internal const long AP_SLOTDATA_VERSION = 1;
+
         public long version {get; private set;}
         public APVersion world_version {get; private set;}
         public LevelShuffleMap level_shuffle_map {get; private set;}
@@ -58,6 +60,7 @@ namespace CupheadArchipelago.AP {
         }
 
         public static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataLong(slotData, "version");
+        public static string GetAPWorldVersionString(Dictionary<string, object> slotData) => GetAPSlotDataString(slotData, "world_version");
         private static bool GetAPSlotDataBool(Dictionary<string, object> slotData, string key) => Aux.IntAsBool(GetAPSlotDataLong(slotData, key));
         private static long GetAPSlotDataLong(Dictionary<string, object> slotData, string key) => (long)GetAPSlotData(slotData, key);
         private static double GetAPSlotDataFloat(Dictionary<string, object> slotData, string key) => (double)GetAPSlotData(slotData, key);

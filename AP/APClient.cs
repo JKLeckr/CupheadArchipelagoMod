@@ -53,7 +53,6 @@ namespace CupheadArchipelago.AP {
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,5,0,0);
-        internal const long AP_SLOTDATA_VERSION = 1;
         internal const long AP_ID_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
@@ -109,10 +108,35 @@ namespace CupheadArchipelago.AP {
             {
                 Logging.Log($"[APClient] Connected to {data.address}:{data.port} as {data.player}");
                 SessionStatus = 3;
-                Logging.Log($"[APClient] Getting AP Data...");
+
+                LoginSuccessful loginData = (LoginSuccessful)result;
+
+                Logging.Log($"[APClient] Checking SlotData version...");
+                try {
+                    long slotDataVersion = APSlotData.GetSlotDataVersion(loginData.SlotData);
+                    if (slotDataVersion != APSlotData.AP_SLOTDATA_VERSION) {
+                        Logging.LogError($"[APClient] SlotData version mismatch: C:{APSlotData.AP_SLOTDATA_VERSION} != S:{slotDataVersion}! Incompatible client!");
+                        CloseArchipelagoSession(resetOnFail);
+                        SessionStatus = -3;
+                        return false;
+                    }
+                } catch (Exception e) {
+                    Logging.LogError($"[APClient] Malformed SlotData! Exception: {e.Message}");
+                    //Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
+                    CloseArchipelagoSession(resetOnFail);
+                    SessionStatus = -2;
+                    return false;
+                }
 
                 try {
-                    LoginSuccessful loginData = (LoginSuccessful)result;
+                    string worldVersion = APSlotData.GetAPWorldVersionString(loginData.SlotData);
+                    Logging.Log($"[APClient] APWorld version {worldVersion}");
+                } catch (Exception e) {
+                    Logging.LogWarning($"[APClient] Cannot get APWorld Version! Exception: {e.Message}");
+                }
+
+                Logging.Log($"[APClient] Getting AP Data...");
+                try {
                     APSessionPlayerTeam = loginData.Team;
                     APSessionPlayerSlot = loginData.Slot;
                     if (APSessionGSData.seed.Length==0)
@@ -124,20 +148,12 @@ namespace CupheadArchipelago.AP {
                     Logging.LogError(e.ToString());
                     //Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -2;
+                    SessionStatus = -4;
                     return false;
                 }
-
-                Logging.Log($"[APClient] APWorld version {SlotData.world_version}");
 
                 SessionStatus = 4;
-                Logging.Log($"[APClient] Checking SlotData version...");
-                if (SlotData.version != AP_SLOTDATA_VERSION) {
-                    Logging.LogError($"[APClient] SlotData version mismatch: C:{AP_SLOTDATA_VERSION} != S:{SlotData.version}! Incompatible client!");
-                    CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -3;
-                    return false;
-                }
+                
                 Logging.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
                 //Logging.Log($"Seed: {seed}");
@@ -146,7 +162,7 @@ namespace CupheadArchipelago.AP {
                     if (APSessionGSData.seed != "") {
                         Logging.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -4;
+                        SessionStatus = -5;
                         return false;
                     }
                     APSessionGSData.seed = seed;
@@ -160,7 +176,7 @@ namespace CupheadArchipelago.AP {
                         if (DLCManager.DLCEnabled())
                             Logging.LogError($"[APClient] Note: You can disable the DLC if you have to.");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -5;
+                        SessionStatus = -6;
                         return false;
                     }
 
@@ -225,7 +241,7 @@ namespace CupheadArchipelago.AP {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -6;
+                    SessionStatus = -7;
                     return false;
                 }
 
@@ -239,7 +255,7 @@ namespace CupheadArchipelago.AP {
                 }
                 if (scoutMapStatus<0) {
                     Logging.LogError($"[APClient] Scout failed!");
-                    SessionStatus = -7;
+                    SessionStatus = -8;
                     return false;
                 }
 
@@ -464,7 +480,7 @@ namespace CupheadArchipelago.AP {
         }
         private static void OnItemReceived(ReceivedItemsHelper helper) {
             Logging.Log("[APClient] OnItemReceived");
-            Logging.Log($"[APClient] Current Item Index: {currentReceivedItemIndex}; Saved Item Index: {ReceivedItemsIndex}; Received Item Index: {helper.Index} All Items Received: {helper.AllItemsReceived.Count}");
+            Logging.Log($"[APClient] CIIndex: {currentReceivedItemIndex}; SIIndex: {ReceivedItemsIndex}; RIIndex: {helper.Index} ItemCount: {helper.AllItemsReceived.Count}");
             try {
                 bool recover = session.Items.AllItemsReceived.Count > ReceivedItemsIndex;
                 if (recover) Logging.Log("[APClient] In Item Recovery");
@@ -646,6 +662,8 @@ namespace CupheadArchipelago.AP {
                                 
                                     Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                                     locMap.Add(loc, item);
+
+                                    //if (item.Flags==ItemFlags.Advancement) Logging.Log($"{item.LocationName}: {item.ItemName} for {item.Player}");
                                 }
                                 if (err) Logging.LogError(" [APClient] Setup: Missing Locations! Make sure that your settings and apworld version are compatible with this client!");
                             } catch (Exception e) {
