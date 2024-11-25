@@ -25,8 +25,10 @@ namespace CupheadArchipelago.Unity {
         }
 
         void Update() {
-            if (invincible != PlayerStatsManager.DebugInvincible)
+            if (invincible != PlayerStatsManager.DebugInvincible) {
                 PlayerStatsManager.DebugToggleInvincible();
+                Logging.Log($"[ControlBoard] Invincibility: {(PlayerStatsManager.DebugInvincible?"on":"off")}");
+            }
         }
 
         void OnEnable() {
