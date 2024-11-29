@@ -13,12 +13,11 @@ namespace CupheadArchipelago.AP {
 
     public enum GameMode {
         BeatDevil = 0,
-        Contracts = 1,
-        DlcBeatDevil = 2,
-        DlcBeatSaltbaker = 3,
-        DlcBeatBoth = 4,
-        DlcBeatSaltbakerIsleFourOnly = 5,
-        DlcIngradients = 6,
+        CollectContracts = 1,
+        DlcBeatSaltbaker = 2,
+        DlcBeatBoth = 3,
+        DlcCollectIngradients = 4,
+        DlcCollectBoth = 5,
     }
     
     public enum GradeChecks {

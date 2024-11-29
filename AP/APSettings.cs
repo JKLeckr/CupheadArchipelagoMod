@@ -12,6 +12,7 @@ namespace CupheadArchipelago.AP {
         public static bool BossSecretChecks { get; internal set; }
         public static GradeChecks BossGradeChecks { get; internal set; }
         public static GradeChecks RungunGradeChecks { get; internal set; }
+        public static bool DicePalaceBossSanity { get; internal set; }
         public static bool DeathLink { get; internal set; }
         public static bool QuestJuggler { get; internal set; }
         public static bool QuestPacifist { get; internal set; }
@@ -33,6 +34,7 @@ namespace CupheadArchipelago.AP {
             BossSecretChecks = false;
             BossGradeChecks = GradeChecks.Disabled;
             RungunGradeChecks = GradeChecks.Disabled;
+            DicePalaceBossSanity = false;
             DeathLink = false;
             QuestJuggler = true;
             QuestPacifist = false;

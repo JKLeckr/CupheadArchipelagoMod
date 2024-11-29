@@ -22,11 +22,8 @@ namespace CupheadArchipelago.AP {
         public int dlc_ingredient_requirements {get; private set;}
         public bool freemove_isles {get; private set;}
         public bool randomize_abilities {get; private set;}
-        public bool boss_secret_checks {get; private set;}
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
-        public bool silverworth_quest {get; private set;}
-        public bool pacifist_quest {get; private set;}
         public int start_maxhealth {get; private set;}
         public bool deathlink {get; private set;}
 
@@ -54,11 +51,8 @@ namespace CupheadArchipelago.AP {
             dlc_ingredient_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_requirements");
             freemove_isles = GetAPSlotDataBool(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataBool(slotData, "randomize_abilities");
-            boss_secret_checks = GetAPSlotDataBool(slotData, "boss_secret_checks");
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
-            silverworth_quest = GetAPSlotDataBool(slotData, "silverworth_quest");
-            pacifist_quest = GetAPSlotDataBool(slotData, "pacifist_quest");
             start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
             deathlink = GetAPSlotDataBool(slotData, "deathlink");
         }
