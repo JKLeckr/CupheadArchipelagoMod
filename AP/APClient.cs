@@ -16,6 +16,7 @@ using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using BepInEx.Logging;
 using CupheadArchipelago.Unity;
+using System.Net;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -111,7 +112,7 @@ namespace CupheadArchipelago.AP {
 
                 LoginSuccessful loginData = (LoginSuccessful)result;
 
-                Logging.Log($"[APClient] Checking SlotData version...");
+                Logging.Log($"[APClient] Checking SlotData...");
                 try {
                     long slotDataVersion = APSlotData.GetSlotDataVersion(loginData.SlotData);
                     if (slotDataVersion != APSlotData.AP_SLOTDATA_VERSION) {
@@ -135,6 +136,8 @@ namespace CupheadArchipelago.AP {
                     Logging.LogWarning($"[APClient] Cannot get APWorld Version! Exception: {e.Message}");
                 }
 
+                SessionStatus = 4;
+
                 Logging.Log($"[APClient] Getting AP Data...");
                 try {
                     APSessionPlayerTeam = loginData.Team;
@@ -152,7 +155,7 @@ namespace CupheadArchipelago.AP {
                     return false;
                 }
 
-                SessionStatus = 4;
+                SessionStatus = 5;
                 
                 Logging.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
@@ -168,25 +171,39 @@ namespace CupheadArchipelago.AP {
                     APSessionGSData.seed = seed;
                 }
 
+                SessionStatus = 6;
+
+                if (scoutMapStatus==0) Logging.Log($"[APClient] Waiting for location scout...");
+                while (scoutMapStatus==0) {
+                    Thread.Sleep(100);
+                }
+                if (scoutMapStatus<0) {
+                    Logging.LogError($"[APClient] Scout failed!");
+                    SessionStatus = -6;
+                    return false;
+                }
+
+                SessionStatus = 7;
+
                 try {
                     // Probably handle this better later
-                    Logging.Log($"[APClient] Checking settings...");
-                    if (DLCManager.DLCEnabled()!=SlotData.use_dlc) { // TODO: Remove this to test
+                    //Logging.Log($"[APClient] Checking settings...");
+                    /*if (DLCManager.DLCEnabled()!=SlotData.use_dlc) { // TODO: Remove this to test
                         Logging.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
                         if (DLCManager.DLCEnabled())
                             Logging.LogError($"[APClient] Note: You can disable the DLC if you have to.");
                         CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -6;
+                        SessionStatus = -7;
                         return false;
-                    }
+                    }*/
 
-                    SessionStatus = 5;
+                    SessionStatus = 8;
 
                     Logging.Log($"[APClient] Applying settings...");
                     APSettings.Init();
                     APSettings.UseDLC = SlotData.use_dlc;
                     APSettings.Mode = GameMode.BeatDevil; //SlotData.mode; //FIXME: Different modes
-                    APSettings.Hard = SlotData.expert_mode;
+                    APSettings.Hard = SlotData.expert_mode; // Slot Data purge
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
@@ -241,23 +258,13 @@ namespace CupheadArchipelago.AP {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -7;
-                    return false;
-                }
-
-                LogQueueItemCounts();
-
-                SessionStatus = 6;
-
-                if (scoutMapStatus==0) Logging.Log($"[APClient] Waiting for location scout...");
-                while (scoutMapStatus==0) {
-                    Thread.Sleep(100);
-                }
-                if (scoutMapStatus<0) {
-                    Logging.LogError($"[APClient] Scout failed!");
                     SessionStatus = -8;
                     return false;
                 }
+
+                SessionStatus = 9;
+
+                LogQueueItemCounts();
 
                 Enabled = true;
                 SessionStatus = 1;
@@ -358,11 +365,11 @@ namespace CupheadArchipelago.AP {
             return true;
         }
         public static bool Check(long loc, bool sendChecks = true) {
-            if (!locMap.ContainsKey(loc)) {
+            if (!CheckExists(loc)) {
                 Logging.LogWarning($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
-            string locName = locMap.ContainsKey(loc) ? locMap[loc].LocationName : $"#{loc}";
+            string locName = CheckExists(loc) ? locMap[loc].LocationName : $"#{loc}";
             Logging.Log($"[APClient] Adding check \"{locName}\"...");
             //Logging.Log(doneChecksUnique.Count);
             //Logging.Log(DoneChecks.Count);
@@ -392,8 +399,9 @@ namespace CupheadArchipelago.AP {
                 }
             }
         }
+        public static bool CheckExists(long loc) => locMap.ContainsKey(loc);
         public static ScoutedItemInfo GetCheck(long loc) {
-            if (locMap.ContainsKey(loc))
+            if (CheckExists(loc))
                 return locMap[loc];
             else
                 throw new KeyNotFoundException($"[APClient] GetCheck: Invalid location id {loc}.");
@@ -638,63 +646,67 @@ namespace CupheadArchipelago.AP {
                     break;
                 }*/
                 case ArchipelagoPacketType.Connected: {
-                    if (scoutMapStatus!=1) {
-                        Logging.Log($"[APClient] Getting location data...");
-                        session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
-                            Logging.Log($" [APClient] Processing {si.Count} locations...");
-                            locMap.Clear();
-                            bool err = false;
-                            try {
-                                foreach (ScoutedItemInfo item in si.Values) {
-                                    if (SessionStatus<0) {
-                                        Logging.LogError($" [APClient] Aborted due to session error.");
-                                        locMap.Clear();
-                                        return;
-                                    }
-                                    long loc = item.LocationId;
-                                    string locName = item.LocationName;
-
-                                    bool loc_cond = APLocation.IdExists(loc);
-                                    if (!loc_cond) {
-                                        err = true;
-                                        Logging.LogError($" [APClient] Setup: Unknown Location: {locName??"MISSINGNAME"}:{loc}");
-                                    }
-                                
-                                    Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
-                                    locMap.Add(loc, item);
-
-                                    //if (item.Flags==ItemFlags.Advancement) Logging.Log($"{item.LocationName}: {item.ItemName} for {item.Player}");
-                                }
-                                if (err) Logging.LogError(" [APClient] Setup: Missing Locations! Make sure that your settings and apworld version are compatible with this client!");
-                            } catch (Exception e) {
-                                err = true;
-                                Logging.LogError($" [APClient] Exception: {e.Message}");
-                            }
-                            if (locMap.Count<1) {
-                                scoutMapStatus = -1;
-                                Logging.LogError(" [APClient] scoutMap is empty!");
-                                return;
-                            }
-                            if (err) {
-                                scoutMapStatus = -2;
-                                Logging.LogError(" [APClient] Errors occured during processing.");
-                                return;
-                            }
-                            Logging.Log($" [APClient] Processed location data.");
-                            if ((debug&4)>0) {
-                                Logging.Log(" -- Location data dump: --");
-                                foreach (KeyValuePair<long, ScoutedItemInfo> entry in locMap) {
-                                    Logging.Log($"  {entry.Key}: {entry.Value.ItemId}: {entry.Value.LocationId}: {entry.Value.ItemName}: {entry.Value.LocationName}");
-                                }
-                                Logging.Log(" -- End Location data dump --");
-                            }
-                            scoutMapStatus = 1;
-                        }, session.Locations.AllLocations.ToArray());
-                    } else scoutMapStatus = 1;
+                    RunScout();
                     break;
                 }
                 default: break;
             }
+        }
+
+        private static void RunScout() {
+            if (scoutMapStatus!=1) {
+                Logging.Log($"[APClient] Getting location data...");
+                session.Locations.ScoutLocationsAsync((Dictionary<long, ScoutedItemInfo> si) => {
+                    Logging.Log($" [APClient] Processing {si.Count} locations...");
+                    locMap.Clear();
+                    bool err = false;
+                    try {
+                        foreach (ScoutedItemInfo item in si.Values) {
+                            if (SessionStatus<0) {
+                                Logging.LogError($" [APClient] Aborted due to session error.");
+                                locMap.Clear();
+                                return;
+                            }
+                            long loc = item.LocationId;
+                            string locName = item.LocationName;
+
+                            bool loc_cond = APLocation.IdExists(loc);
+                            if (!loc_cond) {
+                                err = true;
+                                Logging.LogError($" [APClient] Setup: Unknown Location: {locName??"MISSINGNAME"}:{loc}");
+                            }
+                                
+                            Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
+                            locMap.Add(loc, item);
+
+                            //if (item.Flags==ItemFlags.Advancement) Logging.Log($"{item.LocationName}: {item.ItemName} for {item.Player}");
+                        }
+                        if (err) Logging.LogError(" [APClient] Setup: Missing Locations! Make sure that your settings and apworld version are compatible with this client!");
+                    } catch (Exception e) {
+                        err = true;
+                        Logging.LogError($" [APClient] Exception: {e.Message}");
+                    }
+                    if (locMap.Count<1) {
+                        scoutMapStatus = -1;
+                        Logging.LogError(" [APClient] scoutMap is empty!");
+                        return;
+                    }
+                    if (err) {
+                        scoutMapStatus = -2;
+                        Logging.LogError(" [APClient] Errors occured during processing.");
+                        return;
+                    }
+                    Logging.Log($" [APClient] Processed location data.");
+                    if ((debug&4)>0) {
+                        Logging.Log(" -- Location data dump: --");
+                        foreach (KeyValuePair<long, ScoutedItemInfo> entry in locMap) {
+                            Logging.Log($"  {entry.Key}: {entry.Value.ItemId}: {entry.Value.LocationId}: {entry.Value.ItemName}: {entry.Value.LocationName}");
+                        }
+                        Logging.Log(" -- End Location data dump --");
+                    }
+                    scoutMapStatus = 1;
+                }, session.Locations.AllLocations.ToArray());
+            } else scoutMapStatus = 1;
         }
 
         private static APData GetAPSessionData() {
