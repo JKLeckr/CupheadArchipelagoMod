@@ -16,7 +16,6 @@ using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using BepInEx.Logging;
 using CupheadArchipelago.Unity;
-using System.Net;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -33,7 +32,8 @@ namespace CupheadArchipelago.AP {
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
-        public static APSlotData SlotData { get; private set; }
+        public static APSlotData SlotData { get; private set; } = null;
+        //private static DataPackage dataPackage = null;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
@@ -203,17 +203,19 @@ namespace CupheadArchipelago.AP {
                     APSettings.Init();
                     APSettings.UseDLC = SlotData.use_dlc;
                     APSettings.Mode = GameMode.BeatDevil; //SlotData.mode; //FIXME: Different modes
-                    APSettings.Hard = SlotData.expert_mode; // Slot Data purge
+                    APSettings.Hard = SlotData.expert_mode; // TODO: test slot data purge
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
-                    APSettings.BossSecretChecks = SlotData.boss_secret_checks;
+                    APSettings.BossSecretChecks = LocationExists(APLocation.level_boss_veggies_secret);
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
-                    APSettings.QuestPacifist = SlotData.pacifist_quest;
-                    APSettings.QuestProfessional = SlotData.silverworth_quest;
-                    APSettings.QuestJuggler = true;
+                    APSettings.QuestPacifist = LocationExists(APLocation.quest_pacifist);
+                    APSettings.QuestProfessional = LocationExists(APLocation.quest_silverworth);
+                    APSettings.QuestJuggler = LocationExists(APLocation.quest_4parries);
                     APSettings.StartMaxHealth = SlotData.start_maxhealth;
+                    APSettings.RequiredContracts = SlotData.contract_requirements;
+                    APSettings.RequiredIngredients = SlotData.dlc_ingredient_requirements;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Logging.Log($"[APClient] Setting up game...");
@@ -334,6 +336,8 @@ namespace CupheadArchipelago.AP {
             APSessionGSDataSlot = -1;
             ConnectionInfo = null;
             APSessionPlayerInfo = null;
+            SlotData = null;
+            //dataPackage = null;
             currentReceivedItemIndex = 0;
             doneChecksUnique = null;
             receivedItemsUnique = null;
@@ -365,11 +369,11 @@ namespace CupheadArchipelago.AP {
             return true;
         }
         public static bool Check(long loc, bool sendChecks = true) {
-            if (!CheckExists(loc)) {
+            if (!LocationExists(loc)) {
                 Logging.LogWarning($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
-            string locName = CheckExists(loc) ? locMap[loc].LocationName : $"#{loc}";
+            string locName = LocationExists(loc) ? locMap[loc].LocationName : $"#{loc}";
             Logging.Log($"[APClient] Adding check \"{locName}\"...");
             //Logging.Log(doneChecksUnique.Count);
             //Logging.Log(DoneChecks.Count);
@@ -399,9 +403,9 @@ namespace CupheadArchipelago.AP {
                 }
             }
         }
-        public static bool CheckExists(long loc) => locMap.ContainsKey(loc);
+        public static bool LocationExists(long loc) => locMap.ContainsKey(loc);
         public static ScoutedItemInfo GetCheck(long loc) {
-            if (CheckExists(loc))
+            if (LocationExists(loc))
                 return locMap[loc];
             else
                 throw new KeyNotFoundException($"[APClient] GetCheck: Invalid location id {loc}.");
@@ -638,11 +642,11 @@ namespace CupheadArchipelago.AP {
         }
 
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
-            Logging.Log(string.Format("Packet got: {0}", packet.PacketType));
+            Logging.Log($"Packet got: {packet.PacketType}");
             switch (packet.PacketType) {
                 /*case ArchipelagoPacketType.DataPackage: {
                     DataPackagePacket datapackagepkt = (DataPackagePacket)packet;
-                    APSessionGSData.dataPackage = datapackagepkt.DataPackage;
+                    dataPackage = datapackagepkt.DataPackage;
                     break;
                 }*/
                 case ArchipelagoPacketType.Connected: {
