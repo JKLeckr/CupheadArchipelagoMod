@@ -20,6 +20,8 @@ namespace CupheadArchipelago.AP {
         public APItem start_weapon {get; private set;}
         public int[] contract_requirements {get; private set;}
         public int dlc_ingredient_requirements {get; private set;}
+        public int contract_goal_requirements {get; private set;}
+        public int dlc_ingredient_goal_requirements {get; private set;}
         public bool freemove_isles {get; private set;}
         public bool randomize_abilities {get; private set;}
         public GradeChecks boss_grade_checks {get; private set;}
@@ -49,6 +51,8 @@ namespace CupheadArchipelago.AP {
             };
             contract_requirements = GetAPSlotDataDeserialized<List<int>>(slotData, "contract_requirements").ToArray();
             dlc_ingredient_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_requirements");
+            contract_goal_requirements = (int)GetAPSlotDataLong(slotData, "contract_goal_requirements");
+            dlc_ingredient_goal_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_goal_requirements");
             freemove_isles = GetAPSlotDataBool(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataBool(slotData, "randomize_abilities");
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");

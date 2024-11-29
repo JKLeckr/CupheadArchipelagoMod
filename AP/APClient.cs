@@ -217,6 +217,8 @@ namespace CupheadArchipelago.AP {
                     APSettings.StartMaxHealth = SlotData.start_maxhealth;
                     APSettings.RequiredContracts = SlotData.contract_requirements;
                     APSettings.RequiredIngredients = SlotData.dlc_ingredient_requirements;
+                    APSettings.ContractsGoal = SlotData.contract_goal_requirements;
+                    APSettings.IngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Logging.Log($"[APClient] Setting up game...");
@@ -480,6 +482,7 @@ namespace CupheadArchipelago.AP {
                 GameMode.DlcBeatBoth => Goals.DevilAndSaltbaker,
                 GameMode.DlcCollectIngradients => Goals.Ingredients,
                 GameMode.DlcCollectBoth => Goals.ContractsAndIngredients,
+                GameMode.BuyOutShop => Goals.ShopBuyout,
                 _ => Goals.Devil,
             };
             return APSessionGSData.IsGoalsCompleted(goals);
