@@ -4,7 +4,7 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>CupheadArchipelago</AssemblyName>
     <Description>Cuphead Archipelago Mod</Description>
-    <Version>0.1.1-preview02h</Version>
+    <Version>0.1.2-preview03a</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

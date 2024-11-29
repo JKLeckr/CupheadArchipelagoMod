@@ -8,7 +8,7 @@ using CupheadArchipelago.Util;
 
 namespace CupheadArchipelago.AP {
     public class APSlotData {
-        internal const long AP_SLOTDATA_VERSION = 1;
+        internal const long AP_SLOTDATA_VERSION = 2;
 
         public long version {get; private set;}
         public APVersion world_version {get; private set;}
@@ -18,6 +18,8 @@ namespace CupheadArchipelago.AP {
         public GameMode mode {get; private set;}
         public bool expert_mode {get; private set;}
         public APItem start_weapon {get; private set;}
+        public int contract_requirements {get; private set;}
+        public int dlc_ingredient_requirements {get; private set;}
         public bool freemove_isles {get; private set;}
         public bool randomize_abilities {get; private set;}
         public bool boss_secret_checks {get; private set;}
@@ -48,6 +50,8 @@ namespace CupheadArchipelago.AP {
                 8 => APItem.weapon_dlc_twistup,
                 _ => APItem.weapon_peashooter,
             };
+            contract_requirements = (int)GetAPSlotDataLong(slotData, "contract_requirements");
+            dlc_ingredient_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_requirements");
             freemove_isles = GetAPSlotDataBool(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataBool(slotData, "randomize_abilities");
             boss_secret_checks = GetAPSlotDataBool(slotData, "boss_secret_checks");

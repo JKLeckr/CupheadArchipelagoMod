@@ -197,13 +197,21 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                         APAbort();
                         yield break;
                     }
-                    else if (Status>=3 && Status<5 && displayState!=3) {
+                    else if (Status>=3 && Status<4 && displayState!=3) {
                         SetAPConStatusText("Connected!\nChecking...");
                         displayState = 3;
                     }
-                    else if (Status>=5 && displayState!=5) {
+                    else if (Status>=4 && Status<6 && displayState!=4) {
+                        SetAPConStatusText("Connected!\nChecking...\nGettings Data...");
+                        displayState = 4;
+                    }
+                    else if (Status>=6 && Status<7 && displayState!=6) {
+                        SetAPConStatusText("Connected!\nGetting Data...");
+                        displayState = 6;
+                    }
+                    else if (Status>=7 && displayState!=7) {
                         SetAPConStatusText("Connected!\nSetting Up...");
-                        displayState = 5;
+                        displayState = 7;
                     }
                     yield return null;
                 }
@@ -228,12 +236,24 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             SetAPConStatusText("Connection failed!\nCheck Log!");
                             break;
                         }
-                        case -3: {
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nMultiworld Mismatch!");
+                        case -2: {
+                            SetAPConStatusText("Disconnected!\nCheck failed!\nInvalid Slot Data!\nCheck Log!");
                             break;
                         }
-                        case -4: {
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nContent Mismatch!");
+                        case -3: {
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nWrong Slot Data Version!\nCheck Log!");
+                            break;
+                        }
+                        case -5: {
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nSeed Mismatch!");
+                            break;
+                        }
+                        case -6: {
+                            SetAPConStatusText($"Disconnected!\nGet Failed!\nCheck Log!");
+                            break;
+                        }
+                        case -8: {
+                            SetAPConStatusText($"Disconnected!\nSetup failed!\nCheck Log!");
                             break;
                         }
                         default: { 
