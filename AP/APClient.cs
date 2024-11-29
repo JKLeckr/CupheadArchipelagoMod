@@ -202,13 +202,14 @@ namespace CupheadArchipelago.AP {
                     Logging.Log($"[APClient] Applying settings...");
                     APSettings.Init();
                     APSettings.UseDLC = SlotData.use_dlc;
-                    APSettings.Mode = GameMode.BeatDevil; //SlotData.mode; //FIXME: Different modes
-                    APSettings.Hard = SlotData.expert_mode; // TODO: test slot data purge
+                    APSettings.Mode = SlotData.mode;
+                    APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
                     APSettings.BossSecretChecks = LocationExists(APLocation.level_boss_veggies_secret);
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
+                    APSettings.DicePalaceBossSanity = LocationExists(APLocation.level_dicepalace_boss_booze);
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
                     APSettings.QuestPacifist = LocationExists(APLocation.quest_pacifist);
                     APSettings.QuestProfessional = LocationExists(APLocation.quest_silverworth);
@@ -473,8 +474,15 @@ namespace CupheadArchipelago.AP {
             UpdateGoal();
         }
         public static bool IsAPGoalComplete() {
-            if (APSettings.UseDLC) return APSessionGSData.IsGoalsCompleted(Goals.Devil | Goals.Saltbaker);
-            else return APSessionGSData.IsGoalsCompleted(Goals.Devil);
+            Goals goals = APSettings.Mode switch {
+                GameMode.CollectContracts => Goals.Contracts,
+                GameMode.DlcBeatSaltbaker => Goals.Saltbaker,
+                GameMode.DlcBeatBoth => Goals.DevilAndSaltbaker,
+                GameMode.DlcCollectIngradients => Goals.Ingredients,
+                GameMode.DlcCollectBoth => Goals.ContractsAndIngredients,
+                _ => Goals.Devil,
+            };
+            return APSessionGSData.IsGoalsCompleted(goals);
         }
 
         private static void OnMessageReceived(LogMessage message) {
