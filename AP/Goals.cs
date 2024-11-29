@@ -13,6 +13,7 @@ namespace CupheadArchipelago.AP {
         Contracts = 4,
         Ingredients = 8,
         ContractsAndIngredients = 12,
+        ShopBuyout = 16,
         All = int.MaxValue,
     }
 }

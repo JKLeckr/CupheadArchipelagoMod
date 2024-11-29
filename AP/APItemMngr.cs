@@ -85,6 +85,12 @@ namespace CupheadArchipelago.AP {
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
+                        if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
+                            Logging.Log($"Contracts Goal: {APClient.APSessionGSPlayerData.contracts}");
+                            if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
+                                APClient.GoalComplete(Goals.Contracts);
+                            }
+                        }
                     }
                     else if (itemId==APItem.plane_super)
                         APClient.APSessionGSPlayerData.plane_super=true;
@@ -98,6 +104,12 @@ namespace CupheadArchipelago.AP {
                     else if (itemId==APItem.dlc_ingredient) {
                         APClient.APSessionGSPlayerData.dlc_ingredients++;
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
+                        if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
+                            Logging.Log($"Ingredients Goal: {APClient.APSessionGSPlayerData.dlc_ingredients}");
+                            if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.IngredientsGoal) {
+                                APClient.GoalComplete(Goals.Ingredients);
+                            }
+                        }
                     }
                     break;
                 }

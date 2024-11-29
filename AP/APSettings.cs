@@ -20,6 +20,8 @@ namespace CupheadArchipelago.AP {
         public static int StartMaxHealth { get; internal set; }
         public static int[] RequiredContracts { get; internal set; }
         public static int RequiredIngredients { get; internal set; }
+        public static int ContractsGoal { get; internal set; }
+        public static int IngredientsGoal { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
 
@@ -42,6 +44,8 @@ namespace CupheadArchipelago.AP {
             StartMaxHealth = 3;
             RequiredContracts = [5,10,17];
             RequiredIngredients = 5;
+            ContractsGoal = RequiredContracts[2];
+            IngredientsGoal = RequiredIngredients;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;
         }
