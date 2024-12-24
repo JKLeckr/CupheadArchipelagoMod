@@ -4,9 +4,9 @@
     ".NETFramework,Version=v3.5": {
       "Archipelago.MultiClient.Net": {
         "type": "Direct",
-        "requested": "[6.3.*, )",
-        "resolved": "6.3.1",
-        "contentHash": "x7N0KHS1UjD1ZS6XGkJrBu6w//pNCe4PgYXEwPedRls/GcbbhgtEsGJmtxfPk/9/cCBXTymHNGMCrWmG9PGlLw=="
+        "requested": "[6.5.*, )",
+        "resolved": "6.5.0",
+        "contentHash": "cWz5UDo7/oIA0OVmOPN70UcwzTteQ2V0/v5n2LgMk0AW+HIYFACL7t4OlLBts/lp6LzNHMyOFxc7Fn7C45di4w=="
       },
       "BepInEx.Analyzers": {
         "type": "Direct",
