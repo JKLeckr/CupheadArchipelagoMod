@@ -27,6 +27,7 @@ namespace CupheadArchipelago.AP {
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
         public int start_maxhealth {get; private set;}
+        public bool trap_loadout_anyweapon {get; private set;}
         public bool deathlink {get; private set;}
 
         public APSlotData(Dictionary<string, object> slotData) {
@@ -58,6 +59,7 @@ namespace CupheadArchipelago.AP {
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
+            trap_loadout_anyweapon = GetAPSlotDataBool(slotData, "trap_loadout_anyweapon");
             deathlink = GetAPSlotDataBool(slotData, "deathlink");
         }
 

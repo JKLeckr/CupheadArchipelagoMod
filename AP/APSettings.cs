@@ -18,6 +18,7 @@ namespace CupheadArchipelago.AP {
         public static bool QuestPacifist { get; internal set; }
         public static bool QuestProfessional { get; internal set; }
         public static int StartMaxHealth { get; internal set; }
+        public static bool TrapLoadoutAnyWeapon { get; internal set; }
         public static int[] RequiredContracts { get; internal set; }
         public static int RequiredIngredients { get; internal set; }
         public static int ContractsGoal { get; internal set; }
@@ -42,6 +43,7 @@ namespace CupheadArchipelago.AP {
             QuestPacifist = false;
             QuestProfessional = false;
             StartMaxHealth = 3;
+            TrapLoadoutAnyWeapon = false;
             RequiredContracts = [5,10,17];
             RequiredIngredients = 5;
             ContractsGoal = RequiredContracts[2];
