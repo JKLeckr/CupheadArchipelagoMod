@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.AP {
     public class LevelShuffleMap {
-        private static Dictionary<long, Levels> levelMap = new() {
+        private static readonly Dictionary<long, Levels> levelMap = new() {
             {0, Levels.Veggies},
             {1, Levels.Slime},
             {2, Levels.Frogs},
@@ -25,12 +25,12 @@ namespace CupheadArchipelago.AP {
             {16, Levels.Robot},
             {17, Levels.DicePalaceMain},
             {18, Levels.Devil},
-            {19, Levels.Platforming_Level_1_1},
-            {20, Levels.Platforming_Level_1_2},
-            {21, Levels.Platforming_Level_2_1},
-            {22, Levels.Platforming_Level_2_2},
-            {23, Levels.Platforming_Level_3_1},
-            {24, Levels.Platforming_Level_3_2},
+            {28, Levels.Platforming_Level_1_1},
+            {29, Levels.Platforming_Level_1_2},
+            {30, Levels.Platforming_Level_2_1},
+            {31, Levels.Platforming_Level_2_2},
+            {32, Levels.Platforming_Level_3_1},
+            {33, Levels.Platforming_Level_3_2},
             {100, Levels.OldMan},
             {101, Levels.RumRunners},
             {102, Levels.SnowCult},
