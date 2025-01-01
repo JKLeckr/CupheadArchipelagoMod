@@ -23,8 +23,7 @@ namespace CupheadArchipelago.Util {
             if (iLContext.Method.ReturnType.Name.StartsWith("UniTask")) {
                 TypeReference first = iLContext.Body.Variables.FirstOrDefault()?.VariableType;
 
-                if (first != null && !first.Name.Contains(enumerator.Name))
-                {
+                if (first != null && !first.Name.Contains(enumerator.Name)) {
                     Logging.LogWarning($"{nameof(GetEnumeratorType)}: First Var name invalid: {first.Name}");
                     return null;
                 }
