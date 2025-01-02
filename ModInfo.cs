@@ -1,4 +1,4 @@
-/// Copyright 2024 JKLeckr
+/// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
 namespace CupheadArchipelago {
@@ -11,7 +11,7 @@ namespace CupheadArchipelago {
     public class ModLicense {
         public readonly string PLUGIN_NOTICE =
 @"
-    Copyright 2024 JKLeckr
+    Copyright 2025 JKLeckr
 
     Licensed under the Apache License, Version 2.0 (the ""License"");
     you may not use this file except in compliance with the License.

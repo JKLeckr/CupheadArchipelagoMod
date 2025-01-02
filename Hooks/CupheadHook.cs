@@ -1,4 +1,4 @@
-/// Copyright 2024 JKLeckr
+/// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
 using CupheadArchipelago.Unity;
