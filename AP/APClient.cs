@@ -216,9 +216,9 @@ namespace CupheadArchipelago.AP {
                     APSettings.QuestJuggler = LocationExists(APLocation.quest_4parries);
                     APSettings.StartMaxHealth = SlotData.start_maxhealth;
                     APSettings.RequiredContracts = SlotData.contract_requirements;
-                    APSettings.RequiredIngredients = SlotData.dlc_ingredient_requirements;
+                    APSettings.DLCRequiredIngredients = SlotData.dlc_ingredient_requirements;
                     APSettings.ContractsGoal = SlotData.contract_goal_requirements;
-                    APSettings.IngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
+                    APSettings.DLCIngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Logging.Log($"[APClient] Setting up game...");

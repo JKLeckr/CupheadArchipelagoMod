@@ -106,7 +106,7 @@ namespace CupheadArchipelago.AP {
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Ingredients Goal: {APClient.APSessionGSPlayerData.dlc_ingredients}");
-                            if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.IngredientsGoal) {
+                            if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
                                 APClient.GoalComplete(Goals.Ingredients);
                             }
                         }

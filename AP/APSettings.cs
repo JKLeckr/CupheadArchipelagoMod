@@ -20,9 +20,11 @@ namespace CupheadArchipelago.AP {
         public static int StartMaxHealth { get; internal set; }
         public static bool TrapLoadoutAnyWeapon { get; internal set; }
         public static int[] RequiredContracts { get; internal set; }
-        public static int RequiredIngredients { get; internal set; }
+        public static int DLCRequiredIngredients { get; internal set; }
         public static int ContractsGoal { get; internal set; }
-        public static int IngredientsGoal { get; internal set; }
+        public static int DLCIngredientsGoal { get; internal set; }
+        public static bool DLCRandomizeBoat { get; internal set; }
+        public static bool DLCRequiresMausoleum { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
 
@@ -45,9 +47,11 @@ namespace CupheadArchipelago.AP {
             StartMaxHealth = 3;
             TrapLoadoutAnyWeapon = false;
             RequiredContracts = [5,10,17];
-            RequiredIngredients = 5;
+            DLCRequiredIngredients = 5;
             ContractsGoal = RequiredContracts[2];
-            IngredientsGoal = RequiredIngredients;
+            DLCIngredientsGoal = DLCRequiredIngredients;
+            DLCRandomizeBoat = true;
+            DLCRequiresMausoleum = true;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;
         }

@@ -17,7 +17,6 @@ namespace CupheadArchipelago {
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
         private const long CONFIG_VERSION = 1;
 
-        public static bool ConfigSkipIntro { get; private set; }
         public static string Name => PluginInfo.PLUGIN_NAME;
         public static string Version => PluginInfo.PLUGIN_VERSION;
         public static int State { get; private set; } = 0;
@@ -30,7 +29,7 @@ namespace CupheadArchipelago {
         private ConfigEntry<LoggingFlags> configLoggingFlags;
         private ConfigEntry<LicenseLogModes> configLogLicense;
         private ConfigEntry<string> configSaveKeyName;
-        private ConfigEntry<bool> configSkipIntro;
+        private ConfigEntry<Cutscenes> configSkipCutscenes;
 
         private void Awake() {
             SetupConfigVersion(this);
@@ -40,9 +39,9 @@ namespace CupheadArchipelago {
             configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo | LoggingFlags.Info | LoggingFlags.Message | LoggingFlags.Warning | LoggingFlags.Network, "Set mod logging verbosity.");
             configLogLicense = Config.Bind("Logging", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
-                "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves (Default: \"cuphead_player_data_v1_ap_slot_\", Vanilla: \"cuphead_player_data_v1_slot_\")");
-            configSkipIntro = Config.Bind("Game", "SkipIntro", true, "Skip the intro when starting a new ap game. (Default: true)");
-            ConfigSkipIntro = configSkipIntro.Value;
+                "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves! (Vanilla: \"cuphead_player_data_v1_slot_\")");
+            configSkipCutscenes = Config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
+            CupheadArchipelago.Config.Init(configSkipCutscenes.Value);
 
             if (configEnabled.Value) {
                 if (configModLogs.Value) SetupLogging(this);
