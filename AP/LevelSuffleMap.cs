@@ -44,10 +44,9 @@ namespace CupheadArchipelago.AP {
             {110, Levels.ChessRook},
             {111, Levels.ChessQueen},
         };
-        private static readonly Dictionary<Levels, long> levelIdMap;
+        private static readonly Dictionary<Levels, long> levelIdMap = [];
 
         static LevelShuffleMap() {
-            Dictionary<Levels, long> levelIdMap = [];
             foreach (long key in levelMap.Keys) {
                 levelIdMap.Add(levelMap[key], key);
             }
@@ -63,5 +62,6 @@ namespace CupheadArchipelago.AP {
         }
 
         public Levels GetShuffledLevel(Levels orig) => shuffleMap[orig];
+        public long GetLevelShuffleId(Levels level) => levelIdMap[level];
     }
 }

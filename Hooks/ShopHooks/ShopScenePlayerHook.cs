@@ -406,9 +406,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         [HarmonyPatch(typeof(ShopScenePlayer), "addNewItem_cr", MethodType.Enumerator)]
         internal static class addNewItem_cr {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
+                byte success = 0;
                 bool debug = false;
-                byte successbits = 0;
+
                 MethodInfo crmethod = typeof(ShopScenePlayer).GetMethod("addNewItem_cr", BindingFlags.NonPublic | BindingFlags.Instance);
                 Type crtype = Reflection.GetEnumeratorType(crmethod);
                 FieldInfo _fi_this = crtype.GetField("$this", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -438,7 +439,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_Data && codes[i+2].opcode==OpCodes.Ldfld && 
                         (FieldInfo)codes[i+2].operand==_fi_this && codes[i+11].opcode==OpCodes.Callvirt && codes[i+12].opcode==OpCodes.Brtrue) {
                             Label contloop = (Label)codes[i+12].operand;
-                            if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_c && (successbits&1)==0) {
+                            if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_c && (success&1)==0) {
                                 codes[i].labels.Add(cvanilla);
                                 codes[i+13].labels.Add(cifa);
                                 List<CodeInstruction> ncodes = [
@@ -457,9 +458,9 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 ];
                                 codes.InsertRange(i, ncodes);
                                 i+=ncodes.Count;
-                                successbits|=1;
+                                success|=1;
                             }
-                            else if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_w && (successbits&2)==0) {
+                            else if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_w && (success&2)==0) {
                                 codes[i].labels.Add(wvanilla);
                                 codes[i+13].labels.Add(wifa);
                                 List<CodeInstruction> ncodes = [
@@ -478,12 +479,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 ];
                                 codes.InsertRange(i, ncodes);
                                 i+=ncodes.Count;
-                                successbits|=2;
+                                success|=2;
                             }
                             else Logging.LogWarning($"{nameof(addNewItem_cr)}: Cannot find IsUnlocked method!");
                     }
                 }
-                if (successbits!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {successbits}");
+                if (success!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {

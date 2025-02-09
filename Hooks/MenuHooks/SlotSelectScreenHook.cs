@@ -399,7 +399,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             private static void LoadSceneNewSave() {
                 Logging.Log("Loading Scene", LoggingFlags.Debug);
-                if (APData.SData[_slotSelection].enabled&&Config.IsSkippingCutscene(Cutscenes.Intro)) {
+                if (!Config.IsSkippingCutscene(Cutscenes.Intro, APData.SData[_slotSelection].enabled)) {
                     Cutscene.Load(Scenes.scene_level_house_elder_kettle, Scenes.scene_cutscene_intro, SceneLoader.Transition.Fade, SceneLoader.Transition.Fade);
                 }
                 else {

@@ -13,7 +13,7 @@ namespace CupheadArchipelago.AP {
             {APItem.level_trap_fingerjam, ItemType.Level},
             {APItem.level_trap_slowfire, ItemType.Level},
             {APItem.level_trap_superdrain, ItemType.Level},
-            {APItem.level_trap_reverse, ItemType.Level},
+            {APItem.level_trap_loadout, ItemType.Level},
             {APItem.coin, ItemType.Essential},
             {APItem.coin2, ItemType.Essential},
             {APItem.coin3, ItemType.Essential},

@@ -154,9 +154,9 @@ namespace CupheadArchipelago.AP {
                         if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
                         if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
                     }
-                    else if (itemId==APItem.level_trap_reverse) {
+                    else if (itemId==APItem.level_trap_loadout) {
                         AudioManager.Play("level_menu_select");
-                        PlayerStatsManagerHook.ReverseControls();
+                        Stub("Loadout Trap");
                     }
                     break;
                 }
