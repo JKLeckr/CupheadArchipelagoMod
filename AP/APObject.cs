@@ -62,7 +62,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem level_trap_fingerjam = new APItem(12905209);
         public static readonly APItem level_trap_slowfire = new APItem(12905210);
         public static readonly APItem level_trap_superdrain = new APItem(12905211);
-        public static readonly APItem level_trap_reverse = new APItem(12905212);
+        public static readonly APItem level_trap_loadout = new APItem(12905212);
         public static readonly APItem level_trap_screen = new APItem(12905213);
         public static readonly APItem dlc_boat = new APItem(12909264);
         public static readonly APItem dlc_ingredient = new APItem(12909265);
@@ -260,6 +260,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation shop_dlc_weapon8 = new APLocation(12909312);
         public static readonly APLocation shop_dlc_charm7 = new APLocation(12909313);
         public static readonly APLocation shop_dlc_charm8 = new APLocation(12909314);
+        public static readonly APLocation dlc_cookie = new APLocation(12909315);
         public static readonly APLocation dlc_npc_newscat = new APLocation(12909316);
         public static readonly APLocation dlc_coin_isle4_secret = new APLocation(12909317);
         public static readonly APLocation dlc_quest_cactusgirl = new APLocation(12909319);
