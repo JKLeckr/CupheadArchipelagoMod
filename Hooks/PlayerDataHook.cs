@@ -188,7 +188,7 @@ namespace CupheadArchipelago.Hooks {
                             break;
                         }
                     }
-                    if (found) Logging.Log("[GetCoinCollected] Successfully patched", LoggingFlags.Transpiler);
+                    //if (found) Logging.Log("[GetCoinCollected] Successfully patched", LoggingFlags.Debug);
 
                     /*foreach (CodeInstruction code in codes)
                         Console.WriteLine(code);*/

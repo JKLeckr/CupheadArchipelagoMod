@@ -13,6 +13,6 @@ namespace CupheadArchipelago {
         Warning = 8,
         Network = 16,
         Debug = 32,
-        Transpiler = 64,
+        //Transpiler = 64,
     }
 }

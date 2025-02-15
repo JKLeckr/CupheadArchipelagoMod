@@ -66,7 +66,7 @@ namespace CupheadArchipelago.Util {
 
         private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {
             foreach (CodeInstruction code in codes) {
-                Logging.Log(code.opcode + " -: " + code.operand, LoggingFlags.Transpiler);
+                Logging.Log(code.opcode + " -: " + code.operand);
             }
         }
     }
