@@ -5,6 +5,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
     public class LevelMain {
         public static void Hook() {
             LevelHook.Hook();
+            HouseLevelHook.Hook();
             TutorialLevelDoorHook.Hook();
             PlatformingLevelHook.Hook();
             LevelCoinHook.Hook();

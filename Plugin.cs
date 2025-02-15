@@ -43,7 +43,10 @@ namespace CupheadArchipelago {
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves! (Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipCutscenes = Config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
             configSkipCutscenesAPOnly = Config.Bind("Game", "SkipCutscenesAPOnly", true, "Skip cutscenes only if playing an Archipelago game.");
-            CupheadArchipelago.Config.Init(configSkipCutscenes.Value, configSkipCutscenesAPOnly.Value);
+            CupheadArchipelago.Config.Init(
+                configSkipCutscenes.Value,
+                configSkipCutscenesAPOnly.Value
+            );
 
             if (configEnabled.Value) {
                 if (configModLogs.Value) SetupLogging(this);

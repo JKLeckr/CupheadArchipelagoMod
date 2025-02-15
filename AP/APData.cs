@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json;
-using BepInEx.Logging;
 
 namespace CupheadArchipelago.AP {
     public class APData {
@@ -90,7 +89,7 @@ namespace CupheadArchipelago.AP {
                     }
                 }
                 else {
-                    Logging.Log($"[APData] No data. Saving default data for slot {i}", LogLevel.Warning);
+                    Logging.LogWarning($"[APData] No data. Saving default data for slot {i}");
                     Save(i);
                 }
             }
@@ -153,7 +152,7 @@ namespace CupheadArchipelago.AP {
                 return !SData[index].playerData.HasStartWeapon();
             }
             else {
-                Logging.Log("[APData] PlayerData is not initialized!", LogLevel.Warning);
+                Logging.LogWarning("[APData] PlayerData is not initialized!");
                 return true;
             }
         }

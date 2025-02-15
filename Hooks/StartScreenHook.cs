@@ -12,12 +12,21 @@ namespace CupheadArchipelago.Hooks {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(Awake));
+            Harmony.CreateAndPatchAll(typeof(Update));
         }
+
+        private static CupheadInput.AnyPlayerInput input;
 
         [HarmonyPatch(typeof(StartScreen), "Awake")]
         internal static class Awake {
             static bool Prefix() {
-                return Plugin.State>=0;
+                if (Plugin.State<0) {
+                    Logging.LogFatal("Errors occured. Aborting game to prevent damage!");
+                    CreateModErrorText();
+                    input = new CupheadInput.AnyPlayerInput(false);
+                    return false;
+                }
+                return true;
             }
             static void Postfix() {
                 APClient.CloseArchipelagoSession();
@@ -27,9 +36,17 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(StartScreen), "Start")]
         internal static class Start {
             static bool Prefix() {
+                return Plugin.State>=0;
+            }
+        }
+
+        [HarmonyPatch(typeof(StartScreen), "Update")]
+        internal static class Update {
+            static bool Prefix() {
                 if (Plugin.State<0) {
-                    Logging.LogFatal("Errors occured. Aborting to prevent damage!");
-                    CreateModErrorText();
+                    if (input?.GetAnyButtonDown() ?? false) {
+                        Application.Quit();
+                    }
                     return false;
                 }
                 return true;

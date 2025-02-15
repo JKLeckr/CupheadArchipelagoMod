@@ -7,13 +7,19 @@ namespace CupheadArchipelago {
     public class Config {
         private static Config current;
 
-        public Cutscenes ConfigSkipCutscenes { get; private set; }
-        public bool ConfigSkipCutscenesAPOnly { get; private set; }
+        private Cutscenes configSkipCutscenes;
+        private bool configSkipCutscenesAPOnly;
 
-        internal static void Init(Cutscenes configSkipCutscenes, bool configSkipCutscenesAPOnly) {
+        //public static Cutscenes SkipCutscenes { get => current.configSkipCutscenes; }
+        //public static bool SkipCutscenesAPOnly { get => current.configSkipCutscenesAPOnly; }
+
+        internal static void Init(
+            Cutscenes configSkipCutscenes,
+            bool configSkipCutscenesAPOnly
+        ) {
             current = new() {
-                ConfigSkipCutscenes = configSkipCutscenes,
-                ConfigSkipCutscenesAPOnly = configSkipCutscenesAPOnly,
+                configSkipCutscenes = configSkipCutscenes,
+                configSkipCutscenesAPOnly = configSkipCutscenesAPOnly,
             };
         }
 
@@ -21,8 +27,8 @@ namespace CupheadArchipelago {
             return IsSkippingCutscene(cutscene, APData.IsCurrentSlotEnabled());
         }
         public static bool IsSkippingCutscene(Cutscenes cutscene, bool condition) {
-            if (!current.ConfigSkipCutscenesAPOnly || condition)
-                return (current.ConfigSkipCutscenes&cutscene)>0;
+            if (!current.configSkipCutscenesAPOnly || condition)
+                return (current.configSkipCutscenes & cutscene) > 0;
             else return false;
         }
     }
