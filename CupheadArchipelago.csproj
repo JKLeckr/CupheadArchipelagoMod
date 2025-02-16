@@ -3,14 +3,21 @@
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>CupheadArchipelago</AssemblyName>
-    <Description>Cuphead Archipelago Mod</Description>
+    <Product>CupheadArchipelago Mod</Product>
+    <Description>The Cuphead Archipelago Mod</Description>
     <Version>0.1.2-preview03a</Version>
     <Copyright>Copyright 2025 JKLeckr</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefaultItemExcludes>$(DefaultItemExcludes);ref/**;Excluded/**;Exclude/**;Restricted/**;excluded/**;exclude/**;restricted/**;Templates/**</DefaultItemExcludes>
+    <RootNamespace>CupheadArchipelago</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
