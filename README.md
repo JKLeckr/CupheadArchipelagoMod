@@ -6,7 +6,9 @@ A mod for Cuphead!
 
 Cuphead Game: ([Steam](http://store.steampowered.com/app/268910/Cuphead/), [GOG](https://www.gog.com/game/cuphead))
 
-Archipelago World: [Archipelago Cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
+Archipelago: [GitHub](https://github.com/ArchipelagoMW/Archipelago)
+
+Archipelago AP World: [Archipelago Cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
 
 This mod is designed to work with Archipelago, but it also adds extra features to the game as well. Parts can be enabled or disabled in the config.
 
@@ -22,7 +24,7 @@ This mod is currently in the development phase and it is very very incomplete, s
 ### Instructions
 1. Extract BepInEx 5.x x64 for your OS into the Cuphead installation folder.
 
-2. Place the contents of the extracted CupheadArchipelagoMod folder into the BepInEx/plugins folder.
+2. Place the contents of the extracted CupheadArchipelago folder into the BepInEx/plugins folder.
 
 3. Launch game.
 
@@ -80,18 +82,19 @@ In the game directory:
 ## Setting up Archipelago
 *Note: This is the temporary method while the mod is WIP. For now, just deal with this until the legit way is added.*
 
-1. Make sure the game isn't running.
-2. Go to the Cuphead saves folder (on Windows it should be in `%AppData%`).
-3. Open the apdata save file for the save slot you want to use.
-4. In the beginning of the file:
+1. CupheadArchipelago must have been started to the main menu once for the apdata save files to appear.
+2. Make sure the game isn't running.
+3. Go to the Cuphead saves folder (on Windows it should be in `%AppData%`).
+4. Open the apdata save file for the save slot you want to use.
+5. In the beginning of the file:
     - Set `"enabled":"true"`
     - Set `"address":"URL"` where `URL` is the URL to connect to Archipelago excluding the port.
     - Set `"port":PORT` where `PORT` is the port of the Archipelago server. (Note: no quotes around `PORT`)
     - Set `"player":"PLAYER"` where `PLAYER` is your player slot name.
     - Set `"password":"PASSWD"` where `PASSWD` is the server password.
-5. Save the file and launch the game.
-6. Pick the save slot you set up Archipelago with. (Note it says "AP" in the corner of the save file if it's enabled.)
-7. Have fun, and watch out for bugs!
+6. Save the file and launch the game.
+7. Pick the save slot you set up Archipelago with. (Note it says "AP" in the corner of the save file if it's enabled.)
+8. Have fun, and watch out for bugs!
 
 ## Configuring
 The config files are in the game directory's `BepInEx/config` folder. The mod config file is called `com.JKLeckr.CupheadArchipelago.cfg`. It might be useful for debugging to add more verbose logging flags in the config.
@@ -109,4 +112,4 @@ These are notable config files and their settings for logging:
 
 - `com.JKLeckr.CupheadArchipelago.cfg`
     - Adding `Network` to `Logging` will show more verbose network action logging.
-    - `Transpiler` and `Debug` are too verbose to be useful for most people currently. Logging is pretty verbose, even without `Debug` currently while the mod is in heavy development.
+    - `Debug` is probably too verbose to be useful for most people currently. Logging is pretty verbose, even without `Debug` currently while the mod is in heavy development.
