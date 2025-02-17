@@ -69,12 +69,20 @@ namespace CupheadArchipelago.AP {
         private static long GetAPSlotDataLong(Dictionary<string, object> slotData, string key) => (long)GetAPSlotData(slotData, key);
         private static double GetAPSlotDataFloat(Dictionary<string, object> slotData, string key) => (double)GetAPSlotData(slotData, key);
         private static string GetAPSlotDataString(Dictionary<string, object> slotData, string key) => GetAPSlotData(slotData, key).ToString();
-        private static T GetAPSlotDataDeserialized<T>(Dictionary<string, object> slotData, string key) => JsonConvert.DeserializeObject<T>(GetAPSlotDataString(slotData, key));
+        private static T GetAPSlotDataDeserialized<T>(Dictionary<string, object> slotData, string key) {
+            try {
+                string raw = GetAPSlotDataString(slotData, key);
+                //Logging.Log($"[APSlotData]: Deserializing: \"{raw}\"");
+                return JsonConvert.DeserializeObject<T>(raw);
+            } catch (Exception e) {
+                throw new ArgumentException($"Invalid SlotData data for: \"{key}\"! Exception: {e}");
+            }
+        }
         private static object GetAPSlotData(Dictionary<string, object> slotData, string key) {
             try { 
                 return slotData[key];
             } catch (KeyNotFoundException) {
-                throw new KeyNotFoundException($"GetAPSlotData: {key} is not a valid key!");
+                throw new KeyNotFoundException($"GetAPSlotData: \"{key}\" is not a valid key!");
             }
         }
         private static APVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
@@ -90,12 +98,16 @@ namespace CupheadArchipelago.AP {
         }
         private static ShopSet[] GetAPShopMap(Dictionary<string, object> slotData) {
             string shopMapKey = "shop_map";
-            List<List<int>> map_raw = GetAPSlotDataDeserialized<List<List<int>>>(slotData, shopMapKey);
-            ShopSet[] map = new ShopSet[map_raw.Count];
-            for (int i=0;i<map.Length;i++) {
-                map[i] = new ShopSet(map_raw[i][0], map_raw[i][1]);
+            try {
+                List<List<int>> map_raw = GetAPSlotDataDeserialized<List<List<int>>>(slotData, shopMapKey);
+                ShopSet[] map = new ShopSet[map_raw.Count];
+                for (int i=0;i<map.Length;i++) {
+                    map[i] = new ShopSet(map_raw[i][0], map_raw[i][1]);
+                }
+                return map;
+            } catch (Exception e) {
+                throw new ArgumentException($"Invalid ShopMap data! Exception: {e}");
             }
-            return map;
         }
     }
 }

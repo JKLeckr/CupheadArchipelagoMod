@@ -99,7 +99,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return !_lockMenu;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 int success = 0;
                 bool debug = false;
 
@@ -335,7 +335,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool success = false;
                 MethodInfo _mi_ClearSlot = typeof(PlayerData).GetMethod("ClearSlot", BindingFlags.Public | BindingFlags.Static);
 
@@ -369,7 +369,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool success = false;
 
                 /*foreach (CodeInstruction code in codes) {

@@ -26,8 +26,8 @@ namespace CupheadArchipelago {
         public static bool IsSkippingCutscene(Cutscenes cutscene) {
             return IsSkippingCutscene(cutscene, APData.IsCurrentSlotEnabled());
         }
-        public static bool IsSkippingCutscene(Cutscenes cutscene, bool condition) {
-            if (!current.configSkipCutscenesAPOnly || condition)
+        public static bool IsSkippingCutscene(Cutscenes cutscene, bool apEnabledCondition) {
+            if (!current.configSkipCutscenesAPOnly || apEnabledCondition)
                 return (current.configSkipCutscenes & cutscene) > 0;
             else return false;
         }

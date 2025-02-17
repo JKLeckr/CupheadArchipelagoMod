@@ -56,8 +56,12 @@ namespace CupheadArchipelago.AP {
 
         public LevelShuffleMap(IDictionary<long, long> map) {
             shuffleMap = [];
-            foreach (KeyValuePair<long, long> items in map) {
-                shuffleMap.Add(levelMap[items.Key], levelMap[items.Value]);
+            foreach (long lid in levelMap.Keys) {
+                if (map.ContainsKey(lid)) {
+                    shuffleMap.Add(levelMap[lid], levelMap[map[lid]]);
+                } else {
+                    shuffleMap.Add(levelMap[lid], levelMap[lid]);
+                }
             }
         }
 

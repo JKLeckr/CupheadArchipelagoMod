@@ -53,7 +53,7 @@ namespace CupheadArchipelago.AP {
         private static bool sending = false;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
-        private static readonly Version AP_VERSION = new Version(0,5,0,0);
+        private static readonly Version AP_VERSION = new Version(0,5,1,0);
         internal const long AP_ID_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;

@@ -12,10 +12,10 @@ namespace CupheadArchipelago {
         //FullIntro = 3,
         DieHouseCutscenes = 4,
         EndCutscene = 64,
-        DLCIntro = 256,
-        DLCSaltbakerIntro = 512,
+        DLCIntro = 256, //TODO Add
+        DLCSaltbakerIntro = 512, //TODO Add
         //DLCFullIntro = 768,
-        DLCEndCutscene = 8192,
+        DLCEndCutscene = 8192, //TODO Add
         //All = 32767,
     }
 }

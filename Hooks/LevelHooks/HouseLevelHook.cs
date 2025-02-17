@@ -10,7 +10,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class HouseLevelHook {
         internal static void Hook() {
-            //Harmony.CreateAndPatchAll(typeof(Start));
+            Harmony.CreateAndPatchAll(typeof(Start));
         }
 
         [HarmonyPatch(typeof(HouseLevel), "Start")]
@@ -32,6 +32,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 for (int i=0; i<codes.Count-1; i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_base_Start) {
                         List<CodeInstruction> ncodes = [
+                            new CodeInstruction(OpCodes.Ldarg_0),
                             new CodeInstruction(OpCodes.Ldfld, _fi_dialoguerVariableID),
                             new CodeInstruction(OpCodes.Call, _mi_APSetup),
                         ];

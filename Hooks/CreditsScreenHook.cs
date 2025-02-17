@@ -83,9 +83,6 @@ namespace CupheadArchipelago.Hooks {
                 null
             );
 
-            Logging.Log(_mi_ResetPlayers);
-            Logging.Log(_mi_LoadScene);
-
             Label endl = il.DefineLabel();
 
             for (int i=0; i<codes.Count-7; i++) {
