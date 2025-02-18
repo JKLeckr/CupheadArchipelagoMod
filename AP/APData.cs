@@ -175,6 +175,8 @@ namespace CupheadArchipelago.AP {
             public int contracts = 0;
             [JsonProperty("plane_super")]
             public bool plane_super = false;
+            [JsonProperty("dlc_cplane_super")]
+            public bool dlc_cplane_super = false;
             [JsonProperty("dlc_ingredients")]
             public int dlc_ingredients = 0;
             [JsonProperty("dash")]
@@ -187,6 +189,17 @@ namespace CupheadArchipelago.AP {
             public bool plane_parry = false;
             [JsonProperty("plane_shrink")]
             public bool plane_shrink = false;
+            [JsonProperty("dlc_cdash")]
+            public bool dlc_cdash = false;
+            [JsonProperty("dlc_cduck")]
+            public bool dlc_cduck = false;
+            [JsonProperty("dlc_cparry")]
+            public bool dlc_cparry = false;
+            [JsonProperty("dlc_cplane_parry")]
+            public bool dlc_cplane_parry = false;
+            [JsonProperty("dlc_cplane_shrink")]
+            public bool dlc_cplane_shrink = false;
+            
             [JsonProperty("healthupgrades")]
             public int healthupgrades = 0;
             [JsonProperty("dlc_boat")]
@@ -200,6 +213,11 @@ namespace CupheadArchipelago.AP {
                 if ((setTarget&SetTarget.BasicAbilities)>0) parry = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) plane_parry = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) plane_shrink = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cdash = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cduck = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cparry = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cplane_parry = value;
+                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cplane_shrink = value;
                 if ((setTarget&SetTarget.Essential)>0) dlc_boat = value;
             }
             public void SetIntValues(int value, SetTarget setTarget) {

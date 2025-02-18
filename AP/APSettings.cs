@@ -25,6 +25,7 @@ namespace CupheadArchipelago.AP {
         public static int DLCIngredientsGoal { get; internal set; }
         public static bool DLCRandomizeBoat { get; internal set; }
         public static bool DLCRequiresMausoleum { get; internal set; }
+        public static bool DLCChaliceItemsSeparate { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
 
@@ -52,6 +53,7 @@ namespace CupheadArchipelago.AP {
             DLCIngredientsGoal = DLCRequiredIngredients;
             DLCRandomizeBoat = true;
             DLCRequiresMausoleum = true;
+            DLCChaliceItemsSeparate = false;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;
         }

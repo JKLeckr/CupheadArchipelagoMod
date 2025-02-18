@@ -26,10 +26,10 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem coin = new APItem(12905173);
         public static readonly APItem coin2 = new APItem(12905174);
         public static readonly APItem coin3 = new APItem(12905175);
-        public static readonly APItem plane_gun = new APItem(12905176);
-        public static readonly APItem plane_bombs = new APItem(12905177);
-        public static readonly APItem plane_super = new APItem(12905178);
-        public static readonly APItem contract = new APItem(12905179);
+        public static readonly APItem contract = new APItem(12905176);
+        public static readonly APItem plane_gun = new APItem(12905177);
+        public static readonly APItem plane_bombs = new APItem(12905178);
+        public static readonly APItem plane_super = new APItem(12905179);
         public static readonly APItem healthupgrade = new APItem(12905180);
         public static readonly APItem weapon_peashooter = new APItem(12905181);
         public static readonly APItem weapon_spread = new APItem(12905182);
@@ -66,12 +66,23 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem level_trap_screen = new APItem(12905213);
         public static readonly APItem dlc_boat = new APItem(12909264);
         public static readonly APItem dlc_ingredient = new APItem(12909265);
-        public static readonly APItem weapon_dlc_crackshot = new APItem(12909266);
-        public static readonly APItem weapon_dlc_converge = new APItem(12909267);
-        public static readonly APItem weapon_dlc_twistup = new APItem(12909268);
-        public static readonly APItem charm_dlc_cookie = new APItem(12909269);
-        public static readonly APItem charm_dlc_heartring = new APItem(12909270);
-        public static readonly APItem charm_dlc_broken_relic = new APItem(12909271);
+        public static readonly APItem dlc_cplane_gun = new APItem(12909266);
+        public static readonly APItem dlc_cplane_bombs = new APItem(12909267);
+        public static readonly APItem dlc_cplane_super = new APItem(12909268);
+        public static readonly APItem weapon_dlc_crackshot = new APItem(12909269);
+        public static readonly APItem weapon_dlc_converge = new APItem(12909270);
+        public static readonly APItem weapon_dlc_twistup = new APItem(12909271);
+        public static readonly APItem charm_dlc_cookie = new APItem(12909272);
+        public static readonly APItem charm_dlc_heartring = new APItem(12909273);
+        public static readonly APItem charm_dlc_broken_relic = new APItem(12909274);
+        public static readonly APItem super_dlc_c_i = new APItem(12909275);
+        public static readonly APItem super_dlc_c_ii = new APItem(12909276);
+        public static readonly APItem super_dlc_c_iii = new APItem(12909277);
+        public static readonly APItem ability_dlc_cduck = new APItem(12909278);
+        public static readonly APItem ability_dlc_cdash = new APItem(12909279);
+        public static readonly APItem ability_dlc_cparry = new APItem(12909280);
+        public static readonly APItem ability_dlc_cplane_shrink = new APItem(12909281);
+        public static readonly APItem ability_dlc_cplane_parry = new APItem(12909282);
 
         public static APItem FromId(long id) => id_map[id];
         public static bool IdExists(long id) => id_map.ContainsKey(id);
@@ -263,6 +274,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation dlc_cookie = new APLocation(12909315);
         public static readonly APLocation dlc_npc_newscat = new APLocation(12909316);
         public static readonly APLocation dlc_coin_isle4_secret = new APLocation(12909317);
+        public static readonly APLocation event_dlc_curse_complete = new APLocation(12909318);
         public static readonly APLocation dlc_quest_cactusgirl = new APLocation(12909319);
 
         public static APLocation FromId(long id) => id_map[id];

@@ -18,6 +18,7 @@ namespace CupheadArchipelago.AP {
             switch (ItemMap.GetItemType(itemId)) {
                 case ItemType.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
+                    // FIXME: Add duplication checks
                     PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
                     PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
                     if (itemId==APItem.plane_gun) {
@@ -57,6 +58,7 @@ namespace CupheadArchipelago.AP {
                     break;
                 }
                 case ItemType.Ability: {
+                    // FIXME: Finish implementing since Chalice items are not separate
                     if (itemId==APItem.ability_dash)
                         APClient.APSessionGSPlayerData.dash = true;
                     else if (itemId==APItem.ability_duck)
@@ -67,6 +69,16 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.plane_parry = true;
                     else if (itemId==APItem.ability_plane_shrink)
                         APClient.APSessionGSPlayerData.plane_shrink = true;
+                    else if (itemId==APItem.ability_dlc_cdash)
+                        APClient.APSessionGSPlayerData.dlc_cdash = true;
+                    else if (itemId==APItem.ability_dlc_cduck)
+                        APClient.APSessionGSPlayerData.dlc_cduck = true;
+                    else if (itemId==APItem.ability_dlc_cparry)
+                        APClient.APSessionGSPlayerData.dlc_cparry = true;
+                    else if (itemId==APItem.ability_dlc_cplane_parry)
+                        APClient.APSessionGSPlayerData.dlc_cplane_parry = true;
+                    else if (itemId==APItem.ability_dlc_cplane_shrink)
+                        APClient.APSessionGSPlayerData.dlc_cplane_shrink = true;
                     break;
                 }
                 case ItemType.Essential: {
@@ -94,6 +106,8 @@ namespace CupheadArchipelago.AP {
                     }
                     else if (itemId==APItem.plane_super)
                         APClient.APSessionGSPlayerData.plane_super=true;
+                    else if (itemId==APItem.dlc_cplane_super)
+                        APClient.APSessionGSPlayerData.dlc_cplane_super=true;
                     else if (itemId==APItem.dlc_boat) {
                         APClient.APSessionGSPlayerData.dlc_boat=true;
                     }
