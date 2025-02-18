@@ -224,6 +224,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                 else Level.SetCurrentMode(Level.Mode.Normal);
 
+                if (!APSettings.UseDLC) DLCManagerHook.DisableDLC();
+
                 SetAPConStatusText("Connected!\nDone!");
                 _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                 _lockMenu = false;
@@ -412,11 +414,14 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             GameObject obj = new GameObject("APInfoText");
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();
+            
             rect.anchorMin = new Vector2(1,1);
             rect.anchorMax = new Vector2(1,1);
-            rect.offsetMin = new Vector2(-1000,0);
             rect.pivot = new Vector2(1,1);
-            rect.position = new Vector3(625,350,-15);
+            
+            rect.anchoredPosition = new Vector2(-25,-20);
+
+            rect.sizeDelta = new Vector2(256f, 256f);
             
             TextMeshProUGUI txt = obj.AddComponent<TextMeshProUGUI>();
             txt.alignment = TextAlignmentOptions.TopRight;
@@ -429,22 +434,24 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             obj.layer = 5;
 
             if (parent!=null) {
-                obj.transform.SetParent(parent.GetChild(1));
+                obj.transform.SetParent(parent.GetChild(1), false);
             }
 
             APInfoText = obj.transform;
         }
 
         private static void CreateAPConStatusText(Transform parent) {
-            //FIXME: Fix text not positioned correctly on some resolutions
             GameObject obj = new GameObject("APStatusText");
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();
+            
             rect.anchorMin = new Vector2(0,1);
             rect.anchorMax = new Vector2(0,1);
-            rect.offsetMax = new Vector2(1000,0);
             rect.pivot = new Vector2(0,1);
-            rect.position = new Vector3(-620,350,-15);
+            
+            rect.anchoredPosition = new Vector2(25,-20);
+
+            rect.sizeDelta = new Vector2(256f, 512f);
 
             TextMeshProUGUI txt = obj.AddComponent<TextMeshProUGUI>();
             txt.alignment = TextAlignmentOptions.TopLeft;
@@ -458,7 +465,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             obj.layer = 5;
 
             if (parent!=null) {
-                obj.transform.SetParent(parent.GetChild(1));
+                obj.transform.SetParent(parent.GetChild(1), false);
             }
 
             APConStatusText = obj.transform;

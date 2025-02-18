@@ -496,7 +496,8 @@ namespace CupheadArchipelago.AP {
         }
         private static void OnSocketClosed(string reason) {
             Logging.Log("[APClient] Disconnected.");
-            Logging.Log($"[APClient] Disconnect Reason: {reason}", LoggingFlags.Network);
+            if (reason.Length>0)
+                Logging.Log($"[APClient] Disconnect Reason: {reason}", LoggingFlags.Network);
             if (Enabled) {
                 ReconnectArchipelagoSession();
             }
