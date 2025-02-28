@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>CupheadArchipelago</AssemblyName>
-    <Product>CupheadArchipelago Mod</Product>
+    <Product>CupheadArchipelago</Product>
     <Description>The Cuphead Archipelago Mod</Description>
     <Version>0.1.2-preview03a</Version>
     <Copyright>Copyright 2025 JKLeckr</Copyright>

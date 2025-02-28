@@ -18,4 +18,10 @@ namespace CupheadArchipelago {
         DLCEndCutscene = 8192, //TODO Add
         //All = 32767,
     }
+
+    [Flags]
+    public enum APStatsFunctions {
+        None = 0,
+        ConnectionIndicator = 1,
+    }
 }

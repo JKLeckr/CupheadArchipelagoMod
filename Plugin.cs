@@ -10,18 +10,23 @@ using BepInEx.Logging;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
-    [BepInPlugin("com.JKLeckr.CupheadArchipelago", "CupheadArchipelago", "0.1.2" /*PluginInfo.PLUGIN_VERSION*/)]
+    [BepInPlugin(MOD_GUID, MOD_NAME, MOD_VERSION)]
     [BepInDependency(DEP_SAVECONFIG_MOD_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("Cuphead.exe")]
     public class Plugin : BaseUnityPlugin {
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
+
+        protected const string MOD_NAME = "CupheadArchipelago"; //PluginInfo.PLUGIN_NAME
+        protected const string MOD_GUID = "com.JKLeckr.CupheadArchipelago";
+        protected const string MOD_VERSION = "0.1.2"; //PluginInfo.PLUGIN_VERSION
+
         private const long CONFIG_VERSION = 1;
 
-        public static string Name => PluginInfo.PLUGIN_NAME;
+        public static string Name => MOD_NAME;
         public static string Version => PluginInfo.PLUGIN_VERSION;
         public static int State { get; private set; } = 0;
         
-        private static readonly string verPath = Path.Combine(Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_NAME), "configver");
+        private static readonly string verPath = Path.Combine(Path.Combine(Paths.PluginPath, MOD_NAME), "configver");
         private long configVer;
         private ConfigEntry<bool> configEnabled;
         private ConfigEntry<bool> configModLogs;
@@ -31,6 +36,7 @@ namespace CupheadArchipelago {
         private ConfigEntry<string> configSaveKeyName;
         private ConfigEntry<Cutscenes> configSkipCutscenes;
         private ConfigEntry<bool> configSkipCutscenesAPOnly;
+        private ConfigEntry<APStatsFunctions> configAPStatusFunctions;
 
         private void Awake() {
             SetupConfigVersion(this);
@@ -43,9 +49,12 @@ namespace CupheadArchipelago {
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves! (Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipCutscenes = Config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
             configSkipCutscenesAPOnly = Config.Bind("Game", "SkipCutscenesAPOnly", true, "Skip cutscenes only if playing an Archipelago game.");
+            configAPStatusFunctions = Config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities.");
+            //configAPOverrides = Config.Bind("AP", "Overrides", true, "Overrides specific non-functional server-side settings.");
             CupheadArchipelago.Config.Init(
                 configSkipCutscenes.Value,
-                configSkipCutscenesAPOnly.Value
+                configSkipCutscenesAPOnly.Value,
+                configAPStatusFunctions.Value
             );
 
             if (configEnabled.Value) {
@@ -150,7 +159,7 @@ namespace CupheadArchipelago {
             if (instance.configModLogs.Value) {
                 Logging.Log("Setting up mod logging...");
                 try {
-                    LogFiles.Setup("CupheadAPLog", PluginInfo.PLUGIN_NAME, instance.configModFileMax.Value);
+                    LogFiles.Setup("CupheadAPLog", MOD_NAME, instance.configModFileMax.Value);
                 } catch (Exception e) {
                     Logging.LogError($"Mod logging set up failure: {e.Message}");
                     return;

@@ -9,17 +9,20 @@ namespace CupheadArchipelago {
 
         private Cutscenes configSkipCutscenes;
         private bool configSkipCutscenesAPOnly;
+        private APStatsFunctions configAPStatusFunctions;
 
         //public static Cutscenes SkipCutscenes { get => current.configSkipCutscenes; }
         //public static bool SkipCutscenesAPOnly { get => current.configSkipCutscenesAPOnly; }
 
         internal static void Init(
             Cutscenes configSkipCutscenes,
-            bool configSkipCutscenesAPOnly
+            bool configSkipCutscenesAPOnly,
+            APStatsFunctions configAPStatusFunctions
         ) {
             current = new() {
                 configSkipCutscenes = configSkipCutscenes,
                 configSkipCutscenesAPOnly = configSkipCutscenesAPOnly,
+                configAPStatusFunctions = configAPStatusFunctions,
             };
         }
 
@@ -30,6 +33,9 @@ namespace CupheadArchipelago {
             if (!current.configSkipCutscenesAPOnly || apEnabledCondition)
                 return (current.configSkipCutscenes & cutscene) > 0;
             else return false;
+        }
+        public static bool IsAPStatsFunctionEnabled(APStatsFunctions function) {
+            return (current.configAPStatusFunctions & function) > 0;
         }
     }
 }
