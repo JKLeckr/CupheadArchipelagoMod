@@ -50,6 +50,11 @@ bld/
 .vscode/
 *.code-workspace
 
+# Cursor
+.cursor/
+.cursorrules
+.cursorignore
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
