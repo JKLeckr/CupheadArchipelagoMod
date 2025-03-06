@@ -95,6 +95,7 @@ namespace CupheadArchipelago.AP {
 
         public static readonly APLocation level_tutorial = new APLocation(12905168);
         public static readonly APLocation level_tutorial_coin = new APLocation(12905169);
+        public static readonly APLocation level_plane_tutorial = new APLocation(12905170);
         public static readonly APLocation level_boss_veggies = new APLocation(12905171);
         public static readonly APLocation level_boss_veggies_topgrade = new APLocation(12905172);
         public static readonly APLocation level_boss_slime = new APLocation(12905173);
