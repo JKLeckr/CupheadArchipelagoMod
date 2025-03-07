@@ -6,6 +6,7 @@ on:
       - 'test*'
       - 'preview*'
       - '*.*.*'
+  workflow_dispatch:
 
 jobs:
   create-release:
@@ -21,5 +22,67 @@ jobs:
           draft: true
           prerelease: true
           name: Preview (${{ env.RELEASE_VERSION }})
-        env:
-          GITHUB_TOKEN: ${{ secrets.AP_TOKEN }}
+          token: ${{ secrets.AP_TOKEN }}
+  
+  build-release:
+    name: Build and Upload Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set Env
+        run: |
+          export RELEASE_VERSION="${GITHUB_REF#refs/*/}"
+          export MOD_NAME="CupheadArchipelago"
+          export FILE_NAME="${MOD_NAME}-${RELEASE_VERSION}.zip"
+
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "MOD_NAME=$MOD_NAME" >> $GITHUB_ENV
+          echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        #with:
+        #  fetch-depth: 0  # Fetch all history for possible versioning
+
+      - name: Clean project directory
+        run: |
+          rm -rf ref/
+      
+      - name: Checkout Private Reference Assemblies
+        uses: actions/checkout@v4
+        with:
+          repository: JKLeckr/CupheadArchipelagoMod-Private
+          token: ${{ secrets.AP_PRIVATE_TOKEN }}
+          path: ref
+      
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+      
+      - name: Build Project
+        run: |
+          mkdir build
+          dotnet restore
+          dotnet clean
+          dotnet build --no-restore -o build/${{ env.MOD_NAME }}
+
+      - name: Build ZIP package
+        working-directory: build
+        run: |
+          zip -r ../${{ env.FILE_NAME }} ${{ env.MOD_NAME }}
+
+      - name: Calculate SHA256 checksum
+        run: |
+          sha256sum ${{ env.FILE_NAME }} > ${{ env.FILE_NAME }}.sha256
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: true
+          name: Preview (${{ env.RELEASE_VERSION }})
+          token: ${{ secrets.AP_TOKEN }}
+          files: |
+            ${{ env.FILE_NAME }}
+            ${{ env.FILE_NAME }}.sha256

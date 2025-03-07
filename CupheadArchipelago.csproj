@@ -46,6 +46,10 @@
     <Copy SourceFiles="$(ProjectDir)ref/c-wspp.dll" DestinationFolder="$(OutputPath)" />
   </Target>
 
+  <Target Name="CleanupExtraFiles" AfterTargets="Clean">
+    <Delete Files="$(OutputPath)c-wspp.dll" />
+  </Target>
+
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>.\ref\Assembly-CSharp.dll</HintPath>
