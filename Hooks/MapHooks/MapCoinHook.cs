@@ -17,14 +17,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
         [HarmonyPatch(typeof(MapCoin), "Start")]
         internal static class Start {
-            static bool Prefix(MapCoin __instance) {
+            /*static bool Prefix(MapCoin __instance) {
                 Logging.Log("Coin: "+__instance.coinID);
                 return false;
-            }
+            }*/
             static void Postfix(MapCoin __instance) {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (APClient.IsLocationChecked(CoinIdMap.GetAPLocation(__instance.coinID))) {
-                        Logging.Log("[MapCoin] Already checked, bye.");
+                        Logging.LogDebug("[MapCoin] Already checked, bye.");
                         PlayerData.Data.coinManager.SetCoinValue(__instance.coinID, true, PlayerId.PlayerOne);
                         UnityEngine.Object.Destroy(__instance.gameObject);
                     }

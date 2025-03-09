@@ -219,7 +219,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCRequiredIngredients = SlotData.dlc_ingredient_requirements;
                     APSettings.ContractsGoal = SlotData.contract_goal_requirements;
                     APSettings.DLCIngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
-                    APSettings.ShuffleMusic = SlotData.music_rando;
+                    APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Logging.Log($"[APClient] Setting up game...");

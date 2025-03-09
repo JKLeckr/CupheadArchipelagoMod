@@ -24,11 +24,12 @@ namespace CupheadArchipelago.AP {
         public int dlc_ingredient_goal_requirements {get; private set;}
         public bool freemove_isles {get; private set;}
         public bool randomize_abilities {get; private set;}
+        public bool randomize_abilities_aim {get; private set;}
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
         public int start_maxhealth {get; private set;}
         public bool trap_loadout_anyweapon {get; private set;}
-        public MusicGroups music_rando {get; private set;}
+        public MusicGroups music_shuffle {get; private set;}
         public bool deathlink {get; private set;}
 
         public APSlotData(Dictionary<string, object> slotData) {
@@ -57,11 +58,12 @@ namespace CupheadArchipelago.AP {
             dlc_ingredient_goal_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_goal_requirements");
             freemove_isles = GetAPSlotDataBool(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataBool(slotData, "randomize_abilities");
+            randomize_abilities_aim = false; //GetAPSlotDataBool(slotData, "randomize_abilities_aim");
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
             trap_loadout_anyweapon = GetAPSlotDataBool(slotData, "trap_loadout_anyweapon");
-            music_rando = 0; //(MusicGroups)(long)GetOptionalAPSlotData(slotData, "music_rando", 0);
+            music_shuffle = 0; //(MusicGroups)(long)GetOptionalAPSlotData(slotData, "music_rando", 0);
             deathlink = GetAPSlotDataBool(slotData, "deathlink");
         }
 
