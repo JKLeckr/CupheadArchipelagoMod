@@ -42,6 +42,7 @@ namespace CupheadArchipelago.AP {
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static HashSet<APItemData> receivedItemsUnique;
+        private static HashSet<APItemData> receivedItemsUniqueB; //FIXME: For debugging purposes. Remove later
         private static bool receivedItemsQueueLock = false;
         private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
@@ -186,8 +187,7 @@ namespace CupheadArchipelago.AP {
                 SessionStatus = 7;
 
                 try {
-                    // Probably handle this better later
-                    //Logging.Log($"[APClient] Checking settings...");
+                    Logging.Log($"[APClient] Checking settings...");
                     /*if (DLCManager.DLCEnabled()!=SlotData.use_dlc) { // TODO: Remove this to test
                         Logging.LogError($"[APClient] Content Mismatch! Client: {DLCManager.DLCEnabled()}, Server: {SlotData.use_dlc}");
                         if (DLCManager.DLCEnabled())
@@ -219,12 +219,15 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCRequiredIngredients = SlotData.dlc_ingredient_requirements;
                     APSettings.ContractsGoal = SlotData.contract_goal_requirements;
                     APSettings.DLCIngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
+                    APSettings.ShuffleMusic = SlotData.music_rando;
                     APSettings.DeathLink = SlotData.deathlink;
                     
                     Logging.Log($"[APClient] Setting up game...");
-                    doneChecksUnique = new HashSet<long>(DoneChecks);
+                    doneChecksUnique = new(DoneChecks);
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All);
+                    if (!APSettings.RandomizeAimAbilities)
+                        APSessionGSData.playerData.aim_directions = APData.PlayerData.AimDirections.All;
                     if (APSettings.DeathLink) {
                         Logging.Log($"[APClient] Setting up DeathLink...");
                         deathLinkService = session.CreateDeathLinkService();
@@ -245,6 +248,8 @@ namespace CupheadArchipelago.AP {
                     }
                     APSessionGSData.dlock = true;
                     receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
+                    //FIXME: receivedItemsUniqueB is for debugging purposes only. Remove when done 
+                    receivedItemsUniqueB = new HashSet<APItemData>(new APItemDataComparer(true));
                     for (int i=0; i<ReceivedItems.Count;i++) {
                         APItemData item = ReceivedItems[i];
                         if (item.State==0) {
@@ -254,6 +259,7 @@ namespace CupheadArchipelago.AP {
                             itemApplyIndex = item.State;
                         }
                         if (item.Location>=0) receivedItemsUnique.Add(item);
+                        if (item.Location>=0) receivedItemsUniqueB.Add(item);
                     }
                     APSessionGSData.dlock = false;
 
@@ -344,6 +350,7 @@ namespace CupheadArchipelago.AP {
             currentReceivedItemIndex = 0;
             doneChecksUnique = null;
             receivedItemsUnique = null;
+            receivedItemsUniqueB = null;
             scoutMapStatus = 0;
             locMap.Clear();
             itemMap.Clear();
@@ -515,7 +522,8 @@ namespace CupheadArchipelago.AP {
                 long itemId = item.ItemId;
                 string itemName = GetItemName(itemId);
                 if (currentReceivedItemIndex>=ReceivedItemsIndex || recover) {
-                    Logging.Log($"[APClient] Receiving {itemName}...");
+                    //Logging.Log($"[APClient] Receiving {itemName} from {item.Player}...");
+                    Logging.Log($"[APClient] Receiving {itemName} from {item.Player} ({item.LocationDisplayName})...");
                     APItemData nitem = new APItemData(item);
                     if (!receivedItemsQueueLock) {
                         receivedItemsQueueLock = true;
@@ -550,15 +558,26 @@ namespace CupheadArchipelago.AP {
             }
         }
         internal static void ReceiveItem(APItemData item) {
-            if (!receivedItemsUnique.Contains(item)) {
+            ReceivedItems.Add(item);
+            if (item.Location>=0) {
+                if (!receivedItemsUnique.Contains(item)) receivedItemsUnique.Add(item);
+                else Logging.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
+                //FIXME: For debugging purposes. Remove later
+                if (!receivedItemsUniqueB.Contains(item)) receivedItemsUniqueB.Add(item);
+                else Logging.LogWarning($"[APClient] {{B}} Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
+            }
+            Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location})");
+            QueueItem(item);
+            
+            /*if (!receivedItemsUnique.Contains(item)) {
                 ReceivedItems.Add(item);
                 if (item.Location>=0) receivedItemsUnique.Add(item);
-                Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player}");
+                Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location})");
                 QueueItem(item);
             }
             else {
-                Logging.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} ({item.GetHashCode()}) already exists. Skipping.");
-            }
+                Logging.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists. Skipping.");
+            }*/
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
         private static void QueueItem(APItemData item, int itemIndex) {

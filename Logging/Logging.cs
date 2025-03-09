@@ -56,6 +56,6 @@ namespace CupheadArchipelago {
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
             return (((int)flags)&((int)loggingFlags))==(int)flags;
         }
-        public static bool IsInDebugMode() => IsLoggingFlagsEnabled(LoggingFlags.Debug);
+        public static bool IsDebugEnabled() => IsLoggingFlagsEnabled(LoggingFlags.Debug);
     }
 }

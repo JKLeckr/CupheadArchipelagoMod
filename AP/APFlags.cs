@@ -16,4 +16,13 @@ namespace CupheadArchipelago.AP {
         ShopBuyout = 16,
         All = int.MaxValue,
     }
+
+    [Flags]
+    public enum MusicGroups {
+        None = 0,
+        LevelMusic = 1,
+        MapMusic = 2,
+        LevelAndMapMusic = 3,
+        All = 255
+    }
 }

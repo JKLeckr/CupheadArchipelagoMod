@@ -170,6 +170,19 @@ namespace CupheadArchipelago.AP {
                 BasicAbilities = 2,
                 All = int.MaxValue,
             }
+            [Flags]
+            public enum AimDirections {
+                None = 0,
+                Left = 1,
+                Right = 2,
+                Up = 4,
+                Down = 8,
+                UpLeft = 16,
+                UpRight = 32,
+                DownLeft = 64,
+                DownRight = 128,
+                All = 255
+            }
             
             [JsonProperty("contracts")]
             public int contracts = 0;
@@ -206,6 +219,8 @@ namespace CupheadArchipelago.AP {
             public bool dlc_boat = false;
             [JsonProperty("stat_coins_collected")]
             public int coins_collected = 0;
+            [JsonProperty("aim_directions")]
+            public AimDirections aim_directions = 0;
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget&SetTarget.BasicAbilities)>0) dash = value;

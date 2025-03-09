@@ -6,10 +6,11 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.AP {
     public static class ItemMap {
         private static readonly Dictionary<long, ItemType> itemTypes = new() {
-            {APItem.level_generic, ItemType.Level},
+            {APItem.level_generic, ItemType.NoType},
             {APItem.level_extrahealth, ItemType.Level},
             {APItem.level_superrecharge, ItemType.Level},
             {APItem.level_fastfire, ItemType.Level},
+            {APItem.level_4, ItemType.Level},
             {APItem.level_trap_fingerjam, ItemType.Level},
             {APItem.level_trap_slowfire, ItemType.Level},
             {APItem.level_trap_superdrain, ItemType.Level},
@@ -21,9 +22,12 @@ namespace CupheadArchipelago.AP {
             {APItem.plane_super, ItemType.Essential},
             {APItem.dlc_boat, ItemType.Essential},
             {APItem.dlc_ingredient, ItemType.Essential},
+            {APItem.dlc_cplane_super, ItemType.Essential},
 
             {APItem.plane_gun, ItemType.Weapon},
             {APItem.plane_bombs, ItemType.Weapon},
+            {APItem.dlc_cplane_gun, ItemType.Weapon},
+            {APItem.dlc_cplane_bombs, ItemType.Weapon},
 
             {APItem.weapon_peashooter, ItemType.Weapon},
             {APItem.weapon_spread, ItemType.Weapon},
@@ -41,21 +45,36 @@ namespace CupheadArchipelago.AP {
             {APItem.charm_coffee, ItemType.Charm},
             {APItem.charm_twinheart, ItemType.Charm},
             {APItem.charm_whetstone, ItemType.Charm},
-            //{APItem.dlc_cookie, ItemType.Charm}, // Not part of logic fn
+            {APItem.charm_dlc_cookie, ItemType.Charm},
             {APItem.charm_dlc_heartring, ItemType.Charm},
             {APItem.charm_dlc_broken_relic, ItemType.Charm},
 
             {APItem.super_i, ItemType.Super},
             {APItem.super_ii, ItemType.Super},
             {APItem.super_iii, ItemType.Super},
+            {APItem.super_dlc_c_i, ItemType.Super},
+            {APItem.super_dlc_c_ii, ItemType.Super},
+            {APItem.super_dlc_c_iii, ItemType.Super},
 
             {APItem.ability_dash, ItemType.Ability},
             {APItem.ability_duck, ItemType.Ability},
             {APItem.ability_parry, ItemType.Ability},
             {APItem.ability_plane_parry, ItemType.Ability},
             {APItem.ability_plane_shrink, ItemType.Ability},
+            {APItem.ability_dlc_cdash, ItemType.Ability},
+            {APItem.ability_dlc_cduck, ItemType.Ability},
+            {APItem.ability_dlc_cparry, ItemType.Ability},
+            {APItem.ability_dlc_cplane_parry, ItemType.Ability},
+            {APItem.ability_dlc_cplane_shrink, ItemType.Ability},
 
-            /* Aim Abilities to add later */
+            {APItem.ability_aim_left, ItemType.Ability},
+            {APItem.ability_aim_right, ItemType.Ability},
+            {APItem.ability_aim_up, ItemType.Ability},
+            {APItem.ability_aim_down, ItemType.Ability},
+            {APItem.ability_aim_upleft, ItemType.Ability},
+            {APItem.ability_aim_upright, ItemType.Ability},
+            {APItem.ability_aim_downleft, ItemType.Ability},
+            {APItem.ability_aim_downright, ItemType.Ability},
         };
         public static ItemType GetItemType(long item) {
             if (itemTypes.ContainsKey(item))

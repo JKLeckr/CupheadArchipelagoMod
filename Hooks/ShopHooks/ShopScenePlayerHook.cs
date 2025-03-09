@@ -192,7 +192,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
                 ShopSceneItem[] ctmp = new ShopSceneItem[clen];
 
-                if (Logging.IsInDebugMode()) {
+                if (Logging.IsDebugEnabled()) {
                     Logging.Log("---SHOP---", LoggingFlags.Debug);
                     Logging.Log("-items-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in items) 
@@ -301,7 +301,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     items.Add(nitem);
                 }
                 
-                if (Logging.IsInDebugMode()) {
+                if (Logging.IsDebugEnabled()) {
                     Logging.Log("---SHOP AP---", LoggingFlags.Debug);
                     Logging.Log("-items-", LoggingFlags.Debug);
                     foreach (ShopSceneItem item in items) 

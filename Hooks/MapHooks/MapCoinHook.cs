@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
-using BepInEx.Logging;
 
 namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapCoinHook {

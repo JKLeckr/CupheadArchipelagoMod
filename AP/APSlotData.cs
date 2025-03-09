@@ -28,6 +28,7 @@ namespace CupheadArchipelago.AP {
         public GradeChecks rungun_grade_checks {get; private set;}
         public int start_maxhealth {get; private set;}
         public bool trap_loadout_anyweapon {get; private set;}
+        public MusicGroups music_rando {get; private set;}
         public bool deathlink {get; private set;}
 
         public APSlotData(Dictionary<string, object> slotData) {
@@ -60,6 +61,7 @@ namespace CupheadArchipelago.AP {
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
             trap_loadout_anyweapon = GetAPSlotDataBool(slotData, "trap_loadout_anyweapon");
+            music_rando = 0; //(MusicGroups)(long)GetOptionalAPSlotData(slotData, "music_rando", 0);
             deathlink = GetAPSlotDataBool(slotData, "deathlink");
         }
 
@@ -78,11 +80,21 @@ namespace CupheadArchipelago.AP {
                 throw new ArgumentException($"Invalid SlotData data for: \"{key}\"! Exception: {e}");
             }
         }
+        private static object GetOptionalAPSlotData(Dictionary<string, object> slotData, string key, object fallbackValue) {
+            try {
+                return GetAPSlotData(slotData, key);
+            } catch (KeyNotFoundException) {
+                Logging.LogWarning($"GetOptionalAPSlotData: \"{key}\" is not a valid key. The world you are connecting to probably does not support this feature. Using default value of \"{fallbackValue}\"");
+                return fallbackValue;
+            }
+        }
         private static object GetAPSlotData(Dictionary<string, object> slotData, string key) {
             try { 
                 return slotData[key];
             } catch (KeyNotFoundException) {
                 throw new KeyNotFoundException($"GetAPSlotData: \"{key}\" is not a valid key!");
+            } catch (Exception e) {
+                throw new Exception($"GetAPSlotData: Failed to get \"{key}\" from slot data! Exception: {e}");
             }
         }
         private static APVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {

@@ -16,6 +16,11 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(DiceGateLevel), "Start")]
         internal static class Start {
+            static bool Prefix() {
+                if (!Logging.IsDebugEnabled())
+                    Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
+                return true;
+            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;
@@ -63,7 +68,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
             private static bool APCondition(bool vanillaCondition, int testCount) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
+                    Logging.LogDebug($"Contracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
                     return APClient.APSessionGSPlayerData.contracts>=testCount;
                 }
                 else return vanillaCondition;
