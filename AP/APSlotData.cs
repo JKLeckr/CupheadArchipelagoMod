@@ -15,7 +15,7 @@ namespace CupheadArchipelago.AP {
         public LevelShuffleMap level_shuffle_map {get; private set;}
         public ShopSet[] shop_map {get; private set;}
         public bool use_dlc {get; private set;}
-        public GameMode mode {get; private set;}
+        public GameModes mode {get; private set;}
         public bool expert_mode {get; private set;}
         public APItem start_weapon {get; private set;}
         public int[] contract_requirements {get; private set;}
@@ -28,6 +28,7 @@ namespace CupheadArchipelago.AP {
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
         public int start_maxhealth {get; private set;}
+        public DlcCurseModes dlc_curse_mode {get; private set;}
         public bool trap_loadout_anyweapon {get; private set;}
         public MusicGroups music_shuffle {get; private set;}
         public bool deathlink {get; private set;}
@@ -39,7 +40,7 @@ namespace CupheadArchipelago.AP {
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataBool(slotData, "use_dlc");
-            mode = (GameMode)GetAPSlotDataLong(slotData, "mode");
+            mode = (GameModes)GetAPSlotDataLong(slotData, "mode");
             expert_mode = GetAPSlotDataBool(slotData, "expert_mode");
             start_weapon = GetAPSlotDataLong(slotData, "start_weapon") switch {
                 1 => APItem.weapon_spread,
@@ -62,6 +63,7 @@ namespace CupheadArchipelago.AP {
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
+            dlc_curse_mode = (DlcCurseModes)GetAPSlotDataLong(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataBool(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //(MusicGroups)(long)GetOptionalAPSlotData(slotData, "music_rando", 0);
             deathlink = GetAPSlotDataBool(slotData, "deathlink");

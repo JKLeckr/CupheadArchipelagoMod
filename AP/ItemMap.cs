@@ -5,83 +5,83 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.AP {
     public static class ItemMap {
-        private static readonly Dictionary<long, ItemType> itemTypes = new() {
-            {APItem.level_generic, ItemType.NoType},
-            {APItem.level_extrahealth, ItemType.Level},
-            {APItem.level_superrecharge, ItemType.Level},
-            {APItem.level_fastfire, ItemType.Level},
-            {APItem.level_4, ItemType.Level},
-            {APItem.level_trap_fingerjam, ItemType.Level},
-            {APItem.level_trap_slowfire, ItemType.Level},
-            {APItem.level_trap_superdrain, ItemType.Level},
-            {APItem.level_trap_loadout, ItemType.Level},
-            {APItem.coin, ItemType.Essential},
-            {APItem.coin2, ItemType.Essential},
-            {APItem.coin3, ItemType.Essential},
-            {APItem.contract, ItemType.Essential},
-            {APItem.plane_super, ItemType.Essential},
-            {APItem.dlc_boat, ItemType.Essential},
-            {APItem.dlc_ingredient, ItemType.Essential},
-            {APItem.dlc_cplane_super, ItemType.Essential},
+        private static readonly Dictionary<long, ItemTypes> itemTypes = new() {
+            {APItem.level_generic, ItemTypes.NoType},
+            {APItem.level_extrahealth, ItemTypes.Level},
+            {APItem.level_superrecharge, ItemTypes.Level},
+            {APItem.level_fastfire, ItemTypes.Level},
+            {APItem.level_4, ItemTypes.Level},
+            {APItem.level_trap_fingerjam, ItemTypes.Level},
+            {APItem.level_trap_slowfire, ItemTypes.Level},
+            {APItem.level_trap_superdrain, ItemTypes.Level},
+            {APItem.level_trap_loadout, ItemTypes.Level},
+            {APItem.coin, ItemTypes.Essential},
+            {APItem.coin2, ItemTypes.Essential},
+            {APItem.coin3, ItemTypes.Essential},
+            {APItem.contract, ItemTypes.Essential},
+            {APItem.plane_super, ItemTypes.Essential},
+            {APItem.dlc_boat, ItemTypes.Essential},
+            {APItem.dlc_ingredient, ItemTypes.Essential},
+            {APItem.dlc_cplane_super, ItemTypes.Essential},
 
-            {APItem.plane_gun, ItemType.Weapon},
-            {APItem.plane_bombs, ItemType.Weapon},
-            {APItem.dlc_cplane_gun, ItemType.Weapon},
-            {APItem.dlc_cplane_bombs, ItemType.Weapon},
+            {APItem.plane_gun, ItemTypes.Weapon},
+            {APItem.plane_bombs, ItemTypes.Weapon},
+            {APItem.dlc_cplane_gun, ItemTypes.Weapon},
+            {APItem.dlc_cplane_bombs, ItemTypes.Weapon},
 
-            {APItem.weapon_peashooter, ItemType.Weapon},
-            {APItem.weapon_spread, ItemType.Weapon},
-            {APItem.weapon_chaser, ItemType.Weapon},
-            {APItem.weapon_lobber, ItemType.Weapon},
-            {APItem.weapon_charge, ItemType.Weapon},
-            {APItem.weapon_roundabout, ItemType.Weapon},
-            {APItem.weapon_dlc_crackshot, ItemType.Weapon},
-            {APItem.weapon_dlc_converge, ItemType.Weapon},
-            {APItem.weapon_dlc_twistup, ItemType.Weapon},
+            {APItem.weapon_peashooter, ItemTypes.Weapon},
+            {APItem.weapon_spread, ItemTypes.Weapon},
+            {APItem.weapon_chaser, ItemTypes.Weapon},
+            {APItem.weapon_lobber, ItemTypes.Weapon},
+            {APItem.weapon_charge, ItemTypes.Weapon},
+            {APItem.weapon_roundabout, ItemTypes.Weapon},
+            {APItem.weapon_dlc_crackshot, ItemTypes.Weapon},
+            {APItem.weapon_dlc_converge, ItemTypes.Weapon},
+            {APItem.weapon_dlc_twistup, ItemTypes.Weapon},
 
-            {APItem.charm_heart, ItemType.Charm},
-            {APItem.charm_smokebomb, ItemType.Charm},
-            {APItem.charm_psugar, ItemType.Charm},
-            {APItem.charm_coffee, ItemType.Charm},
-            {APItem.charm_twinheart, ItemType.Charm},
-            {APItem.charm_whetstone, ItemType.Charm},
-            {APItem.charm_dlc_cookie, ItemType.Charm},
-            {APItem.charm_dlc_heartring, ItemType.Charm},
-            {APItem.charm_dlc_broken_relic, ItemType.Charm},
+            {APItem.charm_heart, ItemTypes.Charm},
+            {APItem.charm_smokebomb, ItemTypes.Charm},
+            {APItem.charm_psugar, ItemTypes.Charm},
+            {APItem.charm_coffee, ItemTypes.Charm},
+            {APItem.charm_twinheart, ItemTypes.Charm},
+            {APItem.charm_whetstone, ItemTypes.Charm},
+            {APItem.charm_dlc_cookie, ItemTypes.Charm},
+            {APItem.charm_dlc_heartring, ItemTypes.Charm},
+            {APItem.charm_dlc_broken_relic, ItemTypes.Charm},
 
-            {APItem.super_i, ItemType.Super},
-            {APItem.super_ii, ItemType.Super},
-            {APItem.super_iii, ItemType.Super},
-            {APItem.super_dlc_c_i, ItemType.Super},
-            {APItem.super_dlc_c_ii, ItemType.Super},
-            {APItem.super_dlc_c_iii, ItemType.Super},
+            {APItem.super_i, ItemTypes.Super},
+            {APItem.super_ii, ItemTypes.Super},
+            {APItem.super_iii, ItemTypes.Super},
+            {APItem.super_dlc_c_i, ItemTypes.Super},
+            {APItem.super_dlc_c_ii, ItemTypes.Super},
+            {APItem.super_dlc_c_iii, ItemTypes.Super},
 
-            {APItem.ability_dash, ItemType.Ability},
-            {APItem.ability_duck, ItemType.Ability},
-            {APItem.ability_parry, ItemType.Ability},
-            {APItem.ability_plane_parry, ItemType.Ability},
-            {APItem.ability_plane_shrink, ItemType.Ability},
-            {APItem.ability_dlc_cdash, ItemType.Ability},
-            {APItem.ability_dlc_cduck, ItemType.Ability},
-            {APItem.ability_dlc_cparry, ItemType.Ability},
-            {APItem.ability_dlc_cplane_parry, ItemType.Ability},
-            {APItem.ability_dlc_cplane_shrink, ItemType.Ability},
+            {APItem.ability_dash, ItemTypes.Ability},
+            {APItem.ability_duck, ItemTypes.Ability},
+            {APItem.ability_parry, ItemTypes.Ability},
+            {APItem.ability_plane_parry, ItemTypes.Ability},
+            {APItem.ability_plane_shrink, ItemTypes.Ability},
+            {APItem.ability_dlc_cdash, ItemTypes.Ability},
+            {APItem.ability_dlc_cduck, ItemTypes.Ability},
+            {APItem.ability_dlc_cparry, ItemTypes.Ability},
+            {APItem.ability_dlc_cplane_parry, ItemTypes.Ability},
+            {APItem.ability_dlc_cplane_shrink, ItemTypes.Ability},
 
-            {APItem.ability_aim_left, ItemType.Ability},
-            {APItem.ability_aim_right, ItemType.Ability},
-            {APItem.ability_aim_up, ItemType.Ability},
-            {APItem.ability_aim_down, ItemType.Ability},
-            {APItem.ability_aim_upleft, ItemType.Ability},
-            {APItem.ability_aim_upright, ItemType.Ability},
-            {APItem.ability_aim_downleft, ItemType.Ability},
-            {APItem.ability_aim_downright, ItemType.Ability},
+            {APItem.ability_aim_left, ItemTypes.Ability},
+            {APItem.ability_aim_right, ItemTypes.Ability},
+            {APItem.ability_aim_up, ItemTypes.Ability},
+            {APItem.ability_aim_down, ItemTypes.Ability},
+            {APItem.ability_aim_upleft, ItemTypes.Ability},
+            {APItem.ability_aim_upright, ItemTypes.Ability},
+            {APItem.ability_aim_downleft, ItemTypes.Ability},
+            {APItem.ability_aim_downright, ItemTypes.Ability},
         };
-        public static ItemType GetItemType(long item) {
+        public static ItemTypes GetItemType(long item) {
             if (itemTypes.ContainsKey(item))
                 return itemTypes[item];
             else {
                 Logging.LogWarning($"[APItemMngr] Item Id: {item} does not exist!");
-                return ItemType.NoType;
+                return ItemTypes.NoType;
             }
         }
 
@@ -98,6 +98,9 @@ namespace CupheadArchipelago.AP {
             {APItem.plane_gun, Weapon.plane_weapon_peashot},
             {APItem.plane_bombs, Weapon.plane_weapon_bomb},
 
+            {APItem.dlc_cplane_gun, Weapon.plane_chalice_weapon_3way},
+            {APItem.dlc_cplane_bombs, Weapon.plane_chalice_weapon_bomb},
+            
             /* More unimplemented ones to check out */
         };
         public static Weapon GetWeapon(long item) => idToWeapon[item];
@@ -116,6 +119,10 @@ namespace CupheadArchipelago.AP {
             {APItem.super_i, Super.level_super_beam},
             {APItem.super_ii, Super.level_super_invincible},
             {APItem.super_iii, Super.level_super_ghost},
+
+            {APItem.super_dlc_c_i, Super.level_super_chalice_vert_beam},
+            {APItem.super_dlc_c_ii, Super.level_super_chalice_shield},
+            {APItem.super_dlc_c_iii, Super.level_super_chalice_iii},
         };
         public static Super GetSuper(long item) => idToSuper[item];
 

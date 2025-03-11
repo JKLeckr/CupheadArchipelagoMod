@@ -25,4 +25,18 @@ namespace CupheadArchipelago.AP {
         LevelAndMapMusic = 3,
         All = 255
     }
+
+    [Flags]
+    public enum ItemGroups {
+        None = 0,
+        Essential = 1,
+        Super = 2,
+        //CoreItems = 3,
+        Abilities = 4,
+        //CoreAndAbilities = 7,
+        AimAbilities = 8,
+        //CoreAndAim = 11,
+        //AbilitiesAndAim = 12,
+        All = 255,
+    }
 }

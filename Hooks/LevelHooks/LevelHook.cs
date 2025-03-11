@@ -201,23 +201,23 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     Logging.Log("DeathLink");
                     if (APManager.Current != null && !APManager.Current.IsDeathTriggered()) {
                         if (__instance.LevelType == Level.Type.Platforming) {
-                            APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Normal);
+                            APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseTypes.Normal);
                         }
                         else if (__instance.LevelType == Level.Type.Tutorial) {
-                            APClient.SendDeathLink(__instance.CurrentLevel.ToString(), DeathLinkCauseType.Tutorial);
+                            APClient.SendDeathLink(__instance.CurrentLevel.ToString(), DeathLinkCauseTypes.Tutorial);
                         }
                         else {
                             if (__instance.CurrentLevel == Levels.Mausoleum) {
-                                APClient.SendDeathLink("Mausoleum", DeathLinkCauseType.Mausoleum);
+                                APClient.SendDeathLink("Mausoleum", DeathLinkCauseTypes.Mausoleum);
                             }
                             else if (Array.Exists(Level.kingOfGamesLevels, (Levels level) => __instance.CurrentLevel == level)) {
-                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseType.ChessCastle);
+                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseTypes.ChessCastle);
                             }
                             else if (__instance.CurrentLevel == Levels.Graveyard) {
-                                APClient.SendDeathLink(bossNames[Levels.Graveyard], DeathLinkCauseType.Graveyard);
+                                APClient.SendDeathLink(bossNames[Levels.Graveyard], DeathLinkCauseTypes.Graveyard);
                             }
                             else {
-                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseType.Boss);
+                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseTypes.Boss);
                             }
                         }
                     }

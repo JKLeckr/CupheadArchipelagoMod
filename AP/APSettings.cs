@@ -4,7 +4,7 @@
 namespace CupheadArchipelago.AP {
     public class APSettings {
         public static bool UseDLC { get; internal set; }
-        public static GameMode Mode { get; internal set; }
+        public static GameModes Mode { get; internal set; }
         public static bool Hard { get; internal set; }
         public static APItem StartWeapon { get; internal set; }
         public static bool FreemoveIsles { get; internal set; }
@@ -25,7 +25,8 @@ namespace CupheadArchipelago.AP {
         public static int DLCIngredientsGoal { get; internal set; }
         public static bool DLCRandomizeBoat { get; internal set; }
         public static bool DLCRequiresMausoleum { get; internal set; }
-        public static bool DLCChaliceItemsSeparate { get; internal set; }
+        public static ItemGroups DLCChaliceItemsSeparate { get; internal set; }
+        public static DlcCurseModes DLCCurseMode { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
         public static MusicGroups ShuffleMusic { get; internal set; }
@@ -34,7 +35,7 @@ namespace CupheadArchipelago.AP {
         static APSettings() => Init();
         public static void Init() {
             UseDLC = false;
-            Mode = GameMode.BeatDevil;
+            Mode = GameModes.BeatDevil;
             Hard = false;
             StartWeapon = APItem.weapon_peashooter;
             FreemoveIsles = false;
@@ -55,7 +56,8 @@ namespace CupheadArchipelago.AP {
             DLCIngredientsGoal = DLCRequiredIngredients;
             DLCRandomizeBoat = true;
             DLCRequiresMausoleum = true;
-            DLCChaliceItemsSeparate = false;
+            DLCChaliceItemsSeparate = ItemGroups.None;
+            DLCCurseMode = DlcCurseModes.Normal;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;
             ShuffleMusic = MusicGroups.None;
