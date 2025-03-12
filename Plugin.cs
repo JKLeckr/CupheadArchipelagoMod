@@ -92,21 +92,13 @@ namespace CupheadArchipelago {
                         Hooks.Main.HookSaveKeyUpdater(configSaveKeyName.Value);
                         Logging.Log($"Using Save Key: {configSaveKeyName.Value}");
                     } catch (Exception e) {
-                        Logging.LogError("An exception occured while loading.");
-                        Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
-                        State = -2;
-                        Logging.LogFatal("Throwing Exception...");
-                        throw e;
+                        Fail(e, -2);
                     }
                 } else Logging.Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
                 try {
                     Hooks.Main.HookMain();
                 } catch (Exception e) {
-                    Logging.LogError("An exception occured while loading.");
-                    Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
-                    State = -1;
-                    Logging.LogFatal("Throwing Exception...");
-                    throw e;
+                    Fail(e, -1);
                 }
                 State = 1;
                 Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
@@ -168,6 +160,14 @@ namespace CupheadArchipelago {
                 BepInEx.Logging.Logger.Listeners.Add(listener);
                 Logging.Log("Mod logging started");
             }
+        }
+
+        private static void Fail(Exception e, int failCode) {
+            Logging.LogError("An exception occured while loading.");
+            Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
+            State = failCode;
+            Logging.LogFatal("Throwing Exception...");
+            throw e;
         }
     }
 }

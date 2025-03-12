@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
-using System.Data.SqlTypes;
 
 namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenSlotHook {

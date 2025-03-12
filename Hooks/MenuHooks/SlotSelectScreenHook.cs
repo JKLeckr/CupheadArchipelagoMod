@@ -8,15 +8,23 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Unity;
 using HarmonyLib;
 using UnityEngine;
 using TMPro;
-using BepInEx.Logging;
+using UnityEngine.UI;
 
 namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenHook {
-        private static Transform APInfoText;
-        private static Transform APConStatusText;
+        private static Transform apInfoText;
+        private static Transform apConStatusText;
+        private static Transform apPrompt;
+        private static Transform apPrompt2;
+        private static Transform apGlyph1;
+        private static Transform apGlyph2;
+        private static Transform apSpacer;
+        private static APSetupMenu apSetupMenu;
+        private static bool apSetupMenuState = false;
         private static bool _cancelPlayerSelection = false;
         private static bool _lockMenu = false;
         private static SlotSelectScreen _instance;
@@ -24,6 +32,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(SetState));
+            Harmony.CreateAndPatchAll(typeof(Update));
             Harmony.CreateAndPatchAll(typeof(UpdateOptionsMenu));
             Harmony.CreateAndPatchAll(typeof(UpdateSlotSelect));
             Harmony.CreateAndPatchAll(typeof(UpdatePlayerSelect));
@@ -44,33 +53,35 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 //Logging.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().worldCamera);
                 CreateAPInfoText(__instance.transform);
                 CreateAPConStatusText(__instance.transform);
-            }
-        }
-
-        [HarmonyPatch(typeof(SlotSelectScreen), "Update")]
-        internal static class Update {
-            static bool Prefix() {
-                return true;
-            }
-            static void Postfix(SlotSelectScreen.State ___state) {
-                if (___state != SlotSelectScreen.State.PlayerSelect && _cancelPlayerSelection) _cancelPlayerSelection = false;
+                CreateAPSetupMenu(__instance);
+                CreateAPPrompt(__instance);
             }
         }
 
         [HarmonyPatch(typeof(SlotSelectScreen), "SetState")]
         internal static class SetState {
-            static bool Prefix(ref SlotSelectScreen.State state) {
-                /*if (!(state==SlotSelectScreen.State.SlotSelect||state==SlotSelectScreen.State.ConfirmDelete||state==SlotSelectScreen.State.PlayerSelect)) {
-                    SetAPConStatusText("");
-                }*/
+            static bool Prefix() {
+                if (apSetupMenuState) {
+                    SetAPSetupMenuState(false);
+                }
                 return true;
+            }
+            static void Postfix(SlotSelectScreen.State state) {
+                SetAPPromptsActive(state == SlotSelectScreen.State.SlotSelect);
+            }
+        }
+
+        [HarmonyPatch(typeof(SlotSelectScreen), "Update")]
+        internal static class Update {
+            static void Postfix(SlotSelectScreen.State ___state) {
+                if (___state != SlotSelectScreen.State.PlayerSelect && _cancelPlayerSelection) _cancelPlayerSelection = false;
             }
         }
 
         [HarmonyPatch(typeof(SlotSelectScreen), "UpdateOptionsMenu")]
         internal static class UpdateOptionsMenu {
             static bool Prefix() {
-                APInfoText.gameObject.SetActive(!Cuphead.Current.controlMapper.isOpen);
+                apInfoText.gameObject.SetActive(!Cuphead.Current.controlMapper.isOpen);
                 return true;
             }
         }
@@ -79,23 +90,18 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         internal static class UpdatePlayerSelect {
             /*
                 FIXME: I hate this! Static vars when extracting values are so cringe!
-                They are all over the place from earlier parts of development.
-                Now that I am much more familiar with the Transpiler, redo these parts.
+                There should be a better way to do this!
             */
             private static int _slotSelection;
-            private static CupheadInput.AnyPlayerInput _input;
             private static MethodInfo _mi_game_start_cr;
-            private static MethodInfo _mi_SetState;
             private static int Status => APClient.SessionStatus;
 
             static UpdatePlayerSelect() {
                 _mi_game_start_cr = typeof(SlotSelectScreen).GetMethod("game_start_cr", BindingFlags.NonPublic | BindingFlags.Instance);
-                _mi_SetState = typeof(SlotSelectScreen).GetMethod("SetState", BindingFlags.NonPublic | BindingFlags.Instance);
             }
 
-            static bool Prefix(int ____slotSelection, CupheadInput.AnyPlayerInput ___input) {
+            static bool Prefix(int ____slotSelection) {
                 _slotSelection = ____slotSelection;
-                _input = ___input;
                 return !_lockMenu;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
@@ -284,37 +290,79 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
         [HarmonyPatch(typeof(SlotSelectScreen), "UpdateSlotSelect")]
         internal static class UpdateSlotSelect {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+            private static MethodInfo _mi_GetButtonDown = typeof(SlotSelectScreen).GetMethod("GetButtonDown", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            static bool Prefix(CupheadInput.AnyPlayerInput ___input, RectTransform ___deletePrompt, RectTransform ___deleteGlyph, RectTransform ___deleteSpacer) {
+                if (apSetupMenuState) {
+                    if (___input.GetButtonDown(CupheadButton.Cancel)) {
+                        DeactivateAPSetupMenu(___deletePrompt, ___deleteGlyph, ___deleteSpacer);
+                    }
+                    return false;
+                }
+                return true;
+            }
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 int success = 0;
                 
                 FieldInfo _fi_slots = typeof(SlotSelectScreen).GetField("slots", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi__slotSelection = typeof(SlotSelectScreen).GetField("_slotSelection", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_input = typeof(SlotSelectScreen).GetField("input", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_deletePrompt = typeof(SlotSelectScreen).GetField("deletePrompt", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_deleteGlyph = typeof(SlotSelectScreen).GetField("deleteGlyph", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_deleteSpacer = typeof(SlotSelectScreen).GetField("deleteSpacer", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo _mi_get_IsEmpty = typeof(SlotSelectScreenSlot).GetProperty("IsEmpty", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
                 MethodInfo _mi_GetButtonDown = typeof(SlotSelectScreen).GetMethod("GetButtonDown", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo _mi_GetAPButtonDown = typeof(UpdateSlotSelect).GetMethod("GetAPButtonDown", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_ActivateAPSetupMenu = typeof(UpdateSlotSelect).GetMethod("ActivateAPSetupMenu", BindingFlags.NonPublic| BindingFlags.Static);
                 MethodInfo _mi_IsAPEmpty = typeof(UpdateSlotSelect).GetMethod("IsAPEmpty", BindingFlags.NonPublic | BindingFlags.Static);
 
+                Label lacceptif = il.DefineLabel();
+                
                 if (debug) {
                     foreach (CodeInstruction code in codes) {
                         Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
                 for (int i=0;i<codes.Count-6;i++) {
-                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_slots &&
+                    if ((success&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+1].operand == (sbyte)CupheadButton.Accept &&
+                        codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_GetButtonDown && codes[i+3].opcode == OpCodes.Brfalse) {
+                            codes[i].labels.Add(lacceptif);
+                            List<CodeInstruction> ncodes = [
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_input),
+                                new CodeInstruction(OpCodes.Call, _mi_GetAPButtonDown),
+                                new CodeInstruction(OpCodes.Brfalse_S, lacceptif),
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_deletePrompt),
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_deleteGlyph),
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Ldfld, _fi_deleteSpacer),
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Ldfld, _fi__slotSelection),
+                                new CodeInstruction(OpCodes.Call, _mi_ActivateAPSetupMenu),
+                                new CodeInstruction(OpCodes.Ret),
+                            ];
+                            codes.InsertRange(i, ncodes);
+                            i += ncodes.Count;
+                            success |= 1;
+                    }
+                    else if ((success&2)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_slots &&
                         codes[i+2].opcode == OpCodes.Ldarg_0 && codes[i+3].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+3].operand == _fi__slotSelection &&
                         codes[i+4].opcode == OpCodes.Ldelem_Ref && codes[i+5].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+5].operand == _mi_get_IsEmpty &&
                         codes[i+6].opcode == OpCodes.Brtrue) {
                             codes[i+4] = new CodeInstruction(OpCodes.Call, _mi_IsAPEmpty);
                             codes.RemoveAt(i+5);
-                            success++;
-                            break;
+                            success |= 2;
                     }
+                    if (success>=7) break;
                 }
-                if (success!=1) throw new Exception($"{nameof(SlotSelectScreen)}: Patch Failed! {success}");
+                if (success!=3) throw new Exception($"{nameof(SlotSelectScreen)}: Patch Failed! {success}");
                 if (debug) {
+                    Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Logging.Log("---");
                         Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }
@@ -322,6 +370,28 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 return codes;
             }
 
+            private static bool GetAPButtonDown(CupheadInput.AnyPlayerInput input) {
+                return input.GetButton(CupheadButton.Lock) && input.GetButtonDown(CupheadButton.Accept);
+            }
+            private static void ActivateAPSetupMenu(RectTransform deletePrompt, RectTransform deleteGlyph, RectTransform deleteSpacer, int slotSelection) {
+                if (apSetupMenu?.IsInitted() ?? false) {
+                    AudioManager.Play("level_menu_select");
+                    apSetupMenu.SetSlotSelection(slotSelection);
+                    SetAPSetupMenuState(true);
+                    deletePrompt.gameObject.SetActive(false);
+                    deleteGlyph.gameObject.SetActive(false);
+                    deleteSpacer.gameObject.SetActive(false);
+                    SetAPPromptsActive(false);
+                } else Logging.LogWarning("APSetupMenu is not loaded.");
+            }
+            private static void DeactivateAPSetupMenu(RectTransform deletePrompt, RectTransform deleteGlyph, RectTransform deleteSpacer) {
+                AudioManager.Play("level_menu_select");
+                SetAPSetupMenuState(false);
+                deletePrompt.gameObject.SetActive(true);
+                deleteGlyph.gameObject.SetActive(true);
+                deleteSpacer.gameObject.SetActive(true);
+                SetAPPromptsActive(true);
+            }
             private static bool IsAPEmpty(SlotSelectScreenSlot[] slots, int slotnum) {
                 //Logging.Log($"Prompt delete {slotnum}");
                 return slots[slotnum].IsEmpty && APData.IsSlotEmpty(slotnum);
@@ -410,6 +480,102 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             }
         }
 
+        private static void SetAPSetupMenuState(bool state) {
+            apSetupMenuState = state;
+            apSetupMenu.SetState(state);
+        }
+
+        private static void CreateAPSetupMenu(SlotSelectScreen instance) {
+            Transform parent = instance.transform.GetChild(1);
+            
+            GameObject obj = new GameObject("APSetupMenu");
+            obj.SetActive(false);
+            RectTransform rect = obj.AddComponent<RectTransform>();
+            obj.AddComponent<CanvasGroup>();
+            APSetupMenu apSM = obj.AddComponent<APSetupMenu>();
+
+            instance.StartCoroutine(SetupAPSetupMenu_cr(apSM, parent));
+
+            rect.SetParent(parent, false);
+
+            obj.transform.SetSiblingIndex(8);
+
+            apSetupMenu = apSM;
+        }
+        private static IEnumerator SetupAPSetupMenu_cr(APSetupMenu apSM, Transform parent) {
+            Transform orig_options_p = parent.GetChild(5);
+            while (orig_options_p.GetChildTransforms().Length<1) {
+                yield return null;
+            }
+            Transform orig_options = orig_options_p.GetChild(0);
+            APSetupMenu.Init(apSM, orig_options);
+            yield break;
+        }
+
+        private static void SetAPPromptsActive(bool active) {
+            if (apPrompt==null || apPrompt2==null || apGlyph1==null || apGlyph2==null || apSpacer==null) return;
+            apPrompt.gameObject.SetActive(active);
+            apPrompt2.gameObject.SetActive(active);
+            apGlyph1.gameObject.SetActive(active);
+            apGlyph2.gameObject.SetActive(active);
+            apSpacer.gameObject.SetActive(active);
+        }
+        private static void CreateAPPrompt(SlotSelectScreen instance) {
+            Transform parent = instance.transform.GetChild(1);
+            Transform orig_prompts = parent.transform.GetChild(9);
+            int confirm_start_index = 1;
+            Transform orig_confirmPrompt = orig_prompts.transform.GetChild(confirm_start_index);
+            Transform orig_confirmGlyph = orig_prompts.transform.GetChild(confirm_start_index+1);
+            Transform orig_confirmSpacer = orig_prompts.transform.GetChild(confirm_start_index+2);
+
+            GameObject apPrompt = GameObject.Instantiate(orig_confirmPrompt.gameObject);
+            apPrompt.name = "AP";
+            apPrompt.transform.SetParent(orig_prompts);
+            apPrompt.transform.SetSiblingIndex(confirm_start_index);
+            UnityEngine.Object.Destroy(apPrompt.GetComponent<LocalizationHelper>());
+            Text apPromptText = apPrompt.GetComponent<Text>();
+            apPromptText.text = "ARCHIPELAGO";
+            apPrompt.SetActive(false);
+            SlotSelectScreenHook.apPrompt = apPrompt.transform;
+
+            GameObject apGlyph1 = GameObject.Instantiate(orig_confirmGlyph.gameObject);
+            apGlyph1.name = "APGlyph";
+            apGlyph1.transform.SetParent(orig_prompts);
+            apGlyph1.transform.SetSiblingIndex(confirm_start_index+1);
+            CupheadGlyph apGlyph1Glyph = apGlyph1.GetComponent<CupheadGlyph>();
+            apGlyph1Glyph.button = CupheadButton.Lock;
+            apGlyph1Glyph.Init();
+            apGlyph1.SetActive(false);
+            SlotSelectScreenHook.apGlyph1 = apGlyph1.transform;
+
+            GameObject apPrompt2 = GameObject.Instantiate(orig_confirmPrompt.gameObject);
+            apPrompt2.name = "AP";
+            apPrompt2.transform.SetParent(orig_prompts);
+            apPrompt2.transform.SetSiblingIndex(confirm_start_index+2);
+            UnityEngine.Object.Destroy(apPrompt2.GetComponent<LocalizationHelper>());
+            Text apPrompt2Text = apPrompt2.GetComponent<Text>();
+            apPrompt2Text.text = "+";
+            apPrompt.SetActive(false);
+            SlotSelectScreenHook.apPrompt2 = apPrompt2.transform;
+
+            GameObject apGlyph2 = GameObject.Instantiate(orig_confirmGlyph.gameObject);
+            apGlyph2.name = "APGlyph";
+            apGlyph2.transform.SetParent(orig_prompts);
+            apGlyph2.transform.SetSiblingIndex(confirm_start_index+3);
+            CupheadGlyph apGlyph2Glyph = apGlyph2.GetComponent<CupheadGlyph>();
+            apGlyph2Glyph.button = CupheadButton.Accept;
+            apGlyph2Glyph.Init();
+            apGlyph2.SetActive(false);
+            SlotSelectScreenHook.apGlyph2 = apGlyph2.transform;
+
+            GameObject apSpacer = GameObject.Instantiate(orig_confirmSpacer.gameObject);
+            apSpacer.name = "APSpacer";
+            apSpacer.transform.SetParent(orig_prompts);
+            apSpacer.transform.SetSiblingIndex(confirm_start_index+4);
+            apSpacer.SetActive(false);
+            SlotSelectScreenHook.apSpacer = apSpacer.transform;
+        }
+
         private static void CreateAPInfoText(Transform parent) {
             GameObject obj = new GameObject("APInfoText");
             obj.SetActive(true);
@@ -437,7 +603,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 obj.transform.SetParent(parent.GetChild(1), false);
             }
 
-            APInfoText = obj.transform;
+            apInfoText = obj.transform;
         }
 
         private static void CreateAPConStatusText(Transform parent) {
@@ -468,21 +634,21 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 obj.transform.SetParent(parent.GetChild(1), false);
             }
 
-            APConStatusText = obj.transform;
+            apConStatusText = obj.transform;
         }
         private static void SetAPConStatusText(string str) {
-            if (APConStatusText!=null) {
-                TextMeshProUGUI txt = APConStatusText.GetComponent<TextMeshProUGUI>();
+            if (apConStatusText!=null) {
+                TextMeshProUGUI txt = apConStatusText.GetComponent<TextMeshProUGUI>();
                 txt.SetText(str);
             }
-            else Logging.Log("Error: APStatus Text is NULL!", LogLevel.Error);
+            else Logging.LogError("Error: APStatus Text is NULL!");
         }
         private static string GetAPConStatusText() {
-            if (APConStatusText!=null) {
-                TextMeshProUGUI txt = APConStatusText.GetComponent<TextMeshProUGUI>();
+            if (apConStatusText!=null) {
+                TextMeshProUGUI txt = apConStatusText.GetComponent<TextMeshProUGUI>();
                 return txt.text;
             }
-            else Logging.Log("Error: APStatus Text is NULL!", LogLevel.Error);
+            else Logging.LogError("Error: APStatus Text is NULL!");
             return "";
         }
     }

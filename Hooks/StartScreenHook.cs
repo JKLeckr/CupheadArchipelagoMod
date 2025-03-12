@@ -5,7 +5,6 @@ using CupheadArchipelago.AP;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace CupheadArchipelago.Hooks {
     internal class StartScreenHook {
@@ -42,14 +41,25 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(StartScreen), "Update")]
         internal static class Update {
+            private static readonly CupheadButton[] ERR_DISMISS_BUTTONS = [
+                CupheadButton.Accept, CupheadButton.Cancel, CupheadButton.Pause
+            ];
+
             static bool Prefix() {
                 if (Plugin.State<0) {
-                    if (input?.GetAnyButtonDown() ?? false) {
+                    if (GetAnyButtonDown(ERR_DISMISS_BUTTONS)) {
                         Application.Quit();
                     }
                     return false;
                 }
                 return true;
+            }
+
+            private static bool GetAnyButtonDown(CupheadButton[] buttons) {
+                foreach (CupheadButton button in buttons) {
+                    if (input?.GetButtonDown(button) ?? false) return true;
+                }
+                return false;
             }
         }
 
@@ -65,11 +75,9 @@ namespace CupheadArchipelago.Hooks {
             rect.localPosition = new Vector3(0,0,0);
             rect.sizeDelta = new Vector2(400, 200);
             
-            TextMeshProUGUI txt = obj.AddComponent<TextMeshProUGUI>();
-            txt.alignment = TextAlignmentOptions.Center;
-            txt.OverflowMode = TextOverflowModes.Overflow;
-            txt.font = FontLoader.GetTMPFont(FontLoader.TMPFontType.CupheadVogue_Bold_merged__SDF);
-            txt.fontWeight = 800;
+            Text txt = obj.AddComponent<Text>();
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.font = FontLoader.GetFont(FontLoader.FontType.CupheadVogue_Bold_merged);
             txt.color = UnityEngine.Color.red;
             txt.fontSize = 32;
             txt.text = "CupheadArchipelago\nERROR\nCheck Log";
