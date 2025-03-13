@@ -143,13 +143,19 @@ namespace CupheadArchipelago.AP {
         }
         public static bool IsCurrentSlotEnabled() => IsSlotEnabled(global::PlayerData.CurrentSaveFileIndex);
         public static bool IsSlotLocked(int index) {
-            return Initialized&&SData[index].dlock;
+            return Initialized && SData[index].dlock;
         }
         public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
-        public static bool IsSlotEmpty(int index) {
+        public static bool IsSlotEmpty(int index, bool checkVanillaIfAPDisabled=false) {
             if (global::PlayerData.Initialized) {
-                return !SData[index].playerData.HasStartWeapon();
+                APData sdata = SData[index];
+                if (sdata.enabled || !checkVanillaIfAPDisabled) {
+                    return !sdata.playerData.HasStartWeapon();
+                } else {
+                    global::PlayerData data = global::PlayerData.GetDataForSlot(index);
+                    return !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
+                }
             }
             else {
                 Logging.LogWarning("[APData] PlayerData is not initialized!");

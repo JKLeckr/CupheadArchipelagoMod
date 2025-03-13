@@ -46,14 +46,14 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 _instance = __instance;
                 return true;
             }
-            static void Postfix(SlotSelectScreen __instance) {
+            static void Postfix(SlotSelectScreen __instance, int ____slotSelection) {
                 //Logging.Log.LogInfo("Awake");
                 //Logging.Log.LogInfo(__instance.gameObject.name);
                 //Logging.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().renderMode);
                 //Logging.Log.LogInfo("child: "+__instance.transform.GetChild(1).GetComponent<Canvas>().worldCamera);
                 CreateAPInfoText(__instance.transform);
                 CreateAPConStatusText(__instance.transform);
-                CreateAPSetupMenu(__instance);
+                CreateAPSetupMenu(__instance, ____slotSelection);
                 CreateAPPrompt(__instance);
             }
         }
@@ -294,8 +294,9 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             static bool Prefix(CupheadInput.AnyPlayerInput ___input, RectTransform ___deletePrompt, RectTransform ___deleteGlyph, RectTransform ___deleteSpacer) {
                 if (apSetupMenuState) {
-                    if (___input.GetButtonDown(CupheadButton.Cancel)) {
-                        DeactivateAPSetupMenu(___deletePrompt, ___deleteGlyph, ___deleteSpacer);
+                    if ((___input.GetButtonDown(CupheadButton.Cancel) && !apSetupMenu.IsTyping()) || 
+                        (apSetupMenu.IsBackSelected() && ___input.GetButtonDown(CupheadButton.Accept))) {
+                            DeactivateAPSetupMenu(___deletePrompt, ___deleteGlyph, ___deleteSpacer);
                     }
                     return false;
                 }
@@ -485,7 +486,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             apSetupMenu.SetState(state);
         }
 
-        private static void CreateAPSetupMenu(SlotSelectScreen instance) {
+        private static void CreateAPSetupMenu(SlotSelectScreen instance, int slotSelection) {
             Transform parent = instance.transform.GetChild(1);
             
             GameObject obj = new GameObject("APSetupMenu");
@@ -494,7 +495,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             obj.AddComponent<CanvasGroup>();
             APSetupMenu apSM = obj.AddComponent<APSetupMenu>();
 
-            instance.StartCoroutine(SetupAPSetupMenu_cr(apSM, parent));
+            instance.StartCoroutine(SetupAPSetupMenu_cr(apSM, parent, slotSelection));
 
             rect.SetParent(parent, false);
 
@@ -502,12 +503,16 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             apSetupMenu = apSM;
         }
-        private static IEnumerator SetupAPSetupMenu_cr(APSetupMenu apSM, Transform parent) {
+        private static IEnumerator SetupAPSetupMenu_cr(APSetupMenu apSM, Transform parent, int slotSelection) {
             Transform orig_options_p = parent.GetChild(5);
             while (orig_options_p.GetChildTransforms().Length<1) {
                 yield return null;
             }
             Transform orig_options = orig_options_p.GetChild(0);
+            while (!APData.Initialized) {
+                yield return null;
+            }
+            apSM.SetSlotSelection(slotSelection);
             APSetupMenu.Init(apSM, orig_options);
             yield break;
         }
