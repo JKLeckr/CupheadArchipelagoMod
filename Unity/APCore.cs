@@ -1,10 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using System;
-using CupheadArchipelago;
-using CupheadArchipelago.AP;
-using CupheadArchipelago.Util;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,16 +16,17 @@ namespace CupheadArchipelago.Unity {
             MonoSpace
         }
 
-        public static Text CreateSettingsTextComponent(GameObject obj, FontType type = FontType.Bold, TextAnchor alignment = TextAnchor.UpperLeft, bool overflow = true) {
+        public static Text CreateSettingsTextComponent(GameObject obj, FontType type = FontType.Bold, TextAnchor alignment = TextAnchor.UpperLeft, bool wrap = false) {
             Text txt = obj.AddComponent<Text>();
             txt.color = TEXT_COLOR;
-            if (type == FontType.ExtraBold)
-                txt.font = FontLoader.GetFont(FontLoader.FontType.CupheadVogue_ExtraBold_merged);
-            else
-                txt.font = FontLoader.GetFont(FontLoader.FontType.FGNewRetro);
+            txt.font = type switch {
+                FontType.ExtraBold => FontLoader.GetFont(FontLoader.FontType.CupheadVogue_ExtraBold_merged),
+                FontType.MonoSpace => FontLoader.GetFont(FontLoader.FontType.FGNewRetro),
+                _ => FontLoader.GetFont(FontLoader.FontType.CupheadVogue_Bold_merged),
+            };
             txt.fontSize = 32;
             txt.alignment = alignment;
-            txt.horizontalOverflow = overflow ? HorizontalWrapMode.Overflow : HorizontalWrapMode.Wrap;
+            txt.horizontalOverflow = wrap ? HorizontalWrapMode.Wrap : HorizontalWrapMode.Overflow;
             return txt;
         }
     }

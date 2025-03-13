@@ -488,6 +488,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
         private static void CreateAPSetupMenu(SlotSelectScreen instance, int slotSelection) {
             Transform parent = instance.transform.GetChild(1);
+            Transform prompts = parent.GetChild(8);
             
             GameObject obj = new GameObject("APSetupMenu");
             obj.SetActive(false);
@@ -495,7 +496,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             obj.AddComponent<CanvasGroup>();
             APSetupMenu apSM = obj.AddComponent<APSetupMenu>();
 
-            instance.StartCoroutine(SetupAPSetupMenu_cr(apSM, parent, slotSelection));
+            instance.StartCoroutine(SetupAPSetupMenu_cr(apSM, parent, prompts, slotSelection));
 
             rect.SetParent(parent, false);
 
@@ -503,7 +504,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             apSetupMenu = apSM;
         }
-        private static IEnumerator SetupAPSetupMenu_cr(APSetupMenu apSM, Transform parent, int slotSelection) {
+        private static IEnumerator SetupAPSetupMenu_cr(APSetupMenu apSM, Transform parent, Transform prompts, int slotSelection) {
             Transform orig_options_p = parent.GetChild(5);
             while (orig_options_p.GetChildTransforms().Length<1) {
                 yield return null;
@@ -513,7 +514,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 yield return null;
             }
             apSM.SetSlotSelection(slotSelection);
-            APSetupMenu.Init(apSM, orig_options);
+            APSetupMenu.Init(apSM, orig_options, prompts);
             yield break;
         }
 

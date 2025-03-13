@@ -18,44 +18,125 @@ namespace CupheadArchipelago.Unity {
         }
         
         [SerializeField]
+        private float cursorBlink = 0.25f;
+        [SerializeField]
         private float typeDelay = 2f;
+        [SerializeField]
+        private float typeHoldDelay = 5f;
+        private float cBlinkTime = 0f;
         private float typeTime = 0f;
+        private float typeHoldTime = 0f;
+        private bool cursorState = false;
         private bool typing = false;
         private TextTypes type;
         private string text = "";
+        private string _text = "";
 
         private Text textField;
+        private InputField inputField;
+
+        private const int TEXT_MAX_LENGTH = 340;
 
         void Update() {
             if (!initted || !active) return;
             if (Input.GetKeyDown(KeyCode.Escape)) {
-                //typing = false;
                 ClosePrompt();
             }
             else if (Input.GetKeyDown(KeyCode.Return)) {
-                typing = false;
-                text = textField.text;
+                StopTyping(true);
             }
-            if (typeTime >= typeDelay) {}
-            else {
-                typeTime += Time.deltaTime;
-            }
+            /*if (typing) {
+                if (cBlinkTime >= cursorBlink) {
+                    ToggleCursorState();
+                    cBlinkTime = 0;
+                }
+                else {
+                    cBlinkTime += Time.deltaTime;
+                }
+                if (typeTime < typeDelay) {
+                    typeTime += Time.deltaTime;
+                }
+            }*/
         }
 
         public void OpenPrompt(string initial_str, TextTypes type = TextTypes.Text) {
-            text = initial_str;
-            this.type = type;
-            typing = true;
+            if (!initted) throw new System.Exception("Not initialized!");
+            text = ClampText(initial_str);
+            SetInputType(type);
+            UpdateText(text);
+            inputField.text = _text;
             SetState(true);
+            StartTyping();
+        }
+        public void StartTyping() {
+            if (active && !typing) {
+                typing = true;
+                //SetCursorState(true);
+                inputField.ActivateInputField();
+            }
+        }
+        public void StopTyping(bool saveText = true) {
+            if (active && typing) {
+                typing = false;
+                inputField.DeactivateInputField();
+                if (saveText) text = _text;
+            }
         }
         public void ClosePrompt() {
-            typing = false;
+            if (typing) StopTyping(false);
             SetState(false);
+        }
+
+        private void SetInputType(TextTypes type) {
+            this.type = type;
+            inputField.characterLimit = type switch {
+                TextTypes.Text16 => 16,
+                TextTypes.SixDigit => 6,
+                _ => TEXT_MAX_LENGTH,
+            };
+            if (type == TextTypes.SixDigit) {
+                inputField.contentType = InputField.ContentType.IntegerNumber;
+            } else {
+                inputField.contentType = InputField.ContentType.Standard;
+            }
         }
 
         private void SetState(bool state) {
             gameObject.SetActive(state);
             active = state;
+        }
+        private void SetCursorState(bool set) {
+            if (cursorState != set) {
+                if (set) {
+                    textField.text = _text + "_";
+                } else {
+                    textField.text = _text + " ";
+                }
+                cursorState = set;
+            }
+        }
+        private void ToggleCursorState() {
+            SetCursorState(!cursorState);
+        }
+        private void UpdateText(string text) {
+            _text = text;
+            textField.text = _text;
+            if (typing)
+                textField.text += "_";
+        }
+
+        private string ClampText(string text) {
+            switch (type) {
+                case TextTypes.Text16:
+                    return text.Substring(0, Mathf.Min(text.Length, 16));
+                case TextTypes.SixDigit: 
+                    string res = text.Substring(0, Mathf.Min(text.Length, 6));
+                    if (int.TryParse(res, out int _))
+                        return res;
+                    else return "0";
+                default:
+                    return text.Substring(0, Mathf.Min(text.Length, TEXT_MAX_LENGTH)); 
+            }
         }
 
         public bool IsInitted() => initted;
@@ -85,41 +166,53 @@ namespace CupheadArchipelago.Unity {
         }
 
         protected static void Init(APTypingPrompt instance, Transform orig_options) {
-            Transform obj = instance.gameObject.transform;
+            GameObject obj = instance.gameObject;
             
             Transform orig_card = orig_options.GetChild(1);
-            Transform orig_noise = orig_card.GetChild(1);
+            Transform orig_bigcard = orig_card.GetChild(2);
+            Transform orig_bignoise = orig_card.GetChild(6);
 
-            GameObject ncard = Instantiate(orig_card.gameObject, obj.transform);
-            ncard.name = "Card";
+            GameObject bigcard = Instantiate(orig_bigcard.gameObject, obj.transform);
+            bigcard.name = orig_bigcard.name;
+            bigcard.SetActive(true);
 
             GameObject tprompt = new GameObject("Prompt");
             RectTransform menu_rect = tprompt.AddComponent<RectTransform>();
-            tprompt.AddComponent<VerticalLayoutGroup>();
+            //tprompt.AddComponent<VerticalLayoutGroup>();
             menu_rect.sizeDelta = new Vector2(514f, 299f);
             tprompt.transform.SetParent(obj.transform);
+            InputField field = tprompt.AddComponent<InputField>();
+            field.lineType = InputField.LineType.SingleLine;
+            field.interactable = true;
+            //field.onValueChanged.AddListener(instance.UpdateText);
+            instance.inputField = field;
 
             GameObject header = new GameObject("Header");
             RectTransform hrect = header.AddComponent<RectTransform>();
-            hrect.sizeDelta = new Vector2(600f, 40f);
-            header.transform.SetParent(obj.transform);
+            hrect.sizeDelta = new Vector2(600f, 64f);
+            hrect.anchoredPosition = new Vector2(0f, 190f);
+            header.transform.SetParent(tprompt.transform);
             header.AddComponent<CanvasRenderer>();
             Text htxt = APCore.CreateSettingsTextComponent(header, APCore.FontType.Bold, TextAnchor.UpperCenter, true);
             htxt.fontSize = 26;
-            htxt.text = "Press [Enter] to Accept, Press [Esc] to Cancel. Enter Text:";
+            htxt.text = "Press [Enter] to Accept,\nPress [Esc] to Cancel. Enter Text:";
 
             GameObject fobj = new GameObject("Field");
             RectTransform rect = fobj.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(600f, 40f);
-            fobj.transform.SetParent(obj.transform);
+            rect.sizeDelta = new Vector2(514f, 500f);
+            rect.anchoredPosition = new Vector2(0f, -15f);
+            fobj.transform.SetParent(tprompt.transform);
             fobj.AddComponent<CanvasRenderer>();
-            Text txt = APCore.CreateSettingsTextComponent(fobj, APCore.FontType.MonoSpace, TextAnchor.MiddleCenter, false);
+            Text txt = APCore.CreateSettingsTextComponent(fobj, APCore.FontType.MonoSpace, TextAnchor.MiddleCenter, true);
             txt.fontSize = 24;
-            txt.text = new string('A', 255);
+            txt.text = $"{new string('A', TEXT_MAX_LENGTH)}";
             instance.textField = txt;
+            field.textComponent = txt;
+            field.text = txt.text;
 
-            GameObject nnoise = Instantiate(orig_noise.gameObject, obj.transform);
-            nnoise.name = "Noise";
+            GameObject bignoise = Instantiate(orig_bignoise.gameObject, obj.transform);
+            bignoise.name = orig_bignoise.name;
+            bignoise.SetActive(true);
 
             instance.initted = true;
             Logging.Log("APTypingPrompt Initialized");

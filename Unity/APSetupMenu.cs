@@ -19,6 +19,7 @@ namespace CupheadArchipelago.Unity {
         private bool promptCooldown = false;
         
         private Transform fader;
+        private Transform prompts;
         private APTypingPrompt typingPrompt;
 
         private int slotSelection = 0;
@@ -118,11 +119,13 @@ namespace CupheadArchipelago.Unity {
 
         private void OpenTypingPrompt(string initial_str, APTypingPrompt.TextTypes type) {
             //fader.gameObject.SetActive(false);
+            prompts.gameObject.SetActive(false);
             promptCooldown = true;
             typingPrompt.OpenPrompt(initial_str, type);
         }
         private void CloseTypingPrompt() {
             //fader.gameObject.SetActive(true);
+            prompts.gameObject.SetActive(true);
             typingPrompt.ClosePrompt();
         }
 
@@ -162,15 +165,16 @@ namespace CupheadArchipelago.Unity {
 
         public bool IsInitted() => initted;
 
-        public static void Init(APSetupMenu instance, Transform orig_options) {
-            Transform obj = instance.gameObject.transform;
+        public static void Init(APSetupMenu instance, Transform orig_options, Transform prompts) {
+            GameObject obj = instance.gameObject;
             Transform orig_fader = orig_options.GetChild(0);
             Transform orig_card = orig_options.GetChild(1);
             Transform orig_bigcard = orig_card.GetChild(2);
-            Transform orig_visualmenu = orig_card.GetChild(3);
             Transform orig_bignoise = orig_card.GetChild(6);
 
-            GameObject fader = GameObject.Instantiate(orig_fader.gameObject, obj);
+            instance.prompts = prompts;
+
+            GameObject fader = GameObject.Instantiate(orig_fader.gameObject, obj.transform);
             fader.name = orig_fader.name;
             RectTransform fader_rect = fader.GetComponent<RectTransform>();
             fader_rect.sizeDelta = new Vector2(2570f, 1450f);
@@ -179,7 +183,7 @@ namespace CupheadArchipelago.Unity {
             GameObject card = new GameObject("Card");
             RectTransform card_rect = card.AddComponent<RectTransform>();
             card_rect.sizeDelta = new Vector2(514f, 299f);
-            card.transform.SetParent(obj);
+            card.transform.SetParent(obj.transform);
 
             GameObject bigcard = Instantiate(orig_bigcard.gameObject, card.transform);
             bigcard.name = orig_bigcard.name;
@@ -191,6 +195,7 @@ namespace CupheadArchipelago.Unity {
             menu_rect.sizeDelta = new Vector2(514f, 299f);
             menu.transform.SetParent(card.transform);
 
+            //FIXME: Fix slight alignment issue with Labels and text
             GameObject settingsLabels = new GameObject("SettingsLabels");
             RectTransform sl_rect = settingsLabels.AddComponent<RectTransform>();
             sl_rect.sizeDelta = new Vector2(514f, 259f);
@@ -319,7 +324,7 @@ namespace CupheadArchipelago.Unity {
 
         private static Text CreateSettingsTextComponent(GameObject obj, bool bold = false, TextAnchor alignment = TextAnchor.UpperLeft) {
             APCore.FontType type = bold ? APCore.FontType.ExtraBold : APCore.FontType.MonoSpace;
-            return APCore.CreateSettingsTextComponent(obj, type, alignment, true);
+            return APCore.CreateSettingsTextComponent(obj, type, alignment, false);
         }
     }
 }
