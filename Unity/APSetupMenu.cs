@@ -2,7 +2,6 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
-using CupheadArchipelago;
 using CupheadArchipelago.AP;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,6 +68,7 @@ namespace CupheadArchipelago.Unity {
                         }
                     }
                     CloseTypingPrompt();
+                    RefreshSettingsText();
                 }
                 return;
             }
@@ -217,7 +217,7 @@ namespace CupheadArchipelago.Unity {
             bignoise.name = orig_bignoise.name;
             bignoise.SetActive(true);
 
-            instance.typingPrompt = APTypingPrompt.CreateTypingPrompt(card.transform, orig_options);
+            instance.typingPrompt = APTypingPrompt.CreateTypingPrompt(card.transform, orig_options, null);
 
             instance.RefreshMenu();
 
@@ -244,7 +244,7 @@ namespace CupheadArchipelago.Unity {
 
         private static string GetMenuString(string str) {
             if (str.Length>14) {
-                return $"{str.Substring(str.Length-3)}...";
+                return $"{str.Substring(0, 11)}...";
             }
             return str;
         }

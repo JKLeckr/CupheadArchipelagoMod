@@ -123,7 +123,11 @@ namespace CupheadArchipelago.AP {
         }
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
-        public static void ResetData(int index, bool disable = false, bool resetSettings = false) { // TODO: disable is false by default for testing purposes
+        public static void ResetData(int index) {
+            bool reset = Config.DeleteAPConfigOnFileDelete();
+            ResetData(index, reset, reset);
+        }
+        public static void ResetData(int index, bool disable, bool resetSettings) {
             Logging.Log("[APData] Resetting Data...");
             APData old_data = SData[index];
             SData[index] = new APData();

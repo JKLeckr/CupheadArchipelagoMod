@@ -1,8 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using CupheadArchipelago;
-using CupheadArchipelago.AP;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,61 +15,41 @@ namespace CupheadArchipelago.Unity {
             SixDigit
         }
         
-        [SerializeField]
-        private float cursorBlink = 0.25f;
-        [SerializeField]
-        private float typeDelay = 2f;
-        [SerializeField]
-        private float typeHoldDelay = 5f;
-        private float cBlinkTime = 0f;
-        private float typeTime = 0f;
-        private float typeHoldTime = 0f;
-        private bool cursorState = false;
         private bool typing = false;
         private TextTypes type;
         private string text = "";
-        private string _text = "";
 
-        private Text textField;
         private InputField inputField;
+
+        private CupheadInput.AnyPlayerInput input;
 
         private const int TEXT_MAX_LENGTH = 340;
 
+        void Awake() {
+            input = new CupheadInput.AnyPlayerInput(false);
+        }
+
         void Update() {
             if (!initted || !active) return;
-            if (Input.GetKeyDown(KeyCode.Escape)) {
+            if (input.GetButtonDown(CupheadButton.Cancel)) {
                 ClosePrompt();
             }
             else if (Input.GetKeyDown(KeyCode.Return)) {
                 StopTyping(true);
             }
-            /*if (typing) {
-                if (cBlinkTime >= cursorBlink) {
-                    ToggleCursorState();
-                    cBlinkTime = 0;
-                }
-                else {
-                    cBlinkTime += Time.deltaTime;
-                }
-                if (typeTime < typeDelay) {
-                    typeTime += Time.deltaTime;
-                }
-            }*/
         }
 
         public void OpenPrompt(string initial_str, TextTypes type = TextTypes.Text) {
             if (!initted) throw new System.Exception("Not initialized!");
-            text = ClampText(initial_str);
             SetInputType(type);
-            UpdateText(text);
-            inputField.text = _text;
+            text = ClampText(initial_str);
+            inputField.text = text;
             SetState(true);
             StartTyping();
         }
         public void StartTyping() {
             if (active && !typing) {
                 typing = true;
-                //SetCursorState(true);
                 inputField.ActivateInputField();
             }
         }
@@ -79,7 +57,7 @@ namespace CupheadArchipelago.Unity {
             if (active && typing) {
                 typing = false;
                 inputField.DeactivateInputField();
-                if (saveText) text = _text;
+                if (saveText) text = inputField.text;
             }
         }
         public void ClosePrompt() {
@@ -104,25 +82,6 @@ namespace CupheadArchipelago.Unity {
         private void SetState(bool state) {
             gameObject.SetActive(state);
             active = state;
-        }
-        private void SetCursorState(bool set) {
-            if (cursorState != set) {
-                if (set) {
-                    textField.text = _text + "_";
-                } else {
-                    textField.text = _text + " ";
-                }
-                cursorState = set;
-            }
-        }
-        private void ToggleCursorState() {
-            SetCursorState(!cursorState);
-        }
-        private void UpdateText(string text) {
-            _text = text;
-            textField.text = _text;
-            if (typing)
-                textField.text += "_";
         }
 
         private string ClampText(string text) {
@@ -183,8 +142,9 @@ namespace CupheadArchipelago.Unity {
             tprompt.transform.SetParent(obj.transform);
             InputField field = tprompt.AddComponent<InputField>();
             field.lineType = InputField.LineType.SingleLine;
-            field.interactable = true;
-            //field.onValueChanged.AddListener(instance.UpdateText);
+            Color highlightColor = APCore.TEXT_SELECT_COLOR;
+            highlightColor.a = 0.21f;
+            field.selectionColor = highlightColor;
             instance.inputField = field;
 
             GameObject header = new GameObject("Header");
@@ -205,8 +165,7 @@ namespace CupheadArchipelago.Unity {
             fobj.AddComponent<CanvasRenderer>();
             Text txt = APCore.CreateSettingsTextComponent(fobj, APCore.FontType.MonoSpace, TextAnchor.MiddleCenter, true);
             txt.fontSize = 24;
-            txt.text = $"{new string('A', TEXT_MAX_LENGTH)}";
-            instance.textField = txt;
+            txt.text = $"AAAAAAAA";
             field.textComponent = txt;
             field.text = txt.text;
 

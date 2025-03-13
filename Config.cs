@@ -9,6 +9,7 @@ namespace CupheadArchipelago {
 
         private Cutscenes configSkipCutscenes;
         private bool configSkipCutscenesAPOnly;
+        private bool configFileDeleteClearsAP;
         private APStatsFunctions configAPStatusFunctions;
 
         //public static Cutscenes SkipCutscenes { get => current.configSkipCutscenes; }
@@ -17,11 +18,13 @@ namespace CupheadArchipelago {
         internal static void Init(
             Cutscenes configSkipCutscenes,
             bool configSkipCutscenesAPOnly,
+            bool configFileDeleteClearsAP,
             APStatsFunctions configAPStatusFunctions
         ) {
             current = new() {
                 configSkipCutscenes = configSkipCutscenes,
                 configSkipCutscenesAPOnly = configSkipCutscenesAPOnly,
+                configFileDeleteClearsAP = configFileDeleteClearsAP,
                 configAPStatusFunctions = configAPStatusFunctions,
             };
         }
@@ -33,6 +36,9 @@ namespace CupheadArchipelago {
             if (!current.configSkipCutscenesAPOnly || apEnabledCondition)
                 return (current.configSkipCutscenes & cutscene) > 0;
             else return false;
+        }
+        public static bool DeleteAPConfigOnFileDelete() {
+            return current.configFileDeleteClearsAP;
         }
         public static bool IsAPStatsFunctionEnabled(APStatsFunctions function) {
             return (current.configAPStatusFunctions & function) > 0;
