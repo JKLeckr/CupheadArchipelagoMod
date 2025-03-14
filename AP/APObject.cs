@@ -272,11 +272,11 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation shop_dlc_weapon8 = new APLocation(12909312);
         public static readonly APLocation shop_dlc_charm7 = new APLocation(12909313);
         public static readonly APLocation shop_dlc_charm8 = new APLocation(12909314);
-        public static readonly APLocation dlc_cookie = new APLocation(12909315);
-        public static readonly APLocation dlc_npc_newscat = new APLocation(12909316);
-        public static readonly APLocation dlc_coin_isle4_secret = new APLocation(12909317);
-        public static readonly APLocation event_dlc_curse_complete = new APLocation(12909318);
-        public static readonly APLocation dlc_quest_cactusgirl = new APLocation(12909319);
+        public static readonly APLocation dlc_npc_newscat = new APLocation(12909315);
+        public static readonly APLocation dlc_coin_isle4_secret = new APLocation(12909316);
+        public static readonly APLocation dlc_quest_cactusgirl = new APLocation(12909317);
+        public static readonly APLocation dlc_cookie = new APLocation(12909318);
+        public static readonly APLocation dlc_curse_complete = new APLocation(12909319);
 
         public static APLocation FromId(long id) => id_map[id];
         public static bool IdExists(long id) => id_map.ContainsKey(id);
