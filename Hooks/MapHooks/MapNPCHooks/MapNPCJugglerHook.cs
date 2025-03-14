@@ -35,7 +35,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         Label end = (Label)codes[i+2].operand;
                         codes[i+2] = new CodeInstruction(OpCodes.Bgt, iftrue);
                         List<CodeInstruction> ncodes = [
-                            CodeInstruction.Call(() => APCheck()),
+                            CodeInstruction.Call(() => APChecked()),
                             new CodeInstruction(OpCodes.Brfalse, end),
                         ];
                         codes.InsertRange(i+3,ncodes);
@@ -44,8 +44,8 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                     }
                 }
                 if (debug) {
+                    Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log("---");
                         Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
@@ -53,7 +53,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
                 return codes;
             }
-            private static bool APCheck() {
+            private static bool APChecked() {
                 if (APData.IsCurrentSlotEnabled()) {
                     return !APClient.IsLocationChecked(locationId);
                 }
@@ -63,18 +63,16 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
         [HarmonyPatch(typeof(MapNPCJuggler), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
-            static bool Prefix(string message, bool ___SkipDialogueEvent) {
-                if (APData.IsCurrentSlotEnabled() && APSettings.QuestJuggler) {
-                    if (___SkipDialogueEvent) return false;
-                    if (message == "JugglerCoin") {
-                        if (!APClient.IsLocationChecked(locationId))
-                            APClient.Check(locationId);
-                        PlayerData.SaveCurrentFile();
-                        //MapEventNotification.Current.ShowEvent(MapEventNotification.Type.Coin);
-                    }
-                    return false;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                return MapNPCHookBase.
+                        MapNPCCoinHookBase.
+                        MapNPCCoinHookTranspiler(instructions, il, locationId);
+            }
+            static void Postfix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
+                if (___SkipDialogueEvent) return;
+                if (message == "JugglerCoin") {
+                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                 }
-                else return true;
             }
         }
 

@@ -1,6 +1,8 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
@@ -29,20 +31,16 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
         [HarmonyPatch(typeof(MapNPCAppletraveller), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
-            static bool Prefix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
-                if (APData.IsCurrentSlotEnabled()) {
-                    if (___SkipDialogueEvent) return false;
-                    if (message == "MacCoin") {
-                        Dialoguer.SetGlobalFloat(___dialoguerVariableID, 1f);
-                        LogDialoguerGlobalFloat(___dialoguerVariableID);
-                        if (!APClient.IsLocationChecked(locationId))
-                            APClient.Check(locationId);
-                        PlayerData.SaveCurrentFile();
-                        //MapEventNotification.Current.ShowEvent(MapEventNotification.Type.ThreeCoins);
-                    }
-                    return false;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                return MapNPCHookBase.
+                        MapNPCCoinHookBase.
+                        MapNPCCoinHookTranspiler(instructions, il, locationId, true);
+            }
+            static void Postfix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
+                if (___SkipDialogueEvent) return;
+                if (message == "MacCoin") {
+                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                 }
-                else return true;
             }
         }
 

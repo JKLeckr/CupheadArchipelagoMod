@@ -26,6 +26,7 @@ namespace CupheadArchipelago.AP {
         public static bool DLCRandomizeBoat { get; internal set; }
         public static bool DLCRequiresMausoleum { get; internal set; }
         public static ItemGroups DLCChaliceItemsSeparate { get; internal set; }
+        public static DlcChaliceModes DLCChaliceMode { get; internal set; }
         public static DlcCurseModes DLCCurseMode { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
@@ -57,6 +58,7 @@ namespace CupheadArchipelago.AP {
             DLCRandomizeBoat = true;
             DLCRequiresMausoleum = true;
             DLCChaliceItemsSeparate = ItemGroups.None;
+            DLCChaliceMode = DlcChaliceModes.Vanilla;
             DLCCurseMode = DlcCurseModes.Normal;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;

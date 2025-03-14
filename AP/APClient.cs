@@ -33,7 +33,6 @@ namespace CupheadArchipelago.AP {
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
         public static APSlotData SlotData { get; private set; } = null;
-        //private static DataPackage dataPackage = null;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
@@ -219,6 +218,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCRequiredIngredients = SlotData.dlc_ingredient_requirements;
                     APSettings.ContractsGoal = SlotData.contract_goal_requirements;
                     APSettings.DLCIngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
+                    APSettings.DLCChaliceMode = SlotData.dlc_chalice;
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DeathLink = SlotData.deathlink;

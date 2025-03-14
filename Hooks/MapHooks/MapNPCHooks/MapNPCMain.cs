@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             MapNPCMusicHook.Hook();
             MapNPCProfessionalHook.Hook();
             MapNPCTurtleHook.Hook();
+            MapNPCNewsieCatHook.Hook();
         }
     }
 }

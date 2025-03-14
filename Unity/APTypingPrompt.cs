@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,8 @@ namespace CupheadArchipelago.Unity {
         private InputField inputField;
 
         private CupheadInput.AnyPlayerInput input;
+
+        private static readonly char[] badChars = ['\t', '\n', '\r'];
 
         private const int TEXT_MAX_LENGTH = 340;
 
@@ -104,6 +107,11 @@ namespace CupheadArchipelago.Unity {
         public bool IsFinished() => active && !typing;
         public string GetText() => text;
 
+        public char OnValidateInput(string text, int charIndex, char addedChar) {
+            if (Array.BinarySearch(badChars, addedChar)>=0) return '\0';
+            else return addedChar;
+        }
+
         public static APTypingPrompt CreateTypingPrompt(Transform parent, Transform orig_options, Transform orig_fader = null) {
             GameObject obj = new GameObject("TypingPrompt");
             obj.SetActive(false);
@@ -145,6 +153,7 @@ namespace CupheadArchipelago.Unity {
             Color highlightColor = APCore.TEXT_SELECT_COLOR;
             highlightColor.a = 0.21f;
             field.selectionColor = highlightColor;
+            field.onValidateInput += instance.OnValidateInput;
             instance.inputField = field;
 
             GameObject header = new GameObject("Header");

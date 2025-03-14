@@ -1,7 +1,8 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using System.Drawing.Printing;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
@@ -33,21 +34,16 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
         [HarmonyPatch(typeof(MapNPCCircusgirl), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
-            static bool Prefix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
-                Logging.Log($"CircusGirl: \"{message}\" {___SkipDialogueEvent}");
-                if (APData.IsCurrentSlotEnabled()) {
-                    if (___SkipDialogueEvent) return false;
-                    if (message == "GingerbreadCoin") {
-                        Dialoguer.SetGlobalFloat(___dialoguerVariableID, 2f);
-                        LogDialoguerGlobalFloat(___dialoguerVariableID);
-                        if (!APClient.IsLocationChecked(locationId))
-                            APClient.Check(locationId);
-                        PlayerData.SaveCurrentFile();
-                        //MapEventNotification.Current.ShowEvent(MapEventNotification.Type.Coin);
-                    }
-                    return false;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                return MapNPCHookBase.
+                        MapNPCCoinHookBase.
+                        MapNPCCoinHookTranspiler(instructions, il, locationId);
+            }
+            static void Postfix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
+                if (___SkipDialogueEvent) return;
+                if (message == "GingerbreadCoin") {
+                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                 }
-                else return true;
             }
         }
 

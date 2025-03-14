@@ -28,6 +28,7 @@ namespace CupheadArchipelago.AP {
         public GradeChecks boss_grade_checks {get; private set;}
         public GradeChecks rungun_grade_checks {get; private set;}
         public int start_maxhealth {get; private set;}
+        public DlcChaliceModes dlc_chalice {get; private set;}
         public DlcCurseModes dlc_curse_mode {get; private set;}
         public bool trap_loadout_anyweapon {get; private set;}
         public MusicGroups music_shuffle {get; private set;}
@@ -63,6 +64,7 @@ namespace CupheadArchipelago.AP {
             boss_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "boss_grade_checks");
             rungun_grade_checks = (GradeChecks)GetAPSlotDataLong(slotData, "rungun_grade_checks");
             start_maxhealth = (int)GetAPSlotDataLong(slotData, "start_maxhealth");
+            dlc_chalice = (DlcChaliceModes)GetAPSlotDataLong(slotData, "dlc_chalice");
             dlc_curse_mode = (DlcCurseModes)GetAPSlotDataLong(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataBool(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //(MusicGroups)(long)GetOptionalAPSlotData(slotData, "music_rando", 0);
