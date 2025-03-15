@@ -202,6 +202,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.Mode = SlotData.mode;
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
+                    APSettings.RandomizeWeaponEX = SlotData.randomize_weapon_ex;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
                     APSettings.BossSecretChecks = LocationExists(APLocation.level_boss_veggies_secret);
@@ -223,10 +224,23 @@ namespace CupheadArchipelago.AP {
                     
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
+                    if (APSettings.RandomizeWeaponEX == WeaponExModes.AllButStart) {
+                        Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.Id);
+                        APSessionGSPlayerData.AddWeaponUpgrade(weapon);
+                    }
+                    else if (APSettings.RandomizeWeaponEX == WeaponExModes.Normal) {
+                        
+                    }
                     if (!APSettings.RandomizeAbilities)
-                        APSessionGSData.playerData.SetBoolValues(true, APData.PlayerData.SetTarget.All);
+                        APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
+                    else {
+                        if ((APSettings.DLCChaliceItemsSeparate&ItemGroups.Super)==0)
+                            APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.ChaliceSuper);
+                        if ((APSettings.DLCChaliceItemsSeparate&ItemGroups.Abilities)==0)
+                            APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.ChaliceAbilities);
+                    }
                     if (!APSettings.RandomizeAimAbilities)
-                        APSessionGSData.playerData.aim_directions = APData.PlayerData.AimDirections.All;
+                        APSessionGSPlayerData.aim_directions = APData.PlayerData.AimDirections.All;
                     if (APSettings.DeathLink) {
                         Logging.Log($"[APClient] Setting up DeathLink...");
                         deathLinkService = session.CreateDeathLinkService();

@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CupheadArchipelago.AP {
     public static class ItemMap {
@@ -103,7 +104,21 @@ namespace CupheadArchipelago.AP {
             
             /* More unimplemented ones to check out */
         };
+        private static readonly HashSet<Weapon> upgradableWeapons = new () {
+            Weapon.level_weapon_peashot,
+            Weapon.level_weapon_spreadshot,
+            Weapon.level_weapon_homing,
+            Weapon.level_weapon_bouncer,
+            Weapon.level_weapon_charge,
+            Weapon.level_weapon_boomerang,
+            Weapon.level_weapon_crackshot,
+            Weapon.level_weapon_wide_shot,
+        };
         public static Weapon GetWeapon(long item) => idToWeapon[item];
+        public static IEnumerable<Weapon> GetUpgradableWeapons() {
+            return upgradableWeapons;
+        }
+        public static bool IsWeaponUpgradable(Weapon weapon) => upgradableWeapons.Contains(weapon);
         private static readonly Dictionary<long, Charm> idToCharm = new() {
             {APItem.charm_heart, Charm.charm_health_up_1},
             {APItem.charm_smokebomb, Charm.charm_smoke_dash},

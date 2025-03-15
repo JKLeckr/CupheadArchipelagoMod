@@ -18,6 +18,7 @@ namespace CupheadArchipelago.AP {
         public GameModes mode {get; private set;}
         public bool expert_mode {get; private set;}
         public APItem start_weapon {get; private set;}
+        public WeaponExModes randomize_weapon_ex {get; private set;}
         public int[] contract_requirements {get; private set;}
         public int dlc_ingredient_requirements {get; private set;}
         public int contract_goal_requirements {get; private set;}
@@ -54,6 +55,7 @@ namespace CupheadArchipelago.AP {
                 8 => APItem.weapon_dlc_twistup,
                 _ => APItem.weapon_peashooter,
             };
+            randomize_weapon_ex = (WeaponExModes)GetAPSlotDataLong(slotData, "randomize_weapon_ex");
             contract_requirements = GetAPSlotDataDeserialized<List<int>>(slotData, "contract_requirements").ToArray();
             dlc_ingredient_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_requirements");
             contract_goal_requirements = (int)GetAPSlotDataLong(slotData, "contract_goal_requirements");

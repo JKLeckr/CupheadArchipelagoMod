@@ -39,13 +39,13 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("seed")]
         public string seed = "";
         [JsonProperty("playerData")]
-        public PlayerData playerData = new PlayerData();
+        public PlayerData playerData = new();
         [JsonIgnore]
-        public DataPackage dataPackage = new DataPackage();
+        public DataPackage dataPackage = new();
         [JsonProperty("doneChecks")]
-        public List<long> doneChecks = new List<long>();
+        public List<long> doneChecks = [];
         [JsonProperty("receivedItems")]
-        public List<APItemData> receivedItems = new();
+        public List<APItemData> receivedItems = [];
         [JsonProperty("goalsCompleted")]
         private Goals goalsCompleted = Goals.None;
         [JsonIgnore]
@@ -177,7 +177,14 @@ namespace CupheadArchipelago.AP {
             public enum SetTarget {
                 None = 0,
                 Essential = 1,
-                BasicAbilities = 2,
+                ChaliceEssential = 2,
+                AllEssential = 3,
+                Super = 4,
+                ChaliceSuper = 8,
+                AllSuper = 12,
+                BasicAbilities = 16,
+                ChaliceAbilities = 32,
+                AllAbilities = 48,
                 All = int.MaxValue,
             }
             [Flags]
@@ -232,22 +239,42 @@ namespace CupheadArchipelago.AP {
             [JsonProperty("aim_directions")]
             public AimDirections aim_directions = 0;
 
+            [JsonProperty("weaponupgrades")]
+            private HashSet<Weapon> weaponupgrades = [];
+
             public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget&SetTarget.BasicAbilities)>0) dash = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) duck = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) parry = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) plane_parry = value;
                 if ((setTarget&SetTarget.BasicAbilities)>0) plane_shrink = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cdash = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cduck = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cparry = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cplane_parry = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) dlc_cplane_shrink = value;
+                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cdash = value;
+                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cduck = value;
+                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cparry = value;
+                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cplane_parry = value;
+                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cplane_shrink = value;
+                if ((setTarget&SetTarget.Super)>0) plane_super = value;
+                if ((setTarget&SetTarget.ChaliceSuper)>0) dlc_cplane_super = value;
                 if ((setTarget&SetTarget.Essential)>0) dlc_boat = value;
             }
             public void SetIntValues(int value, SetTarget setTarget) {
                 if ((setTarget&SetTarget.Essential)>0) contracts = value;
                 if ((setTarget&SetTarget.Essential)>0) dlc_ingredients = value;
+            }
+
+            public void AddWeaponUpgrade(Weapon weapon) {
+                if (!weaponupgrades.Contains(weapon)) {
+                    weaponupgrades.Add(weapon);
+                }
+            }
+            public void AddWeaponUpgrades(IEnumerable<Weapon> weapons) {
+                weaponupgrades.UnionWith(weapons);
+            }
+            public void ClearWeaponUpgrades() {
+                weaponupgrades = new();
+            }
+            public bool GetWeaponUpgrade(Weapon weapon) {
+                return weaponupgrades.Contains(weapon);
             }
 
             [JsonProperty("got_start_weapon")]

@@ -20,7 +20,13 @@ namespace CupheadArchipelago.AP {
         DlcCollectIngradients = 5,
         DlcCollectBoth = 6,
     }
-    
+
+    public enum WeaponExModes : byte {
+        Normal = 0,
+        Randomized = 1,
+        AllButStart = 2,
+    }
+
     public enum GradeChecks {
         Disabled = 0,
         AMinusGrade = 1,
