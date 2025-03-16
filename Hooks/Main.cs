@@ -9,6 +9,7 @@ namespace CupheadArchipelago.Hooks {
             CupheadHook.Hook();
             DLCManagerHook.Hook();
             PlayerDataHook.Hook();
+            AbstractPauseGUIHook.Hook();
             WinScreenHook.Hook();
             CreditsScreenHook.Hook();
             DLCCreditsCutsceneHook.Hook();

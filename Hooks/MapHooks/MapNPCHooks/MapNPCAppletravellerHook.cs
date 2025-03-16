@@ -34,7 +34,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 return MapNPCHookBase.
                         MapNPCCoinHookBase.
-                        MapNPCCoinHookTranspiler(instructions, il, locationId, true);
+                        MapNPCCoinHookTranspiler(instructions, il, locationId);
             }
             static void Postfix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
                 if (___SkipDialogueEvent) return;

@@ -235,6 +235,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 SetAPConStatusText("Connected!\nDone!");
                 _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                 _lockMenu = false;
+                yield break;
             }
             private static void APAbort(bool displayError = true) {
                 Logging.Log($"Abort! Client Status {Status}");

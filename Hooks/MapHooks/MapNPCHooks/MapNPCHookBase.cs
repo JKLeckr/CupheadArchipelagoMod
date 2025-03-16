@@ -98,9 +98,47 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (!APClient.IsLocationChecked(loc))
                     APClient.Check(loc);
             }
-            private static bool pc(bool cond) {
-                Logging.Log($"C: {cond}");
-                return cond;
+        }
+        internal static class MapNPCQuestHookBase {
+            internal static IEnumerable<CodeInstruction> MapNPCQuestHookTranspiler(IEnumerable<CodeInstruction> instructions, long loc, bool debug = false) {
+                List<CodeInstruction> codes = new(instructions);
+                bool success = false;
+
+                MethodInfo _mi_SaveCurrentFile = typeof(PlayerData).GetMethod("SaveCurrentFile", BindingFlags.Public | BindingFlags.Static);
+                MethodInfo _mi_get_Current = typeof(MapUI).GetProperty("Current", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_Refresh = typeof(MapUI).GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo _mi_APCheck = typeof(MapNPCCoinHookBase).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (debug) {
+                    foreach (CodeInstruction code in codes) {
+                        Logging.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+                for (int i=0;i<codes.Count-2;i++) {
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_SaveCurrentFile && codes[i+1].opcode == OpCodes.Call &&
+                        (MethodInfo)codes[i+1].operand == _mi_get_Current && codes[i+2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+2].operand == _mi_Refresh) {
+                            List<CodeInstruction> ncodes = [
+                                new CodeInstruction(OpCodes.Ldc_I8, loc),
+                                new CodeInstruction(OpCodes.Call, _mi_APCheck),
+                            ];
+                            codes.InsertRange(i, ncodes);
+                            success = true;
+                            break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(MapNPCQuestHookBase)}: Patch Failed!");
+                if (debug) {
+                    Logging.Log("---");
+                    foreach (CodeInstruction code in codes) {
+                        Logging.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+
+                return codes;
+            }
+            private static void APCheck(long loc) {
+                if (APData.IsCurrentSlotEnabled() && !APClient.IsLocationChecked(loc))
+                    APClient.Check(loc);
             }
         }
     }

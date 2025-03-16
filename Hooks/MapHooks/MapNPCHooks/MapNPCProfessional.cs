@@ -1,6 +1,8 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
@@ -29,23 +31,18 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
         [HarmonyPatch(typeof(MapNPCProfessional), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
-            static bool Prefix(string message, bool ___SkipDialogueEvent) {
-                if (APData.IsCurrentSlotEnabled() && APSettings.QuestProfessional) {
-                    if (___SkipDialogueEvent) return false;
-                    if (message == "RetroColorUnlock") {
-                        MapEventNotification.Current.ShowTooltipEvent(TooltipEvent.Professional);
-		                PlayerData.Data.unlocked2Strip = true;
-                        if (!APClient.IsLocationChecked(locationId))
-                            APClient.Check(locationId);
-                        PlayerData.SaveCurrentFile();
-                        MapUI.Current.Refresh();
-                    }
-                    return false;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                return MapNPCHookBase.
+                        MapNPCQuestHookBase.
+                        MapNPCQuestHookTranspiler(instructions, locationId);
+            }
+            static void Postfix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
+                if (___SkipDialogueEvent) return;
+                if (message == "RetroColorUnlock") {
+                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                 }
-                return true;
             }
         }
-
         private static void LogDialoguerGlobalFloat(int floatId) => 
             Logging.Log($"{nameof(MapNPCProfessional)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }

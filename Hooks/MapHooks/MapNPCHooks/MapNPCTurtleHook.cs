@@ -70,23 +70,18 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
         [HarmonyPatch(typeof(MapNPCTurtle), "OnDialoguerMessageEvent")]
         internal static class OnDialoguerMessageEvent {
-            static bool Prefix(string message, bool ___SkipDialogueEvent) {
-                if (APData.IsCurrentSlotEnabled() && APSettings.QuestPacifist) {
-                    if (___SkipDialogueEvent) return false;
-                    if (message == "Pacifist") {
-                        MapEventNotification.Current.ShowTooltipEvent(TooltipEvent.Turtle);
-		                PlayerData.Data.unlockedBlackAndWhite = true;
-                        if (!APClient.IsLocationChecked(locationId))
-                            APClient.Check(locationId);
-                        PlayerData.SaveCurrentFile();
-                        MapUI.Current.Refresh();
-                    }
-                    return false;
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                return MapNPCHookBase.
+                        MapNPCQuestHookBase.
+                        MapNPCQuestHookTranspiler(instructions, locationId);
+            }
+            static void Postfix(string message, bool ___SkipDialogueEvent, int ___dialoguerVariableID) {
+                if (___SkipDialogueEvent) return;
+                if (message == "Pacifist") {
+                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                 }
-                return true;
             }
         }
-
         private static void LogDialoguerGlobalFloat(int floatId) => 
             Logging.Log($"{nameof(MapNPCTurtle)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }

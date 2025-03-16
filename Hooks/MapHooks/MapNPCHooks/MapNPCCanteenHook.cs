@@ -23,6 +23,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
                 bool debug = false;
                 int labelInsert = 0;
+                
                 FieldInfo _fi_dialoguerVariableID = typeof(MapNPCCanteen).GetField("dialoguerVariableID", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo _mi_Dialoguer_SetGlobalFloat = typeof(Dialoguer).GetMethod("SetGlobalFloat", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_AddDialoguerEvents = typeof(MapNPCCanteen).GetMethod("AddDialoguerEvents", BindingFlags.Public | BindingFlags.Instance);
@@ -72,7 +73,6 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
                 return codes;
             }
-
             private static bool IsAPChecked() => APData.IsCurrentSlotEnabled() && APClient.IsLocationChecked(locationId);
         }
 

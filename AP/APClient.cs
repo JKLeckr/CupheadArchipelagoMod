@@ -14,7 +14,6 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
-using BepInEx.Logging;
 using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
@@ -61,13 +60,13 @@ namespace CupheadArchipelago.AP {
 
         public static bool CreateAndStartArchipelagoSession(int index) {
             if (IsTryingSessionConnect) {
-                Logging.Log($"[APClient] Already Trying to Connect. Aborting.", LogLevel.Error);
+                Logging.LogError($"[APClient] Already Trying to Connect. Aborting.");
                 return false;
             }
             SessionStatus = 2;
             if (session!=null) {
                 if (session.Socket.Connected) {
-                    Logging.Log($"[APClient] Already Connected. Disconnecting...", LogLevel.Warning);
+                    Logging.LogWarning($"[APClient] Already Connected. Disconnecting...");
                     session.Socket.Disconnect();
                     Reset(false);
                 }
@@ -123,7 +122,7 @@ namespace CupheadArchipelago.AP {
                     }
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Malformed SlotData! Exception: {e.Message}");
-                    //Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
+                    //Logging.LogError(e.ToString(), LoggingFlags.Debug);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -2;
                     return false;
@@ -149,7 +148,7 @@ namespace CupheadArchipelago.AP {
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.LogError(e.ToString());
-                    //Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
+                    //Logging.LogError(e.ToString(), LoggingFlags.Debug);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -4;
                     return false;
@@ -280,7 +279,7 @@ namespace CupheadArchipelago.AP {
                     CatchUpChecks();
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
-                    Logging.Log(e.ToString(), LoggingFlags.Debug, LogLevel.Error);
+                    Logging.LogError(e.ToString(), LoggingFlags.Debug);
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -8;
                     return false;
@@ -442,6 +441,14 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static string GetItemName(long item) => GetItemInfo(item)?.Name ?? $"APItem {item}";
+        public static APItemData GetItemFromLocation(long loc) {
+            if (!Enabled) { 
+                Logging.LogWarning("[APClient] Client must be enabled for GetLocalItem to function.");
+                return null;
+            }
+            ScoutedItemInfo item = GetCheck(loc);
+            return new APItemData(item.ItemId, loc, APSessionPlayerName);
+        }
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
             long[] locs = DoneChecks.ToArray();
@@ -485,7 +492,8 @@ namespace CupheadArchipelago.AP {
                     locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
                     if (i==locs.Length-1) locsstr += "]";
                 }
-                Logging.Log($"[APClient] Location(s) {locsstr} send {(state?"success":"fail")}", loggingFlags, state?LogLevel.Info:LogLevel.Warning);
+                if (state) Logging.Log($"[APClient] Location(s) {locsstr} send success", loggingFlags);
+                else Logging.LogWarning($"[APClient] Location(s) {locsstr} send failure", loggingFlags);
             }
             sending = false;
             return state;
@@ -512,7 +520,7 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"[Archipelago] {message}");
         }
         private static void OnError(Exception e, string message) {
-            Logging.Log($"[APClient] {message}: {e}", LogLevel.Error);
+            Logging.LogError($"[APClient] {message}: {e}");
         }
         private static void OnSocketClosed(string reason) {
             Logging.Log("[APClient] Disconnected.");
@@ -571,14 +579,7 @@ namespace CupheadArchipelago.AP {
             }
         }
         internal static void ReceiveItem(APItemData item) {
-            ReceivedItems.Add(item);
-            if (item.Location>=0) {
-                if (!receivedItemsUnique.Contains(item)) receivedItemsUnique.Add(item);
-                else Logging.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
-                //FIXME: For debugging purposes. Remove later
-                if (!receivedItemsUniqueB.Contains(item)) receivedItemsUniqueB.Add(item);
-                else Logging.LogWarning($"[APClient] {{B}} Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
-            }
+            ReceiveItemBasic(item);
             Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location})");
             QueueItem(item);
             
@@ -591,6 +592,26 @@ namespace CupheadArchipelago.AP {
             else {
                 Logging.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists. Skipping.");
             }*/
+        }
+        internal static void ReceiveItemImmediate(APItemData item) {
+            ReceiveItemBasic(item);
+            Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location}). Applying immediately!");
+            bool success = APItemMngr.ApplyItem(item);
+            if (!success) {
+                Logging.LogWarning($"[APClient] Failed to apply {GetItemName(item.Id)} immediately!");
+                return;
+            }
+            item.State = ++itemApplyIndex;
+        }
+        private static void ReceiveItemBasic(APItemData item) {
+            if (item.Location>=0) {
+                if (!receivedItemsUnique.Contains(item)) receivedItemsUnique.Add(item);
+                else Logging.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
+                //FIXME: For debugging purposes. Remove later
+                if (!receivedItemsUniqueB.Contains(item)) receivedItemsUniqueB.Add(item);
+                else Logging.LogWarning($"[APClient] {{B}} Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
+            }
+            ReceivedItems.Add(item);
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
         private static void QueueItem(APItemData item, int itemIndex) {
@@ -762,7 +783,7 @@ namespace CupheadArchipelago.AP {
                 return APData.SData[APSessionGSDataSlot];
             }
             else {
-                Logging.Log("[APClient] Cannot get APSessionData", LogLevel.Error);
+                Logging.LogError("[APClient] Cannot get APSessionData");
                 return null;
             }
         }
