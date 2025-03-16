@@ -18,16 +18,12 @@ namespace CupheadArchipelago.AP {
             switch (ItemMap.GetItemType(itemId)) {
                 case ItemTypes.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
-                    // FIXME: Add duplication checks
-                    PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
-                    PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
+                    Gift(weapon);
                     if (itemId==APItem.plane_gun && !IsChaliceSeparate(ItemGroups.Essential)) {
-                        PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way);
-                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_3way);
+                        Gift(Weapon.plane_chalice_weapon_3way);
                     }
                     else if (itemId==APItem.plane_bombs && !IsChaliceSeparate(ItemGroups.Essential)) {
-                        PlayerData.Data.Gift(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb);
-                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Weapon.plane_chalice_weapon_bomb);
+                        Gift(Weapon.plane_chalice_weapon_bomb);
                     }
                     if ((PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) ||
                         (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb))) {
@@ -37,24 +33,20 @@ namespace CupheadArchipelago.AP {
                     break;
                 }
                 case ItemTypes.Charm: {
-                    PlayerData.Data.Gift(PlayerId.PlayerOne, ItemMap.GetCharm(itemId));
-                    PlayerData.Data.Gift(PlayerId.PlayerTwo, ItemMap.GetCharm(itemId));
+                    Charm charm = ItemMap.GetCharm(itemId);
+                    Gift(charm);
                     break;
                 }
                 case ItemTypes.Super: {
-                    PlayerData.Data.Gift(PlayerId.PlayerOne, ItemMap.GetSuper(itemId));
-                    PlayerData.Data.Gift(PlayerId.PlayerTwo, ItemMap.GetSuper(itemId));
+                    Gift(ItemMap.GetSuper(itemId));
                     if (itemId==APItem.super_i && !IsChaliceSeparate(ItemGroups.Super)) {
-                        PlayerData.Data.Gift(PlayerId.PlayerOne, Super.level_super_chalice_vert_beam);
-                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Super.level_super_chalice_vert_beam);
+                        Gift(Super.level_super_chalice_vert_beam);
                     }
                     else if (itemId==APItem.super_ii && !IsChaliceSeparate(ItemGroups.Super)) {
-                        PlayerData.Data.Gift(PlayerId.PlayerOne, Super.level_super_chalice_shield);
-                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Super.level_super_chalice_shield);
+                        Gift(Super.level_super_chalice_shield);
                     }
                     else if (itemId==APItem.super_iii && !IsChaliceSeparate(ItemGroups.Super)) {
-                        PlayerData.Data.Gift(PlayerId.PlayerOne, Super.level_super_chalice_iii);
-                        PlayerData.Data.Gift(PlayerId.PlayerTwo, Super.level_super_chalice_iii);
+                        Gift(Super.level_super_chalice_iii);
                     }
                     break;
                 }
@@ -209,6 +201,25 @@ namespace CupheadArchipelago.AP {
 
         private static bool IsChaliceSeparate(ItemGroups group) {
             return (APSettings.DLCChaliceItemsSeparate & group) > 0;
+        }
+
+        private static void Gift(Weapon weapon) {
+            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, weapon))
+                PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
+            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, weapon))
+                PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
+        }
+        private static void Gift(Charm charm) {
+            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, charm))
+                PlayerData.Data.Gift(PlayerId.PlayerOne, charm);
+            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, charm))
+                PlayerData.Data.Gift(PlayerId.PlayerTwo, charm);
+        }
+        private static void Gift(Super super) {
+            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, super))
+                PlayerData.Data.Gift(PlayerId.PlayerOne, super);
+            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, super))
+                PlayerData.Data.Gift(PlayerId.PlayerTwo, super);
         }
 
         private static void Stub(string itemName) => Logging.LogWarning($"Item handling unimplemented: {itemName}");
