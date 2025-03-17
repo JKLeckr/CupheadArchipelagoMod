@@ -80,28 +80,20 @@ In the game directory:
 3. Launch Game.
 
 ## Setting up Archipelago
-*Note: This is the temporary method while the mod is WIP. For now, just deal with this until the legit way is added.*
 
-1. CupheadArchipelago must have been started to the main menu once for the apdata save files to appear.
-2. Make sure the game isn't running.
-3. Go to the Cuphead saves folder (on Windows it should be in `%AppData%`).
-4. Open the apdata save file for the save slot you want to use.
-5. In the beginning of the file:
-    - Set `"enabled":"true"`
-    - Set `"address":"URL"` where `URL` is the URL to connect to Archipelago excluding the port.
-    - Set `"port":PORT` where `PORT` is the port of the Archipelago server. (Note: no quotes around `PORT`)
-    - Set `"player":"PLAYER"` where `PLAYER` is your player slot name.
-    - Set `"password":"PASSWD"` where `PASSWD` is the server password.
-6. Save the file and launch the game.
-7. Pick the save slot you set up Archipelago with. (Note it says "AP" in the corner of the save file if it's enabled.)
-8. Have fun, and watch out for bugs!
+1. Launch Cuphead with CupheadArchipelago installed. It will create the config files.
+2. Select a save slot.
+3. Press the button combination shown in game to show the Archiepalago setup menu (if you are using a keyboard, it's C+Z by default).
+4. Set it to enabled, and set all the required settings for connecting to Archipelago.
+5. Once you are done, close the Archipelago setup menu and start the save slot. (Note it says "AP" in the corner of the save slot if Archipelago is enabled)
+6. Have fun, and watch out for bugs!
 
 ## Configuring
-The config files are in the game directory's `BepInEx/config` folder. The mod config file is called `com.JKLeckr.CupheadArchipelago.cfg`. It might be useful for debugging to add more verbose logging flags in the config.
+The config files are in the game directory's `BepInEx/config` folder. The mod config file is called `com.JKLeckr.CupheadArchipelago.cfg`. It might be useful for debugging to add more verbose logging flags in the config. The game must be launched at least once for this to appear.
 
 ### Logging
 If you want to see what is going on behind the scenes (useful for diagnosing problems), you should check the logs.
-The logs are located in the `BepInEx` folder in the game directory.
+The logs are located in the `BepInEx` folder in the game directory. Logging can be configure in the config.
 By default, the BepInEx console is disabled.
 
 These are notable config files and their settings for logging:

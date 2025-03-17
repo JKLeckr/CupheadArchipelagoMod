@@ -35,9 +35,11 @@ namespace CupheadArchipelago.Unity {
         void Update() {
             if (!initted || !active) return;
             if (input.GetButtonDown(CupheadButton.Cancel)) {
+                AudioManager.Play("level_menu_select");
                 ClosePrompt();
             }
             else if (Input.GetKeyDown(KeyCode.Return)) {
+                AudioManager.Play("level_menu_select");
                 StopTyping(true);
             }
         }

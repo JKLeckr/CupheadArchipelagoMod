@@ -84,15 +84,19 @@ namespace CupheadArchipelago.Unity {
                 }
             }
             else if (menuSelection == 1 && input.GetButtonDown(CupheadButton.Accept)) {
+                AudioManager.Play("level_select");
                 OpenTypingPrompt(apData.address, APTypingPrompt.TextTypes.Text);
             }
             else if (menuSelection == 2 && input.GetButtonDown(CupheadButton.Accept)) {
+                AudioManager.Play("level_select");
                 OpenTypingPrompt(apData.port.ToString(), APTypingPrompt.TextTypes.SixDigit);
             }
             else if (menuSelection == 3 && input.GetButtonDown(CupheadButton.Accept)) {
+                AudioManager.Play("level_select");
                 OpenTypingPrompt(apData.player, APTypingPrompt.TextTypes.Text16);
             }
             else if (menuSelection == 4 && input.GetButtonDown(CupheadButton.Accept)) {
+                AudioManager.Play("level_select");
                 OpenTypingPrompt(apData.password, APTypingPrompt.TextTypes.Text16);
             }
             if (menuTime >= 0.15f) {
@@ -101,15 +105,14 @@ namespace CupheadArchipelago.Unity {
                     AudioManager.Play("level_menu_move");
                     menuSelection--;
                     if (menuLocked && menuSelection == 0) menuSelection = -1;
-                    ClampMenuSelection();
+                    if (menuSelection<0) menuSelection = menuText.Length - 1;
                     SetSettingsTextColors();
                 }
                 else if (input.GetButtonDown(CupheadButton.MenuDown)) {
                     menuTime = 0;
                     AudioManager.Play("level_menu_move");
                     menuSelection++;
-                    if (menuSelection>=menuText.Length) menuSelection = 0;
-                    ClampMenuSelection();
+                    if (menuSelection>=menuText.Length) menuSelection = menuLocked ? 1 : 0;
                     SetSettingsTextColors();
                 }
             } else {
@@ -142,11 +145,6 @@ namespace CupheadArchipelago.Unity {
             if (APData.IsSlotEmpty(slotSelection, true)) menuLocked = false;
         }
 
-        private void ClampMenuSelection() {
-            if (menuSelection<0) menuSelection = menuText.Length - 1;
-            if (menuSelection>=menuText.Length) menuSelection = menuLocked ? 0 : 1;
-        }
-
         public bool IsBackSelected() => menuSelection == 5;
         public bool IsTyping() => typingPrompt?.IsTyping() ?? false;
 
@@ -158,9 +156,11 @@ namespace CupheadArchipelago.Unity {
                 RefreshMenu();
             }
             menuSelection = menuLocked ? 1 : 0;
+            SetSettingsTextColors();
         }
         public void SetSlotSelection(int slotSelection) {
             apData = APData.SData[slotSelection];
+            menuLocked = !APData.IsSlotEmpty(slotSelection, true);
         }
 
         public bool IsInitted() => initted;
@@ -232,7 +232,7 @@ namespace CupheadArchipelago.Unity {
         }
 
         private void RefreshSettingsText() {
-            if (menuText[0] != null) menuText[0].text = apData.enabled ? "ON" : "OFF";
+            if (menuText[0] != null) menuText[0].text = $"{(apData.enabled ? "YES" : "NO")} {(menuLocked ? "(Locked)" : "")}";
             if (menuText[1] != null) menuText[1].text = $"[{GetMenuString(apData.address)}]" ?? "[]";
             if (menuText[2] != null) menuText[2].text = $"[{apData.port}]";
             if (menuText[3] != null) menuText[3].text = $"[{GetMenuString(apData.player)}]" ?? "[]";

@@ -283,6 +283,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             }
             private static bool IsAPCancelPlayerSelection() {
                 if (_cancelPlayerSelection) {
+                    AudioManager.Play("level_select");
                     _cancelPlayerSelection = false;
                     return true;
                 } else return false;
