@@ -82,10 +82,10 @@ In the game directory:
 ## Setting up Archipelago
 
 1. Launch Cuphead with CupheadArchipelago installed. It will create the config files.
-2. Select a save slot.
+2. Select an empty save slot. (Note the save slot must be empty to enable or disable Archipelago on it.)
 3. Press the button combination shown in game to show the Archiepalago setup menu (if you are using a keyboard, it's C+Z by default).
 4. Set it to enabled, and set all the required settings for connecting to Archipelago.
-5. Once you are done, close the Archipelago setup menu and start the save slot. (Note it says "AP" in the corner of the save slot if Archipelago is enabled)
+5. Once you are done, close the Archipelago setup menu and start the save slot. (Note it says "AP" in the corner of the save slot if Archipelago is enabled.)
 6. Have fun, and watch out for bugs!
 
 ## Configuring
