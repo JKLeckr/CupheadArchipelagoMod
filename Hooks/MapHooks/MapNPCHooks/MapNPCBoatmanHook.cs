@@ -128,11 +128,8 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return codes;
             }
             private static bool APCookieCondition() {
-                if (APData.IsCurrentSlotEnabled()) {
-                    if (APSettings.DLCChaliceMode == DlcChaliceModes.Vanilla) {
-                        APClient.ReceiveItemImmediate(APClient.GetItemFromLocation(locationID));
-                    }
-                    if (APSettings.DLCChaliceMode != DlcChaliceModes.Disabled) {
+                if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode != DlcChaliceModes.Vanilla) {
+                    if (APSettings.DLCChaliceMode == DlcChaliceModes.Randomized) {
                         APClient.Check(locationID, true);
                     }
                     return false;
@@ -140,6 +137,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return true;
             }
             private static bool APLoadScene() {
+                
                 return false; //FIXME: Finish
             }
         }

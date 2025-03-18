@@ -22,10 +22,14 @@ namespace CupheadArchipelago.AP {
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionGSData; }
 
+        [JsonIgnore]
+        public int index {get; private set;} = 0;
+        [JsonIgnore]
+        public sbyte state {get; private set;} = 0;
+        [JsonIgnore]
+        internal bool dlock = false;
         [JsonProperty("version")]
         public long version {get; private set;} = AP_DATA_VERSION;
-        [JsonIgnore]
-        public int error {get; private set;} = 0;
         [JsonProperty("enabled")]
         public bool enabled = false;
         [JsonProperty("address")]
@@ -40,16 +44,14 @@ namespace CupheadArchipelago.AP {
         public string seed = "";
         [JsonProperty("playerData")]
         public PlayerData playerData = new();
-        [JsonIgnore]
-        public DataPackage dataPackage = new();
         [JsonProperty("doneChecks")]
         public List<long> doneChecks = [];
         [JsonProperty("receivedItems")]
         public List<APItemData> receivedItems = [];
         [JsonProperty("goalsCompleted")]
         private Goals goalsCompleted = Goals.None;
-        [JsonIgnore]
-        internal bool dlock = false;
+        [JsonProperty("override")]
+        private int _override = 0;
 
         static APData() {
             SData = new APData[3];
@@ -64,7 +66,7 @@ namespace CupheadArchipelago.AP {
                 string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[i]+".sav");
                 if (File.Exists(filename)) {
                     APData data = null;
-                    int error = 0;
+                    sbyte state = 0;
                     try {
                         string sdata = File.ReadAllText(filename);
                         data = JsonConvert.DeserializeObject<APData>(sdata);
@@ -73,18 +75,20 @@ namespace CupheadArchipelago.AP {
                     }
                     catch (Exception e) {
                         Logging.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
-                        error = 1;
+                        state = -1;
                     }
                     if (data == null) {
                         Logging.LogError($"[APData] Data could not be unserialized for key: {AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
                         SData[i] = new APData {
-                            error = error
+                            state = state
                         };
                     }
                     else {
+                        data.index = i;
                         SData[i] = data;
                         if (data.version != AP_DATA_VERSION) {
                             Logging.LogWarning($"[APData] Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                            data.state = 1;
                         }
                     }
                 }
@@ -143,7 +147,7 @@ namespace CupheadArchipelago.AP {
         }
 
         public static bool IsSlotEnabled(int index) {
-            return Initialized&&SData[index].enabled;
+            return Initialized && SData[index].enabled;
         }
         public static bool IsCurrentSlotEnabled() => IsSlotEnabled(global::PlayerData.CurrentSaveFileIndex);
         public static bool IsSlotLocked(int index) {
@@ -151,15 +155,23 @@ namespace CupheadArchipelago.AP {
         }
         public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
+        public bool IsEmpty(bool checkVanillaIfAPDisabled=false) {
+            if (enabled || !checkVanillaIfAPDisabled) {
+                return !playerData.HasStartWeapon();
+            } else {
+                global::PlayerData data = global::PlayerData.GetDataForSlot(index);
+                return !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
+            }
+        }
+
+        public bool IsOverridden(int i) {
+            return (_override & i) > 0;
+        }
+
         public static bool IsSlotEmpty(int index, bool checkVanillaIfAPDisabled=false) {
             if (global::PlayerData.Initialized) {
                 APData sdata = SData[index];
-                if (sdata.enabled || !checkVanillaIfAPDisabled) {
-                    return !sdata.playerData.HasStartWeapon();
-                } else {
-                    global::PlayerData data = global::PlayerData.GetDataForSlot(index);
-                    return !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
-                }
+                return sdata.IsEmpty(checkVanillaIfAPDisabled);
             }
             else {
                 Logging.LogWarning("[APData] PlayerData is not initialized!");

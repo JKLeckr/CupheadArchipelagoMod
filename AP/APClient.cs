@@ -161,7 +161,7 @@ namespace CupheadArchipelago.AP {
                 //Logging.Log($"Seed: {seed}");
                 //Logging.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
                 if (APSessionGSData.seed != seed) {
-                    if (APSessionGSData.seed != "") {
+                    if (APSessionGSData.seed != "" || APSessionGSData.IsOverridden(2)) {
                         Logging.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -5;

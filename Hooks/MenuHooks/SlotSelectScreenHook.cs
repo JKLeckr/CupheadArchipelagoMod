@@ -155,8 +155,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static void ConnectAndStart() {
                 Logging.Log($"Starting slot {_slotSelection}");
 
-                if (APData.SData[_slotSelection].error>0) {
-                    Logging.LogError($"Bad file! E{APData.SData[_slotSelection].error}");
+                if (APData.SData[_slotSelection].state>0) {
+                    Logging.LogError($"Bad file! E{APData.SData[_slotSelection].state}");
                     SetAPConStatusText("AP data Error!\nFailed to load!\nCheck Log!");
                     APAbort(false);
                     return;

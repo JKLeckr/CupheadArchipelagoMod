@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Unity {
         public enum FontType {
             Bold,
             ExtraBold,
-            MonoSpace
+            Mono
         }
 
         public static Text CreateSettingsTextComponent(GameObject obj, FontType type = FontType.Bold, TextAnchor alignment = TextAnchor.UpperLeft, bool wrap = false) {
@@ -21,7 +21,7 @@ namespace CupheadArchipelago.Unity {
             txt.color = TEXT_COLOR;
             txt.font = type switch {
                 FontType.ExtraBold => FontLoader.GetFont(FontLoader.FontType.CupheadVogue_ExtraBold_merged),
-                FontType.MonoSpace => FontLoader.GetFont(FontLoader.FontType.FGNewRetro),
+                FontType.Mono => FontLoader.GetFont(FontLoader.FontType.FGNewRetro),
                 _ => FontLoader.GetFont(FontLoader.FontType.CupheadVogue_Bold_merged),
             };
             txt.fontSize = 32;

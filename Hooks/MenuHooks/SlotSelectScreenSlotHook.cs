@@ -108,16 +108,22 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Transform slotAPText_inst = __instance.transform.GetChild(APTEXT_SIBLING_INDEX);
                 if (slotAPText_inst!=null) {
                     TextMeshProUGUI txt = slotAPText_inst.GetComponent<TextMeshProUGUI>();
-                    if (APData.SData[slot].enabled && APData.SData[slot].error==0) {
+                    if (APData.SData[slot].enabled && APData.SData[slot].state==0) {
                         txt.color = selected?hColor:bColor;
                         slotAPText_inst.gameObject.SetActive(true);
                         states[slot] = 1;
                     }
-                    else if (APData.SData[slot].error>0) {
+                    else if (APData.SData[slot].state<0) {
                         txt.color = selected?ehColor:ebColor;
-                        txt.text = "E" + APData.SData[slot].error;
+                        txt.text = "E" + APData.SData[slot].state;
                         slotAPText_inst.gameObject.SetActive(true);
                         states[slot] = 2;                            
+                    }
+                    else if (APData.SData[slot].state>0) {
+                        txt.color = selected?ehColor:ebColor;
+                        txt.text = "!" + APData.SData[slot].state;
+                        slotAPText_inst.gameObject.SetActive(true);
+                        states[slot] = 3;                            
                     }
                     else {
                         slotAPText_inst.gameObject.SetActive(false);

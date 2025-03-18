@@ -174,7 +174,7 @@ namespace CupheadArchipelago.Unity {
             rect.anchoredPosition = new Vector2(0f, -15f);
             fobj.transform.SetParent(tprompt.transform);
             fobj.AddComponent<CanvasRenderer>();
-            Text txt = APCore.CreateSettingsTextComponent(fobj, APCore.FontType.MonoSpace, TextAnchor.MiddleCenter, true);
+            Text txt = APCore.CreateSettingsTextComponent(fobj, APCore.FontType.Mono, TextAnchor.MiddleCenter, true);
             txt.fontSize = 24;
             txt.text = $"AAAAAAAA";
             field.textComponent = txt;

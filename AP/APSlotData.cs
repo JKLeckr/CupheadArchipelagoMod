@@ -55,6 +55,7 @@ namespace CupheadArchipelago.AP {
                 8 => APItem.weapon_dlc_twistup,
                 _ => APItem.weapon_peashooter,
             };
+            Logging.Log($"start_weapon: {start_weapon.Id}");
             randomize_weapon_ex = (WeaponExModes)GetAPSlotDataLong(slotData, "randomize_weapon_ex");
             contract_requirements = GetAPSlotDataDeserialized<List<int>>(slotData, "contract_requirements").ToArray();
             dlc_ingredient_requirements = (int)GetAPSlotDataLong(slotData, "dlc_ingredient_requirements");

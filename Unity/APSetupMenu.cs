@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Unity {
         private bool active = false;
         private int menuSelection = 0;
         private Text[] menuText;
+        private Text headerText; 
         private bool menuLocked;
 
         private bool promptCooldown = false;
@@ -24,6 +25,8 @@ namespace CupheadArchipelago.Unity {
         private int slotSelection = 0;
         private APData apData;
 
+        [SerializeField]
+        private float menuDelay = 0.05f;
         private float menuTime = 0f;
 
         private static string[] setupFieldLabels = {
@@ -99,7 +102,7 @@ namespace CupheadArchipelago.Unity {
                 AudioManager.Play("level_select");
                 OpenTypingPrompt(apData.password, APTypingPrompt.TextTypes.Text16);
             }
-            if (menuTime >= 0.15f) {
+            if (menuTime >= menuDelay) {
                 if (input.GetButtonDown(CupheadButton.MenuUp)) {
                     menuTime = 0;
                     AudioManager.Play("level_menu_move");
@@ -141,10 +144,6 @@ namespace CupheadArchipelago.Unity {
             }
         }
 
-        private void RefreshAvailableText() {
-            if (APData.IsSlotEmpty(slotSelection, true)) menuLocked = false;
-        }
-
         public bool IsBackSelected() => menuSelection == 5;
         public bool IsTyping() => typingPrompt?.IsTyping() ?? false;
 
@@ -159,8 +158,13 @@ namespace CupheadArchipelago.Unity {
             SetSettingsTextColors();
         }
         public void SetSlotSelection(int slotSelection) {
+            this.slotSelection = slotSelection;
             apData = APData.SData[slotSelection];
-            menuLocked = !APData.IsSlotEmpty(slotSelection, true);
+            RefreshMenuLock();
+        }
+
+        private void RefreshMenuLock() {
+            menuLocked = !apData.IsEmpty(true);
         }
 
         public bool IsInitted() => initted;
@@ -188,6 +192,17 @@ namespace CupheadArchipelago.Unity {
             GameObject bigcard = Instantiate(orig_bigcard.gameObject, card.transform);
             bigcard.name = orig_bigcard.name;
             bigcard.SetActive(true);
+
+            GameObject header = new GameObject("Header");
+            RectTransform hrect = header.AddComponent<RectTransform>();
+            hrect.sizeDelta = new Vector2(600f, 64f);
+            hrect.anchoredPosition = new Vector2(0f, 190f);
+            header.transform.SetParent(card.transform);
+            header.AddComponent<CanvasRenderer>();
+            Text htxt = APCore.CreateSettingsTextComponent(header, APCore.FontType.Mono, TextAnchor.UpperCenter, true);
+            htxt.fontSize = 24;
+            htxt.text = "Seed: 000000000000000";
+            instance.headerText = htxt;
             
             GameObject menu = new GameObject("APMenu");
             RectTransform menu_rect = menu.AddComponent<RectTransform>();
@@ -226,12 +241,13 @@ namespace CupheadArchipelago.Unity {
         }
 
         private void RefreshMenu() {
-            RefreshAvailableText();
+            RefreshMenuLock();
             SetSettingsTextColors();
             RefreshSettingsText();
         }
 
         private void RefreshSettingsText() {
+            if (headerText != null) headerText.text = menuLocked ? $"Seed: {GetAPSeed()}" : "";
             if (menuText[0] != null) menuText[0].text = $"{(apData.enabled ? "YES" : "NO")} {(menuLocked ? "(Locked)" : "")}";
             if (menuText[1] != null) menuText[1].text = $"[{GetMenuString(apData.address)}]" ?? "[]";
             if (menuText[2] != null) menuText[2].text = $"[{apData.port}]";
@@ -240,6 +256,11 @@ namespace CupheadArchipelago.Unity {
                 string chars = new('*', Mathf.Min(apData.password?.Length ?? 0, 16));
                 menuText[4].text = $"[{chars}]";
             }
+        }
+
+        private string GetAPSeed() {
+            APData data = APData.SData[slotSelection];
+            return !data.IsEmpty(true) ? data.seed : "";
         }
 
         private static string GetMenuString(string str) {
@@ -323,7 +344,7 @@ namespace CupheadArchipelago.Unity {
         }
 
         private static Text CreateSettingsTextComponent(GameObject obj, bool bold = false, TextAnchor alignment = TextAnchor.UpperLeft) {
-            APCore.FontType type = bold ? APCore.FontType.ExtraBold : APCore.FontType.MonoSpace;
+            APCore.FontType type = bold ? APCore.FontType.ExtraBold : APCore.FontType.Mono;
             return APCore.CreateSettingsTextComponent(obj, type, alignment, false);
         }
     }
