@@ -18,6 +18,17 @@ namespace CupheadArchipelago.AP {
     }
 
     [Flags]
+    public enum LevelTypes : byte {
+        None = 0,
+        Boss = 1,
+        RunGun = 2,
+        DicePalace = 4,
+        Final = 8,
+        ChessCastle = 16,
+        All = byte.MaxValue
+    }
+
+    [Flags]
     public enum MusicGroups {
         None = 0,
         LevelMusic = 1,

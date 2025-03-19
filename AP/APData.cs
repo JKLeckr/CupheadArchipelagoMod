@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Archipelago.MultiClient.Net.Models;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago.AP {
     public class APData {
-        internal const int AP_DATA_VERSION = 0;
+        internal const int AP_DATA_VERSION = 1;
         private static readonly string[] AP_SAVE_FILE_KEYS = [
             "cuphead_player_data_v1_ap_slot_0_apdata",
             "cuphead_player_data_v1_ap_slot_1_apdata",
@@ -86,8 +85,11 @@ namespace CupheadArchipelago.AP {
                     else {
                         data.index = i;
                         SData[i] = data;
-                        if (data.version != AP_DATA_VERSION) {
-                            Logging.LogWarning($"[APData] Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                        if (data._override != 0) {
+                            Logging.LogWarning($"[APData] Slot {i}: There are overrides enabled ({data._override}). I hope you know what you are doing!");
+                        } 
+                        if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(1)) {
+                            Logging.LogWarning($"[APData] Slot: {i}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
                             data.state = 1;
                         }
                     }
@@ -102,10 +104,11 @@ namespace CupheadArchipelago.AP {
         public static void Save(int index) {
             Logging.Log($"[APData] Saving slot {index}");
             APData data = SData[index];
-            if (data.version != AP_DATA_VERSION) {
+            if (data.version != AP_DATA_VERSION && !data.IsOverridden(1)) {
                 Logging.LogError($"[APData] Slot {index} Data version mismatch. {data.version} != {AP_DATA_VERSION}. Skipping.");
                 return;
             }
+            data.version = AP_DATA_VERSION;
             if (data.dlock) {
                 Logging.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
                 return;
@@ -165,7 +168,7 @@ namespace CupheadArchipelago.AP {
         }
 
         public bool IsOverridden(int i) {
-            return (_override & i) > 0;
+            return (_override & i) != 0;
         }
 
         public static bool IsSlotEmpty(int index, bool checkVanillaIfAPDisabled=false) {
@@ -215,6 +218,10 @@ namespace CupheadArchipelago.AP {
             
             [JsonProperty("contracts")]
             public int contracts = 0;
+            [JsonProperty("plane_ex")]
+            public bool plane_ex = false;
+            [JsonProperty("dlc_cplane_ex")]
+            public bool dlc_cplane_ex = false;
             [JsonProperty("plane_super")]
             public bool plane_super = false;
             [JsonProperty("dlc_cplane_super")]

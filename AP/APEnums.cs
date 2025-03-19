@@ -22,7 +22,7 @@ namespace CupheadArchipelago.AP {
     }
 
     public enum WeaponExModes : byte {
-        Normal = 0,
+        Off = 0,
         Randomized = 1,
         AllButStart = 2,
     }

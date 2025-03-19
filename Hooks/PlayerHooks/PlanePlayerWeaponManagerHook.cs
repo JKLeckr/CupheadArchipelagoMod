@@ -33,21 +33,29 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "CheckBasic")]
         internal static class CheckBasic {
             static bool Prefix(PlanePlayerWeaponManager __instance) {
-                return PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_peashot) || PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_bomb);
+                return IsAnyWeaponAvailable(__instance);
             }
         }
 
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "StartBasic")]
         internal static class StartBasic {
+            private static MethodInfo _mi_EndBasic = typeof(PlanePlayerWeaponManager).GetMethod("EndBasic", BindingFlags.NonPublic | BindingFlags.Instance);
+
             static bool Prefix(PlanePlayerWeaponManager __instance) {
-                return PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_peashot) || PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_bomb);
+                if (__instance.player.stats.StoneTime > 0) {
+                    _mi_EndBasic.Invoke(__instance, null);
+                }
+                return IsAnyWeaponAvailable(__instance);
             }
         }
 
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "CheckEx")]
         internal static class CheckEx {
             static bool Prefix(PlanePlayerWeaponManager __instance) {
-                return PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_peashot) || PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_bomb);
+                if (__instance.player.stats.isChalice) {
+                    return APClient.APSessionGSPlayerData.dlc_cplane_ex;
+                }
+                return APClient.APSessionGSPlayerData.plane_ex;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
@@ -148,6 +156,14 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                     (PlayerData.Data.IsUnlocked(player, Weapon.plane_weapon_peashot) &&
                     PlayerData.Data.IsUnlocked(player, Weapon.plane_weapon_bomb)) ||
                     (!APData.IsCurrentSlotEnabled() && Level.IsTowerOfPower);
+            }
+        }
+
+        private static bool IsAnyWeaponAvailable(PlanePlayerWeaponManager instance) {
+            if (instance.player.stats.isChalice) {
+                return PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_chalice_weapon_3way) || PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_chalice_weapon_bomb);
+            } else {
+                return PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_weapon_peashot) || PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_weapon_bomb);
             }
         }
     }
