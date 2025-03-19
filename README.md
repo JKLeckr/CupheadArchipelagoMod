@@ -4,15 +4,19 @@
 
 A mod for Cuphead! 
 
+## Intro
+
+This mod is designed to work with Archipelago, but it also adds extra features to the game as well. Parts can be enabled or disabled in the config.
+
+This mod is currently in the development phase and it is very very incomplete, so do not expect to make it out alive if you use it. Caveat Emptor!
+
+### Links
+
 Cuphead Game: ([Steam](http://store.steampowered.com/app/268910/Cuphead/), [GOG](https://www.gog.com/game/cuphead))
 
 Archipelago: [GitHub](https://github.com/ArchipelagoMW/Archipelago)
 
 Archipelago AP World: [Archipelago Cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
-
-This mod is designed to work with Archipelago, but it also adds extra features to the game as well. Parts can be enabled or disabled in the config.
-
-This mod is currently in the development phase and it is very very incomplete, so do not expect to make it out alive if you use it. Caveat Emptor!
 
 ## Install
 *Note: The install process is WIP, so it is not the most user-friendly. Also, during this stage of development there are no binary builds other than previews. See "Building."*
@@ -88,13 +92,17 @@ In the game directory:
 5. Once you are done, close the Archipelago setup menu and start the save slot. (Note it says "AP" in the corner of the save slot if Archipelago is enabled.)
 6. Have fun, and watch out for bugs!
 
+## Logs
+If you want to see what is going on behind the scenes (useful for diagnosing problems), you should check the logs.
+The logs are located in the `BepInEx` folder in the game directory. Logging can be configured in the config (See [Configuring](#configuring)).
+
 ## Configuring
 The config files are in the game directory's `BepInEx/config` folder. The mod config file is called `com.JKLeckr.CupheadArchipelago.cfg`. It might be useful for debugging to add more verbose logging flags in the config. The game must be launched at least once for this to appear.
 
 ### Logging
-If you want to see what is going on behind the scenes (useful for diagnosing problems), you should check the logs.
-The logs are located in the `BepInEx` folder in the game directory. Logging can be configure in the config.
-By default, the BepInEx console is disabled.
+Logging can be configured in the config.
+
+The BepInEx console allows you to see what's going on in real time. By default, the BepInEx console is disabled.
 
 These are notable config files and their settings for logging:
 
