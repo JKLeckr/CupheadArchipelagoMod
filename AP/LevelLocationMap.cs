@@ -71,16 +71,47 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_boss_train_topgrade,
                     APLocation.level_boss_train_dlc_chaliced
                 }},
+
                 {Levels.DicePalaceMain, new APLocation[] {
                     APLocation.level_boss_kingdice,
                     APLocation.level_boss_kingdice_topgrade,
                     APLocation.level_boss_kingdice_dlc_chaliced
                 }},
+
+                {Levels.DicePalaceBooze, new APLocation[] {
+                    APLocation.level_dicepalace_boss_booze,
+                }},
+                {Levels.DicePalaceChips, new APLocation[] {
+                    APLocation.level_dicepalace_boss_chips,
+                }},
+                {Levels.DicePalaceCigar, new APLocation[] {
+                    APLocation.level_dicepalace_boss_cigar,
+                }},
+                {Levels.DicePalaceDomino, new APLocation[] {
+                    APLocation.level_dicepalace_boss_domino,
+                }},
+                {Levels.DicePalaceRabbit, new APLocation[] {
+                    APLocation.level_dicepalace_boss_rabbit,
+                }},
+                {Levels.DicePalaceFlyingHorse, new APLocation[] {
+                    APLocation.level_dicepalace_boss_plane_horse,
+                }},
+                {Levels.DicePalaceRoulette, new APLocation[] {
+                    APLocation.level_dicepalace_boss_roulette,
+                }},
+                {Levels.DicePalaceEightBall, new APLocation[] {
+                    APLocation.level_dicepalace_boss_eightball,
+                }},
+                {Levels.DicePalaceFlyingMemory, new APLocation[] {
+                    APLocation.level_dicepalace_boss_plane_memory,
+                }},
+
                 {Levels.Devil, new APLocation[] {
                     APLocation.level_boss_devil,
                     APLocation.level_boss_devil_topgrade,
                     APLocation.level_boss_devil_dlc_chaliced
                 }},
+
                 {Levels.FlyingBlimp, new APLocation[] {
                     APLocation.level_boss_plane_blimp,
                     APLocation.level_boss_plane_blimp_topgrade,
@@ -107,36 +138,44 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_boss_plane_robot_topgrade,
                     APLocation.level_boss_plane_robot_dlc_chaliced
                 }},
+
                 {Levels.Platforming_Level_1_1, new APLocation[] {
                     APLocation.level_rungun_forest,
                     APLocation.level_rungun_forest_agrade,
                     APLocation.level_rungun_forest_pacifist,
+                    APLocation.level_rungun_forest_dlc_chaliced,
                 }},
                 {Levels.Platforming_Level_1_2, new APLocation[] {
                     APLocation.level_rungun_tree,
                     APLocation.level_rungun_tree_agrade,
                     APLocation.level_rungun_tree_pacifist,
+                    APLocation.level_rungun_tree_dlc_chaliced,
                 }},
                 {Levels.Platforming_Level_2_1, new APLocation[] {
                     APLocation.level_rungun_circus,
                     APLocation.level_rungun_circus_agrade,
                     APLocation.level_rungun_circus_pacifist,
+                    APLocation.level_rungun_circus_dlc_chaliced,
                 }},
                 {Levels.Platforming_Level_2_2, new APLocation[] {
                     APLocation.level_rungun_funhouse,
                     APLocation.level_rungun_funhouse_agrade,
                     APLocation.level_rungun_funhouse_pacifist,
+                    APLocation.level_rungun_funhouse_dlc_chaliced,
                 }},
                 {Levels.Platforming_Level_3_1, new APLocation[] {
                     APLocation.level_rungun_harbour,
                     APLocation.level_rungun_harbour_agrade,
                     APLocation.level_rungun_harbour_pacifist,
+                    APLocation.level_rungun_harbour_dlc_chaliced,
                 }},
                 {Levels.Platforming_Level_3_2, new APLocation[] {
                     APLocation.level_rungun_mountain,
                     APLocation.level_rungun_mountain_agrade,
                     APLocation.level_rungun_mountain_pacifist,
+                    APLocation.level_rungun_mountain_dlc_chaliced,
                 }},
+
                 {Levels.OldMan, new APLocation[] {
                     APLocation.level_dlc_boss_oldman,
                     APLocation.level_dlc_boss_oldman_topgrade,
@@ -162,10 +201,27 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_dlc_boss_plane_cowboy_topgrade,
                     APLocation.level_dlc_boss_plane_cowboy_dlc_chaliced
                 }},
+
                 {Levels.Saltbaker, new APLocation[] {
                     APLocation.level_dlc_boss_saltbaker,
                     APLocation.level_dlc_boss_saltbaker_topgrade,
                     APLocation.level_dlc_boss_saltbaker_dlc_chaliced
+                }},
+
+                {Levels.ChessPawn, new APLocation[] {
+                    APLocation.level_dlc_chesscastle_pawn,
+                }},
+                {Levels.ChessKnight, new APLocation[] {
+                    APLocation.level_dlc_chesscastle_knight,
+                }},
+                {Levels.ChessBishop, new APLocation[] {
+                    APLocation.level_dlc_chesscastle_bishop,
+                }},
+                {Levels.ChessRook, new APLocation[] {
+                    APLocation.level_dlc_chesscastle_rook,
+                }},
+                {Levels.ChessQueen, new APLocation[] {
+                    APLocation.level_dlc_chesscastle_queen,
                 }},
             };
         }

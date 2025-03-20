@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.PlayerHooks {
+namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
     internal class LevelPlayerMotorHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(HandleDash));
@@ -92,10 +92,16 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             }
 
             private static Trilean2 DuckHack(int x, int y, LevelPlayerMotor instance) {
-                if (APData.IsCurrentSlotEnabled() && !APData.CurrentSData.playerData.duck && !instance.Locked && instance.Grounded && y < 0) {
+                if (APData.IsCurrentSlotEnabled() && !APCondition(instance) && !instance.Locked && instance.Grounded && y < 0) {
                     return new Trilean2(x, 0);
                 }
                 return new Trilean2(x, y);
+            }
+            private static bool APCondition(LevelPlayerMotor instance) {
+                if (instance.player.stats.isChalice)
+                    return APData.CurrentSData.playerData.dlc_cduck;
+                else
+                    return APData.CurrentSData.playerData.duck;
             }
         }
 
@@ -103,6 +109,13 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         internal static class HandleParry {
             static bool Prefix() {
                 return !APData.IsCurrentSlotEnabled() || APData.CurrentSData.playerData.parry;
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelPlayerMotor), "ChaliceDashParry")]
+        internal static class ChaliceDashParry {
+            static bool Prefix() {
+                return !APData.IsCurrentSlotEnabled() || APData.CurrentSData.playerData.dlc_cparry;
             }
         }
     }

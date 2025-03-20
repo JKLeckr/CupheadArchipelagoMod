@@ -41,6 +41,7 @@ namespace CupheadArchipelago.AP {
         private static HashSet<long> doneChecksUnique;
         private static HashSet<APItemData> receivedItemsUnique;
         private static HashSet<APItemData> receivedItemsUniqueB; //FIXME: For debugging purposes. Remove later
+        private static Dictionary<long, int> receivedItemCounts = new();
         private static bool receivedItemsQueueLock = false;
         private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
@@ -158,7 +159,6 @@ namespace CupheadArchipelago.AP {
                 
                 Logging.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
-                //Logging.Log($"Seed: {seed}");
                 //Logging.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
                 if (APSessionGSData.seed != seed) {
                     if (APSessionGSData.seed != "" || APSessionGSData.IsOverridden(2)) {
@@ -169,6 +169,8 @@ namespace CupheadArchipelago.AP {
                     }
                     APSessionGSData.seed = seed;
                 }
+
+                Logging.Log($"Seed: {seed}");
 
                 SessionStatus = 6;
 
@@ -266,6 +268,10 @@ namespace CupheadArchipelago.AP {
                     receivedItemsUniqueB = new HashSet<APItemData>(new APItemDataComparer(true));
                     for (int i=0; i<ReceivedItems.Count;i++) {
                         APItemData item = ReceivedItems[i];
+                        if (!receivedItemCounts.ContainsKey(item.Id))
+                            receivedItemCounts[item.Id] = 1;
+                        else 
+                            receivedItemCounts[item.Id]++;
                         if (item.State==0) {
                             QueueItem(item, i);
                         }
@@ -360,11 +366,11 @@ namespace CupheadArchipelago.AP {
             ConnectionInfo = null;
             APSessionPlayerInfo = null;
             SlotData = null;
-            //dataPackage = null;
             currentReceivedItemIndex = 0;
             doneChecksUnique = null;
             receivedItemsUnique = null;
             receivedItemsUniqueB = null;
+            receivedItemCounts = new();
             scoutMapStatus = 0;
             locMap.Clear();
             itemMap.Clear();
@@ -638,6 +644,10 @@ namespace CupheadArchipelago.AP {
             } else {
                 throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
             }
+        }
+        public static int GetReceivedItemCount(long itemId) {
+            if (receivedItemCounts.ContainsKey(itemId)) return receivedItemCounts[itemId];
+            return 0;
         }
         public static bool ItemReceiveQueueIsEmpty() => receivedItemsQueue.Count==0;
         public static bool ItemApplyQueueIsEmpty() => itemApplyQueue.Count==0;

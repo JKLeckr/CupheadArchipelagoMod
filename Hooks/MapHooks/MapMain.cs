@@ -1,8 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using CupheadArchipelago.Hooks.MapHooks.MapNPCHooks;
-
 namespace CupheadArchipelago.Hooks.MapHooks {
     public class MapMain {
         public static void Hook() {
@@ -17,7 +15,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             MapUICoinsHook.Hook();
             MapShmupTutorialBridgeActivatorHook.Hook();
             BoatmanEnablerHook.Hook();
-            MapNPCMain.Hook();
+            MapNPCHooks.MapNPCMain.Hook();
         }
     }
 }

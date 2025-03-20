@@ -36,11 +36,15 @@ namespace CupheadArchipelago.Hooks {
                 if (_APMode) {
                     PlayerData data = ____saveFiles[slot];
                     PlayerInventories inventories = (PlayerInventories)_fi_inventories.GetValue(data);
+                    Logging.Log($"Start Weapon: {APSettings.StartWeapon}");
                     Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon);
                     inventories.playerOne._weapons = [weapon];
                     data.Loadouts.playerOne.primaryWeapon = weapon;
                     inventories.playerTwo._weapons = [weapon];
                     data.Loadouts.playerTwo.primaryWeapon = weapon;
+                    if (APSettings.DLCChaliceMode == DlcChaliceModes.Start) {
+                        Data.Gift(PlayerId.PlayerOne, Charm.charm_chalice);
+                    }
                     return false;
                 }
                 else return true;

@@ -3,7 +3,7 @@
 
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.PlayerHooks {
+namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
     internal class LevelPlayerControllerHook {
         internal static void Hook() {}
     }

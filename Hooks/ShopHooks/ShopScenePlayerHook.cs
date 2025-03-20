@@ -56,9 +56,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 byte successBit = 0;
+
                 FieldInfo _fi_Multiplayer = typeof(PlayerManager).GetField("Multiplayer", BindingFlags.Public | BindingFlags.Static);
                 FieldInfo _fi_player = typeof(ShopScenePlayer).GetField("player", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_items = typeof(ShopScenePlayer).GetField("items", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -367,7 +368,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         [HarmonyPatch(typeof(ShopScenePlayer), "UpdateSelection")]
         internal static class UpdateSelection {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 bool success = false;
 

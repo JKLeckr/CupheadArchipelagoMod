@@ -62,9 +62,9 @@ namespace CupheadArchipelago.AP {
             {APItem.ability_parry, ItemTypes.Ability},
             {APItem.ability_plane_parry, ItemTypes.Ability},
             {APItem.ability_plane_shrink, ItemTypes.Ability},
-            {APItem.ability_dlc_cdash, ItemTypes.Ability},
+            {APItem.ability_dlc_p_cdash, ItemTypes.Ability},
             {APItem.ability_dlc_cduck, ItemTypes.Ability},
-            {APItem.ability_dlc_cparry, ItemTypes.Ability},
+            {APItem.ability_dlc_cdoublejump, ItemTypes.Ability},
             {APItem.ability_dlc_cplane_parry, ItemTypes.Ability},
             {APItem.ability_dlc_cplane_shrink, ItemTypes.Ability},
 

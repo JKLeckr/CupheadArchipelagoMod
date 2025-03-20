@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.PlayerHooks {
+namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
     internal class PlanePlayerAnimationControllerHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(HandleShrunk));

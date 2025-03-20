@@ -158,10 +158,14 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                     Levels clevel = instance.CurrentLevel;
                                     bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret?3:0), false);
-                                    if (APSettings.BossGradeChecks>0)
+                                    if (APSettings.BossGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel,1), false);
                                         }
+                                    }
+                                    if (APSettings.DLCBossChaliceChecks && IsChalice()) {
+                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 2), false);
+                                    }
                                 } else {
                                     Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                                 }
@@ -171,11 +175,15 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 Logging.Log("[LevelHook] Platforming Type");
                                 Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={Level.Mode.Normal}");
                                 if (Level.Difficulty >= Level.Mode.Normal) {    
-                                    APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,0), false);
+                                    Levels clevel = instance.CurrentLevel;
+                                    APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
                                     if (APSettings.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.RungunGradeChecks)-1))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(instance.CurrentLevel,((int)APSettings.RungunGradeChecks>3)?2:1), false);
+                                            APClient.Check(LevelLocationMap.GetLocationId(clevel, ((int)APSettings.RungunGradeChecks>3)?2:1), false);
                                         }
+                                    }
+                                    if (APSettings.DLCRunGunChaliceChecks && IsChalice()) {
+                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 3), false);
                                     }
                                 } else {
                                     Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
@@ -187,10 +195,23 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 break;
                             }
                         }
+                    } else if (Level.IsDicePalace && APSettings.DicePalaceBossSanity) {
+                        Logging.Log("[LevelHook] DicePalace Type");
+                        Level.Mode battleNormalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
+                        Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
+                        if (Level.Difficulty >= battleNormalMode) {
+                            Levels clevel = instance.CurrentLevel;
+                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                        } else {
+                            Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                        }
                     } else {
                         Logging.Log("[LevelHook] Not a checkable level");
                     }
                 }
+            }
+            private static bool IsChalice() {
+                return PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).charm == Charm.charm_chalice;
             }
         }
 
@@ -234,22 +255,34 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     APManager.Current.SetActive(false);
                 return true;
             }
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
-                bool success = false;
+                int success = 0;
+
+                FieldInfo _fi_coinManager = typeof(PlayerData).GetField("coinManager", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_get_mode = typeof(Level).GetProperty("mode")?.GetGetMethod();
                 MethodInfo _mi_get_LevelType = typeof(Level).GetProperty("LevelType")?.GetGetMethod();
                 MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty")?.GetSetMethod(true);
                 MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
+                MethodInfo _mi_GetCoinCollected = 
+                    typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoinCollected", BindingFlags.Public | BindingFlags.Instance, null, [typeof(string)], null);
+                MethodInfo _mi_AddCurrency = typeof(PlayerData).GetMethod("AddCurrency", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo _mi_get_CurrentLevel = typeof(Level).GetProperty("CurrentLevel", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
+                MethodInfo _mi_APCoinCondition = typeof(zHack_OnWin).GetMethod("APCoinCondition", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_APCoinCheck = typeof(zHack_OnWin).GetMethod("APCoinCheck", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_APCheck = typeof(zHack_OnWin).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
+
+                Label l_skipcoin = il.DefineLabel();
 
                 if (debug) {
                     for (int i = 0; i < codes.Count; i++) {
                         Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
                     }
                 }
-                for (int i = 0; i < codes.Count - 2; i++) {
-                    if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
+                for (int i = 0; i < codes.Count - 8; i++) {
+                    if ((success&1)==0 && codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
                         codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
                         List<CodeInstruction> ncodes = [
                             new CodeInstruction(OpCodes.Ldarg_0),
@@ -257,12 +290,31 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             new CodeInstruction(OpCodes.Call, _mi_HackDifficulty)
                         ];
                         codes.InsertRange(i+1, ncodes);
-                        if (debug) Logging.Log("Patch success");
-                        success = true;
-                        break;
+                        i+=ncodes.Count;
+                        success |= 1;
+                    }
+                    if ((success&2)==0) { //TODO Do Chalice checks
+                        //List<CodeInstruction> ncodes = [];
+                        //codes.InsertRange(i, ncodes);
+                        //i+=ncodes.Count;
+                        success |= 2;
+                    }
+                    if ((success&4)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+3].opcode == OpCodes.Callvirt &&
+                        (MethodInfo)codes[i+3].operand == _mi_AddCurrency && codes[i+4].opcode == OpCodes.Call && (MethodInfo)codes[i+4].operand == _mi_get_Data && codes[i+7].opcode == OpCodes.Callvirt &&
+                        (MethodInfo)codes[i+7].operand == _mi_AddCurrency) {
+                            codes[i+4].labels.Add(l_skipcoin);
+                            List<CodeInstruction> ncodes = [
+                                new CodeInstruction(OpCodes.Ldarg_0),
+                                new CodeInstruction(OpCodes.Callvirt, _mi_get_CurrentLevel),
+                                new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
+                                new CodeInstruction(OpCodes.Brtrue, l_skipcoin),
+                            ];
+                            codes.InsertRange(i, ncodes);
+                            i+=ncodes.Count;
+                            success |= 4;
                     }
                 }
-                if (!success) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed!");
+                if (success!=7) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -278,6 +330,18 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     return (APSettings.Hard && mode < Level.Mode.Hard) ? Level.Mode.Easy : mode;
                 }
                 else return mode;
+            }
+            private static bool APCoinCheck(Levels level) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    long locationId = LevelLocationMap.GetLocationId(level, 0);
+                    APCheck(locationId);
+                    return true;
+                }
+                return false;
+            }
+            private static void APCheck(long loc) {
+                if (!APClient.IsLocationChecked(loc))
+                    APClient.Check(loc);
             }
         }
 

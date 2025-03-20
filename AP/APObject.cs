@@ -97,8 +97,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem super_dlc_c_iii = new APItem(12909279);
         public static readonly APItem dlc_cplane_super = new APItem(12909280);
         public static readonly APItem ability_dlc_cduck = new APItem(12909281);
-        public static readonly APItem ability_dlc_cdash = new APItem(12909282);
-        public static readonly APItem ability_dlc_cparry = new APItem(12909283);
+        public static readonly APItem ability_dlc_p_cdash = new APItem(12909282);
+        public static readonly APItem ability_dlc_cdoublejump = new APItem(12909283);
         public static readonly APItem ability_dlc_cplane_shrink = new APItem(12909284);
         public static readonly APItem ability_dlc_cplane_parry = new APItem(12909285);
         public static readonly APItem charm_dlc_cookie = new APItem(12909286);

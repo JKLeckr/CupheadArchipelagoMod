@@ -89,7 +89,7 @@ namespace CupheadArchipelago.AP {
                             Logging.LogWarning($"[APData] Slot {i}: There are overrides enabled ({data._override}). I hope you know what you are doing!");
                         } 
                         if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(1)) {
-                            Logging.LogWarning($"[APData] Slot: {i}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                            Logging.LogWarning($"[APData] Slot {i}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
                             data.state = 1;
                         }
                     }
@@ -244,6 +244,8 @@ namespace CupheadArchipelago.AP {
             public bool dlc_cduck = false;
             [JsonProperty("dlc_cparry")]
             public bool dlc_cparry = false;
+            [JsonProperty("dlc_cdoublejump")]
+            public bool dlc_cdoublejump = false;
             [JsonProperty("dlc_cplane_parry")]
             public bool dlc_cplane_parry = false;
             [JsonProperty("dlc_cplane_shrink")]
@@ -270,6 +272,7 @@ namespace CupheadArchipelago.AP {
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cdash = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cduck = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cparry = value;
+                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cdoublejump = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cplane_parry = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cplane_shrink = value;
                 if ((setTarget&SetTarget.Super)>0) plane_super = value;

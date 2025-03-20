@@ -24,7 +24,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 MethodInfo _mi_ShowEvent = typeof(MapEventNotification).GetMethod("ShowEvent", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_APCoinCondition = typeof(MapNPCCoinHookBase).GetMethod("APCoinCondition", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_IsAPEnabled = typeof(MapNPCCoinHookBase).GetMethod("IsAPEnabled", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_APCheck = typeof(MapNPCCoinHookBase).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_APCoinCheck = typeof(MapNPCCoinHookBase).GetMethod("APCoinCheck", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label l_afterac = il.DefineLabel();
                 Label l_end = il.DefineLabel();
@@ -50,18 +50,14 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         if ((success&2)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+3].opcode == OpCodes.Callvirt &&
                             (MethodInfo)codes[i+3].operand == _mi_AddCurrency && codes[i+4].opcode == OpCodes.Call && (MethodInfo)codes[i+4].operand == _mi_get_Data && codes[i+7].opcode == OpCodes.Callvirt &&
                             (MethodInfo)codes[i+7].operand == _mi_AddCurrency) {
+                                codes[i+8].labels.Add(l_afterac);
                                 List<CodeInstruction> ncodes = [
                                     new CodeInstruction(OpCodes.Ldc_I8, loc),
-                                    new CodeInstruction(OpCodes.Call, _mi_APCheck),
+                                    new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
+                                    new CodeInstruction(OpCodes.Brtrue, l_afterac),
                                 ];
-                                codes.InsertRange(i+8, ncodes);
-                                codes[i+8].labels.Add(l_afterac);
-                                List<CodeInstruction> ncodes2 = [
-                                    new CodeInstruction(OpCodes.Call, _mi_IsAPEnabled),
-                                    new CodeInstruction(OpCodes.Brtrue, l_end),
-                                ];
-                                codes.InsertRange(i, ncodes2);
-                                i+=ncodes2.Count;
+                                codes.InsertRange(i, ncodes);
+                                i+=ncodes.Count;
                                 success |= 2;
                         }
                     }
@@ -87,11 +83,19 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
                 return codes;
             }
+
             private static bool APCoinCondition(bool orig, long locationId) {
                 if (APData.IsCurrentSlotEnabled()) {
                     return !APClient.IsLocationChecked(locationId);
                 }
                 return orig;
+            }
+            private static bool APCoinCheck(long locationId) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    APCheck(locationId);
+                    return true;
+                }
+                return false;
             }
             private static bool IsAPEnabled() => APData.IsCurrentSlotEnabled();
             private static void APCheck(long loc) {

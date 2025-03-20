@@ -223,7 +223,13 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 }
 
                 if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
-                    PlayerDataHook.APSanitizeSlot(_slotSelection);
+                    try {
+                        PlayerDataHook.APSanitizeSlot(_slotSelection);
+                    } catch (Exception e) {
+                        Logging.Log($"Failed to set up save data! {e}");
+                        APClient.CloseArchipelagoSession(true);
+                        APAbort();
+                    }
                     APData.SData[_slotSelection].playerData.GotStartWeapon();
                 }
 

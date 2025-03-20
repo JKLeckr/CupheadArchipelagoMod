@@ -4,7 +4,7 @@
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.PlayerHooks {
+namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
     internal class LevelPlayerAnimationControllerHook {
         internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(Update));

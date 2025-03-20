@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class LevelCoinHook {
@@ -18,11 +19,11 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(LevelCoin), "Awake")]
         internal static class Awake {
             // DEBUG
-            /*static bool Prefix(LevelCoin __instance) {
+            static bool Prefix(LevelCoin __instance) {
                 Vector3 pos = __instance.transform.position;
                 Logging.Log("Coin: "+pos.x+", "+pos.y+" : "+__instance.GlobalID);
                 return true;
-            }*/
+            }
             
             static void Postfix(LevelCoin __instance, ref bool ____collected) {
                 if (APData.IsCurrentSlotEnabled()) {

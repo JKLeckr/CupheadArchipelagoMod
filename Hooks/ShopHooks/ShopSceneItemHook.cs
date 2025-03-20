@@ -165,11 +165,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
         [HarmonyPatch(typeof(ShopSceneItem), "Purchase")]
         internal static class Purchase {
+            //FIXME: Better quality
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
-                bool success = false;
-                byte labelbits = 0;
+                byte success = 0;
+                
                 FieldInfo _fi_itemType = typeof(ShopSceneItem).GetField("itemType", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
@@ -185,18 +186,17 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     }
                 }
                 for (int i=codes.Count-2;i>=0;i--) {
-                    if (labelbits==0 && codes[i+1].opcode == OpCodes.Ret && codes[i].labels.Count>0) {
+                    if (success==0 && codes[i+1].opcode == OpCodes.Ret && codes[i].labels.Count>0) {
                         end_label = codes[i].labels[0];
-                        labelbits|=1;
+                        success|=1;
                     }
-                    else if ((labelbits&2)==0 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Brfalse && (Label)codes[i+1].operand == end_label) {
+                    else if ((success&2)==0 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Brfalse && (Label)codes[i+1].operand == end_label) {
                         codes[i].labels.Add(flag_label);
-                        labelbits|=2;
+                        success|=2;
                     }
-                    else if ((labelbits&4)==0 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i+1].opcode == OpCodes.Stloc_0) {
+                    else if ((success&4)==0 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i+1].opcode == OpCodes.Stloc_0) {
                         if ((i+2)<codes.Count) {
                             codes[i+2].labels.Add(vanilla_label);
-                            labelbits|=4;
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, vanilla_label),
@@ -206,11 +206,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 new CodeInstruction(OpCodes.Br, flag_label),
                             ];
                             codes.InsertRange(i+2, ncodes);
-                            success = true;
+                            i+=ncodes.Count;
+                            success|=4;
                         }
                     }
                 }
-                if (!success||labelbits!=7) throw new Exception($"{nameof(Purchase)}: Patch Failed! {success}:{labelbits}");
+                if (success!=7) throw new Exception($"{nameof(Purchase)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     for (int i = 0; i < codes.Count; i++) {
@@ -221,9 +222,14 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 return codes;
             }
             // TODO: Eventually use transpipler which is more elegant.
-            static void Postfix() {
-                if (APData.IsCurrentSlotEnabled() && PlayerData.Data.shouldShowShopkeepTooltip) {
-                    PlayerData.Data.shouldShowShopkeepTooltip = false;
+            static void Postfix(ShopSceneItem __instance) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    if (PlayerData.Data.shouldShowShopkeepTooltip) {
+                        PlayerData.Data.shouldShowShopkeepTooltip = false;
+                    }
+                    if (ShopScene.Current.HasBoughtEverythingForAchievement(__instance.player)) {
+                        APClient.GoalComplete(Goals.ShopBuyout);
+                    }
                 }
             }
 

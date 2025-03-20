@@ -14,8 +14,7 @@ namespace CupheadArchipelago.AP {
 
             ItemMap.GetItemType(itemId);
 
-            try{
-            switch (ItemMap.GetItemType(itemId)) {
+            try {switch (ItemMap.GetItemType(itemId)) {
                 case ItemTypes.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
                     Gift(weapon);
@@ -79,7 +78,7 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.contracts++;
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
                         if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
-                            Logging.Log($"Contracts Goal: {APClient.APSessionGSPlayerData.contracts}");
+                            Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
                             if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
                                 APClient.GoalComplete(Goals.Contracts);
                             }
@@ -109,7 +108,7 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.dlc_ingredients++;
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
                         if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
-                            Logging.Log($"Ingredients Goal: {APClient.APSessionGSPlayerData.dlc_ingredients}");
+                            Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
                             if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
                                 APClient.GoalComplete(Goals.Ingredients);
                             }
@@ -165,8 +164,7 @@ namespace CupheadArchipelago.AP {
                     break;
                 }
                 default: break;
-            }
-            } catch (Exception e) {Logging.LogError(e); return false;}
+            }} catch (Exception e) {Logging.LogError(e); return false;}
             return true;
         }
 
@@ -191,11 +189,14 @@ namespace CupheadArchipelago.AP {
                 APClient.APSessionGSPlayerData.plane_shrink = true;
                 if (!IsChaliceSeparate(ItemGroups.Abilities))
                     APClient.APSessionGSPlayerData.dlc_cplane_shrink = true;
-            } else if (id==APItem.ability_dlc_cdash) {
-                APClient.APSessionGSPlayerData.dlc_cdash = true;
+            } else if (id==APItem.ability_dlc_p_cdash) {
+                if (APClient.GetReceivedItemCount(id)>=2)
+                    APClient.APSessionGSPlayerData.dlc_cparry = true;
+                else
+                    APClient.APSessionGSPlayerData.dlc_cdash = true;
             } else if (id==APItem.ability_dlc_cduck) {
                 APClient.APSessionGSPlayerData.dlc_cduck = true;
-            } else if (id==APItem.ability_dlc_cparry) {
+            } else if (id==APItem.ability_dlc_cdoublejump) {
                 APClient.APSessionGSPlayerData.dlc_cparry = true;
             } else if (id==APItem.ability_dlc_cplane_parry) {
                 APClient.APSessionGSPlayerData.dlc_cplane_parry = true;

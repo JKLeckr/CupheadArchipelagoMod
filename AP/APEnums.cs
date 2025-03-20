@@ -49,8 +49,9 @@ namespace CupheadArchipelago.AP {
 
     public enum DlcChaliceModes {
         Disabled = 0,
-        Vanilla = 1,
-        Randomized = 2,
+        Start = 1,
+        Vanilla = 2,
+        Randomized = 3,
     }
 
     public enum DlcCurseModes {
