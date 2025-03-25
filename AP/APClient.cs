@@ -227,11 +227,11 @@ namespace CupheadArchipelago.AP {
                     
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
-                    if (APSettings.RandomizeWeaponEX == WeaponExModes.AllButStart) {
+                    if (APSettings.RandomizeWeaponEX == WeaponExMode.AllButStart) {
                         Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.Id);
                         APSessionGSPlayerData.AddWeaponUpgrade(weapon);
                     }
-                    else if (APSettings.RandomizeWeaponEX == WeaponExModes.Off) {
+                    else if (APSettings.RandomizeWeaponEX == WeaponExMode.Off) {
                         APSessionGSPlayerData.AddWeaponUpgrades(ItemMap.GetUpgradableWeapons());
                     }
                     if (!APSettings.RandomizeAbilities)
@@ -513,12 +513,12 @@ namespace CupheadArchipelago.AP {
         }
         public static bool IsAPGoalComplete() {
             Goals goals = APSettings.Mode switch {
-                GameModes.CollectContracts => Goals.Contracts,
-                GameModes.DlcBeatSaltbaker => Goals.Saltbaker,
-                GameModes.DlcBeatBoth => Goals.DevilAndSaltbaker,
-                GameModes.DlcCollectIngradients => Goals.Ingredients,
-                GameModes.DlcCollectBoth => Goals.ContractsAndIngredients,
-                GameModes.BuyOutShop => Goals.ShopBuyout,
+                GameMode.CollectContracts => Goals.Contracts,
+                GameMode.DlcBeatSaltbaker => Goals.Saltbaker,
+                GameMode.DlcBeatBoth => Goals.DevilAndSaltbaker,
+                GameMode.DlcCollectIngradients => Goals.Ingredients,
+                GameMode.DlcCollectBoth => Goals.ContractsAndIngredients,
+                GameMode.BuyOutShop => Goals.ShopBuyout,
                 _ => Goals.Devil,
             };
             return APSessionGSData.IsGoalsCompleted(goals);
@@ -623,7 +623,7 @@ namespace CupheadArchipelago.AP {
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
         private static void QueueItem(APItemData item, int itemIndex) {
-            if (ItemMap.GetItemType(item.Id)==ItemTypes.Level) {
+            if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
                 QueueItem(itemApplyLevelQueue, itemIndex);
             }
             else {
@@ -686,7 +686,7 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static bool IsDeathLinkActive() => deathLinkService != null;
-        public static void SendDeathLink(string cause=null, DeathLinkCauseTypes causeType=DeathLinkCauseTypes.Normal) {
+        public static void SendDeathLink(string cause=null, DeathLinkCauseType causeType=DeathLinkCauseType.Normal) {
             if (!IsDeathLinkActive()) return;
             Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
@@ -694,11 +694,11 @@ namespace CupheadArchipelago.AP {
             string chessDeathTxt = "beaten";
             string causeMessage = causeType switch
             {
-                DeathLinkCauseTypes.Boss => player + " got " + deathTxt + (cause != null ? " by " + cause : "" + "!"),
-                DeathLinkCauseTypes.Mausoleum => player + " failed to protect the Chalice" + (cause != null ? " at " + cause : "" + "!"),
-                DeathLinkCauseTypes.Tutorial => player + " died in a tutorial level!",
-                DeathLinkCauseTypes.ChessCastle => player + " was " + chessDeathTxt + " at The King's Leap" + (cause != null ? " by " + cause : "" + "!"),
-                DeathLinkCauseTypes.Graveyard => player + " got taken for a ride in the graveyard!",
+                DeathLinkCauseType.Boss => player + " got " + deathTxt + (cause != null ? " by " + cause : "" + "!"),
+                DeathLinkCauseType.Mausoleum => player + " failed to protect the Chalice" + (cause != null ? " at " + cause : "" + "!"),
+                DeathLinkCauseType.Tutorial => player + " died in a tutorial level!",
+                DeathLinkCauseType.ChessCastle => player + " was " + chessDeathTxt + " at The King's Leap" + (cause != null ? " by " + cause : "" + "!"),
+                DeathLinkCauseType.Graveyard => player + " got taken for a ride in the graveyard!",
                 _ => player + " was " + deathTxt + (cause != null ? " at " + cause : "" + "!"),
             };
             Logging.Log($"[APClient] Your message: \"{causeMessage}\"");

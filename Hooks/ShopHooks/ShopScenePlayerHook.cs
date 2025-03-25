@@ -52,7 +52,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
             static bool Prefix() {
-                Logging.Log("Shop");
+                //Logging.Log("Shop");
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {

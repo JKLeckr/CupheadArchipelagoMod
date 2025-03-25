@@ -164,7 +164,7 @@ namespace CupheadArchipelago.Unity {
         }
 
         private void RefreshMenuLock() {
-            menuLocked = !apData.IsEmpty(true);
+            menuLocked = !apData.IsEmpty(SaveDataType.Vanilla);
         }
 
         public bool IsInitted() => initted;
@@ -260,7 +260,7 @@ namespace CupheadArchipelago.Unity {
 
         private string GetAPSeed() {
             APData data = APData.SData[slotSelection];
-            return !data.IsEmpty(true) ? data.seed : "";
+            return !data.IsEmpty(SaveDataType.Vanilla) ? data.seed : "";
         }
 
         private static string GetMenuString(string str) {

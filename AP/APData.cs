@@ -9,14 +9,13 @@ using Newtonsoft.Json;
 namespace CupheadArchipelago.AP {
     public class APData {
         internal const int AP_DATA_VERSION = 1;
-        private static readonly string[] AP_SAVE_FILE_KEYS = [
-            "cuphead_player_data_v1_ap_slot_0_apdata",
-            "cuphead_player_data_v1_ap_slot_1_apdata",
-            "cuphead_player_data_v1_ap_slot_2_apdata"
-        ];
+        private const string AP_SAVE_FILE_KEY_SUFFIX = "_apdata";
         private static readonly string AP_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
 
+        private static readonly string[] AP_SAVE_FILE_KEYS = new string[3];
+
         public static bool Initialized { get; private set; } = false;
+        public static bool Loaded { get; private set; } = false;
         public static APData[] SData { get; private set; }
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionGSData; }
@@ -59,7 +58,19 @@ namespace CupheadArchipelago.AP {
             }
         }
 
+        public static void Init(string saveKeyBaseName) {
+            for (int i=0;i<3;i++) {
+                AP_SAVE_FILE_KEYS[i] = $"{saveKeyBaseName}{i}{AP_SAVE_FILE_KEY_SUFFIX}";
+            }
+            Logging.Log("[APData] Initialized");
+            Initialized = true;
+        }
+
         public static void LoadData() {
+            if (!Initialized) {
+                Logging.LogError("[APData] Not initialized! Cannot load data!");
+                return;
+            }
             Logging.Log($"[APData] Loading Data from {AP_SAVE_PATH}");
             for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
                 string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[i]+".sav");
@@ -99,9 +110,13 @@ namespace CupheadArchipelago.AP {
                     Save(i);
                 }
             }
-            Initialized = true;
+            Loaded = true;
         }
         public static void Save(int index) {
+            if (!Initialized) {
+                Logging.LogError("[APData] Not initialized! Cannot save data!");
+                return;
+            }
             Logging.Log($"[APData] Saving slot {index}");
             APData data = SData[index];
             if (data.version != AP_DATA_VERSION && !data.IsOverridden(1)) {
@@ -124,6 +139,10 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static void SaveAll() {
+            if (!Initialized) {
+                Logging.LogError("[APData] Not initialized! Cannot save data!");
+                return;
+            }
             for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
                 Save(i);
             }
@@ -131,7 +150,7 @@ namespace CupheadArchipelago.AP {
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
         public static void ResetData(int index) {
-            bool reset = Config.DeleteAPConfigOnFileDelete();
+            bool reset = Config.ResetAPConfigOnFileDelete();
             ResetData(index, reset, reset);
         }
         public static void ResetData(int index, bool disable, bool resetSettings) {
@@ -145,36 +164,43 @@ namespace CupheadArchipelago.AP {
                 data.port = old_data.port;
                 data.player = old_data.player;
                 data.password = old_data.password;
+                data._override = old_data._override;
             }
             Save(index);
         }
 
         public static bool IsSlotEnabled(int index) {
-            return Initialized && SData[index].enabled;
+            return Loaded && SData[index].enabled;
         }
         public static bool IsCurrentSlotEnabled() => IsSlotEnabled(global::PlayerData.CurrentSaveFileIndex);
         public static bool IsSlotLocked(int index) {
-            return Initialized && SData[index].dlock;
+            return Loaded && SData[index].dlock;
         }
         public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
-        public bool IsEmpty(bool checkVanillaIfAPDisabled=false) {
-            if (enabled || !checkVanillaIfAPDisabled) {
+        public bool IsOverridden(int i) {
+            return (_override & i) != 0;
+        }
+
+        public bool IsEmpty() => IsEmpty(SaveDataType.Auto);
+        public bool IsEmpty(SaveDataType saveDataType) {
+            bool cond;
+            if (saveDataType == SaveDataType.Auto)
+                cond = enabled || saveDataType != SaveDataType.Vanilla;
+            else
+                cond = saveDataType == SaveDataType.AP;
+            if (cond) {
                 return !playerData.HasStartWeapon();
             } else {
                 global::PlayerData data = global::PlayerData.GetDataForSlot(index);
                 return !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
             }
         }
-
-        public bool IsOverridden(int i) {
-            return (_override & i) != 0;
-        }
-
-        public static bool IsSlotEmpty(int index, bool checkVanillaIfAPDisabled=false) {
+        public static bool IsSlotEmpty(int index) => IsSlotEmpty(index, SaveDataType.Auto);
+        public static bool IsSlotEmpty(int index, SaveDataType saveDataType) {
             if (global::PlayerData.Initialized) {
                 APData sdata = SData[index];
-                return sdata.IsEmpty(checkVanillaIfAPDisabled);
+                return sdata.IsEmpty(saveDataType);
             }
             else {
                 Logging.LogWarning("[APData] PlayerData is not initialized!");

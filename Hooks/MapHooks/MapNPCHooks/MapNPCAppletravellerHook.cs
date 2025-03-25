@@ -19,11 +19,10 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         internal static class Start {
             static bool Prefix(int ___dialoguerVariableID) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                     if (APClient.IsLocationChecked(locationId)) {
                         Dialoguer.SetGlobalFloat(___dialoguerVariableID, 1f);
-                        LogDialoguerGlobalFloat(___dialoguerVariableID);
                     }
+                    LogDialoguerGlobalFloat(___dialoguerVariableID);
                 } 
                 return true;
             }

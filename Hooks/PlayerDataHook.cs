@@ -20,6 +20,7 @@ namespace CupheadArchipelago.Hooks {
             //Harmony.CreateAndPatchAll(typeof(AddCurrency));
             Harmony.CreateAndPatchAll(typeof(ApplyLevelCoins));
             Harmony.CreateAndPatchAll(typeof(TryActivateDjimmi));
+            Harmony.CreateAndPatchAll(typeof(Gift));
             //Harmony.CreateAndPatchAll(typeof(NumWeapons));
             //PlayerInventoryHook.Hook();
             //PlayerCoinManagerHook.Hook();
@@ -42,7 +43,7 @@ namespace CupheadArchipelago.Hooks {
                     data.Loadouts.playerOne.primaryWeapon = weapon;
                     inventories.playerTwo._weapons = [weapon];
                     data.Loadouts.playerTwo.primaryWeapon = weapon;
-                    if (APSettings.UseDLC && APSettings.DLCChaliceMode == DlcChaliceModes.Start) {
+                    if (APSettings.UseDLC && APSettings.DLCChaliceMode == DlcChaliceMode.Start) {
                         Data.Gift(PlayerId.PlayerOne, Charm.charm_chalice);
                     }
                     return false;
@@ -73,8 +74,10 @@ namespace CupheadArchipelago.Hooks {
                 return true;
             }
             static void Postfix(int fileIndex) {
-                Debug.Log($"Saving APData to slot {fileIndex}...");
-                APData.Save(fileIndex);
+                if (APData.IsSlotEnabled(fileIndex) || !inGame) {
+                    Logging.Log($"Saving APData to slot {fileIndex}...");
+                    APData.Save(fileIndex);
+                }
             }
         }
 
@@ -108,6 +111,16 @@ namespace CupheadArchipelago.Hooks {
         internal static class TryActivateDjimmi {
             static bool Prefix() {
                 return !APData.IsCurrentSlotEnabled() || APSettings.AllowGameDjimmi;
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerData), "Gift", [typeof(PlayerId), typeof(Weapon)])]
+        [HarmonyPatch(typeof(PlayerData), "Gift", [typeof(PlayerId), typeof(Charm)])]
+        [HarmonyPatch(typeof(PlayerData), "Gift", [typeof(PlayerId), typeof(Super)])]
+        internal static class Gift {
+            static bool Prefix(object value) {
+                Logging.Log($"Gifting {value}");
+                return true;
             }
         }
 

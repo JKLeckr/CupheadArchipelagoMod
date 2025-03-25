@@ -2,7 +2,13 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 namespace CupheadArchipelago.AP {
-    public enum DeathLinkCauseTypes {
+    public enum SaveDataType {
+        Auto = 0,
+        Vanilla = 1,
+        AP = 2,
+    }
+
+    public enum DeathLinkCauseType {
         Normal = 0,
         Boss = 1,
         Mausoleum = 2,
@@ -11,7 +17,7 @@ namespace CupheadArchipelago.AP {
         Graveyard = 5,
     }
 
-    public enum GameModes {
+    public enum GameMode {
         BeatDevil = 0,
         CollectContracts = 1,
         BuyOutShop = 2,
@@ -21,7 +27,7 @@ namespace CupheadArchipelago.AP {
         DlcCollectBoth = 6,
     }
 
-    public enum WeaponExModes : byte {
+    public enum WeaponExMode : byte {
         Off = 0,
         Randomized = 1,
         AllButStart = 2,
@@ -36,7 +42,7 @@ namespace CupheadArchipelago.AP {
         Pacifist = 5,
     }
 
-    public enum ItemTypes {
+    public enum ItemType {
         NoType = 0,
         Weapon = 1,
         Charm = 2,
@@ -47,14 +53,14 @@ namespace CupheadArchipelago.AP {
         Level = 64,
     }
 
-    public enum DlcChaliceModes {
+    public enum DlcChaliceMode {
         Disabled = 0,
         Start = 1,
         Vanilla = 2,
         Randomized = 3,
     }
 
-    public enum DlcCurseModes {
+    public enum DlcCurseMode {
         Off = 0,
         Normal = 1,
         Reverse = 2,

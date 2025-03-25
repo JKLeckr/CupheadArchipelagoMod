@@ -128,8 +128,8 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return codes;
             }
             private static bool APCookieCondition() {
-                if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode != DlcChaliceModes.Vanilla) {
-                    if (APSettings.DLCChaliceMode == DlcChaliceModes.Randomized) {
+                if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode != DlcChaliceMode.Vanilla) {
+                    if (APSettings.DLCChaliceMode == DlcChaliceMode.Randomized) {
                         APClient.Check(locationID, true);
                     }
                     return false;

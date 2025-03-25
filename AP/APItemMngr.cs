@@ -15,7 +15,7 @@ namespace CupheadArchipelago.AP {
             ItemMap.GetItemType(itemId);
 
             try {switch (ItemMap.GetItemType(itemId)) {
-                case ItemTypes.Weapon: {
+                case ItemType.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
                     Gift(weapon);
                     if (itemId==APItem.plane_gun && !IsChaliceSeparate(ItemGroups.Essential)) {
@@ -24,7 +24,7 @@ namespace CupheadArchipelago.AP {
                     else if (itemId==APItem.plane_bombs && !IsChaliceSeparate(ItemGroups.Essential)) {
                         Gift(Weapon.plane_chalice_weapon_bomb);
                     }
-                    if (APSettings.RandomizeWeaponEX == WeaponExModes.Off) {
+                    if (APSettings.RandomizeWeaponEX == WeaponExMode.Off) {
                         if (itemId==APItem.plane_gun || itemId==APItem.plane_bombs) {
                             APClient.APSessionGSPlayerData.plane_ex = true;
                         }
@@ -39,12 +39,12 @@ namespace CupheadArchipelago.AP {
                     }
                     break;
                 }
-                case ItemTypes.Charm: {
+                case ItemType.Charm: {
                     Charm charm = ItemMap.GetCharm(itemId);
                     Gift(charm);
                     break;
                 }
-                case ItemTypes.Super: {
+                case ItemType.Super: {
                     Gift(ItemMap.GetSuper(itemId));
                     if (itemId==APItem.super_i && !IsChaliceSeparate(ItemGroups.Super)) {
                         Gift(Super.level_super_chalice_vert_beam);
@@ -57,11 +57,11 @@ namespace CupheadArchipelago.AP {
                     }
                     break;
                 }
-                case ItemTypes.Ability: {
+                case ItemType.Ability: {
                     ApplyAbiltiy(itemId);
                     break;
                 }
-                case ItemTypes.Essential: {
+                case ItemType.Essential: {
                     if (itemId==APItem.coin) {
                         Logging.Log("AddCurrency");
                         AddCoins(1);
@@ -77,7 +77,7 @@ namespace CupheadArchipelago.AP {
                     else if (itemId==APItem.contract) {
                         APClient.APSessionGSPlayerData.contracts++;
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
-                        if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
+                        if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
                             if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
                                 APClient.GoalComplete(Goals.Contracts);
@@ -107,7 +107,7 @@ namespace CupheadArchipelago.AP {
                     else if (itemId==APItem.dlc_ingredient) {
                         APClient.APSessionGSPlayerData.dlc_ingredients++;
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
-                        if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
+                        if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
                             if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
                                 APClient.GoalComplete(Goals.Ingredients);
@@ -116,10 +116,10 @@ namespace CupheadArchipelago.AP {
                     }
                     break;
                 }
-                case ItemTypes.Special: {
+                case ItemType.Special: {
                     break;
                 }
-                case ItemTypes.Level: {
+                case ItemType.Level: {
                     PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
                     PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
                     PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
@@ -218,21 +218,21 @@ namespace CupheadArchipelago.AP {
         }
 
         private static void Gift(Weapon weapon) {
-            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, weapon))
+            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, weapon))
                 PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
-            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, weapon))
+            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, weapon))
                 PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
         }
         private static void Gift(Charm charm) {
-            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, charm))
+            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, charm))
                 PlayerData.Data.Gift(PlayerId.PlayerOne, charm);
-            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, charm))
+            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, charm))
                 PlayerData.Data.Gift(PlayerId.PlayerTwo, charm);
         }
         private static void Gift(Super super) {
-            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, super))
+            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, super))
                 PlayerData.Data.Gift(PlayerId.PlayerOne, super);
-            if (PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, super))
+            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, super))
                 PlayerData.Data.Gift(PlayerId.PlayerTwo, super);
         }
 

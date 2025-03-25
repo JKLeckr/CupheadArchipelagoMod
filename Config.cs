@@ -37,7 +37,7 @@ namespace CupheadArchipelago {
                 return (current.configSkipCutscenes & cutscene) > 0;
             else return false;
         }
-        public static bool DeleteAPConfigOnFileDelete() {
+        public static bool ResetAPConfigOnFileDelete() {
             return current.configFileDeleteClearsAP;
         }
         public static bool IsAPStatsFunctionEnabled(APStatsFunctions function) {

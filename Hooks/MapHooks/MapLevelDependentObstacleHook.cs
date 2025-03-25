@@ -24,7 +24,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     return false;
                 }
                 else {
-                    if (!APData.Initialized) {Logging.Log("[MapLevelDependentObstacleHook] APData is not Initialized!", LogLevel.Warning);}
+                    if (!APData.Loaded) {Logging.Log("[MapLevelDependentObstacleHook] APData is not Initialized!", LogLevel.Warning);}
                     return true;
                 }
             }

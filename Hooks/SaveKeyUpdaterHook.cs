@@ -9,8 +9,8 @@ using System.Reflection;
 
 namespace CupheadArchipelago.Hooks {
     internal class SaveKeyUpdaterHook {
-        public static string SaveKeyBaseName {get; private set;} = "cuphead_player_data_v1_ap_slot_";
-        public static string[] SaveKeyNames {get; private set;}
+        private static string saveKeyBaseName = "cuphead_player_data_v1_ap_slot_";
+        private static string[] saveKeyNames;
         private static bool _nameLock = false;
         private static FieldInfo _fi_SAVE_FILE_KEYS;
 
@@ -19,12 +19,12 @@ namespace CupheadArchipelago.Hooks {
         }
 
         internal static void SetSaveKeyBaseName(string name) {
-            if (!_nameLock) SaveKeyBaseName = name; else Logging.Log("Cannot Set SaveKeyBaseName after Hook", LogLevel.Warning);
+            if (!_nameLock) saveKeyBaseName = name; else Logging.Log("Cannot Set SaveKeyBaseName after Hook", LogLevel.Warning);
         }
 
         internal static void Hook() {
             _nameLock = true;
-            SaveKeyNames = new string[3] {SaveKeyBaseName+0, SaveKeyBaseName+1, SaveKeyBaseName+2};
+            saveKeyNames = [saveKeyBaseName+0, saveKeyBaseName+1, saveKeyBaseName+2];
             Harmony.CreateAndPatchAll(typeof(OnCloudStorageInitialized));
             Harmony.CreateAndPatchAll(typeof(OnLoaded));
             Harmony.CreateAndPatchAll(typeof(Save));
@@ -70,15 +70,15 @@ namespace CupheadArchipelago.Hooks {
                 new CodeInstruction(OpCodes.Newarr, typeof(string)),
                 new CodeInstruction(OpCodes.Dup),
                 new CodeInstruction(OpCodes.Ldc_I4_0),
-                new CodeInstruction(OpCodes.Ldstr, SaveKeyNames[0]),
+                new CodeInstruction(OpCodes.Ldstr, saveKeyNames[0]),
                 new CodeInstruction(OpCodes.Stelem_Ref),
                 new CodeInstruction(OpCodes.Dup),
                 new CodeInstruction(OpCodes.Ldc_I4_1),
-                new CodeInstruction(OpCodes.Ldstr, SaveKeyNames[1]),
+                new CodeInstruction(OpCodes.Ldstr, saveKeyNames[1]),
                 new CodeInstruction(OpCodes.Stelem_Ref),
                 new CodeInstruction(OpCodes.Dup),
                 new CodeInstruction(OpCodes.Ldc_I4_2),
-                new CodeInstruction(OpCodes.Ldstr, SaveKeyNames[2]),
+                new CodeInstruction(OpCodes.Ldstr, saveKeyNames[2]),
                 new CodeInstruction(OpCodes.Stelem_Ref),
             ];
 

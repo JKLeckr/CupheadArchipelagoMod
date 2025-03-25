@@ -7,6 +7,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using CupheadArchipelago.AP;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
@@ -36,7 +37,7 @@ namespace CupheadArchipelago {
         private ConfigEntry<string> configSaveKeyName;
         private ConfigEntry<Cutscenes> configSkipCutscenes;
         private ConfigEntry<bool> configSkipCutscenesAPOnly;
-        private ConfigEntry<bool> configFileDeleteClearsAP;
+        private ConfigEntry<bool> configFileDeleteResetsAPData;
         private ConfigEntry<APStatsFunctions> configAPStatusFunctions;
 
         private void Awake() {
@@ -50,13 +51,13 @@ namespace CupheadArchipelago {
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves! (Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipCutscenes = Config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
             configSkipCutscenesAPOnly = Config.Bind("Game", "SkipCutscenesAPOnly", true, "Skip cutscenes only if playing an Archipelago game.");
-            configFileDeleteClearsAP = Config.Bind("AP", "FileDeleteClearsAP", true, "When the save file is deleted, the Archipelago settings gets cleared.");
+            configFileDeleteResetsAPData = Config.Bind("AP", "FileDeleteResetsAPData", true, "When the save file is deleted, the Archipelago settings gets reset.");
             configAPStatusFunctions = Config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities.");
             //configAPOverrides = Config.Bind("AP", "Overrides", true, "Overrides specific non-functional server-side settings.");
             CupheadArchipelago.Config.Init(
                 configSkipCutscenes.Value,
                 configSkipCutscenesAPOnly.Value,
-                configFileDeleteClearsAP.Value,
+                configFileDeleteResetsAPData.Value,
                 configAPStatusFunctions.Value
             );
 
@@ -99,6 +100,7 @@ namespace CupheadArchipelago {
                     }
                 } else Logging.Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
                 try {
+                    APData.Init(configSaveKeyName.Value);
                     Hooks.Main.HookMain();
                 } catch (Exception e) {
                     Fail(e, -1);

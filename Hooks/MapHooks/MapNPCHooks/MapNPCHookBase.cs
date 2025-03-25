@@ -85,12 +85,14 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             }
 
             private static bool APCoinCondition(bool orig, long locationId) {
+                Logging.Log($"APCoinCondition: {orig}, {locationId}");
                 if (APData.IsCurrentSlotEnabled()) {
-                    return !APClient.IsLocationChecked(locationId);
+                    return APClient.IsLocationChecked(locationId);
                 }
                 return orig;
             }
             private static bool APCoinCheck(long locationId) {
+                Logging.Log($"APCoinCheck: {locationId}");
                 if (APData.IsCurrentSlotEnabled()) {
                     APCheck(locationId);
                     return true;

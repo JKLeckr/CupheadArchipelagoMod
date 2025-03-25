@@ -192,6 +192,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     _instance.StartCoroutine(connect_and_start_cr());
                 }
                 else {
+                    if (!APData.IsSlotEmpty(_slotSelection))
+                        APData.ResetData(_slotSelection, true, true);
                     _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                 }
             }
@@ -518,7 +520,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 yield return null;
             }
             Transform orig_options = orig_options_p.GetChild(0);
-            while (!APData.Initialized) {
+            while (!APData.Loaded) {
                 yield return null;
             }
             apSM.SetSlotSelection(slotSelection);

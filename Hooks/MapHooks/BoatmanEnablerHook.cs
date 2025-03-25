@@ -24,6 +24,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 else return true;
             }
             private static IEnumerator apcheck_cr(BoatmanEnabler instance) {
+                Logging.Log($"Boat: {APClient.APSessionGSPlayerData.dlc_boat}");
                 while (!APClient.APSessionGSPlayerData.dlc_boat || !IsInReadyState()) {
                     yield return null;
                 }
@@ -32,6 +33,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             }
             private static bool IsInReadyState() {
                 return Map.Current.CurrentState == Map.State.Ready && AbstractPauseGUIHook.CanPause && !AbstractPauseGUIHook.Paused;
+            }
+        }
+
+        [HarmonyPatch(typeof(BoatmanEnabler), "check_cr", MethodType.Enumerator)]
+        internal static class check_cr {
+            private static bool Prefix() {
+                Logging.Log("BoatmanEnabler: check_cr");
+                return true;
             }
         }
     }
