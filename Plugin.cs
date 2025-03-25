@@ -51,7 +51,7 @@ namespace CupheadArchipelago {
             configSkipCutscenes = Config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
             configSkipCutscenesAPOnly = Config.Bind("Game", "SkipCutscenesAPOnly", true, "Skip cutscenes only if playing an Archipelago game.");
             configFileDeleteResetsAPData = Config.Bind("AP", "FileDeleteResetsAPData", true, "When the save file is deleted, the Archipelago settings gets reset.");
-            configAPStatusFunctions = Config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities.");
+            configAPStatusFunctions = Config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities. (Currently does nothing)");
             //configAPOverrides = Config.Bind("AP", "Overrides", true, "Overrides specific non-functional server-side settings.");
             CupheadArchipelago.Config.Init(
                 configSkipCutscenes.Value,
