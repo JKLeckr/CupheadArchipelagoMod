@@ -58,9 +58,53 @@ namespace CupheadArchipelago.AP {
                 Logging.LogError("[APData] Not initialized! Cannot load data!");
                 return;
             }
-            Logging.Log($"[APData] Loading Data from {SaveData.AP_SAVE_PATH}");
+            Logging.Log($"[APData] Loading Data from {SaveData.SAVE_PATH}");
+            SaveData.LoadAPData(new LoadCloudDataHandler(OnAPDataLoaded));
+        }
+
+        private static void OnAPDataLoaded(string[] data, CloudLoadResult result) {
+            if (result != CloudLoadResult.Success) {
+                if (result == CloudLoadResult.NoData)
+                    Logging.Log($"[APData] No data.");
+                else
+                    Logging.LogError($"[APData] Failed to load.");
+                Logging.Log($"[APData] Trying other loading method...");
+                TryLocalLoad();
+                return;
+            }
             for (int i=0;i<SaveData.AP_SAVE_FILE_KEYS.Length;i++) {
-                string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[i]+".sav");
+                APData sdata = null;
+                sbyte state = 0;
+                try {
+                    sdata = JsonConvert.DeserializeObject<APData>(data[i]);
+                } catch (Exception e) {
+                    Logging.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
+                    state = -1;
+                }
+                if (sdata == null) {
+                    Logging.LogError($"[APData] Data could not be unserialized for key: {SaveData.AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
+                    SData[i] = new APData {
+                        state = state
+                    };
+                }
+                else {
+                    sdata.index = i;
+                    SData[i] = sdata;
+                    if (sdata._override != 0) {
+                        Logging.LogWarning($"[APData] Slot {i}: There are overrides enabled ({sdata._override}). I hope you know what you are doing!");
+                    } 
+                    if (sdata.version != AP_DATA_VERSION && !sdata.IsEmpty() && sdata.IsOverridden(1)) {
+                        Logging.LogWarning($"[APData] Slot {i}: Data version mismatch. {sdata.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                        sdata.state = 1;
+                    }
+                }
+            }
+            Loaded = true;
+        }
+
+        private static void TryLocalLoad() {
+            for (int i=0;i<SaveData.AP_SAVE_FILE_KEYS.Length;i++) {
+                string filename = Path.Combine(SaveData.SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[i]+".sav");
                 if (File.Exists(filename)) {
                     APData data = null;
                     sbyte state = 0;
@@ -97,8 +141,8 @@ namespace CupheadArchipelago.AP {
                     Save(i);
                 }
             }
-            Loaded = true;
         }
+
         public static void Save(int index) {
             if (!SaveData.IsInitialized()) {
                 Logging.LogError("[APData] Not initialized! Cannot save data!");
@@ -115,7 +159,14 @@ namespace CupheadArchipelago.AP {
                 Logging.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
                 return;
             }
-            string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
+            string sdata;
+            try {
+                sdata = JsonConvert.SerializeObject(APData.SData[index]);
+            } catch (Exception e) {
+                Logging.LogError($"[APData] Error while saving AP Save Data for {index}: {e}");
+                return;
+            }
+            /*string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
             try {
                 string sdata = JsonConvert.SerializeObject(data);
                 File.WriteAllText(filename, sdata);
@@ -123,7 +174,8 @@ namespace CupheadArchipelago.AP {
             catch (Exception e) {
                 Logging.LogError($"[APData] Error while saving AP Save Data for {index}: {e}");
                 return;
-            }
+            }*/
+            SaveData.SaveAPData(index, sdata);
         }
         public static void SaveAll() {
             if (!SaveData.IsInitialized()) {
