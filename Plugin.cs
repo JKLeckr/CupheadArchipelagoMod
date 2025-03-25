@@ -7,7 +7,6 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using CupheadArchipelago.AP;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
@@ -100,7 +99,7 @@ namespace CupheadArchipelago {
                     }
                 } else Logging.Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
                 try {
-                    APData.Init(configSaveKeyName.Value);
+                    SaveData.Init(configSaveKeyName.Value);
                     Hooks.Main.HookMain();
                 } catch (Exception e) {
                     Fail(e, -1);
