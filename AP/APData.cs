@@ -9,12 +9,7 @@ using Newtonsoft.Json;
 namespace CupheadArchipelago.AP {
     public class APData {
         internal const int AP_DATA_VERSION = 1;
-        private const string AP_SAVE_FILE_KEY_SUFFIX = "_apdata";
-        private static readonly string AP_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
 
-        private static readonly string[] AP_SAVE_FILE_KEYS = new string[3];
-
-        public static bool Initialized { get; private set; } = false;
         public static bool Loaded { get; private set; } = false;
         public static APData[] SData { get; private set; }
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
@@ -58,22 +53,14 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        public static void Init(string saveKeyBaseName) {
-            for (int i=0;i<3;i++) {
-                AP_SAVE_FILE_KEYS[i] = $"{saveKeyBaseName}{i}{AP_SAVE_FILE_KEY_SUFFIX}";
-            }
-            Logging.Log("[APData] Initialized");
-            Initialized = true;
-        }
-
         public static void LoadData() {
-            if (!Initialized) {
+            if (!SaveData.IsInitialized()) {
                 Logging.LogError("[APData] Not initialized! Cannot load data!");
                 return;
             }
-            Logging.Log($"[APData] Loading Data from {AP_SAVE_PATH}");
-            for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
-                string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[i]+".sav");
+            Logging.Log($"[APData] Loading Data from {SaveData.AP_SAVE_PATH}");
+            for (int i=0;i<SaveData.AP_SAVE_FILE_KEYS.Length;i++) {
+                string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[i]+".sav");
                 if (File.Exists(filename)) {
                     APData data = null;
                     sbyte state = 0;
@@ -88,7 +75,7 @@ namespace CupheadArchipelago.AP {
                         state = -1;
                     }
                     if (data == null) {
-                        Logging.LogError($"[APData] Data could not be unserialized for key: {AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
+                        Logging.LogError($"[APData] Data could not be unserialized for key: {SaveData.AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
                         SData[i] = new APData {
                             state = state
                         };
@@ -113,7 +100,7 @@ namespace CupheadArchipelago.AP {
             Loaded = true;
         }
         public static void Save(int index) {
-            if (!Initialized) {
+            if (!SaveData.IsInitialized()) {
                 Logging.LogError("[APData] Not initialized! Cannot save data!");
                 return;
             }
@@ -128,7 +115,7 @@ namespace CupheadArchipelago.AP {
                 Logging.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
                 return;
             }
-            string filename = Path.Combine(AP_SAVE_PATH, AP_SAVE_FILE_KEYS[index]+".sav");
+            string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
             try {
                 string sdata = JsonConvert.SerializeObject(data);
                 File.WriteAllText(filename, sdata);
@@ -139,11 +126,11 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static void SaveAll() {
-            if (!Initialized) {
+            if (!SaveData.IsInitialized()) {
                 Logging.LogError("[APData] Not initialized! Cannot save data!");
                 return;
             }
-            for (int i=0;i<AP_SAVE_FILE_KEYS.Length;i++) {
+            for (int i=0;i<SaveData.AP_SAVE_FILE_KEYS.Length;i++) {
                 Save(i);
             }
         }
