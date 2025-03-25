@@ -19,11 +19,9 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(BoatmanEnabler), "Start")]
         internal static class Start {
             private static MethodInfo _mi_check_cr;
-            private static MethodInfo _mi_showAppear_cr;
 
             static Start() {
                 _mi_check_cr = typeof(BoatmanEnabler).GetMethod("check_cr", BindingFlags.NonPublic | BindingFlags.Instance);
-                _mi_showAppear_cr = typeof(BoatmanEnabler).GetMethod("showAppear_cr", BindingFlags.NonPublic | BindingFlags.Instance);
             }
 
             static bool Prefix(BoatmanEnabler __instance, ref bool ___forceBoatmanUnlocking) {
@@ -39,19 +37,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             }
             private static bool APCondition() {
                 return !APSettings.DLCRequiresMausoleum || PlayerData.Data.GetLevelData(Levels.Mausoleum).completed;
-            }
-            private static IEnumerator apcheck_cr(BoatmanEnabler instance) {
-                Logging.Log($"Boat: {APClient.APSessionGSPlayerData.dlc_boat}");
-                //Logging.Log($"EquipUI CurrentState: {AbstractEquipUI.Current.CurrentState}");
-                while (!APClient.APSessionGSPlayerData.dlc_boat || !IsInReadyState()) {
-                    yield return null;
-                }
-                Logging.Log("Unlocked Boat");
-			    instance.StartCoroutine(_mi_check_cr.Name);
-                yield break;
-            }
-            private static bool IsInReadyState() {
-                return Map.Current.CurrentState == Map.State.Ready && AbstractPauseGUIHook.CanPause && !AbstractPauseGUIHook.Paused;
             }
         }
 
