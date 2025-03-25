@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCBoatmanHook {
@@ -166,8 +167,11 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return true;
             }
             private static bool APLoadScene() {
-                
-                return false; //FIXME: Finish
+                if (Config.IsSkippingCutscene(Cutscenes.DLCIntro)) {
+                    SceneLoader.LoadScene(Scenes.scene_level_kitchen, SceneLoader.Transition.Iris, SceneLoader.Transition.Iris, SceneLoader.Icon.Hourglass);
+                    return true;
+                }
+                return false;
             }
         }
     }

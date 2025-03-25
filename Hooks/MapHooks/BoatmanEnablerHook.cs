@@ -28,7 +28,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (DLCManager.DLCEnabled() && APCondition()) {
                         ___forceBoatmanUnlocking = true;
-                        Logging.Log($"Boat: {APClient.APSessionGSPlayerData.dlc_boat}");
                         __instance.StartCoroutine(_mi_check_cr.Name);
                     }
                     return false;
