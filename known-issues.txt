@@ -11,3 +11,5 @@ There are too many bugs. While I have fixed a lot of them, there are still issue
 - Traps are still disabled. This is because they have not been resolved at this time.
 
 - Chalice is disabled for now. There are technical issues to get around.
+
+- Some settings in the config do not work. Do not take it to heart.
