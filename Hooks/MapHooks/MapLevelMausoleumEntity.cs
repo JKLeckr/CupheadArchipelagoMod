@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using CupheadArchipelago.AP;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.MapHooks {
@@ -13,16 +14,20 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapLevelMausoleumEntity), "ValidateSucess")]
         internal static class ValidateSucess {
             static void Postfix(ref bool __result) {
-                Logging.Log($"[MapLevelMausoleumEntity] ValidateSuccess: {__result}");
-                __result = false;
+                if (APData.IsCurrentSlotEnabled()) {
+                    Logging.Log($"[MapLevelMausoleumEntity] ValidateSuccess: {__result}");
+                    __result = false;
+                }
             }
         }
 
         [HarmonyPatch(typeof(MapLevelMausoleumEntity), "ValidateCondition")]
         internal static class ValidateCondition {
             static void Postfix(ref bool __result) {
-                Logging.Log($"[MapLevelMausoleumEntity] ValidateCondition: {__result}");
-                __result = false;
+                if (APData.IsCurrentSlotEnabled()) {
+                    Logging.Log($"[MapLevelMausoleumEntity] ValidateCondition: {__result}");
+                    __result = false;
+                }
             }
         }
     }

@@ -2,11 +2,13 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCBoatmanHook {
@@ -20,6 +22,15 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
         [HarmonyPatch(typeof(MapNPCBoatman), "Start")]
         internal static class Start {
+            static bool Prefix(MapNPCBoatman __instance) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    if (!APClient.APSessionGSPlayerData.dlc_boat) {
+                        SetBoatActive(__instance, false);
+                        __instance.StartCoroutine(apcheck_cr(__instance));
+                    }
+                }
+                return true;
+            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
@@ -53,8 +64,26 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return codes;
             }
             private static float APConditionFloat(float orig) {
-                Logging.Log($"{nameof(MapNPCCanteen)}: {orig}");
+                Logging.Log($"{nameof(MapNPCBoatman)}: {orig}");
                 return orig;
+            }
+
+            private static IEnumerator apcheck_cr(MapNPCBoatman instance) {
+                Logging.Log($"Boat: {APClient.APSessionGSPlayerData.dlc_boat}");
+                //Logging.Log($"EquipUI CurrentState: {AbstractEquipUI.Current.CurrentState}");
+                while (!APClient.APSessionGSPlayerData.dlc_boat) {
+                    yield return null;
+                }
+                Logging.Log("Unlocked Boat");
+			    SetBoatActive(instance, true);
+                yield break;
+            }
+
+            private static void SetBoatActive(MapNPCBoatman instance, bool set) {
+                MapDialogueInteraction mdi = instance.GetComponent<MapDialogueInteraction>();
+                mdi.enabled = set;
+                Transform boat = instance.transform.GetChild(1);
+                boat.gameObject.SetActive(set);
             }
         }
 
