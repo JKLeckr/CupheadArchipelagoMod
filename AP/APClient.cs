@@ -542,7 +542,7 @@ namespace CupheadArchipelago.AP {
             Logging.Log("[APClient] OnItemReceived");
             Logging.Log($"[APClient] CIIndex: {currentReceivedItemIndex}; SIIndex: {ReceivedItemsIndex}; RIIndex: {helper.Index} ItemCount: {helper.AllItemsReceived.Count}");
             try {
-                bool recover = session.Items.AllItemsReceived.Count > ReceivedItemsIndex;
+                bool recover = helper.AllItemsReceived.Count > ReceivedItemsIndex;
                 if (recover) Logging.Log("[APClient] In Item Recovery");
                 ItemInfo item = helper.PeekItem();
                 if (!itemMap.ContainsKey(item.ItemId)) {

@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using CupheadArchipelago.AP;
 
 namespace CupheadArchipelago {
     internal class SaveData {

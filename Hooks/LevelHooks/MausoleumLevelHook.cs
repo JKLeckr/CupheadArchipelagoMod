@@ -87,11 +87,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static bool IsChecked(Level.Mode mode) {
-                switch (mode) {
-                    case Level.Mode.Normal: return APClient.IsLocationChecked(APLocation.level_mausoleum_ii);
-                    case Level.Mode.Hard: return APClient.IsLocationChecked(APLocation.level_mausoleum_iii);
-                    default: return APClient.IsLocationChecked(APLocation.level_mausoleum_i); // Level.Mode.Easy
-                }
+                if (!PlayerData.Data.GetLevelData(Levels.Mausoleum).completed) return false;
+                return mode switch {
+                    Level.Mode.Normal => APClient.IsLocationChecked(APLocation.level_mausoleum_ii),
+                    Level.Mode.Hard => APClient.IsLocationChecked(APLocation.level_mausoleum_iii),
+                    _ => APClient.IsLocationChecked(APLocation.level_mausoleum_i),// Level.Mode.Easy
+                };
             }
         }
 
