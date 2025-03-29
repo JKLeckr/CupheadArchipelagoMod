@@ -8,9 +8,9 @@ using CupheadArchipelago.Unity;
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
         public static bool ApplyItem(APItemData item) {
-            long itemId = item.Id;
-            string itemName = APClient.GetItemName(item.Id);
-            Logging.Log($"[APItemMngr] Applying item {itemName} ({item.Id})...");
+            long itemId = item.id;
+            string itemName = APClient.GetItemName(item.id);
+            Logging.Log($"[APItemMngr] Applying item {itemName} ({item.id})...");
 
             ItemMap.GetItemType(itemId);
 
@@ -75,7 +75,8 @@ namespace CupheadArchipelago.AP {
                         AddCoins(3);
                     }
                     else if (itemId==APItem.contract) {
-                        APClient.APSessionGSPlayerData.contracts++;
+                        if (APClient.APSessionGSPlayerData.contracts < APClient.GetReceivedItemCount(APItem.contract))
+                            APClient.APSessionGSPlayerData.contracts++;
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
@@ -101,11 +102,13 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.dlc_boat=true;
                     }
                     else if (itemId==APItem.healthupgrade) {
-                        APClient.APSessionGSPlayerData.healthupgrades++;
+                        if (APClient.APSessionGSPlayerData.healthupgrades < APClient.GetReceivedItemCount(APItem.healthupgrade))
+                            APClient.APSessionGSPlayerData.healthupgrades++;
                         Logging.Log($"Health Upgrades: {APClient.APSessionGSPlayerData.healthupgrades}");
                     }
                     else if (itemId==APItem.dlc_ingredient) {
-                        APClient.APSessionGSPlayerData.dlc_ingredients++;
+                        if (APClient.APSessionGSPlayerData.dlc_ingredients < APClient.GetReceivedItemCount(APItem.dlc_ingredient))
+                            APClient.APSessionGSPlayerData.dlc_ingredients++;
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
@@ -206,10 +209,17 @@ namespace CupheadArchipelago.AP {
         }
 
         private static void AddCoins(int count=1) {
-            PlayerData.Data.AddCurrency(PlayerId.PlayerOne, count);
-            PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, count);
+            int diff = APClient.GetReceivedCoinCount() - APClient.APSessionGSPlayerData.coins_collected;
+            int ncount = Math.Min(count, diff);
+            if (ncount > 0) {
+                Logging.Log($"[AddCoins] Adding {ncount} coins...");
+                PlayerData.Data.AddCurrency(PlayerId.PlayerOne, ncount);
+                PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, ncount);
+                APClient.APSessionGSPlayerData.coins_collected += ncount;
+            } else {
+                Logging.Log("[AddCoins] Coins are already applied. Skipping.");
+            }
             Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
-            APClient.APSessionGSPlayerData.coins_collected += count;
             Logging.Log($"Total coins: {APClient.APSessionGSPlayerData.coins_collected}");
         }
 

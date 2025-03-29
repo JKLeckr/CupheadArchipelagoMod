@@ -8,46 +8,46 @@ using Archipelago.MultiClient.Net.Models;
 namespace CupheadArchipelago.AP {
     public class APItemData {
         [JsonProperty("id")]
-        public long Id { get; private set; }
+        public readonly long id;
         [JsonProperty("location")]
-        public long Location { get; private set; }
+        public readonly long location;
         [JsonProperty("player")]
-        public string Player { get; private set; }
+        public readonly string player;
         [JsonProperty("state")]
         public int State { get; internal set; }
 
         [JsonConstructor]
         public APItemData(long id, long location, string player, int state = 0) {
-            Id = id;
-            Location = location;
-            Player = player;
+            this.id = id;
+            this.location = location;
+            this.player = player;
             State = state;
         }
         public APItemData(ItemInfo item) {
-            Id = item.ItemId;
-            Location = item.LocationId;
-            Player = item.Player.Name;
+            id = item.ItemId;
+            location = item.LocationId;
+            player = item.Player.Name;
             State = 0;
         }
 
         public override string ToString() {
-            return Id + ": " + Location + " - \"" + Player + "\"";
+            return id + ": " + location + " - \"" + player + "\"";
         }
         public override bool Equals(object obj) {
             if (obj is APItemData item) {
-                return Id == item.Id && Location == item.Location && Player == item.Player;
+                return id == item.id && location == item.location && player == item.player;
             } else return false;
         }
         public override int GetHashCode() => GetHashCode(true);
         public int GetHashCode(bool useId) {
             unchecked {
                 int hash = 17;
-                if (useId) hash *= 29 + Id.GetHashCode();
-                hash *= 29 + Location.GetHashCode();
-                if (Player == null) {
+                if (useId) hash *= 29 + id.GetHashCode();
+                hash *= 29 + location.GetHashCode();
+                if (player == null) {
                     Logging.LogWarning("[APItemData] GetHashCode: Player is null!");
                 }
-                hash *= 29 + (Player?.GetHashCode() ?? 0);
+                hash *= 29 + (player?.GetHashCode() ?? 0);
                 return hash;
             }
         }
@@ -57,7 +57,7 @@ namespace CupheadArchipelago.AP {
         private readonly bool useId = useId;
 
         public bool Equals(APItemData a, APItemData b) {
-            return (!useId || a.Id == b.Id) && a.Location == b.Location && a.Player == b.Player;
+            return (!useId || a.id == b.id) && a.location == b.location && a.player == b.player;
         }
         public int GetHashCode(APItemData item) => item.GetHashCode(useId);
     }

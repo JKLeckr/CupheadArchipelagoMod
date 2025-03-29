@@ -14,6 +14,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
             Harmony.CreateAndPatchAll(typeof(HandleDash));
             Harmony.CreateAndPatchAll(typeof(HandleLooking));
             Harmony.CreateAndPatchAll(typeof(HandleParry));
+            Harmony.CreateAndPatchAll(typeof(ChaliceDashParry));
+            Harmony.CreateAndPatchAll(typeof(ChaliceDoubleJump));
         }
 
         [HarmonyPatch(typeof(LevelPlayerMotor), "HandleDash")]
@@ -116,6 +118,13 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
         internal static class ChaliceDashParry {
             static bool Prefix() {
                 return !APData.IsCurrentSlotEnabled() || APData.CurrentSData.playerData.dlc_cparry;
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelPlayerMotor), "ChaliceDoubleJump")]
+        internal static class ChaliceDoubleJump {
+            static bool Prefix() {
+                return !APData.IsCurrentSlotEnabled() || APData.CurrentSData.playerData.dlc_cdoublejump;
             }
         }
     }

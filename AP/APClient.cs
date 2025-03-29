@@ -268,18 +268,18 @@ namespace CupheadArchipelago.AP {
                     receivedItemsUniqueB = new HashSet<APItemData>(new APItemDataComparer(true));
                     for (int i=0; i<ReceivedItems.Count;i++) {
                         APItemData item = ReceivedItems[i];
-                        if (!receivedItemCounts.ContainsKey(item.Id))
-                            receivedItemCounts[item.Id] = 1;
+                        if (!receivedItemCounts.ContainsKey(item.id))
+                            receivedItemCounts[item.id] = 1;
                         else 
-                            receivedItemCounts[item.Id]++;
+                            receivedItemCounts[item.id]++;
                         if (item.State==0) {
                             QueueItem(item, i);
                         }
                         else if (itemApplyIndex < item.State) {
                             itemApplyIndex = item.State;
                         }
-                        if (item.Location>=0) receivedItemsUnique.Add(item);
-                        if (item.Location>=0) receivedItemsUniqueB.Add(item);
+                        if (item.location>=0) receivedItemsUnique.Add(item);
+                        if (item.location>=0) receivedItemsUniqueB.Add(item);
                     }
                     APSessionGSData.dlock = false;
 
@@ -588,7 +588,7 @@ namespace CupheadArchipelago.AP {
         }
         internal static void ReceiveItem(APItemData item) {
             ReceiveItemBasic(item);
-            Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location})");
+            Logging.Log($"[APClient] Received {GetItemName(item.id)} from {item.player} ({item.location})");
             QueueItem(item);
             
             /*if (!receivedItemsUnique.Contains(item)) {
@@ -603,27 +603,27 @@ namespace CupheadArchipelago.AP {
         }
         internal static void ReceiveItemImmediate(APItemData item) {
             ReceiveItemBasic(item);
-            Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location}). Applying immediately!");
+            Logging.Log($"[APClient] Received {GetItemName(item.id)} from {item.player} ({item.location}). Applying immediately!");
             bool success = APItemMngr.ApplyItem(item);
             if (!success) {
-                Logging.LogWarning($"[APClient] Failed to apply {GetItemName(item.Id)} immediately!");
+                Logging.LogWarning($"[APClient] Failed to apply {GetItemName(item.id)} immediately!");
                 return;
             }
             item.State = ++itemApplyIndex;
         }
         private static void ReceiveItemBasic(APItemData item) {
-            if (item.Location>=0) {
+            if (item.location>=0) {
                 if (!receivedItemsUnique.Contains(item)) receivedItemsUnique.Add(item);
-                else Logging.LogWarning($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
+                else Logging.LogWarning($"[APClient] Item {GetItemName(item.id)} from {item.player} at Loc:{item.location} (Hash: {item.GetHashCode(false)}) already exists.");
                 //FIXME: For debugging purposes. Remove later
                 if (!receivedItemsUniqueB.Contains(item)) receivedItemsUniqueB.Add(item);
-                else Logging.LogWarning($"[APClient] {{B}} Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists.");
+                else Logging.LogWarning($"[APClient] {{B}} Item {GetItemName(item.id)} from {item.player} at Loc:{item.location} (Hash: {item.GetHashCode(false)}) already exists.");
             }
             ReceivedItems.Add(item);
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
         private static void QueueItem(APItemData item, int itemIndex) {
-            if (ItemMap.GetItemType(item.Id)==ItemType.Level) {
+            if (ItemMap.GetItemType(item.id)==ItemType.Level) {
                 QueueItem(itemApplyLevelQueue, itemIndex);
             }
             else {
@@ -648,6 +648,22 @@ namespace CupheadArchipelago.AP {
         public static int GetReceivedItemCount(long itemId) {
             if (receivedItemCounts.ContainsKey(itemId)) return receivedItemCounts[itemId];
             return 0;
+        }
+        public static int GetReceivedItemGroupCount(APItemGroups.ItemGroup itemGroup) {
+            int res = 0;
+            foreach (APItem item in APItemGroups.GetItems(itemGroup)) {
+                res += GetReceivedItemCount(item);
+            }
+            return res;
+        }
+        public static int GetReceivedCoinCount() {
+            int res = 0;
+            foreach (APItem item in APItemGroups.GetItems(APItemGroups.ItemGroup.Coins)) {
+                if (item == APItem.coin3) res += 3;
+                else if (item == APItem.coin2) res += 2;
+                else res++;
+            }
+            return res;
         }
         public static bool ItemReceiveQueueIsEmpty() => receivedItemsQueue.Count==0;
         public static bool ItemApplyQueueIsEmpty() => itemApplyQueue.Count==0;
