@@ -228,7 +228,7 @@ namespace CupheadArchipelago.AP {
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
                     if (APSettings.RandomizeWeaponEX == WeaponExMode.AllButStart) {
-                        Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.Id);
+                        Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
                         APSessionGSPlayerData.AddWeaponUpgrade(weapon);
                     }
                     else if (APSettings.RandomizeWeaponEX == WeaponExMode.Off) {
