@@ -195,12 +195,11 @@ namespace CupheadArchipelago.AP {
             } else if (id==APItem.ability_dlc_p_cdash) {
                 if (APClient.GetReceivedItemCount(id)>=2)
                     APClient.APSessionGSPlayerData.dlc_cparry = true;
-                else
-                    APClient.APSessionGSPlayerData.dlc_cdash = true;
+                APClient.APSessionGSPlayerData.dlc_cdash = true;
             } else if (id==APItem.ability_dlc_cduck) {
                 APClient.APSessionGSPlayerData.dlc_cduck = true;
             } else if (id==APItem.ability_dlc_cdoublejump) {
-                APClient.APSessionGSPlayerData.dlc_cparry = true;
+                APClient.APSessionGSPlayerData.dlc_cdoublejump = true;
             } else if (id==APItem.ability_dlc_cplane_parry) {
                 APClient.APSessionGSPlayerData.dlc_cplane_parry = true;
             } else if (id==APItem.ability_dlc_cplane_shrink) {

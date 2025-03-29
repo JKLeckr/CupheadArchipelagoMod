@@ -236,12 +236,6 @@ namespace CupheadArchipelago.AP {
                     }
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
-                    else {
-                        if ((APSettings.DLCChaliceItemsSeparate&ItemGroups.Super)==0)
-                            APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.ChaliceSuper);
-                        if ((APSettings.DLCChaliceItemsSeparate&ItemGroups.Abilities)==0)
-                            APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.ChaliceAbilities);
-                    }
                     if (!APSettings.RandomizeAimAbilities)
                         APSessionGSPlayerData.aim_directions = APData.PlayerData.AimDirections.All;
                     if (APSettings.DeathLink) {
