@@ -2,7 +2,7 @@
 
 *Mod Created by JKLeckr*
 
-A mod for Cuphead! 
+A mod for Cuphead!
 
 ## Intro
 
@@ -16,7 +16,9 @@ Cuphead Game: ([Steam](http://store.steampowered.com/app/268910/Cuphead/), [GOG]
 
 Archipelago: [GitHub](https://github.com/ArchipelagoMW/Archipelago)
 
-Archipelago AP World: [Archipelago Cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
+APWorld: [Archipelago-cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
+
+Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelagoMod) (This project)
 
 ## Install
 *Note: The install process is WIP, so it is not the most user-friendly. Also, during this stage of development there are no binary builds other than previews. See "Building."*
