@@ -123,12 +123,15 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         (int)codes[i+6].operand == (int)Charm.charm_chalice && codes[i+7].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+7].operand == _mi_Gift &&
                         codes[i+8].opcode == OpCodes.Call && (MethodInfo)codes[i+8].operand == _mi_get_Data && codes[i+9].opcode == OpCodes.Ldc_I4_1 &&
                         codes[i+10].opcode == OpCodes.Stfld && (FieldInfo)codes[i+10].operand == _fi_shouldShowChaliceTooltip) {
+                            List<Label> orig_labels = codes[i].labels;
+                            codes[i].labels = [];
                             codes[i+11].labels.Add(l_aftercookie);
                             List<CodeInstruction> ncodes = [
                                 CodeInstruction.Call(() => APCookieCondition()),
                                 new CodeInstruction(OpCodes.Brfalse, l_aftercookie),
                             ];
                             codes.InsertRange(i, ncodes);
+                            codes[i].labels = orig_labels;
                             i+=ncodes.Count+10;
                             success |= 1;
                     }

@@ -13,3 +13,5 @@ There are too many bugs. While I have fixed a lot of them, there are still issue
 - Chalice is disabled for now. There are technical issues to get around.
 
 - Some settings in the config do not work. Do not take it to heart.
+
+- There is a delay with some of the dialogue on the King's Leap. It is because it waits for the coin reward display that normally appears.

@@ -82,7 +82,14 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 return codes;
             }
-            static void Postfix(SlotSelectScreenSlot __instance, int slotNumber) {
+            static void Postfix(
+                SlotSelectScreenSlot __instance,
+                int slotNumber//, //TODO: Add text percent for AP Progress
+                /*TMP_Text ___slotTitle,
+                TMP_Text ___slotPercentage,
+                TMP_Text ___slotPercentageSelectedBase,
+                TMP_Text ___slotPercentageSelectedDLC*/
+                ) {
                 //Logging.Log.LogInfo("Init");
                 //Logging.Log.LogInfo(__instance.gameObject.name);
                 instances[slotNumber] = __instance;
@@ -94,13 +101,17 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 }
 
                 CreateSlotAPText(slotNumber, __instance.transform);
+
+                /*if (APData.IsSlotEnabled(slotNumber) && !APData.IsSlotEmpty(slotNumber)) {
+                    // Add this later
+                }*/
             }
 
             private static bool IsAPEmpty(int slot) => APData.IsSlotEnabled(slot) && APData.IsSlotEmpty(slot);
         }
         [HarmonyPatch(typeof(SlotSelectScreenSlot), "SetSelected")]
         internal static class SetSelected {
-            static void Postfix(SlotSelectScreenSlot __instance, ref bool selected) {
+            static void Postfix(SlotSelectScreenSlot __instance, ref bool selected, RectTransform ___mainChild, RectTransform ___mainDLCChild) {
                 //Logging.Log.LogInfo("SetSelected");
                 //Logging.Log.LogInfo(__instance.gameObject.name);
                 int slot = GetSlotNumber(__instance);
@@ -108,7 +119,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Transform slotAPText_inst = __instance.transform.GetChild(APTEXT_SIBLING_INDEX);
                 if (slotAPText_inst!=null) {
                     TextMeshProUGUI txt = slotAPText_inst.GetComponent<TextMeshProUGUI>();
-                    if (APData.SData[slot].enabled && APData.SData[slot].state==0) {
+                    if (APData.IsSlotEnabled(slot) && APData.SData[slot].state==0) {
                         txt.color = selected?hColor:bColor;
                         slotAPText_inst.gameObject.SetActive(true);
                         states[slot] = 1;
@@ -130,6 +141,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                         states[slot] = 0;
                     }
                 }
+                /*if (APData.IsSlotEnabled(slot) && !APData.IsSlotEmpty(slot)) {
+                    ___mainChild.gameObject.SetActive(!selected);
+                    ___mainDLCChild.gameObject.SetActive(selected);
+                }*/
             }
         }
 

@@ -143,7 +143,9 @@ namespace CupheadArchipelago.AP {
         public static void ResetData(int index, bool disable, bool resetSettings) {
             Logging.Log("[APData] Resetting Data...");
             APData old_data = SData[index];
-            SData[index] = new APData();
+            SData[index] = new APData() {
+                index = old_data.index
+            };
             APData data = SData[index];
             if (!disable) data.enabled = old_data.enabled;
             if (!resetSettings) {
@@ -151,6 +153,8 @@ namespace CupheadArchipelago.AP {
                 data.port = old_data.port;
                 data.player = old_data.player;
                 data.password = old_data.password;
+            }
+            if (old_data.IsOverridden(16)) {
                 data._override = old_data._override;
             }
             Save(index);
@@ -172,16 +176,19 @@ namespace CupheadArchipelago.AP {
         public bool IsEmpty() => IsEmpty(SaveDataType.Auto);
         public bool IsEmpty(SaveDataType saveDataType) {
             bool cond;
+            bool res;
             if (saveDataType == SaveDataType.Auto)
                 cond = enabled || saveDataType != SaveDataType.Vanilla;
             else
                 cond = saveDataType == SaveDataType.AP;
             if (cond) {
-                return !playerData.HasStartWeapon();
+                res = !playerData.HasStartWeapon();
             } else {
                 global::PlayerData data = global::PlayerData.GetDataForSlot(index);
-                return !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
+                res = !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
             }
+            //Logging.Log($"[APData] Slot {index}: {(res?"E":"Not e")}mpty");
+            return res;
         }
         public static bool IsSlotEmpty(int index) => IsSlotEmpty(index, SaveDataType.Auto);
         public static bool IsSlotEmpty(int index, SaveDataType saveDataType) {
