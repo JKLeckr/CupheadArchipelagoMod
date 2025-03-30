@@ -13,6 +13,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             DiceGateLevelHook.Hook();
             DiceGateLevelToNextWorldHook.Hook();
             DicePalaceMainLevelGameManagerHook.Hook();
+            KitchenLevelHook.Hook();
+            KitchenSaltbakerCounterHook.Hook();
             ChessCastleLevelHook.Hook();
         }
     }

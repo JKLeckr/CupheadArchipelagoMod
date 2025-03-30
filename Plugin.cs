@@ -64,12 +64,12 @@ namespace CupheadArchipelago {
                 if (configModLogs.Value) SetupLogging(this);
                 Logging.Log($"CupheadArchipelago {Version} by JKLeckr");
                 
-                Logging.Log("[Log] Info", LoggingFlags.Debug);
+                /*Logging.Log("[Log] Info", LoggingFlags.Debug);
                 Logging.LogWarning("[Log] Warning", LoggingFlags.Debug);
                 Logging.LogError("[Log] Error", LoggingFlags.Debug);
                 Logging.LogFatal("[Log] Fatal", LoggingFlags.Debug);
                 Logging.LogMessage("[Log] Message", LoggingFlags.Debug);
-                Logging.LogDebug("[Log] Debug", LoggingFlags.Debug);
+                Logging.LogDebug("[Log] Debug", LoggingFlags.Debug);*/
 
                 if (configVer != CONFIG_VERSION) {
                     Logging.LogWarning($"Config version changed ({configVer} -> {CONFIG_VERSION})! You may want to check the config.");
