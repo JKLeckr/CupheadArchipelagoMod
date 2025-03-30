@@ -24,6 +24,7 @@ Archipelago AP World: [Archipelago Cuphead](https://github.com/JKLeckr/Archipela
 ### Prerequisites
 - A copy of Cuphead
 - [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x
+- [CupheadArchipelago](https://github.com/JKLeckr/CupheadArchipelagoMod/releases)
 
 ### Instructions
 1. Extract BepInEx 5.x x64 for your OS into the Cuphead installation folder.
