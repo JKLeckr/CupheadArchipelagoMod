@@ -16,7 +16,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class Start {
             static bool Prefix() {
                 Logging.Log($"saltbaker: {Dialoguer.GetGlobalFloat(DIALOGUER_ID)}");
-                if (Dialoguer.GetGlobalFloat(23) == 0f && APData.IsCurrentSlotEnabled())
+                if (Dialoguer.GetGlobalFloat(23) == 0f && Config.IsSkippingCutscene(Cutscenes.DLCSaltbakerIntro))
                     Dialoguer.SetGlobalFloat(23, 1f);
                 return true;
             }
