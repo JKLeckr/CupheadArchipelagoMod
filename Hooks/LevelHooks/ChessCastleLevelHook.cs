@@ -12,12 +12,20 @@ using UnityEngine;
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class ChessCastleLevelHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(onDialogueEndedHandler));
-            Harmony.CreateAndPatchAll(typeof(onDialogueMessageHandler));
-            Harmony.CreateAndPatchAll(typeof(postWinEntry_cr));
+            //Harmony.CreateAndPatchAll(typeof(onDialogueMessageHandler));
+            //Harmony.CreateAndPatchAll(typeof(postWinEntry_cr));
         }
 
         private static readonly long locationIdRun = APLocation.level_dlc_chesscastle_run;
+
+        [HarmonyPatch(typeof(ChessCastleLevel), "Awake")]
+        internal static class Awake {
+            static void Postfix() {
+                if (APData.IsCurrentSlotEnabled() && Level.Won) APClient.SendChecks();
+            }
+        }
 
         [HarmonyPatch(typeof(ChessCastleLevel), "onDialogueEndedHandler")]
         internal static class onDialogueEndedHandler {

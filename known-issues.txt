@@ -14,4 +14,4 @@ There are too many bugs. While I have fixed a lot of them, there are still issue
 
 - Some settings in the config do not work. Do not take it to heart.
 
-- There is a delay with some of the dialogue on the King's Leap. It is because it waits for the coin reward display that normally appears.
+- By the way, the HUD is WIP (shows coins next to everything). Second is contracts, Third is ingredients. (I will try to figure out an ethical way to fix this)
