@@ -75,8 +75,10 @@ namespace CupheadArchipelago.AP {
                         AddCoins(3);
                     }
                     else if (itemId==APItem.contract) {
-                        if (APClient.APSessionGSPlayerData.contracts < APClient.GetReceivedItemCount(APItem.contract))
+                        if (APClient.APSessionGSPlayerData.contracts < APClient.GetReceivedItemCount(APItem.contract)) {
+                            Logging.Log($"Adding Contract...");
                             APClient.APSessionGSPlayerData.contracts++;
+                        } else Logging.Log("Contract is already applied. Skipping.");
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
@@ -102,13 +104,17 @@ namespace CupheadArchipelago.AP {
                         APClient.APSessionGSPlayerData.dlc_boat=true;
                     }
                     else if (itemId==APItem.healthupgrade) {
-                        if (APClient.APSessionGSPlayerData.healthupgrades < APClient.GetReceivedItemCount(APItem.healthupgrade))
+                        if (APClient.APSessionGSPlayerData.healthupgrades < APClient.GetReceivedItemCount(APItem.healthupgrade)) {
+                            Logging.Log($"Adding Health Upgrade...");
                             APClient.APSessionGSPlayerData.healthupgrades++;
+                        } else Logging.Log("Health Upgrade is already applied. Skipping.");
                         Logging.Log($"Health Upgrades: {APClient.APSessionGSPlayerData.healthupgrades}");
                     }
                     else if (itemId==APItem.dlc_ingredient) {
-                        if (APClient.APSessionGSPlayerData.dlc_ingredients < APClient.GetReceivedItemCount(APItem.dlc_ingredient))
+                        if (APClient.APSessionGSPlayerData.dlc_ingredients < APClient.GetReceivedItemCount(APItem.dlc_ingredient)) {
+                            Logging.Log($"Adding Ingredient...");
                             APClient.APSessionGSPlayerData.dlc_ingredients++;
+                        } else Logging.Log("Ingredient is already applied. Skipping.");
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
