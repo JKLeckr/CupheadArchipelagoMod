@@ -135,7 +135,7 @@ namespace CupheadArchipelago.Unity {
         void OnDestroy() {
             Logging.Log("[APManager] Destroyed");
             init = false;
-            Current = null;
+            if (Current == this) Current = null;
         }
     }
 }

@@ -348,7 +348,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                 _ => false,
             } && instance.CurrentLevel switch {
-                Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
+                Levels.House or Levels.ShmupTutorial or Levels.Mausoleum or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
                 _ => true,
             };
         }
