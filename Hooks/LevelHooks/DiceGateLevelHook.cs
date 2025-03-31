@@ -33,9 +33,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_APCondition = typeof(Start).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_PlayerData_Data &&
@@ -53,9 +51,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (insertCount!=12) throw new Exception($"{nameof(Start)}: Patch Failed! insertCount: {insertCount}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

@@ -28,9 +28,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 MethodInfo _mi_CheckLevelsHaveMinGrade = typeof(PlayerData).GetMethod("CheckLevelsHaveMinGrade", BindingFlags.Public | BindingFlags.Instance);
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-5;i++) {
                     if (!success && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && 
@@ -52,9 +50,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                     }
                 }
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 if (!success) throw new Exception($"{nameof(Start)}: Patch Failed!");
 

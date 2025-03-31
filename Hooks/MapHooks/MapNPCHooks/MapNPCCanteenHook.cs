@@ -32,9 +32,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 Label end_label = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 List<CodeInstruction> ncodes = [
                     CodeInstruction.Call(() => IsAPChecked()),
@@ -66,9 +64,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (labelInsert!=3) throw new Exception($"{nameof(Start)}: Patch Failed! {labelInsert}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

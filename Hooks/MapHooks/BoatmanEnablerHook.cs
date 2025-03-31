@@ -52,9 +52,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 MethodInfo _mi_APCondition = typeof(check_cr).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-7;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && codes[i+2].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+2].operand == _fi_forceBoatmanUnlocking &&
@@ -70,9 +68,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (!success) throw new Exception($"{nameof(check_cr)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

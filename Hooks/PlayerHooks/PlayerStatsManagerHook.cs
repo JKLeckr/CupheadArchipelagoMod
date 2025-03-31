@@ -71,9 +71,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 Label cvanilla = il.DefineLabel();
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if ((success&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && codes[i+2].opcode == OpCodes.Call &&
@@ -105,9 +103,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 if (success!=3) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

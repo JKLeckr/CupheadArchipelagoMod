@@ -34,9 +34,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 MethodInfo _mi_APCondition = typeof(Start).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-5;i++) {
                     if ((success&1)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldfld &&
@@ -62,9 +60,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 }
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 if (success!=7) throw new Exception($"{nameof(Start)}: Patch Failed! {success}");
 

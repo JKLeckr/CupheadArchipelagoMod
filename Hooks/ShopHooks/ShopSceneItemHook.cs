@@ -181,9 +181,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Label end_label = new();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=codes.Count-2;i>=0;i--) {
                     if (success==0 && codes[i+1].opcode == OpCodes.Ret && codes[i].labels.Count>0) {
@@ -214,9 +212,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (success!=7) throw new Exception($"{nameof(Purchase)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

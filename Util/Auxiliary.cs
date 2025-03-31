@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using HarmonyLib;
 
 namespace CupheadArchipelago.Util {
     public static class Aux {
@@ -56,17 +55,6 @@ namespace CupheadArchipelago.Util {
                 T value = list[k];  
                 list[k] = list[n];  
                 list[n] = value;  
-            }
-        }
-
-        private static bool DbgT(int num) {
-            Logging.Log($"T:{num}");
-            return true;
-        }
-
-        private static void LogCodeInstructions(IEnumerable<CodeInstruction> codes) {
-            foreach (CodeInstruction code in codes) {
-                Logging.Log(code.opcode + " -: " + code.operand);
             }
         }
     }

@@ -10,23 +10,25 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             Harmony.CreateAndPatchAll(typeof(Start));
         }
 
-        private const int DIALOGUER_ID = 23;
+        private const int DIALOGUER_ID = KitchenLevelHook.DIALOGUER_ID;
 
         [HarmonyPatch(typeof(KitchenSaltbakerCounter), "Start")]
         internal static class Start {
             static bool Prefix() {
                 Logging.Log($"saltbaker: {Dialoguer.GetGlobalFloat(DIALOGUER_ID)}");
-                if (Dialoguer.GetGlobalFloat(23) == 0f && APCondition())
-                    Dialoguer.SetGlobalFloat(23, 1f);
+                if (APData.IsCurrentSlotEnabled()) {
+                    if (Dialoguer.GetGlobalFloat(DIALOGUER_ID) == 0f) {
+                        KitchenLevelHook.firstVisit = true;
+                        if (APCondition()) Dialoguer.SetGlobalFloat(DIALOGUER_ID, 1f);
+                    } else KitchenLevelHook.firstVisit = false;
+                }
                 return true;
             }
 
             private static bool APCondition() {
-                if (APData.IsCurrentSlotEnabled()) {
-                    return 
-                        Config.IsSkippingCutscene(Cutscenes.DLCSaltbakerIntro) ||
-                        APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCRequiredIngredients;
-                } else return false;
+                return 
+                    Config.IsSkippingCutscene(Cutscenes.DLCSaltbakerIntro) ||
+                    APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCRequiredIngredients;
             }
         }
     }

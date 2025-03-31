@@ -46,9 +46,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 //Logging.Log(_fi_MapData_sessionStarted);
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
                     if (!success && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && 
@@ -75,9 +73,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (!labelPlaced||!success) throw new Exception($"{nameof(Init)}: Patch Failed! {labelPlaced}||{success}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

@@ -15,7 +15,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             Harmony.CreateAndPatchAll(typeof(OnLevelStart));
         }
 
-        private const int DIALOGUER_ID = 23;
+        internal const int DIALOGUER_ID = 23;
+        internal static bool firstVisit = false;
 
         [HarmonyPatch(typeof(KitchenLevel), "CheckIfBossesCompleted")]
         internal static class CheckIfBossesCompleted {
@@ -30,9 +31,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_APCondition = typeof(CheckIfBossesCompleted).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i+1].operand == _fi_worldDLCBossLevels &&
@@ -45,9 +44,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (!success) throw new Exception($"{nameof(CheckIfBossesCompleted)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -70,7 +67,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
                 MethodInfo _mi_GetGlobalFloat = typeof(Dialoguer).GetMethod(
                     "GetGlobalFloat",
-                    BindingFlags.NonPublic | BindingFlags.Static,
+                    BindingFlags.Public | BindingFlags.Static,
                     null,
                     [typeof(int)],
                     null
@@ -78,14 +75,13 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_APCondition = typeof(OnLevelStart).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == DIALOGUER_ID && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_GetGlobalFloat &&
-                        codes[i+2].opcode == OpCodes.Ldc_R4 && (float)codes[i+2].operand == 1f && codes[i+4].opcode == OpCodes.Brfalse) {
-                            codes.Insert(i+4, new CodeInstruction(OpCodes.Call, _mi_APCondition));
+                        codes[i+2].opcode == OpCodes.Ldc_R4 && (float)codes[i+2].operand == 1 && codes[i+3].opcode == OpCodes.Bne_Un) {
+                            codes[i+3].opcode = OpCodes.Brfalse;
+                            codes.Insert(i+3, new CodeInstruction(OpCodes.Call, _mi_APCondition));
                             success = true;
                             break;
                     }
@@ -93,17 +89,16 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (!success) throw new Exception($"{nameof(OnLevelStart)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
             }
 
-            private static bool APCondition(bool orig) {
+            private static bool APCondition(float a, float b) {
+                bool orig = a == b;
                 if (APData.IsCurrentSlotEnabled()) {
-                    return orig && APClient.APSessionGSPlayerData.dlc_ingredients < APSettings.DLCRequiredIngredients;
+                    return orig && !firstVisit;
                 } else return orig;
             }
         }

@@ -23,17 +23,13 @@ namespace CupheadArchipelago.Hooks {
                 bool debug = false;
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 success |= APCommonPatch(ref codes, il);
                 if (success!=1) throw new Exception($"{nameof(credits_cr)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -48,17 +44,13 @@ namespace CupheadArchipelago.Hooks {
                 bool debug = false;
                 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 success |= APCommonPatch(ref codes, il);
                 if (success!=1) throw new Exception($"{nameof(skip_cr)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

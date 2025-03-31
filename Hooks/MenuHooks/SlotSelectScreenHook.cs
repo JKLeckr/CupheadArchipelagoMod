@@ -114,9 +114,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Label cblock = il.DefineLabel();
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-5;i++) {
                     if ((success&1) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldarg_0 &&
@@ -332,9 +330,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Label lacceptif = il.DefineLabel();
                 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-6;i++) {
                     if ((success&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+1].operand == (sbyte)CupheadButton.Accept &&
@@ -373,9 +369,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (success!=3) throw new Exception($"{nameof(SlotSelectScreen)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

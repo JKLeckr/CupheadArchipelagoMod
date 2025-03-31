@@ -86,9 +86,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Label ccwhile = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-11;i++) {
                     if ((successBit&1) == 0 && codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == _fi_Multiplayer &&
@@ -179,9 +177,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (successBit!=15) throw new Exception($"{nameof(Awake)}: Patch Failed! {successBit}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -375,9 +371,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Label end = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 codes[codes.Count-1].labels.Add(end);
                 for (int i = 0; i < codes.Count-4; i++) {
@@ -395,9 +389,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (!success) throw new Exception($"{nameof(UpdateSelection)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -432,9 +424,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Label wifa = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-13;i++) {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_Data && codes[i+2].opcode==OpCodes.Ldfld && 
@@ -488,9 +478,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 if (success!=3) throw new Exception($"{nameof(addNewItem_cr)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

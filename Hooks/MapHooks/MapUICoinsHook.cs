@@ -71,9 +71,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 MethodInfo _mi_APGetCurrency = typeof(Update).GetMethod("APGetCurrency", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
                     if ((success&1)==0 && codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == _fi_Multiplayer && codes[i+1].opcode == OpCodes.Brfalse) {
@@ -94,9 +92,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (success!=3) throw new Exception($"{nameof(Update)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

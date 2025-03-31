@@ -26,9 +26,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 MethodInfo _mi_APCheckLevelsCompleted = typeof(Init).GetMethod("APCheckLevelsCompleted", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0; i<codes.Count-3; i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldsfld && codes[i+2].opcode == OpCodes.Callvirt &&
@@ -44,9 +42,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (index!=3) throw new Exception($"{nameof(Init)}: Patch Failed! {index}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

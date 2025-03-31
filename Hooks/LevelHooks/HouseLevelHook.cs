@@ -25,9 +25,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_APSetup = typeof(Start).GetMethod("APSetup", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0; i<codes.Count-1; i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_base_Start) {
@@ -45,9 +43,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (!success) throw new Exception($"{nameof(Start)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

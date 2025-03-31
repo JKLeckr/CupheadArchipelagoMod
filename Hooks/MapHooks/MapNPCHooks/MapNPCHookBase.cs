@@ -30,9 +30,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 Label l_end = il.DefineLabel();
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if (i < codes.Count-8) {
@@ -76,9 +74,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (success!=7) throw new Exception($"{nameof(MapNPCCoinHookTranspiler)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -116,9 +112,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 MethodInfo _mi_APCheck = typeof(MapNPCCoinHookBase).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-2;i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_SaveCurrentFile && codes[i+1].opcode == OpCodes.Call &&
@@ -135,9 +129,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (!success) throw new Exception($"{nameof(MapNPCQuestHookBase)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

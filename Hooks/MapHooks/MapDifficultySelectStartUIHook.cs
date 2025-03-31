@@ -49,9 +49,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 MethodInfo _mi_GetButtonDown = typeof(AbstractMapSceneStartUI).GetMethod("GetButtonDown", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+1].operand == 13 &&

@@ -31,9 +31,7 @@ namespace CupheadArchipelago.Hooks {
                 MethodInfo _mi_WriteCanPause = typeof(UpdateInput).GetMethod("WriteCanPause", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-2;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Callvirt &&
@@ -46,9 +44,7 @@ namespace CupheadArchipelago.Hooks {
                 if (!success) throw new Exception($"{nameof(UpdateInput)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

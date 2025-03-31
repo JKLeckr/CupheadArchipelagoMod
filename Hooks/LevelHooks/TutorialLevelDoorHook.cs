@@ -27,9 +27,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_APCheck = typeof(Activate).GetMethod("APCheck", BindingFlags.Static | BindingFlags.NonPublic);
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i = 0; i < codes.Count - 2; i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_base_Activate) {
@@ -44,9 +42,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 //if (!success) Logging.Log("Patch failed", BepInEx.Logging.LogLevel.Warning);
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

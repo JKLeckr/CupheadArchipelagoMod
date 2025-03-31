@@ -30,9 +30,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
                 MethodInfo _mi_APIsDashUnReady = typeof(HandleDash).GetMethod("APIsDashUnReady", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0; i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_dashManager &&
@@ -45,9 +43,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
                 if (!success) throw new Exception($"{nameof(HandleDash)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -69,9 +65,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
                 MethodInfo _mi_DuckHack = typeof(HandleLooking).GetMethod("DuckHack", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldloc_0 && codes[i+2].opcode == OpCodes.Ldloc_1 &&
@@ -85,9 +79,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
                 if (!success) throw new Exception($"{nameof(HandleLooking)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

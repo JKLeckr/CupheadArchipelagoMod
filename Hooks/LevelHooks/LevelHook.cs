@@ -277,9 +277,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Label l_skipcoin = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i = 0; i < codes.Count - 8; i++) {
                     if ((success&1)==0 && codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
@@ -318,9 +316,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (success!=7) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

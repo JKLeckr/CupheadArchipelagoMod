@@ -48,9 +48,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 Label savepoint = il.DefineLabel();
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if ((success&1) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
@@ -73,9 +71,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (success!=3) throw new Exception($"{nameof(OnTriggerEnter2D)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

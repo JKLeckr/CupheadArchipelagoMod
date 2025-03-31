@@ -24,9 +24,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 int success = 0;
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
                     if (codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && codes[i+2].opcode == OpCodes.Ble) {
@@ -45,9 +43,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 }
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 if (success!=1) throw new Exception($"{nameof(Start)}: Patch Failed! {success}");
 

@@ -38,9 +38,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 int ins_index = codes.Count-1;
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 List<Label> end_labels = codes[ins_index].labels;
                 codes[ins_index].labels = [];
@@ -52,9 +50,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 codes[ins_index].labels = end_labels;
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -92,9 +88,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_APWaitTime = typeof(postWinEntry_cr).GetMethod("APWaitTime", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Ldfld && codes[i+3].opcode == OpCodes.Ldc_R4 &&
@@ -107,9 +101,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (!success) throw new Exception($"{nameof(postWinEntry_cr)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

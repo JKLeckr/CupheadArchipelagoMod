@@ -141,9 +141,7 @@ namespace CupheadArchipelago.Hooks {
                     Label vanilla_label = il.DefineLabel();
 
                     if (debug) {
-                        for (int i = 0; i < codes.Count; i++) {
-                            Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                        }
+                        Dbg.LogCodeInstructions(codes);
                     }
                     for (int i = 0; i < codes.Count - 3; i++) {
                         if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi__weapons &&
@@ -166,9 +164,7 @@ namespace CupheadArchipelago.Hooks {
                     if (!success) throw new Exception($"{nameof(PlayerInventory)}: Patch Failed!");
                     if (debug) {
                         Logging.Log("---");
-                        for (int i = 0; i < codes.Count; i++) {
-                            Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                        }
+                        Dbg.LogCodeInstructions(codes);
                     }
 
                     return codes;

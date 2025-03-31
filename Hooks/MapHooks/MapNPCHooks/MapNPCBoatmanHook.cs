@@ -41,9 +41,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 MethodInfo _mi_APConditionFloat = typeof(Start).GetMethod("APConditionFloat", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-10;i++) {
                     if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == DIALOGUER_VAR_ID && codes[i+5].opcode == OpCodes.Brfalse &&
@@ -57,9 +55,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (!success) throw new Exception($"{nameof(Start)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -112,9 +108,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 Label l_afterload = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-11;i++) {
                     if ((success&1)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+2].opcode == OpCodes.Ldc_I4 &&
@@ -153,9 +147,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (success!=3) throw new Exception($"{nameof(Start)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

@@ -66,9 +66,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 MethodInfo _mi_get_SuperMeterMax = typeof(PlayerStatsManager).GetProperty("SuperMeterMax", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-8;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && codes[i+2].opcode == OpCodes.Callvirt &&
@@ -91,9 +89,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 if (!success) throw new Exception($"{nameof(HandleWeaponSwitch)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
@@ -117,9 +113,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 MethodInfo _mi_IsInSwitchableState = typeof(HandleWeaponSwitch).GetMethod("IsInSwitchableState", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-8;i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldarg_0 &&

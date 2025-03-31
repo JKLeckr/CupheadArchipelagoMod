@@ -35,9 +35,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Label after_label = il.DefineLabel();
 
                 if (debug) {
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i = 0; i < codes.Count - 3; i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_PlayerData_Data && 
@@ -78,9 +76,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (insertCount!=3) throw new Exception($"{nameof(Awake)}: Patch Failed! insertCount: {insertCount}");
                 if (debug) {
                     Logging.Log("---");
-                    for (int i = 0; i < codes.Count; i++) {
-                        Logging.Log($"{codes[i].opcode}: {codes[i].operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

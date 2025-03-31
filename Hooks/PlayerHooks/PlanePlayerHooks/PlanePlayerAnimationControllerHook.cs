@@ -25,9 +25,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 MethodInfo _mi_APIsShrinkReady = typeof(HandleShrunk).GetMethod("APIsShrinkReady", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0; i<codes.Count-2;i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_get_ShrinkState && codes[i+2].opcode == OpCodes.Brtrue) {
@@ -39,9 +37,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 if (!success) throw new Exception($"{nameof(HandleShrunk)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;

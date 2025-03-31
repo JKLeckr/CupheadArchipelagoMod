@@ -26,9 +26,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_IsSkippingCutscene = typeof(go_cr).GetMethod("IsSkippingCutscene", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+2].operand == _mi_GetMapData &&
@@ -41,9 +39,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (success!=2) throw new Exception($"{nameof(go_cr)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
-                    foreach (CodeInstruction code in codes) {
-                        Logging.Log($"{code.opcode}: {code.operand}");
-                    }
+                    Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
