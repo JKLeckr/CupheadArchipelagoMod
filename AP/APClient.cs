@@ -483,7 +483,7 @@ namespace CupheadArchipelago.AP {
             } catch (ArchipelagoSocketClosedException e) {
                 Logging.LogWarning($"[APClient] Failed to send checks! {e.Message}");
             }
-            LoggingFlags loggingFlags = LoggingFlags.Network | (state?LoggingFlags.Info:LoggingFlags.Warning);
+            LoggingFlags loggingFlags = LoggingFlags.Debug | (state?LoggingFlags.Info:LoggingFlags.Warning);
             if (Logging.IsLoggingFlagsEnabled(loggingFlags)) {
                 string locsstr = "[";
                 for (int i=0;i<locs.Length;i++) {
@@ -493,6 +493,9 @@ namespace CupheadArchipelago.AP {
                 }
                 if (state) Logging.Log($"[APClient] Location(s) {locsstr} send success", loggingFlags);
                 else Logging.LogWarning($"[APClient] Location(s) {locsstr} send failure", loggingFlags);
+            } else if (Logging.IsLoggingFlagsEnabled(LoggingFlags.Network)) {
+                if (state) Logging.Log($"[APClient] Locations send success");
+                else Logging.LogWarning($"[APClient] Locations send failure");
             }
             sending = false;
             return state;
