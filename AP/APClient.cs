@@ -533,15 +533,15 @@ namespace CupheadArchipelago.AP {
             Logging.Log("[APClient] OnItemReceived");
             Logging.Log($"[APClient] CIIndex: {currentReceivedItemIndex}; SIIndex: {ReceivedItemsIndex}; RIIndex: {helper.Index} ItemCount: {helper.AllItemsReceived.Count}");
             try {
-                bool recover = helper.AllItemsReceived.Count > ReceivedItemsIndex;
-                if (recover) Logging.Log("[APClient] In Item Recovery");
+                bool catchup = helper.AllItemsReceived.Count > ReceivedItemsIndex;
+                if (catchup) Logging.LogDebug("[APClient] Catching up...");
                 ItemInfo item = helper.PeekItem();
                 if (!itemMap.ContainsKey(item.ItemId)) {
                     itemMap.Add(item.ItemId, new APItemInfo(item.ItemId, item.ItemName, item.Flags));
                 }
                 long itemId = item.ItemId;
                 string itemName = GetItemName(itemId);
-                if (currentReceivedItemIndex>=ReceivedItemsIndex || recover) {
+                if (currentReceivedItemIndex>=ReceivedItemsIndex || catchup) {
                     //Logging.Log($"[APClient] Receiving {itemName} from {item.Player}...");
                     Logging.Log($"[APClient] Receiving {itemName} from {item.Player} ({item.LocationDisplayName})...");
                     APItemData nitem = new APItemData(item);
