@@ -148,7 +148,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 break;
 		                }
                     }
-                    else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain) {
+                    else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain || Level.IsChessBoss) {
                         switch (instance.LevelType) {
                             case Level.Type.Battle: {
                                 Logging.Log("[LevelHook] Battle Type");
@@ -304,9 +304,10 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         (MethodInfo)codes[i+7].operand == _mi_AddCurrency) {
                             codes[i+4].labels.Add(l_skipcoin);
                             List<CodeInstruction> ncodes = [
-                                new CodeInstruction(OpCodes.Ldarg_0),
-                                new CodeInstruction(OpCodes.Callvirt, _mi_get_CurrentLevel),
-                                new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
+                                //new CodeInstruction(OpCodes.Ldarg_0),
+                                //new CodeInstruction(OpCodes.Callvirt, _mi_get_CurrentLevel),
+                                //new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
+                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brtrue, l_skipcoin),
                             ];
                             codes.InsertRange(i, ncodes);
@@ -351,7 +352,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                 _ => false,
             } && instance.CurrentLevel switch {
-                Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.ChessCastle => false,
+                Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
                 _ => true,
             };
         }
