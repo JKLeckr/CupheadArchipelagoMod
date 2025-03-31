@@ -8,6 +8,8 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapUICoinsHook {
@@ -18,7 +20,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
         [HarmonyPatch(typeof(MapUICoins), "Start")]
         internal static class Start {
-            static void Postfix(MapUICoins __instance, ref PlayerId ___playerId) {
+            static void Postfix(MapUICoins __instance, ref PlayerId ___playerId, Image ___coinImage) {
                 if (!APData.IsCurrentSlotEnabled() || !APSettings.UseDLC) return;
                 if (__instance.name == "CurrencyCanvasTwo") {
                     /*GameObject currencyOne = GameObject.Find("CurrencyCanvasOne");
@@ -29,11 +31,28 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     currencyThree.transform.SetSiblingIndex(2);
                     RectTransform rect = currencyThree.GetComponent<RectTransform>();
                     rect.anchoredPosition += new Vector2(108.2598f, 0f);
+                    GameObject icon = SetupHUDIcon(__instance.gameObject, "C");
+                    RectTransform trect = icon.gameObject.GetComponent<RectTransform>();
+                    trect.anchoredPosition += new Vector2(24f, -20f);
                     Logging.Log("Initialized Ingredients HUD");
                 }
                 else if (__instance.name == "CurrencyCanvasThree") {
                     ___playerId = PlayerId.Any;
+                    ___coinImage.enabled = false;
+                    GameObject icon = SetupHUDIcon(__instance.gameObject, "I");
+                    RectTransform trect = icon.gameObject.GetComponent<RectTransform>();
+                    trect.anchoredPosition += new Vector2(36f, -20f);
                 }
+            }
+
+            private static GameObject SetupHUDIcon(GameObject obj, string str) {
+                Transform tobj = obj.transform.GetChild(2);
+                tobj.gameObject.SetActive(true);
+                TextMeshProUGUI text = tobj.GetComponent<TextMeshProUGUI>();
+                text.text = str;
+                text.fontSize -= 16;
+                text.color = new Color(.97f, .85f, .28f);
+                return tobj.gameObject;
             }
         }
 
@@ -81,6 +100,9 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 }
 
                 return codes;
+            }
+            static void Postfix(PlayerId ___playerId, Image ___coinImage) {
+                if (APData.IsCurrentSlotEnabled() && ___playerId == PlayerId.PlayerTwo) ___coinImage.enabled = false;
             }
 
             private static bool APMult(bool multiplayer) => multiplayer || APData.IsCurrentSlotEnabled();
