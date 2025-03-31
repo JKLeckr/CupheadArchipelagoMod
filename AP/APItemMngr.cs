@@ -210,7 +210,11 @@ namespace CupheadArchipelago.AP {
         private static void AddCoins(int count=1) {
             int diff = APClient.GetReceivedCoinCount() - APClient.APSessionGSPlayerData.coins_collected;
             Logging.Log($"[AddCoins] Diff {diff}");
-            int ncount = Math.Min(count, diff);
+            int ncount = count;
+            if (ncount != diff) {
+                Logging.Log($"[AddCoins] Coins are out of sync. Adjusting...");
+                ncount = diff;
+            }
             if (ncount > 0) {
                 Logging.Log($"[AddCoins] Adding {ncount} coin{(ncount!=1?"s":"")}...");
                 PlayerData.Data.AddCurrency(PlayerId.PlayerOne, ncount);

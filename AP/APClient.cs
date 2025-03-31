@@ -262,10 +262,7 @@ namespace CupheadArchipelago.AP {
                     receivedItemsUniqueB = new HashSet<APItemData>(new APItemDataComparer(true));
                     for (int i=0; i<ReceivedItems.Count;i++) {
                         APItemData item = ReceivedItems[i];
-                        if (!receivedItemCounts.ContainsKey(item.id))
-                            receivedItemCounts[item.id] = 1;
-                        else 
-                            receivedItemCounts[item.id]++;
+                        AddReceivedItemCount(item.id);
                         if (item.State==0) {
                             QueueItem(item, i);
                         }
@@ -614,6 +611,7 @@ namespace CupheadArchipelago.AP {
                 else Logging.LogWarning($"[APClient] {{B}} Item {GetItemName(item.id)} from {item.player} at Loc:{item.location} (Hash: {item.GetHashCode(false)}) already exists.");
             }
             ReceivedItems.Add(item);
+            AddReceivedItemCount(item.id);
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
         private static void QueueItem(APItemData item, int itemIndex) {
@@ -639,6 +637,12 @@ namespace CupheadArchipelago.AP {
                 throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
             }
         }
+        private static void AddReceivedItemCount(long itemId, int count = 1) {
+            if (!receivedItemCounts.ContainsKey(itemId))
+                receivedItemCounts[itemId] = 1;
+            else 
+                receivedItemCounts[itemId] += count;
+        }
         public static int GetReceivedItemCount(long itemId) {
             if (receivedItemCounts.ContainsKey(itemId)) return receivedItemCounts[itemId];
             return 0;
@@ -653,9 +657,11 @@ namespace CupheadArchipelago.AP {
         public static int GetReceivedCoinCount() {
             int res = 0;
             foreach (APItem item in APItemGroups.GetItems(APItemGroups.ItemGroup.Coins)) {
-                if (item == APItem.coin3) res += 3;
-                else if (item == APItem.coin2) res += 2;
-                else res++;
+                int value;
+                if (item == APItem.coin3) value = 3;
+                else if (item == APItem.coin2) value = 2;
+                else value = 1;
+                res += value * GetReceivedItemCount(item);
             }
             return res;
         }
