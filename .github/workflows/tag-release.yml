@@ -6,7 +6,6 @@ on:
       - 'test*'
       - 'preview*'
       - '*.*.*'
-  workflow_dispatch:
 
 jobs:
   create-release:
