@@ -82,7 +82,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks();
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
-                    apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal);
+                    apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal, false);
                 }
             }
 
@@ -343,6 +343,16 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         }
 
         private static bool IsValidLevel(Level instance) {
+            Logging.Log($"Level: {instance.CurrentLevel} | LevelType: {instance.LevelType} | Difficulty: {instance.mode}");
+            return instance.LevelType switch {
+                Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
+                _ => false,
+            } && instance.CurrentLevel switch {
+                Levels.House or Levels.ShmupTutorial or Levels.Mausoleum or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
+                _ => true,
+            };
+        }
+        private static bool IsValidDeathLinkLevel(Level instance) {
             Logging.Log($"Level: {instance.CurrentLevel} | LevelType: {instance.LevelType} | Difficulty: {instance.mode}");
             return instance.LevelType switch {
                 Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,

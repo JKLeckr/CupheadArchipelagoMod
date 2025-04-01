@@ -25,6 +25,8 @@ namespace CupheadArchipelago.Unity {
         private Type type = Type.Normal;
         private float timer = 0f;
         [SerializeField]
+        private bool deathLink = false;
+        [SerializeField]
         private bool death = false;
         [SerializeField]
         private string deathCause = "";
@@ -36,7 +38,7 @@ namespace CupheadArchipelago.Unity {
         [SerializeField]
         private float slowFire = 0f;
         
-        public void Init(Type type = Type.Normal) {
+        public void Init(Type type, bool disableDeathLink = false) {
             if (init) return;
             if (Current!=this) {
                 if (Current!=null) Destroy(Current);
@@ -44,6 +46,7 @@ namespace CupheadArchipelago.Unity {
             }
             Logging.Log($"[APManager] Initialized as Current {type}");
             this.type = type;
+            deathLink = type == Type.Level && !disableDeathLink;
             init = true;
         }
         public bool IsActive() => active;
@@ -84,7 +87,7 @@ namespace CupheadArchipelago.Unity {
                 }
                 else if (active && PauseManager.state != PauseManager.State.Paused) {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
-                    if (type == Type.Level && death && !deathExecuted) {
+                    if (type == Type.Level && deathLink && death && !deathExecuted) {
                         Logging.Log($"[APManager] Killing Players. Cause: \"{deathCause}\"");
                         PlayerStatsManagerHook.KillPlayer(PlayerId.Any);
                         deathExecuted = true;
