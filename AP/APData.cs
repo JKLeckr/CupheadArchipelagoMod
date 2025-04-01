@@ -21,6 +21,8 @@ namespace CupheadArchipelago.AP {
         public sbyte state {get; private set;} = 0;
         [JsonIgnore]
         internal bool dlock = false;
+        [JsonIgnore]
+        private long ltime = 0;
         [JsonProperty("version")]
         public long version {get; private set;} = AP_DATA_VERSION;
         [JsonProperty("enabled")]
@@ -43,12 +45,10 @@ namespace CupheadArchipelago.AP {
         public List<APItemData> receivedItems = [];
         [JsonProperty("goalsCompleted")]
         private Goals goalsCompleted = Goals.None;
-        [JsonProperty("override")]
-        private int _override = 0;
         [JsonProperty("ftime")]
         private long ftime = 0;
-        [JsonIgnore]
-        private long ltime = 0;
+        [JsonProperty("override")]
+        private int _override = 0;
 
         static APData() {
             SData = new APData[3];

@@ -15,6 +15,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             MapUICoinsHook.Hook();
             MapShmupTutorialBridgeActivatorHook.Hook();
             BoatmanEnablerHook.Hook();
+            MapDLCHook.Hook();
             MapNPCHooks.MapNPCMain.Hook();
         }
     }

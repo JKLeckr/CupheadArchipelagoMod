@@ -57,5 +57,8 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 Logging.Log($"Visited worlds: {res}");
             }
         }
+
+        [HarmonyPatch(typeof(Map), "start_cr", MethodType.Enumerator)]
+        internal static class start_cr {}
     }
 }
