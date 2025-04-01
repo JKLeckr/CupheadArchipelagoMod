@@ -2,11 +2,7 @@ Known Issues:
 
 There are too many bugs. While I have fixed a lot of them, there are still issues that need to be worked out. There are some that I already aware of that you can brace yourself for.
 
-- There are possible item duplication problems. A couple of times, I have seen more contracts and coins in my inventory than what I actually have on Archipelago. Workaround: Edit the save file. Coins is called "money" in the main game save file, and "contracts" is in the ap save file. (Might be fixed)
-
 - There are visual glitches with the shop. I remember one time (ONLY ONCE) after buying an item, an unavailable item (labeled already bought) would appear. This is harmless, and if it is clogging the shop, then just leave and re-enter.
-
-- There is a current bug with stoning and using EX/super. Might be fixed.
 
 - Traps are still disabled. This is because they have not been resolved at this time.
 
@@ -14,4 +10,4 @@ There are too many bugs. While I have fixed a lot of them, there are still issue
 
 - Some settings in the config do not work (For example, some cutscenes will not be skipped despite the config). Do not take it to heart.
 
-- By the way, the HUD is WIP (shows coins next to everything). Second is contracts, Third is ingredients. (I will try to figure out an ethical way to fix this)
+- There are certain instabilities when it comes to the client connecting and reconnecting. Crashes may occur.
