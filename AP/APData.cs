@@ -122,7 +122,9 @@ namespace CupheadArchipelago.AP {
             }
             string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
             if (global::PlayerData.inGame) {
-                data.ftime += DateTime.UtcNow.Ticks - data.ltime;
+                long diff = DateTime.UtcNow.Ticks - data.ltime;
+                if (diff > 0) data.ftime += diff;
+                else Logging.LogWarning("[APData] File time elapsed is negative!");
             }
             data.ltime = DateTime.UtcNow.Ticks;
             try {
