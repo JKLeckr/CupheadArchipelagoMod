@@ -12,10 +12,13 @@ namespace CupheadArchipelago {
         KettleIntro = 2,
         //FullIntro = 3,
         DieHouseCutscenes = 4,
+        KingdiceIntro = 16, //TODO Add
+        FinalIntro = 32, //TODO Add
         EndCutscene = 64,
         DLCIntro = 256,
         DLCSaltbakerIntro = 512,
         //DLCFullIntro = 768,
+        DLCFinalBossIntro = 4096, //TODO Add
         DLCEndCutscene = 8192, //TODO Add
         //All = 32767,
     }

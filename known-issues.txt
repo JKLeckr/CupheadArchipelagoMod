@@ -12,6 +12,6 @@ There are too many bugs. While I have fixed a lot of them, there are still issue
 
 - Chalice is disabled for now. There are technical issues to get around.
 
-- Some settings in the config do not work. Do not take it to heart.
+- Some settings in the config do not work (For example, some cutscenes will not be skipped despite the config). Do not take it to heart.
 
 - By the way, the HUD is WIP (shows coins next to everything). Second is contracts, Third is ingredients. (I will try to figure out an ethical way to fix this)
