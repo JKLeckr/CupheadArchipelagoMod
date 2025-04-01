@@ -12,7 +12,7 @@ This mod is currently in the development phase and it is very very incomplete, s
 
 ### Links
 
-Cuphead Game: ([Steam](http://store.steampowered.com/app/268910/Cuphead/), [GOG](https://www.gog.com/game/cuphead))
+Cuphead Game: [Steam](http://store.steampowered.com/app/268910/Cuphead/), [GOG](https://www.gog.com/game/cuphead)
 
 Archipelago: [GitHub](https://github.com/ArchipelagoMW/Archipelago)
 
