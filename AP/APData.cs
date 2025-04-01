@@ -95,6 +95,18 @@ namespace CupheadArchipelago.AP {
                             Logging.LogWarning($"[APData] Slot {i}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
                             data.state = 1;
                         }
+                        if (data.IsOverridden(512)) {
+                            data._override &= ~512;
+                            Logging.LogWarning($"[APData] Slot {i}: Cleaning up received items...");
+                            int counter = 0;
+                            for (int j=0;j<data.receivedItems.Count;j++) {
+                                if ((data.receivedItems[i]?.id ?? -1) == -1) {
+                                    data.receivedItems.RemoveAt(i);
+                                    counter++;
+                                }
+                            }
+                            Logging.LogWarning($"[APData] Slot {i}: Removed {counter} items.");
+                        }
                     }
                 }
                 else {
