@@ -95,6 +95,7 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_roundabout, Weapon.level_weapon_boomerang},
             {APItem.weapon_dlc_crackshot, Weapon.level_weapon_crackshot},
             {APItem.weapon_dlc_converge, Weapon.level_weapon_wide_shot},
+            {APItem.weapon_dlc_twistup, Weapon.level_weapon_upshot},
 
             {APItem.plane_gun, Weapon.plane_weapon_peashot},
             {APItem.plane_bombs, Weapon.plane_weapon_bomb},
