@@ -4,27 +4,27 @@
 using System;
 
 namespace CupheadArchipelago.AP {
-    public class APVersion : IComparable<APVersion> {
-        public int Major { get; private set; }
-        public int Minor { get; private set; }
-        public int Patch { get; private set; }
-        public string Pre { get; private set; }
+    public struct APVersion : IComparable<APVersion> {
+        public readonly int major;
+        public readonly int minor;
+        public readonly int patch;
+        public readonly string pre;
 
         public APVersion() {
-            Major = 0;
-            Minor = 0;
-            Patch = 0;
-            Pre = "";
+            major = 0;
+            minor = 0;
+            patch = 0;
+            pre = "";
         }
 
         public APVersion(int major, int minor, int patch, string pre = null) {
             if (major < 0 || minor < 0 || patch < 0)
                 throw new ArgumentOutOfRangeException("Version numbers must not be negative");
 
-            Major = major;
-            Minor = minor;
-            Patch = patch;
-            Pre = pre;
+            this.major = major;
+            this.minor = minor;
+            this.patch = patch;
+            this.pre = pre;
         }
 
         public APVersion(string version) {
@@ -50,28 +50,28 @@ namespace CupheadArchipelago.AP {
                 throw new FormatException("Invalid version format", e);
             }
 
-            Major = major;
-            Minor = minor;
-            Patch = patch;
-            Pre = (mainParts.Length>1) ? mainParts[1] : "";
+            this.major = major;
+            this.minor = minor;
+            this.patch = patch;
+            pre = (mainParts.Length>1) ? mainParts[1] : "";
         }
 
         public int CompareTo(APVersion other) {
             if (other == null) return 1;
 
-            int res = Major.CompareTo(other.Major);
+            int res = major.CompareTo(other.major);
             if (res != 0) return res;
 
-            res = Minor.CompareTo(other.Minor);
+            res = minor.CompareTo(other.minor);
             if (res != 0) return res;
 
-            res = Patch.CompareTo(other.Patch);
+            res = patch.CompareTo(other.patch);
             if (res != 0) return res;
 
-            if (Pre == null && other.Pre != null) return 1;
-            if (Pre != null && other.Pre == null) return -1;
-            if (Pre != null && other.Pre != null) {
-                res = StringComparer.Ordinal.Compare(Pre, other.Pre);
+            if (pre == null && other.pre != null) return 1;
+            if (pre != null && other.pre == null) return -1;
+            if (pre != null && other.pre != null) {
+                res = StringComparer.Ordinal.Compare(pre, other.pre);
                 if (res != 0) return res;
             }
 
@@ -84,26 +84,23 @@ namespace CupheadArchipelago.AP {
         public override int GetHashCode() {
             unchecked {
                 int hash = 17;
-                hash *= 29 + Major.GetHashCode();
-                hash *= 29 + Minor.GetHashCode();
-                hash *= 29 + Patch.GetHashCode();
-                hash *= 29 + (Pre?.GetHashCode() ?? 0);
+                hash *= 29 + major.GetHashCode();
+                hash *= 29 + minor.GetHashCode();
+                hash *= 29 + patch.GetHashCode();
+                hash *= 29 + (pre?.GetHashCode() ?? 0);
                 return hash;
             }
         }
 
         public override string ToString() {
-            var version = $"{Major}.{Minor}.{Patch}";
-            if (!string.IsNullOrEmpty(Pre))
-                version += $"-{Pre}";
+            var version = $"{major}.{minor}.{patch}";
+            if (!string.IsNullOrEmpty(pre))
+                version += $"-{pre}";
 
             return version;
         }
 
-        public static bool operator ==(APVersion a, APVersion b) {
-            if (a is null) return b is null;
-            return a.Equals(b);
-        }
+        public static bool operator ==(APVersion a, APVersion b) => a.Equals(b);
         public static bool operator !=(APVersion a, APVersion b) => !(a == b);
         public static bool operator <(APVersion a, APVersion b) => a.CompareTo(b) < 0;
         public static bool operator >(APVersion a, APVersion b) => a.CompareTo(b) > 0;

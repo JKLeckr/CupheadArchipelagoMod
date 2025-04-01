@@ -7,33 +7,33 @@ using Newtonsoft.Json;
 using CupheadArchipelago.Util;
 
 namespace CupheadArchipelago.AP {
-    public class APSlotData {
+    public partial class APSlotData {
         internal const long AP_SLOTDATA_VERSION = 2;
 
-        public long version {get; private set;}
-        public APVersion world_version {get; private set;}
-        public LevelShuffleMap level_shuffle_map {get; private set;}
-        public ShopSet[] shop_map {get; private set;}
-        public bool use_dlc {get; private set;}
-        public GameMode mode {get; private set;}
-        public bool expert_mode {get; private set;}
-        public APItem start_weapon {get; private set;}
-        public WeaponExMode randomize_weapon_ex {get; private set;}
-        public int[] contract_requirements {get; private set;}
-        public int dlc_ingredient_requirements {get; private set;}
-        public int contract_goal_requirements {get; private set;}
-        public int dlc_ingredient_goal_requirements {get; private set;}
-        public bool freemove_isles {get; private set;}
-        public bool randomize_abilities {get; private set;}
-        public bool randomize_abilities_aim {get; private set;}
-        public GradeChecks boss_grade_checks {get; private set;}
-        public GradeChecks rungun_grade_checks {get; private set;}
-        public int start_maxhealth {get; private set;}
-        public DlcChaliceMode dlc_chalice {get; private set;}
-        public DlcCurseMode dlc_curse_mode {get; private set;}
-        public bool trap_loadout_anyweapon {get; private set;}
-        public MusicGroups music_shuffle {get; private set;}
-        public bool deathlink {get; private set;}
+        public readonly long version;
+        public readonly APVersion world_version;
+        public readonly LevelShuffleMap level_shuffle_map;
+        public readonly ShopSet[] shop_map;
+        public readonly bool use_dlc;
+        public readonly GameMode mode;
+        public readonly bool expert_mode;
+        public readonly APItem start_weapon;
+        public readonly WeaponExMode randomize_weapon_ex;
+        public readonly int[] contract_requirements;
+        public readonly int dlc_ingredient_requirements;
+        public readonly int contract_goal_requirements;
+        public readonly int dlc_ingredient_goal_requirements;
+        public readonly bool freemove_isles;
+        public readonly bool randomize_abilities;
+        public readonly bool randomize_abilities_aim;
+        public readonly GradeChecks boss_grade_checks;
+        public readonly GradeChecks rungun_grade_checks;
+        public readonly int start_maxhealth;
+        public readonly DlcChaliceMode dlc_chalice;
+        public readonly DlcCurseMode dlc_curse_mode;
+        public readonly bool trap_loadout_anyweapon;
+        public readonly MusicGroups music_shuffle;
+        public readonly bool deathlink;
 
         public APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataLong(slotData, "version");
