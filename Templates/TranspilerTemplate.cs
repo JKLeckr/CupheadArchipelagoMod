@@ -17,7 +17,7 @@ namespace CupheadArchipelago.Templates {
                     Dbg.LogCodeInstructions(codes);
                 }
                 // Body here
-                //if (!success) throw new Exception($"{nameof(method)}: Patch Failed!");
+                if (!success) throw new Exception($"{nameof(Patch)}: Patch Failed!");
                 if (debug) {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
