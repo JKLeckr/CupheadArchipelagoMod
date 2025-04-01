@@ -504,23 +504,25 @@ namespace CupheadArchipelago.AP {
             Logging.LogDebug("SendChecksThread");
             try {
                 session.Locations.CompleteLocationChecks(locs);
+                LoggingFlags loggingFlags = LoggingFlags.Debug | (state?LoggingFlags.Info:LoggingFlags.Warning);
+                if (Logging.IsLoggingFlagsEnabled(loggingFlags)) {
+                    string locsstr = "[";
+                    for (int i=0;i<locs.Length;i++) {
+                        if (i>0) locsstr += ",";
+                        locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
+                        if (i==locs.Length-1) locsstr += "]";
+                    }
+                    if (state) Logging.Log($"[APClient] Location(s) {locsstr} send success", loggingFlags);
+                    else Logging.LogWarning($"[APClient] Location(s) {locsstr} send failure", loggingFlags);
+                } else if (Logging.IsLoggingFlagsEnabled(LoggingFlags.Network)) {
+                    if (state) Logging.Log($"[APClient] Locations send success");
+                    else Logging.LogWarning($"[APClient] Locations send failure");
+                }
                 state = true;
             } catch (ArchipelagoSocketClosedException e) {
                 Logging.LogWarning($"[APClient] Failed to send checks! {e.Message}");
-            }
-            LoggingFlags loggingFlags = LoggingFlags.Debug | (state?LoggingFlags.Info:LoggingFlags.Warning);
-            if (Logging.IsLoggingFlagsEnabled(loggingFlags)) {
-                string locsstr = "[";
-                for (int i=0;i<locs.Length;i++) {
-                    if (i>0) locsstr += ",";
-                    locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
-                    if (i==locs.Length-1) locsstr += "]";
-                }
-                if (state) Logging.Log($"[APClient] Location(s) {locsstr} send success", loggingFlags);
-                else Logging.LogWarning($"[APClient] Location(s) {locsstr} send failure", loggingFlags);
-            } else if (Logging.IsLoggingFlagsEnabled(LoggingFlags.Network)) {
-                if (state) Logging.Log($"[APClient] Locations send success");
-                else Logging.LogWarning($"[APClient] Locations send failure");
+            } catch (Exception e) {
+                Logging.LogError($"[APClient] Failed to send checks! Exception: {e}");
             }
             sending = false;
             return state;
