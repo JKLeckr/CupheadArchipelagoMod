@@ -73,10 +73,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(Level), "Awake")]
         internal static class Awake {
-            /*static bool Prefix() {
-                Level.SetCurrentMode(GetClamppedCurrentLevelMode());
-                return true;
-            }*/
             static void Postfix(Level __instance) {
                 Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
@@ -85,16 +81,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal, false);
                 }
             }
-
-            /*private static Level.Mode GetClamppedCurrentLevelMode() {
-                if (APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) {
-                    //Logging.Log.LogInfo("Clamping mode");
-                    if (APData.CurrentSData.Hard||Level.CurrentMode>0) {
-                        return APData.CurrentSData.Hard?Level.Mode.Hard:Level.Mode.Normal;
-                    } else return Level.Mode.Easy;
-                }
-                else return Level.CurrentMode;
-            }*/
         }
 
         [HarmonyPatch(typeof(Level), "_OnLevelStart")]

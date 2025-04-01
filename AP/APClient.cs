@@ -614,16 +614,6 @@ namespace CupheadArchipelago.AP {
             ReceiveItemBasic(item);
             Logging.Log($"[APClient] Received {GetItemName(item.id)} from {item.player} ({item.location})");
             QueueItem(item);
-            
-            /*if (!receivedItemsUnique.Contains(item)) {
-                ReceivedItems.Add(item);
-                if (item.Location>=0) receivedItemsUnique.Add(item);
-                Logging.Log($"[APClient] Received {GetItemName(item.Id)} from {item.Player} ({item.Location})");
-                QueueItem(item);
-            }
-            else {
-                Logging.Log($"[APClient] Item {GetItemName(item.Id)} from {item.Player} at Loc:{item.Location} (Hash: {item.GetHashCode(false)}) already exists. Skipping.");
-            }*/
         }
         internal static void ReceiveItemImmediate(APItemData item) {
             ReceiveItemBasic(item);

@@ -18,9 +18,10 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(MausoleumLevel), "Awake")]
         internal static class Awake {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 int insertCount = 0;
+
                 MethodInfo _mi_IsCurrentSlotEnabled = typeof(APData).GetMethod("IsCurrentSlotEnabled", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_IsChecked = typeof(Awake).GetMethod("IsChecked", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
@@ -58,15 +59,17 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             codes[i].labels.Add(tgt_label);
                             insertCount++;
                     }
-                    /*Logging.Log(i);
-                    for (int j=0;j<4;j++) {
-                        Logging.Log($"{codes[i+j].opcode}: {codes[i+j].operand}");
+                    if (debug) {
+                        Logging.Log(i);
+                        for (int j=0;j<4;j++) {
+                            Logging.Log($"{codes[i+j].opcode}: {codes[i+j].operand}");
+                        }
+                        Logging.Log(codes[i+1].opcode == OpCodes.Ldarg_0);
+                        Logging.Log(codes[i+2].opcode == OpCodes.Call);
+                        Logging.Log(codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_base_Awake);
+                        Logging.Log(codes[i+3].opcode == OpCodes.Ret);
+                        Logging.Log("-");
                     }
-                    Logging.Log(codes[i+1].opcode == OpCodes.Ldarg_0);
-                    Logging.Log(codes[i+2].opcode == OpCodes.Call);
-                    Logging.Log(codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_base_Awake);
-                    Logging.Log(codes[i+3].opcode == OpCodes.Ret);
-                    Logging.Log("-");*/
                     if (codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Call &&
                         (MethodInfo)codes[i+2].operand == _mi_base_Awake && codes[i+3].opcode == OpCodes.Ret) {
                             codes[i+1].labels.Add(after_label);

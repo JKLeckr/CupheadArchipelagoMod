@@ -145,14 +145,15 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool success = false;
+                bool debug = false;
+
                 FieldInfo _fi_normal = typeof(MapDifficultySelectStartUI).GetField("normal", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                /*for (int i = 0; i < codes.Count; i++) {
-                    Logging.Log.LogInfo($"{codes[i].opcode}: {codes[i].operand}");
-                }*/
-
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
                 for (int i = 0; i < codes.Count - 3; i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_normal
                         && codes[i+2].opcode == OpCodes.Callvirt && codes[i+3].opcode == OpCodes.Stloc_1) {
@@ -163,10 +164,10 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     }
                 }
                 if (!success) throw new Exception($"{nameof(UpdateCursor)}: Patch Failed!");
-
-                /*for (int i = 0; i < codes.Count; i++) {
-                    Logging.Log.LogInfo($"{codes[i].opcode}: {codes[i].operand}");
-                }*/
+                if (debug) {
+                    Logging.Log("---");
+                    Dbg.LogCodeInstructions(codes);
+                }
 
                 return codes;
             }

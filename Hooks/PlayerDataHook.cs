@@ -132,9 +132,10 @@ namespace CupheadArchipelago.Hooks {
             [HarmonyPatch(typeof(PlayerInventory), MethodType.Constructor)]
             internal static class PlayerInventory {
                 static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                    List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                    List<CodeInstruction> codes = new(instructions);
                     bool debug = false;
                     bool success = false;
+                    
                     FieldInfo _fi__weapons = typeof(PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
                     MethodInfo _mi__weapons_Add = typeof(PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
 
@@ -190,9 +191,13 @@ namespace CupheadArchipelago.Hooks {
                         BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[]{typeof(string)}, null);
 
                 static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                    List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                    List<CodeInstruction> codes = new(instructions);
                     bool found = false;
+                    bool debug = false;
 
+                    if (debug) {
+                        Dbg.LogCodeInstructions(codes);
+                    }
                     for (int i=0;i<codes.Count-1;i++) {
                         if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_GetCoin__str) {
                             codes[i] = CodeInstruction.Call(typeof(GetCoinCollected), "APGetCoinCollected"); //FIXME: Style use OpCodes.Call instead
@@ -201,16 +206,17 @@ namespace CupheadArchipelago.Hooks {
                             break;
                         }
                     }
-                    if (found) Logging.Log("[GetCoinCollected] Successfully patched", LoggingFlags.Debug);
-
-                    /*foreach (CodeInstruction code in codes)
-                        Console.WriteLine(code);*/
+                    if (!found) throw new Exception($"{nameof(GetCoinCollected)}: Patch Failed!");
+                    if (debug) {
+                        Logging.Log("---");
+                        Dbg.LogCodeInstructions(codes);
+                    }
 
                     return codes;
                 }
 
                 private static bool APGetCoinCollected(PlayerCoinManager instance, string coinID) {
-                    return ((PlayerCoinProperties)_mi_GetCoin__str.Invoke(instance, new object[]{coinID})).collected;
+                    return ((PlayerCoinProperties)_mi_GetCoin__str.Invoke(instance, [coinID])).collected;
                 }
             }
         }

@@ -414,12 +414,13 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 bool success = false;
+                bool debug = false;
+
                 MethodInfo _mi_ClearSlot = typeof(PlayerData).GetMethod("ClearSlot", BindingFlags.Public | BindingFlags.Static);
 
-                /*foreach (CodeInstruction code in codes) {
-                    Logging.Log.LogInfo($"{code.opcode}: {code.operand}");
-                }*/
-
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
                 for (int i=0;i<codes.Count;i++) {
                     if (codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_ClearSlot) {
                         codes.Insert(i+1, CodeInstruction.Call(() => APDataClearSlot()));
@@ -428,6 +429,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     }
                 }
                 if (!success) throw new Exception($"{nameof(UpdateConfirmDelete)}: Patch Failed!");
+                if (debug) {
+                    Logging.Log("---");
+                    Dbg.LogCodeInstructions(codes);
+                }
 
                 return codes;
             }
@@ -448,17 +453,18 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 bool success = false;
-
-                /*foreach (CodeInstruction code in codes) {
-                    Logging.Log.LogInfo($"{code.opcode}: {code.operand}");
-                }
-                Logging.Log.LogInfo("------------------------------------------------------");*/
+                bool debug = false;
                 
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
                 for (int i=0;i<codes.Count-6;i++) {
                     if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 50) {
-                        /*for (int j=0;j<6;j++) {
-                            Logging.Log.LogInfo($"REMOVING {codes[i+j].opcode}: {codes[i+j].operand}");
-                        }*/
+                        if (debug) {
+                            for (int j=0;j<6;j++) {
+                            Logging.Log($"REMOVING {codes[i+j].opcode}: {codes[i+j].operand}");
+                            }
+                        }
                         codes.RemoveRange(i,6);
                         codes.Insert(i, CodeInstruction.Call(() => LoadSceneNewSave()));
                         success = true;
@@ -466,10 +472,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     }
                 }
                 if (!success) throw new Exception($"{nameof(EnterGame)}: Patch Failed!");
-
-                /*foreach (CodeInstruction code in codes) {
-                    Logging.Log.LogInfo($"{code.opcode}: {code.operand}");
-                }*/
+                if (debug) {
+                    Logging.Log("---");
+                    Dbg.LogCodeInstructions(codes);
+                }
 
                 return codes;
             }

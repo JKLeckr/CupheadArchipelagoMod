@@ -20,7 +20,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         [HarmonyPatch(typeof(MapNPCCanteen), "Start")]
         internal static class Start {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 int labelInsert = 0;
                 

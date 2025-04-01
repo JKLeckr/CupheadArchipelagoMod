@@ -32,10 +32,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         [HarmonyPatch(typeof(SlotSelectScreenSlot), "Init")]
         internal static class Init {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 bool success = false;
                 bool labelPlaced = false;
+
                 FieldInfo _fi_MapData_sessionStarted = typeof(PlayerData.MapData).GetField("sessionStarted", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_emptyChild = typeof(SlotSelectScreenSlot).GetField("emptyChild", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo _mi_gameObject_SetActive = typeof(GameObject).GetMethod("SetActive");
