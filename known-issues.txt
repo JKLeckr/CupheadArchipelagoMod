@@ -10,6 +10,8 @@ There are too many bugs. While I have fixed a lot of them, there are still issue
 
 - Some settings in the config do not work (For example, some cutscenes will not be skipped despite the config). Do not take it to heart.
 
-- There are certain instabilities when it comes to the client connecting and reconnecting. Crashes may occur.
+- There are certain instabilities when it comes to the client connecting and reconnecting.
+
+- The client may be more reliable, but it is more unstable. The game may crash when sending checks.
 
 - I did not test all of the modes (goals). In only tested the devil and saltbaker goal. Make sure it works before doing an important multiworld.
