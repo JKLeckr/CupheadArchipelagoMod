@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(OnAwake));
             Harmony.CreateAndPatchAll(typeof(CalculateHealthMax));
+            Harmony.CreateAndPatchAll(typeof(TakeDamage));
             Harmony.CreateAndPatchAll(typeof(DebugAddSuper));
             Harmony.CreateAndPatchAll(typeof(DebugFillSuper));
         }
@@ -50,6 +51,20 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                     CurrentStatMngr2 = __instance;
                 } else {
                     CurrentStatMngr1 = __instance;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerStatsManager), "TakeDamage")]
+        internal static class TakeDamage {
+            static bool Prefix(PlayerStatsManager __instance) {
+                if (APData.IsCurrentSlotEnabled() && APData.CurrentSData.IsAnyOverridden(192)) {
+                    if (APData.CurrentSData.IsOverridden(64) || __instance.Health == 1) {
+                        Vibrator.Vibrate(1f, 0.2f, __instance.basePlayer.id);
+                        __instance.StartCoroutine("hit_cr");
+                        return false;
+                    }
                 }
                 return true;
             }

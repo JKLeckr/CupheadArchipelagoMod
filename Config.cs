@@ -63,14 +63,14 @@ namespace CupheadArchipelago {
         }
         public static bool IsSkippingCutscene(Cutscenes cutscene, bool apEnabledCondition) {
             if (!current.configSkipCutscenesAPOnly || apEnabledCondition)
-                return (current.configSkipCutscenes & cutscene) > 0;
+                return (current.configSkipCutscenes & cutscene) == cutscene;
             else return false;
         }
         public static bool ResetAPConfigOnFileDelete() {
             return current.configFileDeleteClearsAP;
         }
         public static bool IsAPStatsFunctionEnabled(APStatsFunctions function) {
-            return (current.configAPStatusFunctions & function) > 0;
+            return (current.configAPStatusFunctions & function) == function;
         }
     }
 }

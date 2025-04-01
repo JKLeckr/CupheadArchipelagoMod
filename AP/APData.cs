@@ -170,6 +170,9 @@ namespace CupheadArchipelago.AP {
         public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
         public bool IsOverridden(int i) {
+            return (_override & i) == i;
+        }
+        public bool IsAnyOverridden(int i) {
             return (_override & i) != 0;
         }
 
