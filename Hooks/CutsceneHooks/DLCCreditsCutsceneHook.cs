@@ -4,7 +4,7 @@
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.CutsceneHooks {
     internal class DLCCreditsCutsceneHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(goToNext));

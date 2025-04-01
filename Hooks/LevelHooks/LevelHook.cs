@@ -111,12 +111,16 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Logging.Log("[LevelHook] APCheck");
                 if (APData.IsCurrentSlotEnabled()) {
                     Logging.Log($"[LevelHook] Level: {instance.CurrentLevel}");
-                    // For now, the final bosses are not checks because they are event locations
                     if (instance.CurrentLevel == Levels.Devil || instance.CurrentLevel == Levels.Saltbaker) {
-                        Logging.Log("[LevelHook] Goal");
-                        APClient.GoalComplete((instance.CurrentLevel == Levels.Saltbaker)?Goals.Saltbaker:Goals.Devil);
+                        Goals goalFlag = (instance.CurrentLevel == Levels.Saltbaker)?Goals.Saltbaker:Goals.Devil;
+                        Logging.Log($"[LevelHook] Goal: {goalFlag}");
+                        APClient.GoalComplete(goalFlag, false);
+                        if (!APClient.LocationExists(LevelLocationMap.GetLocationId(instance.CurrentLevel, 0))) {
+                            Logging.Log("[LevelHook] Not Checking Final Location");
+                            return;
+                        }
                     }
-                    else if (instance.CurrentLevel == Levels.Mausoleum) {
+                    if (instance.CurrentLevel == Levels.Mausoleum) {
                         Logging.Log("[LevelHook] Mausoleum Type");
                         switch (PlayerData.Data.CurrentMap)
 		                {

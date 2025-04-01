@@ -8,11 +8,20 @@ using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.CutsceneHooks {
     internal class CreditsScreenHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(credits_cr));
             Harmony.CreateAndPatchAll(typeof(skip_cr));
+        }
+
+        [HarmonyPatch(typeof(CreditsScreen), "Start")]
+        internal static class Start {
+            static bool Prefix() {
+                APClient.SendChecks();
+                return true;
+            }
         }
 
         [HarmonyPatch(typeof(CreditsScreen), "credits_cr", MethodType.Enumerator)]

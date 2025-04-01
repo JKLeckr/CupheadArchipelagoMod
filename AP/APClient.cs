@@ -526,9 +526,10 @@ namespace CupheadArchipelago.AP {
             return state;
         }
 
-        public static void GoalComplete(Goals goal) {
+        public static void GoalComplete(Goals goal, bool updateGoal = true) {
+            Logging.Log($"[APClient] Adding Goal Flag {goal}");
             APSessionGSData.AddGoals(goal);
-            UpdateGoal();
+            if (updateGoal) UpdateGoal();
         }
         public static bool IsAPGoalComplete() {
             Goals goals = APSettings.Mode switch {
