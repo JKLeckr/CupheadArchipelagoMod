@@ -8,7 +8,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks {
     internal class CupheadHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Awake));
+            //Harmony.CreateAndPatchAll(typeof(Awake));
         }
 
         [HarmonyPatch(typeof(Cuphead), "Awake")]
