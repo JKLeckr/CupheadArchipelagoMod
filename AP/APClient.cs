@@ -3,8 +3,8 @@
 
 using System;
 using System.Threading;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
@@ -15,7 +15,6 @@ using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using CupheadArchipelago.Unity;
-using System.Net;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -51,6 +50,7 @@ namespace CupheadArchipelago.AP {
         private static int scoutMapStatus = 0;
         private static bool sending = false;
         private static bool reconnecting = false;
+        private static bool catchUpChecks = false;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,5,1,0);
@@ -139,31 +139,13 @@ namespace CupheadArchipelago.AP {
                 SessionStatus = 4;
 
                 try {
-                    if (Enabled) {
-                        Logging.Log($"[APClient] Checking AP data...");
-                        APSlotData nSlotData = new(loginData.SlotData);
-                        Logging.Log($"SlotData: {SlotData.GetHashCode()} == {nSlotData.GetHashCode()}");
-                        if (
-                            APSessionPlayerTeam != loginData.Team ||
-                            APSessionPlayerSlot != loginData.Slot ||
-                            APSessionGSData.seed != session.RoomState.Seed ||
-                            SlotData.GetHashCode() != nSlotData.GetHashCode()
-                        ) {
-                            Logging.LogError("[APClient] Data mismatch! Server changed unexpectedly!");
-                            CloseArchipelagoSession(resetOnFail);
-                            SessionStatus = -4;
-                            return false;
-                        }
-                    }
-                    else {
-                        Logging.Log($"[APClient] Getting AP Data...");
-                        APSessionPlayerTeam = loginData.Team;
-                        APSessionPlayerSlot = loginData.Slot;
-                        if (APSessionGSData.seed.Length==0)
-                            APSessionGSData.seed = session.RoomState.Seed;
-                        SlotData = new APSlotData(loginData.SlotData);
-                        APSessionPlayerInfo = session.Players.GetPlayerInfo(APSessionPlayerTeam, APSessionPlayerSlot);
-                    }
+                    Logging.Log($"[APClient] Getting AP Data...");
+                    APSessionPlayerTeam = loginData.Team;
+                    APSessionPlayerSlot = loginData.Slot;
+                    if (APSessionGSData.seed.Length==0)
+                        APSessionGSData.seed = session.RoomState.Seed;
+                    SlotData = new APSlotData(loginData.SlotData);
+                    APSessionPlayerInfo = session.Players.GetPlayerInfo(APSessionPlayerTeam, APSessionPlayerSlot);
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.LogError(e.ToString());
@@ -171,19 +153,6 @@ namespace CupheadArchipelago.AP {
                     CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -4;
                     return false;
-                }
-
-                if (Enabled) {
-                    if (Ready) {
-                        SessionStatus = 1;
-
-                        session.SetClientState(ArchipelagoClientState.ClientPlaying);
-
-                        Logging.Log($"[APClient] Reconnected. Skipping setup.");
-                        return true;
-                    } else {
-                        Logging.LogError($"[APClient] Not Ready. Continuing...");
-                    }
                 }
 
                 SessionStatus = 5;
@@ -229,7 +198,7 @@ namespace CupheadArchipelago.AP {
                     SessionStatus = 8;
 
                     Logging.Log($"[APClient] Applying settings...");
-                    APSettings.Init();
+                    if (!Enabled) APSettings.Init();
                     APSettings.UseDLC = SlotData.use_dlc;
                     APSettings.Mode = SlotData.mode;
                     APSettings.Hard = SlotData.expert_mode;
@@ -271,39 +240,47 @@ namespace CupheadArchipelago.AP {
                         APSessionGSPlayerData.aim_directions = APData.PlayerData.AimDirections.All;
                     if (APSettings.DeathLink) {
                         Logging.Log($"[APClient] Setting up DeathLink...");
+                        deathLinkService?.DisableDeathLink();
                         deathLinkService = session.CreateDeathLinkService();
                         deathLinkService.EnableDeathLink();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
                     }
-
-                    Logging.Log($"[APClient] Setting up items...");
-                    if (APSessionGSData.dlock) {
-                        Logging.Log($"[APClient] Waiting for AP save data unlock...");
-                        while (APSessionGSData.dlock) {
-                            if (SessionStatus<=0) {
-                                Logging.Log($"[APClient] Cancelled.");
-                                return false;
+                    if (receivedItemCounts == null) {
+                        Logging.Log($"[APClient] Setting up items...");
+                        receivedItemCounts = new();
+                        if (APSessionGSData.dlock) {
+                            Logging.Log($"[APClient] Waiting for AP save data unlock...");
+                            while (APSessionGSData.dlock) {
+                                if (SessionStatus<=0) {
+                                    Logging.Log($"[APClient] Cancelled.");
+                                    return false;
+                                }
+                                Thread.Sleep(100);
                             }
-                            Thread.Sleep(100);
                         }
+                        APSessionGSData.dlock = true;
+                        receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
+                        for (int i=0; i<ReceivedItems.Count;i++) {
+                            APItemData item = ReceivedItems[i];
+                            AddReceivedItemCount(item.id);
+                            if (item.State==0) {
+                                QueueItem(item, i);
+                            }
+                            else if (itemApplyIndex < item.State) {
+                                itemApplyIndex = item.State;
+                            }
+                            if (item.location>=0) receivedItemsUnique.Add(item);
+                        }
+                        APSessionGSData.dlock = false;
                     }
-                    APSessionGSData.dlock = true;
-                    receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
-                    for (int i=0; i<ReceivedItems.Count;i++) {
-                        APItemData item = ReceivedItems[i];
-                        AddReceivedItemCount(item.id);
-                        if (item.State==0) {
-                            QueueItem(item, i);
-                        }
-                        else if (itemApplyIndex < item.State) {
-                            itemApplyIndex = item.State;
-                        }
-                        if (item.location>=0) receivedItemsUnique.Add(item);
-                    }
-                    APSessionGSData.dlock = false;
 
                     Logging.Log($"[APClient] Catching up...");
-                    CatchUpChecks();
+                    if (!Enabled) {
+                        SendChecksThread(DoneChecks.ToArray());
+                        CatchUpChecks();
+                    } else {
+                        catchUpChecks = true;
+                    }
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.LogError(e.ToString(), LoggingFlags.Debug);
@@ -319,7 +296,7 @@ namespace CupheadArchipelago.AP {
                 Enabled = true;
                 SessionStatus = 1;
 
-                session.SetClientState(ArchipelagoClientState.ClientReady);
+                session.SetClientState(ArchipelagoClientState.ClientPlaying);
 
                 Logging.Log($"[APClient] Done!");
                 return true;
@@ -344,8 +321,12 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static void ReconnectArchipelagoSession() {
-            if (reconnecting || SessionStatus == 1) {
-                Logging.Log("Not reconnecting.");
+            if (reconnecting) {
+                Logging.Log("Already reconnecting.");
+                return;
+            }
+            if (session.Socket.Connected) {
+                Logging.Log("Connected. Not reconnecting.");
                 return;
             }
             ThreadPool.QueueUserWorkItem(_ => {
@@ -400,7 +381,7 @@ namespace CupheadArchipelago.AP {
             SlotData = null;
             doneChecksUnique = null;
             receivedItemsUnique = null;
-            receivedItemCounts = new();
+            receivedItemCounts = null;
             scoutMapStatus = 0;
             locMap.Clear();
             itemMap.Clear();
@@ -409,6 +390,7 @@ namespace CupheadArchipelago.AP {
             receivedItemsQueue = new();
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
+            catchUpChecks = false;
             APSettings.Init();
         }
 
@@ -428,22 +410,21 @@ namespace CupheadArchipelago.AP {
             }
             return true;
         }
-        public static bool Check(long loc, bool sendChecks = true) {
+        public static bool Check(long loc, bool sendChecks = true, bool logAlreadyChecked = true) {
             if (!LocationExists(loc)) {
                 Logging.LogWarning($"[APClient] Location {loc} is missing. Skipping.");
                 return false;
             }
             string locName = LocationExists(loc) ? locMap[loc].LocationName : $"#{loc}";
-            Logging.Log($"[APClient] Adding check \"{locName}\"...");
             //Logging.Log(doneChecksUnique.Count);
             //Logging.Log(DoneChecks.Count);
             if (!doneChecksUnique.Contains(loc)) {
+                Logging.Log($"[APClient] Adding check \"{locName}\"...");
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);
-                //APData.SaveCurrent();
                 if (sendChecks) SendChecks();
             } else {
-                Logging.Log($"[APClient] \"{locName}\" is already checked.");
+                if (logAlreadyChecked) Logging.Log($"[APClient] \"{locName}\" is already checked.");
             }
             return true;
         }
@@ -455,13 +436,19 @@ namespace CupheadArchipelago.AP {
         }
         public static void CatchUpChecks() {
             if (session.Socket.Connected) {
-                ReadOnlyCollection<long> checkedLocations = session.Locations.AllLocationsChecked;
-                if (DoneChecks.Count<checkedLocations.Count) {
-                    for (int i=DoneChecks.Count;i<checkedLocations.Count;i++) {
-                        Check(checkedLocations[i], false);
-                    }
+                foreach (long cloc in session.Locations.AllLocationsChecked) {
+                    Check(cloc, false, Logging.IsDebugEnabled());
                 }
             }
+        }
+        private static IEnumerator CatchUpChecks_cr() {
+            while (!session.Socket.Connected || sending) yield return null;
+            IEnumerable<long> allLocsChecked = session.Locations.AllLocationsChecked;
+            foreach (long cloc in allLocsChecked) {
+                Check(cloc, false, Logging.IsDebugEnabled());
+                yield return null;
+            }
+            yield break;
         }
         public static bool LocationExists(long loc) => locMap.ContainsKey(loc);
         public static ScoutedItemInfo GetCheck(long loc) {
@@ -489,6 +476,7 @@ namespace CupheadArchipelago.AP {
         }
         public static void SendChecks() {
             if (DoneChecks.Count<1) return;
+            Logging.LogDebug("SendChecks");
             long[] locs = DoneChecks.ToArray();
             if (session.Socket.Connected) {
                 Logging.Log($"[APClient] Sending Checks...");
@@ -516,6 +504,7 @@ namespace CupheadArchipelago.AP {
         }
         private static bool SendChecksThread(long[] locs) {
             bool state = false;
+            Logging.LogDebug("SendChecksThread");
             try {
                 session.Locations.CompleteLocationChecks(locs);
                 state = true;
@@ -611,6 +600,14 @@ namespace CupheadArchipelago.AP {
                     APSessionGSData.dlock = false;
                     receivedItemsQueueLock = false;
                 }
+            }
+        }
+        public static void ChecksUpdate(APManager instance) {
+            if (!APSessionGSData.dlock && catchUpChecks) {
+                catchUpChecks = false;
+                Logging.Log("[APClient] Catching up checks...");
+                SendChecks();
+                instance.StartCoroutine(CatchUpChecks_cr());
             }
         }
         internal static void ReceiveItem(APItemData item) {

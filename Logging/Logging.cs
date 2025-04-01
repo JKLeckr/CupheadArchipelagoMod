@@ -51,7 +51,7 @@ namespace CupheadArchipelago {
         }
         public static void LogDebug(object data) => LogDebug(data, LoggingFlags.Debug);
         public static void LogDebug(object data, LoggingFlags requiredFlags) {
-            Log(data, requiredFlags, LogLevel.Debug);
+            Log(data, requiredFlags, Config.IsDebugLogsInfo() ? LogLevel.Info : LogLevel.Debug);
         }
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
             return (((int)flags)&((int)loggingFlags))==(int)flags;

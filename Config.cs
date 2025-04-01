@@ -29,6 +29,7 @@ namespace CupheadArchipelago {
     public class Config {
         private static Config current;
 
+        private bool configDebugAsInfo;
         private Cutscenes configSkipCutscenes;
         private bool configSkipCutscenesAPOnly;
         private bool configFileDeleteClearsAP;
@@ -38,12 +39,14 @@ namespace CupheadArchipelago {
         //public static bool SkipCutscenesAPOnly { get => current.configSkipCutscenesAPOnly; }
 
         internal static void Init(
+            bool configDebugAsInfo,
             Cutscenes configSkipCutscenes,
             bool configSkipCutscenesAPOnly,
             bool configFileDeleteClearsAP,
             APStatsFunctions configAPStatusFunctions
         ) {
             current = new() {
+                configDebugAsInfo = configDebugAsInfo,
                 configSkipCutscenes = configSkipCutscenes,
                 configSkipCutscenesAPOnly = configSkipCutscenesAPOnly,
                 configFileDeleteClearsAP = configFileDeleteClearsAP,
@@ -51,6 +54,7 @@ namespace CupheadArchipelago {
             };
         }
 
+        public static bool IsDebugLogsInfo() => current.configDebugAsInfo;
         public static bool IsSkippingCutscene(Cutscenes cutscene) {
             return IsSkippingCutscene(cutscene, APData.IsCurrentSlotEnabled());
         }

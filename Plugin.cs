@@ -38,6 +38,7 @@ namespace CupheadArchipelago {
         private ConfigEntry<bool> configSkipCutscenesAPOnly;
         private ConfigEntry<bool> configFileDeleteResetsAPData;
         private ConfigEntry<APStatsFunctions> configAPStatusFunctions;
+        private ConfigEntry<bool> configDebugAsInfo;
 
         private void Awake() {
             SetupConfigVersion(this);
@@ -46,6 +47,7 @@ namespace CupheadArchipelago {
             configModFileMax = Config.Bind("Logging", "ModLogFileMax", 10, "The maxmum amount of mod logs that can be in the mod logs folder at once. Oldest gets deleted when max is reached.");
             configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo | LoggingFlags.Info | LoggingFlags.Message | LoggingFlags.Warning | LoggingFlags.Network, "Set mod logging verbosity.");
             configLogLicense = Config.Bind("Logging", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
+            configDebugAsInfo = Config.Bind("Debug", "DebugAsInfo", true, "Logs mod debug messages to loglevel info instead of debug.");
             configSaveKeyName = Config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves! (Vanilla: \"cuphead_player_data_v1_slot_\")");
             configSkipCutscenes = Config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
@@ -54,6 +56,7 @@ namespace CupheadArchipelago {
             configAPStatusFunctions = Config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities. (Currently does nothing)");
             //configAPOverrides = Config.Bind("AP", "Overrides", true, "Overrides specific non-functional server-side settings.");
             CupheadArchipelago.Config.Init(
+                configDebugAsInfo.Value,
                 configSkipCutscenes.Value,
                 configSkipCutscenesAPOnly.Value,
                 configFileDeleteResetsAPData.Value,
