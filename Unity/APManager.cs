@@ -131,7 +131,6 @@ namespace CupheadArchipelago.Unity {
                         }
                     }
                     if (timer<applyInterval) timer += Time.deltaTime;
-                    APClient.ChecksUpdate(this);
                 }
             }
         }

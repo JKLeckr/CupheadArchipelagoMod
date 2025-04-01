@@ -50,7 +50,6 @@ namespace CupheadArchipelago.AP {
         private static int scoutMapStatus = 0;
         private static bool sending = false;
         private static bool reconnecting = false;
-        private static bool catchUpChecks = false;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new Version(0,5,1,0);
@@ -278,8 +277,6 @@ namespace CupheadArchipelago.AP {
                     if (!Enabled) {
                         SendChecksThread(DoneChecks.ToArray());
                         CatchUpChecks();
-                    } else {
-                        catchUpChecks = true;
                     }
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
@@ -390,7 +387,6 @@ namespace CupheadArchipelago.AP {
             receivedItemsQueue = new();
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
-            catchUpChecks = false;
             APSettings.Init();
         }
 
@@ -445,6 +441,7 @@ namespace CupheadArchipelago.AP {
             while (!session.Socket.Connected || sending) yield return null;
             IEnumerable<long> allLocsChecked = session.Locations.AllLocationsChecked;
             foreach (long cloc in allLocsChecked) {
+                while (sending) yield return null;
                 Check(cloc, false, Logging.IsDebugEnabled());
                 yield return null;
             }
@@ -600,14 +597,6 @@ namespace CupheadArchipelago.AP {
                     APSessionGSData.dlock = false;
                     receivedItemsQueueLock = false;
                 }
-            }
-        }
-        public static void ChecksUpdate(APManager instance) {
-            if (!APSessionGSData.dlock && catchUpChecks) {
-                catchUpChecks = false;
-                Logging.Log("[APClient] Catching up checks...");
-                SendChecks();
-                instance.StartCoroutine(CatchUpChecks_cr());
             }
         }
         internal static void ReceiveItem(APItemData item) {
