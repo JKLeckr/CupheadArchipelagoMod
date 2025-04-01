@@ -45,6 +45,10 @@ namespace CupheadArchipelago.AP {
         private Goals goalsCompleted = Goals.None;
         [JsonProperty("override")]
         private int _override = 0;
+        [JsonProperty("ftime")]
+        private long ftime = 0;
+        [JsonIgnore]
+        private long ltime = 0;
 
         static APData() {
             SData = new APData[3];
@@ -67,6 +71,7 @@ namespace CupheadArchipelago.AP {
                     try {
                         string sdata = File.ReadAllText(filename);
                         data = JsonConvert.DeserializeObject<APData>(sdata);
+                        data.ltime = DateTime.UtcNow.Ticks;
                         //Logging.Log($"Dump:\n{sdata}");
                         //Logging.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");
                     }
@@ -116,6 +121,10 @@ namespace CupheadArchipelago.AP {
                 return;
             }
             string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
+            if (global::PlayerData.inGame) {
+                data.ftime += DateTime.UtcNow.Ticks - data.ltime;
+            }
+            data.ltime = DateTime.UtcNow.Ticks;
             try {
                 string sdata = JsonConvert.SerializeObject(data);
                 File.WriteAllText(filename, sdata);
@@ -158,6 +167,9 @@ namespace CupheadArchipelago.AP {
                 data._override = old_data._override;
             }
             Save(index);
+        }
+        public void ResetLTime() {
+            ltime = DateTime.UtcNow.Ticks;
         }
 
         public static bool IsSlotEnabled(int index) {

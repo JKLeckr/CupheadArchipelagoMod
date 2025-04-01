@@ -473,6 +473,9 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 return codes;
             }
+            static void Postfix() {
+                APData.SData[_slotSelection].ResetLTime();
+            }
 
             private static void LoadSceneNewSave() {
                 Logging.Log("Loading Scene", LoggingFlags.Debug);
