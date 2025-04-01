@@ -56,8 +56,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem ability_duck = new(12905203, true);
         public static readonly APItem ability_dash = new(12905204, true);
         public static readonly APItem ability_parry = new(12905205, true);
-        public static readonly APItem ability_plane_shrink = new(12905206, true);
-        public static readonly APItem ability_plane_parry = new(12905207, true);
+        public static readonly APItem ability_plane_parry = new(12905206, true);
+        public static readonly APItem ability_plane_shrink = new(12905207, true);
         public static readonly APItem ability_aim_left = new(12905208, true);
         public static readonly APItem ability_aim_right = new(12905209, true);
         public static readonly APItem ability_aim_up = new(12905210, true);
@@ -99,8 +99,8 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem ability_dlc_cduck = new(12909281, true);
         public static readonly APItem ability_dlc_p_cdash = new(12909282, true);
         public static readonly APItem ability_dlc_cdoublejump = new(12909283, true);
-        public static readonly APItem ability_dlc_cplane_shrink = new(12909284, true);
-        public static readonly APItem ability_dlc_cplane_parry = new(12909285, true);
+        public static readonly APItem ability_dlc_cplane_parry = new(12909284, true);
+        public static readonly APItem ability_dlc_cplane_shrink = new(12909285, true);
         public static readonly APItem charm_dlc_cookie = new(12909286, true);
 
         public static void Register(APItem item) => id_map.Add(item.id, item);
