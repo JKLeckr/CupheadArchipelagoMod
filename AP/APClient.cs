@@ -518,19 +518,23 @@ namespace CupheadArchipelago.AP {
         }
         public static void SendGoal() {
             Logging.LogDebug("SendGoal");
-            if (session.Socket.Connected) {
-                Logging.Log($"[APClient] Sending Goal...");
-                if (!sending) {
-                    sending = true;
-                    ThreadPool.QueueUserWorkItem(_ => SendGoalThread());
-                }
-                else {
-                    Logging.LogWarning("[APClient] Already sending something.");
+            if (IsAPGoalComplete()) {
+                if (session.Socket.Connected) {
+                    Logging.Log($"[APClient] Sending Goal...");
+                    if (!sending) {
+                        sending = true;
+                        ThreadPool.QueueUserWorkItem(_ => SendGoalThread());
+                    }
+                    else {
+                        Logging.LogWarning("[APClient] Already sending something.");
+                    }
+                } else {
+                    Logging.Log($"[APClient] Disconnected. Cannot send goal. Will retry after connecting.");
+                    ReconnectArchipelagoSession();
                 }
             }
             else {
-                Logging.Log($"[APClient] Disconnected. Cannot send goal. Will retry after connecting.");
-                ReconnectArchipelagoSession();
+                Logging.Log($"[APClient] Goal is not complete. Not sending.");
             }
         }
         private static bool SendGoalThread() {
