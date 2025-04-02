@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
         [HarmonyPatch(typeof(CreditsScreen), "Start")]
         internal static class Start {
             static bool Prefix() {
-                APClient.SendChecks();
+                APClient.SendChecks(true);
                 return true;
             }
         }

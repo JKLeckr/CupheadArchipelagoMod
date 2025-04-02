@@ -46,7 +46,6 @@ namespace CupheadArchipelago.AP {
         private static Queue<int> itemApplyQueue = new();
         private static Queue<int> itemApplyLevelQueue = new();
         private static int itemApplyIndex = 0;
-        private static bool complete = false;
         private static int scoutMapStatus = 0;
         private static bool sending = false;
         private static bool reconnecting = false;
@@ -275,7 +274,7 @@ namespace CupheadArchipelago.AP {
 
                     Logging.Log($"[APClient] Catching up...");
                     if (!Enabled) {
-                        SendChecksThread(DoneChecks.ToArray());
+                        SendChecksThread(DoneChecks.ToArray(), true);
                         CatchUpChecks();
                     }
                 } catch (Exception e) {
@@ -418,7 +417,7 @@ namespace CupheadArchipelago.AP {
                 Logging.Log($"[APClient] Adding check \"{locName}\"...");
                 doneChecksUnique.Add(loc);
                 DoneChecks.Add(loc);
-                if (sendChecks) SendChecks();
+                if (sendChecks) SendChecks(true);
             } else {
                 if (logAlreadyChecked) Logging.Log($"[APClient] \"{locName}\" is already checked.");
             }
@@ -428,7 +427,7 @@ namespace CupheadArchipelago.AP {
             foreach (long loc in locs) {
                 Check(loc, false);
             }
-            if (sendChecks) SendChecks();
+            if (sendChecks) SendChecks(true);
         }
         public static void CatchUpChecks() {
             if (session.Socket.Connected) {
@@ -471,54 +470,44 @@ namespace CupheadArchipelago.AP {
             ScoutedItemInfo item = GetCheck(loc);
             return new APItemData(item.ItemId, loc, APSessionPlayerName);
         }
-        public static void SendChecks() {
+        public static void SendChecks(bool sendGoal) {
             if (DoneChecks.Count<1) return;
             Logging.LogDebug("SendChecks");
             long[] locs = DoneChecks.ToArray();
             if (session.Socket.Connected) {
                 Logging.Log($"[APClient] Sending Checks...");
-                if (!sending) {
-                    sending = true;
-                    ThreadPool.QueueUserWorkItem(_ => SendChecksThread(locs));
-                }
-                else
-                    Logging.LogWarning("[APClient] Already sending checks.");
-                UpdateGoal();
-                Logging.Log($"[APClient] Done");
-            }
-            else {
-                Logging.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
-                ReconnectArchipelagoSession();
-            }
-        }
-        public static void UpdateGoal() {
-            if (IsAPGoalComplete()) {
-                if (!complete) {
-                    StatusUpdatePacket statusUpdate = new StatusUpdatePacket() { Status = ArchipelagoClientState.ClientGoal };
-                    session.Socket.SendPacketAsync(statusUpdate, _ => {complete = true;});
-                }
-            }
-        }
-        private static bool SendChecksThread(long[] locs) {
-            bool state = false;
-            Logging.LogDebug("SendChecksThread");
-            try {
-                session.Locations.CompleteLocationChecks(locs);
-                LoggingFlags loggingFlags = LoggingFlags.Debug | (state?LoggingFlags.Info:LoggingFlags.Warning);
-                if (Logging.IsLoggingFlagsEnabled(loggingFlags)) {
+                if (Logging.IsDebugEnabled()) {
                     string locsstr = "[";
                     for (int i=0;i<locs.Length;i++) {
                         if (i>0) locsstr += ",";
                         locsstr += locMap.ContainsKey(locs[i])?locMap[locs[i]].LocationName:locs[i];
                         if (i==locs.Length-1) locsstr += "]";
                     }
-                    if (state) Logging.Log($"[APClient] Location(s) {locsstr} send success", loggingFlags);
-                    else Logging.LogWarning($"[APClient] Location(s) {locsstr} send failure", loggingFlags);
-                } else if (Logging.IsLoggingFlagsEnabled(LoggingFlags.Network)) {
-                    if (state) Logging.Log($"[APClient] Locations send success");
-                    else Logging.LogWarning($"[APClient] Locations send failure");
+                    Logging.LogDebug($"[APClient] Sending locations: {locsstr}");
                 }
+                if (!sending) {
+                    sending = true;
+                    ThreadPool.QueueUserWorkItem(_ => SendChecksThread(locs, sendGoal));
+                }
+                else {
+                    Logging.LogWarning("[APClient] Already sending something.");
+                }
+            }
+            else {
+                Logging.Log($"[APClient] Disconnected. Cannot send check. Will retry after connecting.");
+                ReconnectArchipelagoSession();
+            }
+        }
+        private static bool SendChecksThread(long[] locs, bool sendGoal) {
+            bool state = false;
+            Logging.LogDebug("SendChecksThread");
+            try {
+                session.Locations.CompleteLocationChecks(locs);
                 state = true;
+                if (sendGoal && IsAPGoalComplete()) {
+                    state = SendGoalThread();
+                }
+                Logging.Log($"[APClient] Successfully sent checks.");
             } catch (ArchipelagoSocketClosedException e) {
                 Logging.LogWarning($"[APClient] Failed to send checks! {e.Message}");
             } catch (Exception e) {
@@ -527,11 +516,44 @@ namespace CupheadArchipelago.AP {
             sending = false;
             return state;
         }
+        public static void SendGoal() {
+            Logging.LogDebug("SendGoal");
+            if (session.Socket.Connected) {
+                Logging.Log($"[APClient] Sending Goal...");
+                if (!sending) {
+                    sending = true;
+                    ThreadPool.QueueUserWorkItem(_ => SendGoalThread());
+                }
+                else {
+                    Logging.LogWarning("[APClient] Already sending something.");
+                }
+            }
+            else {
+                Logging.Log($"[APClient] Disconnected. Cannot send goal. Will retry after connecting.");
+                ReconnectArchipelagoSession();
+            }
+        }
+        private static bool SendGoalThread() {
+            bool state = false;
+            Logging.LogDebug("SendGoalThread");
+            try {
+                StatusUpdatePacket statusUpdate = new() { Status = ArchipelagoClientState.ClientGoal };
+                session.Socket.SendPacket(statusUpdate);
+                state = true;
+                Logging.Log($"[APClient] Successfully sent goal.");
+            } catch (ArchipelagoSocketClosedException e) {
+                Logging.LogWarning($"[APClient] Failed to send goal! {e.Message}");
+            } catch (Exception e) {
+                Logging.LogError($"[APClient] Failed to send goal! Exception: {e}");
+            }
+            sending = false;
+            return state;
+        }
 
-        public static void GoalComplete(Goals goal, bool updateGoal = true) {
+        public static void GoalComplete(Goals goal, bool sendGoal = false) {
             Logging.Log($"[APClient] Adding Goal Flag {goal}");
             APSessionGSData.AddGoals(goal);
-            if (updateGoal) UpdateGoal();
+            if (sendGoal) SendGoal();
         }
         public static bool IsAPGoalComplete() {
             Goals goals = APSettings.Mode switch {

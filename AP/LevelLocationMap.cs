@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.AP {
@@ -144,36 +145,66 @@ namespace CupheadArchipelago.AP {
                     APLocation.level_rungun_forest_agrade,
                     APLocation.level_rungun_forest_pacifist,
                     APLocation.level_rungun_forest_dlc_chaliced,
+                    APLocation.level_rungun_forest_coin1,
+                    APLocation.level_rungun_forest_coin2,
+                    APLocation.level_rungun_forest_coin3,
+                    APLocation.level_rungun_forest_coin4,
+                    APLocation.level_rungun_forest_coin5
                 }},
                 {Levels.Platforming_Level_1_2, new APLocation[] {
                     APLocation.level_rungun_tree,
                     APLocation.level_rungun_tree_agrade,
                     APLocation.level_rungun_tree_pacifist,
                     APLocation.level_rungun_tree_dlc_chaliced,
+                    APLocation.level_rungun_tree_coin1,
+                    APLocation.level_rungun_tree_coin2,
+                    APLocation.level_rungun_tree_coin3,
+                    APLocation.level_rungun_tree_coin4,
+                    APLocation.level_rungun_tree_coin5
                 }},
                 {Levels.Platforming_Level_2_1, new APLocation[] {
                     APLocation.level_rungun_circus,
                     APLocation.level_rungun_circus_agrade,
                     APLocation.level_rungun_circus_pacifist,
                     APLocation.level_rungun_circus_dlc_chaliced,
+                    APLocation.level_rungun_circus_coin1,
+                    APLocation.level_rungun_circus_coin2,
+                    APLocation.level_rungun_circus_coin3,
+                    APLocation.level_rungun_circus_coin4,
+                    APLocation.level_rungun_circus_coin5
                 }},
                 {Levels.Platforming_Level_2_2, new APLocation[] {
                     APLocation.level_rungun_funhouse,
                     APLocation.level_rungun_funhouse_agrade,
                     APLocation.level_rungun_funhouse_pacifist,
                     APLocation.level_rungun_funhouse_dlc_chaliced,
+                    APLocation.level_rungun_funhouse_coin1,
+                    APLocation.level_rungun_funhouse_coin2,
+                    APLocation.level_rungun_funhouse_coin3,
+                    APLocation.level_rungun_funhouse_coin4,
+                    APLocation.level_rungun_funhouse_coin5
                 }},
                 {Levels.Platforming_Level_3_1, new APLocation[] {
                     APLocation.level_rungun_harbour,
                     APLocation.level_rungun_harbour_agrade,
                     APLocation.level_rungun_harbour_pacifist,
                     APLocation.level_rungun_harbour_dlc_chaliced,
+                    APLocation.level_rungun_harbour_coin1,
+                    APLocation.level_rungun_harbour_coin2,
+                    APLocation.level_rungun_harbour_coin3,
+                    APLocation.level_rungun_harbour_coin4,
+                    APLocation.level_rungun_harbour_coin5
                 }},
                 {Levels.Platforming_Level_3_2, new APLocation[] {
                     APLocation.level_rungun_mountain,
                     APLocation.level_rungun_mountain_agrade,
                     APLocation.level_rungun_mountain_pacifist,
                     APLocation.level_rungun_mountain_dlc_chaliced,
+                    APLocation.level_rungun_mountain_coin1,
+                    APLocation.level_rungun_mountain_coin2,
+                    APLocation.level_rungun_mountain_coin3,
+                    APLocation.level_rungun_mountain_coin4,
+                    APLocation.level_rungun_mountain_coin5
                 }},
 
                 {Levels.OldMan, new APLocation[] {
@@ -226,7 +257,16 @@ namespace CupheadArchipelago.AP {
             };
         }
 
-        public static long GetLocationId(Levels level, int index) => map[level][index].id;
+        public static long GetLocationId(Levels level, int index) {
+            try {
+                return map[level][index].id;
+            } catch (KeyNotFoundException) {
+                throw new KeyNotFoundException($"Level {level} does not exist.");
+            } catch (IndexOutOfRangeException) {
+                throw new IndexOutOfRangeException($"Index {index} is out of range for Level {level}.");
+            }
+        }
+        public static bool LevelHasLocations(Levels level) => map.ContainsKey(level);
         public static IEnumerable<Levels> GetKeys() => map.Keys;
     }
 }

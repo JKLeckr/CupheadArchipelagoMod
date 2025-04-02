@@ -76,7 +76,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             static void Postfix(Level __instance) {
                 Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
-                    APClient.SendChecks();
+                    APClient.SendChecks(true);
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal, false);
                 }

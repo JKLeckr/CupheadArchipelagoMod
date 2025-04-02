@@ -83,7 +83,7 @@ namespace CupheadArchipelago.AP {
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
                             if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
-                                APClient.GoalComplete(Goals.Contracts);
+                                APClient.GoalComplete(Goals.Contracts, true);
                             }
                         }
                     }
@@ -119,7 +119,7 @@ namespace CupheadArchipelago.AP {
                         if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
                             Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
                             if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
-                                APClient.GoalComplete(Goals.Ingredients);
+                                APClient.GoalComplete(Goals.Ingredients, true);
                             }
                         }
                     }

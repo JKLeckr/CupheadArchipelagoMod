@@ -224,8 +224,9 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                         PlayerData.Data.shouldShowShopkeepTooltip = false;
                     }
                     if (ShopScene.Current.HasBoughtEverythingForAchievement(__instance.player)) {
-                        APClient.GoalComplete(Goals.ShopBuyout);
+                        APClient.GoalComplete(Goals.ShopBuyout, true);
                     }
+                    APClient.SendChecks(true);
                 }
             }
 
@@ -234,7 +235,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 long loc = GetAPLocation(item);
                 if (!APClient.IsLocationChecked(loc) && PlayerData.Data.GetCurrency(0) >= item.Value) {
                     PlayerData.Data.AddCurrency(0, -item.Value);
-                    APClient.Check(loc);
+                    APClient.Check(loc, false);
                     res = true;
                 }
                 return res;

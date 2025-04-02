@@ -23,7 +23,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         [HarmonyPatch(typeof(ChessCastleLevel), "Awake")]
         internal static class Awake {
             static void Postfix() {
-                if (APData.IsCurrentSlotEnabled() && Level.Won) APClient.SendChecks();
+                if (APData.IsCurrentSlotEnabled() && Level.Won) APClient.SendChecks(true);
             }
         }
 

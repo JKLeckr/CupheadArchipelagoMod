@@ -28,11 +28,18 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             static void Postfix(LevelCoin __instance, ref bool ____collected) {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (APClient.IsLocationChecked(CoinIdMap.GetAPLocation(__instance.GlobalID))) {
+                        Logging.LogDebug($"{__instance.GlobalID} {GetLocationId(__instance.GlobalID)} already Collected");
                         PlayerData.Data.coinManager.SetCoinValue(__instance.GlobalID, true, PlayerId.PlayerOne);
                         ____collected = true;
                         UnityEngine.Object.Destroy(__instance.gameObject);
                     }
                 }
+            }
+
+            private static long GetLocationId(string coinId) {
+                if (CoinIdMap.CoinIDExists(coinId)) {
+                    return CoinIdMap.GetAPLocation(coinId);
+                } return -1;
             }
         }
 
