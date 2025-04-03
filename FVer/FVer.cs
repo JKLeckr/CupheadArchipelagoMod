@@ -1,7 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-/// FVer version 01a
+/// FVer version 01b
 
 using System;
 
@@ -153,10 +153,18 @@ namespace FVer {
             return new FVersion(0, 0, 0, null, null);
         }
 
-        public int CompareTo(FVersion other) {
+        public int CompareTo(FVersion other) => CompareTo(other, null);
+        public int CompareTo(FVersion other, IPrefixComparer prefixComparer) {
             if (other == null) return 1;
 
             int res = string.IsNullOrEmpty(Prefix).CompareTo(string.IsNullOrEmpty(other.Prefix));
+            if (res != 0) return res;
+
+            if (prefixComparer == null) {
+                res = string.Compare(Prefix, other.Prefix, StringComparison.Ordinal);
+            } else {
+                res = prefixComparer.Compare(Prefix, other.Prefix);
+            }
             if (res != 0) return res;
 
             res = Baseline.CompareTo(other.Baseline);
