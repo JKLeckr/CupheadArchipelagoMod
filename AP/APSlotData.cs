@@ -5,13 +5,14 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using CupheadArchipelago.Util;
+using FVer;
 
 namespace CupheadArchipelago.AP {
-    public partial class APSlotData {
+    public class APSlotData {
         internal const long AP_SLOTDATA_VERSION = 2;
 
         public readonly long version;
-        public readonly APVersion world_version;
+        public readonly FVersion world_version;
         public readonly LevelShuffleMap level_shuffle_map;
         public readonly ShopSet[] shop_map;
         public readonly bool use_dlc;
@@ -106,14 +107,20 @@ namespace CupheadArchipelago.AP {
                 throw new Exception($"GetAPSlotData: Failed to get \"{key}\" from slot data! Exception: {e}");
             }
         }
-        private static APVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
+        private static FVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
             string vraw = GetAPSlotDataString(slotData, key);
-            APVersion res;
+            string[] mainParts = vraw.Split(['-'], 2);
+            string[] versionParts = mainParts[0].Split(['.'], 4);
+            FVersion res;
             try {
-                res = new APVersion(vraw);
+                if (mainParts.Length > 1 && versionParts.Length >= 3) {
+                    Logging.Log($"[APSlotData] Got legacy version format. Converting.");
+                    res = new APVersion(vraw).AsFVersion();
+                }
+                else res = new FVersion(vraw);
             } catch (Exception) {
                 Logging.LogWarning($"[APSlotData] Invalid version {vraw}");
-                res = new APVersion();
+                res = FVersion.Zero();
             }
             return res;
         }

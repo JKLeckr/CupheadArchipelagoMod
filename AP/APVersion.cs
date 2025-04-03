@@ -2,9 +2,10 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using FVer;
 
 namespace CupheadArchipelago.AP {
-    public struct APVersion : IComparable<APVersion> {
+    public class APVersion : IComparable<APVersion> {
         public readonly int major;
         public readonly int minor;
         public readonly int patch;
@@ -90,6 +91,11 @@ namespace CupheadArchipelago.AP {
                 hash *= 29 + (pre?.GetHashCode() ?? 0);
                 return hash;
             }
+        }
+
+        public FVersion AsFVersion() {
+            FVersion res = new(pre);
+            return res;
         }
 
         public override string ToString() {

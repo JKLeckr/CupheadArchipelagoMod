@@ -7,6 +7,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using FVer;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
@@ -18,12 +19,14 @@ namespace CupheadArchipelago {
 
         protected const string MOD_NAME = "CupheadArchipelago"; //PluginInfo.PLUGIN_NAME
         protected const string MOD_GUID = "com.JKLeckr.CupheadArchipelago";
-        protected const string MOD_VERSION = "0.1.2"; //PluginInfo.PLUGIN_VERSION
+        protected const string MOD_VERSION = PluginInfo.PLUGIN_VERSION;
+        protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_VERSION);
 
         private const long CONFIG_VERSION = 1;
 
         public static string Name => MOD_NAME;
-        public static string Version => PluginInfo.PLUGIN_VERSION;
+        public static string Version => MOD_VERSION;
+        public static string FullVersion => $"{MOD_FRIENDLY_VERSION} ({MOD_VERSION})";
         public static int State { get; private set; } = 0;
         
         private static readonly string verPath = Path.Combine(Path.Combine(Paths.PluginPath, MOD_NAME), "configver");
@@ -128,6 +131,26 @@ namespace CupheadArchipelago {
             }       
 
             return -1;
+        }
+
+        // TEMP. This will be changed when entering main branch version.
+        private static string GetFVer(string ver) {
+            string[] versionParts = ver.Split(['.'], 4);
+            if (int.Parse(versionParts[0]) > 0) {
+                throw new Exception("Version parsing system needs to be changed for main version!");
+            }
+            int pre = int.Parse(versionParts[1]);
+            string pres = pre switch {
+                1 => "preview",
+                2 => "alpha",
+                3 => "beta",
+                4 => "rc",
+                _ => "branch"
+            };
+            int baseline = int.Parse(versionParts[2]) + 1;
+            int rev = int.Parse(versionParts[3]);
+            FVersion fver = new(baseline, rev, 0, pres, null);
+            return fver;
         }
 
         private static void SetupConfigVersion(Plugin instance) {

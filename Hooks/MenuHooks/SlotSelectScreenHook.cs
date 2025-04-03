@@ -614,7 +614,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             txt.color = UnityEngine.Color.white;
             txt.font = FontLoader.GetTMPFont(FontLoader.TMPFontType.CupheadVogue_Bold_merged__SDF);
             txt.fontSize = 16;
-            txt.text = $"CupheadArchipelago {Plugin.Version}";
+            txt.text = $"CupheadArchipelago\n{Plugin.FullVersion}";
             
             obj.layer = 5;
 
