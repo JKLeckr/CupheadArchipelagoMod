@@ -30,6 +30,12 @@
         "resolved": "1.1.0",
         "contentHash": "RqM3aaGs8Hc2m0D+8aSt9mv09rCMYNIF35NB3D6KA2zSpcXJh/9ZVWrPlIUJfA8KYzodSWcCMUexEW24fjwR3w=="
       },
+      "FVer": {
+        "type": "Direct",
+        "requested": "[0.1.0-*, )",
+        "resolved": "0.1.0-draft01d",
+        "contentHash": "oh0mqxg1g8CK0EUPAwUItVZUh5qlcaemdGMpqR+2TbxWhJDIeolJrlBRPkY8GNKDK3ONW6FIoOvDr0ydubmcsA=="
+      },
       "Microsoft.NETFramework.ReferenceAssemblies": {
         "type": "Direct",
         "requested": "[1.0.3, )",

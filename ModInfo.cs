@@ -35,7 +35,24 @@ namespace CupheadArchipelago {
     public class ModLicenseThirdParty {
         public readonly string PLUGIN_LIB_FULL_NOTICE =
 @"CupheadArchipelago uses third party libraries listed in this document.
-    
+
+FVer
+
+    Copyright 2025 JKLeckr
+
+    Licensed under the Apache License, Version 2.0 (the ""License"");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an ""AS IS"" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+
 Archipelago.MultiClient.NET
 
     MIT License

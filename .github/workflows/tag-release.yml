@@ -3,9 +3,8 @@ name: TagRelease
 on:
   push:
     tags:
-      - 'test*'
-      - 'preview*'
-      - '*.*.*'
+      - '*'
+      - '!*test*'
 
 jobs:
   create-release:
