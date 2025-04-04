@@ -90,13 +90,18 @@ namespace CupheadArchipelago.AP {
                 throw new ArgumentException($"Invalid SlotData data for: \"{key}\"! Exception: {e}");
             }
         }
-        private static object GetOptionalAPSlotData(Dictionary<string, object> slotData, string key, object fallbackValue) {
-            try {
-                return GetAPSlotData(slotData, key);
-            } catch (KeyNotFoundException) {
-                Logging.LogWarning($"GetOptionalAPSlotData: \"{key}\" is not a valid key. The world you are connecting to probably does not support this feature. Using default value of \"{fallbackValue}\"");
-                return fallbackValue;
+        private static T GetOptionalAPSlotData<T>(Dictionary<string, object> slotData, string key, T fallbackValue) {
+            if (slotData.ContainsKey(key)) {
+                try {
+                    return (T)GetAPSlotData(slotData, key);
+                } catch (InvalidCastException e) {
+                    Logging.LogWarning($"GetOptionalAPSlotData: Could not get value from \"{key}\". Exception: {e.Message}");
+                }
+            } else {
+                Logging.LogWarning($"GetOptionalAPSlotData: \"{key}\" is not a valid key. The world you are connecting to probably does not support this feature.");
             }
+            Logging.LogWarning($"Using fallback value of \"{fallbackValue}\" for \"{key}\"");
+            return fallbackValue;
         }
         private static object GetAPSlotData(Dictionary<string, object> slotData, string key) {
             try { 

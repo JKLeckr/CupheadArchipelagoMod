@@ -81,30 +81,39 @@ namespace CupheadArchipelago.AP {
 
                 {Levels.DicePalaceBooze, new APLocation[] {
                     APLocation.level_dicepalace_boss_booze,
+                    new(-254), //TEMP
                 }},
                 {Levels.DicePalaceChips, new APLocation[] {
                     APLocation.level_dicepalace_boss_chips,
+                    new(-253), //TEMP
                 }},
                 {Levels.DicePalaceCigar, new APLocation[] {
                     APLocation.level_dicepalace_boss_cigar,
+                    new(-252), //TEMP
                 }},
                 {Levels.DicePalaceDomino, new APLocation[] {
                     APLocation.level_dicepalace_boss_domino,
+                    new(-251), //TEMP
                 }},
                 {Levels.DicePalaceRabbit, new APLocation[] {
                     APLocation.level_dicepalace_boss_rabbit,
+                    new(-250), //TEMP
                 }},
                 {Levels.DicePalaceFlyingHorse, new APLocation[] {
                     APLocation.level_dicepalace_boss_plane_horse,
+                    new(-249), //TEMP
                 }},
                 {Levels.DicePalaceRoulette, new APLocation[] {
                     APLocation.level_dicepalace_boss_roulette,
+                    new(-248), //TEMP
                 }},
                 {Levels.DicePalaceEightBall, new APLocation[] {
                     APLocation.level_dicepalace_boss_eightball,
+                    new(-247), //TEMP
                 }},
                 {Levels.DicePalaceFlyingMemory, new APLocation[] {
                     APLocation.level_dicepalace_boss_plane_memory,
+                    new(-246), //TEMP
                 }},
 
                 {Levels.Devil, new APLocation[] {
@@ -241,18 +250,23 @@ namespace CupheadArchipelago.AP {
 
                 {Levels.ChessPawn, new APLocation[] {
                     APLocation.level_dlc_chesscastle_pawn,
+                    new(-255), //TEMP
                 }},
                 {Levels.ChessKnight, new APLocation[] {
                     APLocation.level_dlc_chesscastle_knight,
+                    new(-256), //TEMP
                 }},
                 {Levels.ChessBishop, new APLocation[] {
                     APLocation.level_dlc_chesscastle_bishop,
+                    new(-257), //TEMP
                 }},
                 {Levels.ChessRook, new APLocation[] {
                     APLocation.level_dlc_chesscastle_rook,
+                    new(-258), //TEMP
                 }},
                 {Levels.ChessQueen, new APLocation[] {
                     APLocation.level_dlc_chesscastle_queen,
+                    new(-259), //TEMP
                 }},
             };
         }

@@ -11,13 +11,6 @@ namespace CupheadArchipelago.AP {
         public readonly int patch;
         public readonly string pre;
 
-        public APVersion() {
-            major = 0;
-            minor = 0;
-            patch = 0;
-            pre = "";
-        }
-
         public APVersion(int major, int minor, int patch, string pre = null) {
             if (major < 0 || minor < 0 || patch < 0)
                 throw new ArgumentOutOfRangeException("Version numbers must not be negative");

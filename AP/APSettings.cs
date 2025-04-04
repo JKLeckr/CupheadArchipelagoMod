@@ -30,6 +30,8 @@ namespace CupheadArchipelago.AP {
         public static DlcChaliceMode DLCChaliceMode { get; internal set; }
         public static bool DLCBossChaliceChecks { get; internal set; }
         public static bool DLCRunGunChaliceChecks { get; internal set; }
+        public static bool DLCDicePalaceChaliceChecks { get; internal set; }
+        public static bool DLCChessChaliceChecks { get; internal set; }
         public static DlcCurseMode DLCCurseMode { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
@@ -65,6 +67,8 @@ namespace CupheadArchipelago.AP {
             DLCChaliceMode = DlcChaliceMode.Vanilla;
             DLCBossChaliceChecks = false;
             DLCRunGunChaliceChecks = false;
+            DLCDicePalaceChaliceChecks = false;
+            DLCChessChaliceChecks = false;
             DLCCurseMode = DlcCurseMode.Normal;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;

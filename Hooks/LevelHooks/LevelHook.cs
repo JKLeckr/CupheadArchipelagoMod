@@ -137,8 +137,15 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 Logging.LogWarning($"[LevelHook] Invalid Mausoleum Map: {PlayerData.Data.CurrentMap}");
                                 break;
 		                }
-                    }
-                    else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain || Level.IsChessBoss) {
+                    } else if (Level.IsChessBoss) {
+                        Logging.Log("[LevelHook] Chess Castle");
+                        Levels clevel = instance.CurrentLevel;
+                        if (!IsChalice() || !APSettings.DLCChessChaliceChecks) {
+                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                        } else if (IsChalice()) {
+                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
+                        }
+                    } else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain) {
                         switch (instance.LevelType) {
                             case Level.Type.Battle: {
                                 Logging.Log("[LevelHook] Battle Type");
@@ -147,14 +154,15 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 if (Level.Difficulty >= battleNormalMode) {
                                     Levels clevel = instance.CurrentLevel;
                                     bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
-                                    APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret?3:0), false);
+                                    if (!IsChalice() || !APSettings.DLCBossChaliceChecks) {
+                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret?3:0), false);
+                                    } else if (IsChalice()) {
+                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 2), false);
+                                    }
                                     if (APSettings.BossGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel,1), false);
                                         }
-                                    }
-                                    if (APSettings.DLCBossChaliceChecks && IsChalice()) {
-                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 2), false);
                                     }
                                 } else {
                                     Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
@@ -166,14 +174,15 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={Level.Mode.Normal}");
                                 if (Level.Difficulty >= Level.Mode.Normal) {    
                                     Levels clevel = instance.CurrentLevel;
-                                    APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                                    if (!IsChalice() || !APSettings.DLCRunGunChaliceChecks) {
+                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                                    } else if (IsChalice()) {
+                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 3), false);
+                                    }
                                     if (APSettings.RungunGradeChecks>0) {
                                         if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.RungunGradeChecks)-1))) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, ((int)APSettings.RungunGradeChecks>3)?2:1), false);
                                         }
-                                    }
-                                    if (APSettings.DLCRunGunChaliceChecks && IsChalice()) {
-                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 3), false);
                                     }
                                 } else {
                                     Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
@@ -191,7 +200,11 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
                         if (Level.Difficulty >= battleNormalMode) {
                             Levels clevel = instance.CurrentLevel;
-                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                            if (!IsChalice() || !APSettings.DLCDicePalaceChaliceChecks) {
+                                APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                            } else if (IsChalice()) {
+                                APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
+                            }
                         } else {
                             Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                         }

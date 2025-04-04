@@ -60,6 +60,12 @@ namespace CupheadArchipelago.AP {
         Randomized = 3,
     }
 
+    public enum ChaliceCheckMode {
+        Disabled = 0,
+        Enabled = 1,
+        Separate = 2,
+    }
+
     public enum DlcCurseMode {
         Off = 0,
         Normal = 1,
