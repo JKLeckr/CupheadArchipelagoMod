@@ -42,7 +42,7 @@ namespace CupheadArchipelago.AP {
         Pacifist = 5,
     }
 
-    public enum ItemType {
+    public enum APItemType {
         NoType = 0,
         Weapon = 1,
         Charm = 2,

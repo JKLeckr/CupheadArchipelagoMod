@@ -2,10 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 namespace CupheadArchipelago.Util {
-    public class Ext {
-        public static bool CheckLevelComplete(Levels level) {
-            return PlayerData.Data.CheckLevelCompleted(level);
-        }
+    public static class Ext {
         public static bool CheckAnyLevelComplete(Levels[] levels) {
             PlayerData data = PlayerData.Data;
             foreach (Levels l in levels) {

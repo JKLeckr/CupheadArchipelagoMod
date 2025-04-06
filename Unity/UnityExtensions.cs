@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using CupheadArchipelago.Util;
 using UnityEngine;
 
 namespace CupheadArchipelago.Unity {
@@ -38,9 +39,6 @@ namespace CupheadArchipelago.Unity {
             }
 
             return comp;
-        }
-        private static bool IsObsolete(this MemberInfo mi, bool inherit = false) {
-            return mi.GetCustomAttributes(typeof(ObsoleteAttribute), inherit) == null;
         }
     }
 }

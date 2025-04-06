@@ -21,49 +21,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             Harmony.CreateAndPatchAll(typeof(Purchase));
         }
 
-        internal static readonly Dictionary<Weapon, APLocation> weaponLocations = new() {
-            {Weapon.level_weapon_homing, APLocation.shop_weapon1},
-            {Weapon.level_weapon_spreadshot, APLocation.shop_weapon2},
-            {Weapon.level_weapon_boomerang, APLocation.shop_weapon3},
-            {Weapon.level_weapon_bouncer, APLocation.shop_weapon4},
-            {Weapon.level_weapon_charge, APLocation.shop_weapon5},
-            {Weapon.level_weapon_wide_shot, APLocation.shop_dlc_weapon6},
-            {Weapon.level_weapon_crackshot, APLocation.shop_dlc_weapon7},
-            {Weapon.level_weapon_upshot, APLocation.shop_dlc_weapon8},
-        };
-        internal static readonly Dictionary<Charm, APLocation> charmLocations = new() {
-            {Charm.charm_health_up_1, APLocation.shop_charm1},
-            {Charm.charm_smoke_dash, APLocation.shop_charm2},
-            {Charm.charm_parry_plus, APLocation.shop_charm3},
-            {Charm.charm_super_builder, APLocation.shop_charm4},
-            {Charm.charm_parry_attack, APLocation.shop_charm5},
-            {Charm.charm_health_up_2, APLocation.shop_charm6},
-            {Charm.charm_healer, APLocation.shop_dlc_charm7},
-            {Charm.charm_curse, APLocation.shop_dlc_charm8},
-        };
-        internal static long GetAPLocation(ShopSceneItem item) {
-            long loc = -1;
-            switch(item.itemType) {
-                case ItemType.Weapon:
-                    if (weaponLocations.ContainsKey(item.weapon)) {
-                        loc = weaponLocations[item.weapon];                
-                    }
-                    else Logging.LogWarning($"[ShopSceneItem] Unknown item: {item.weapon}");
-                    break;
-                case ItemType.Charm: 
-                    if (charmLocations.ContainsKey(item.charm)) {
-                        loc = charmLocations[item.charm];
-                    }
-                    else Logging.LogWarning($"[ShopSceneItem] Unknown item: {item.charm}");
-                    break;
-                default:
-                    Logging.LogWarning($"[ShopSceneItem] Cannot get item. Invalid Type {item.itemType}");
-                    break;
-            }
-            return loc;
-        }
         internal static bool IsAPLocationChecked(ShopSceneItem item) {
-            return APClient.IsLocationChecked(GetAPLocation(item));
+            return APClient.IsLocationChecked(ShopMap.GetAPLocation(item));
         }
 
         [HarmonyPatch(typeof(ShopSceneItem), "Init")]
@@ -73,7 +32,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         internal static class Description {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
-                long loc = GetAPLocation(__instance);
+                long loc = ShopMap.GetAPLocation(__instance);
                 if (loc<0) {
                     __result = $"{__instance.itemType}";
                     return false;
@@ -95,7 +54,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         internal static class DisplayName {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
-                long loc = GetAPLocation(__instance);
+                long loc = ShopMap.GetAPLocation(__instance);
                 if (loc<0) {
                     __result = "INVALID";
                     return false;
@@ -124,7 +83,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         internal static class Subtext {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
-                long loc = GetAPLocation(__instance);
+                long loc = ShopMap.GetAPLocation(__instance);
                 if (loc<0) {
                     __result = "Unknown type";
                     return false;
@@ -232,7 +191,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
             private static bool APCheck(ShopSceneItem item) {
                 bool res = false;
-                long loc = GetAPLocation(item);
+                long loc = ShopMap.GetAPLocation(item);
                 if (!APClient.IsLocationChecked(loc) && PlayerData.Data.GetCurrency(0) >= item.Value) {
                     PlayerData.Data.AddCurrency(0, -item.Value);
                     APClient.Check(loc, false);

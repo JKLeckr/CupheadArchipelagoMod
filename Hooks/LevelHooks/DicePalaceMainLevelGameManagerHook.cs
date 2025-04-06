@@ -31,7 +31,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             boardSpaceShuffledIndexes.Add(i);
                         }
                     }
-                    Aux.Shuffle(boardSpaceShuffledIndexes, rand);
+                    boardSpaceShuffledIndexes.Shuffle(rand);
                     for (int i=0;i<boardSpaceIndexes.Count;i++) {
                         int bsindex = boardSpaceIndexes[i];
                         int bssindex = boardSpaceShuffledIndexes[i];
