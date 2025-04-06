@@ -15,7 +15,7 @@ namespace CupheadArchipelago.AP {
             ItemMap.GetItemType(itemId);
 
             try {switch (ItemMap.GetItemType(itemId)) {
-                case ItemType.Weapon: {
+                case APItemType.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
                     Gift(weapon);
                     if (APSettings.RandomizeWeaponEX > 0 && ItemMap.IsItemUpgradableWeapon(itemId)) {
@@ -44,12 +44,12 @@ namespace CupheadArchipelago.AP {
                     }
                     break;
                 }
-                case ItemType.Charm: {
+                case APItemType.Charm: {
                     Charm charm = ItemMap.GetCharm(itemId);
                     Gift(charm);
                     break;
                 }
-                case ItemType.Super: {
+                case APItemType.Super: {
                     Gift(ItemMap.GetSuper(itemId));
                     if (itemId==APItem.super_i && !IsChaliceSeparate(ItemGroups.Super)) {
                         Gift(Super.level_super_chalice_vert_beam);
@@ -62,11 +62,11 @@ namespace CupheadArchipelago.AP {
                     }
                     break;
                 }
-                case ItemType.Ability: {
+                case APItemType.Ability: {
                     ApplyAbiltiy(itemId);
                     break;
                 }
-                case ItemType.Essential: {
+                case APItemType.Essential: {
                     if (itemId==APItem.coin) {
                         Logging.Log("AddCurrency");
                         AddCoins(1);
@@ -130,10 +130,10 @@ namespace CupheadArchipelago.AP {
                     }
                     break;
                 }
-                case ItemType.Special: {
+                case APItemType.Special: {
                     break;
                 }
-                case ItemType.Level: {
+                case APItemType.Level: {
                     PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
                     PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
                     PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);

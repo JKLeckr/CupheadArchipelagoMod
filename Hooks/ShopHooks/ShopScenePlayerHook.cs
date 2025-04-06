@@ -46,9 +46,6 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             {Charm.charm_curse, 7},
         };
 
-        //private static Dictionary<Weapon, APLocation> WeaponLocations { get => ShopSceneItemHook.weaponLocations; }
-        //private static Dictionary<Charm, APLocation> CharmLocations { get => ShopSceneItemHook.charmLocations; }
-
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
         internal static class Awake {
             static bool Prefix() {
@@ -183,7 +180,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 return codes;
             }
             private static void SetupItems(ref List<ShopSceneItem> items, ref ShopSceneItem[] weaponItemPrefabs, ref ShopSceneItem[] charmItemPrefabs) {
-                ShopSet[] shopMap = APClient.SlotData.shop_map;
+                ShopSet[] shopMap = ShopMap.GetShopMap();
                 int wlen = weaponItemPrefabs.Length;
                 int clen = charmItemPrefabs.Length;
                 ShopSceneItem[] wtmp = new ShopSceneItem[wlen];
@@ -490,13 +487,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 null, [typeof(PlayerId), type], null);
         }
         private static bool IsAPCharmChecked(Charm charm) {
-            long loc = ShopSceneItemHook.charmLocations[charm];
+            long loc = ShopMap.GetAPCharmLocation(charm);
             bool res = APClient.IsLocationChecked(loc);
             Logging.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
             return res;
         }
         private static bool IsAPWeaponChecked(Weapon weapon) {
-            long loc = ShopSceneItemHook.weaponLocations[weapon];
+            long loc = ShopMap.GetAPWeaponLocation(weapon);
             bool res = APClient.IsLocationChecked(loc);
             Logging.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
             return res;

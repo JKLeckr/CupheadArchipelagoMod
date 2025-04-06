@@ -11,7 +11,7 @@ using MonoMod.Cil;
 using MonoMod.Utils;
 
 namespace CupheadArchipelago.Util {
-    public class Reflection {
+    public static class Reflection {
         public static Type GetEnumeratorType(MethodBase enumerator) {
             if (enumerator == null) throw new ArgumentNullException($"{nameof(GetEnumeratorType)}: Argument cannot be null!");
 
@@ -43,6 +43,10 @@ namespace CupheadArchipelago.Util {
             }
 
             return res;
+        }
+
+        public static bool IsObsolete(this MemberInfo mi, bool inherit = false) {
+            return mi.GetCustomAttributes(typeof(ObsoleteAttribute), inherit) == null;
         }
     }
 }

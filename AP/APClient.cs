@@ -31,7 +31,7 @@ namespace CupheadArchipelago.AP {
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
-        public static APSlotData SlotData { get; private set; } = null;
+        internal static APSlotData SlotData { get; private set; } = null;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
@@ -51,7 +51,7 @@ namespace CupheadArchipelago.AP {
         private static bool reconnecting = false;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
-        private static readonly Version AP_VERSION = new Version(0,5,1,0);
+        private static readonly Version AP_VERSION = new(0,6,0,0);
         internal const long AP_ID_VERSION = 0;
         private const int STATUS_READY = 1;
         private const int RECONNECT_MAX_RETRIES = 3;
@@ -113,8 +113,8 @@ namespace CupheadArchipelago.AP {
                 Logging.Log($"[APClient] Checking SlotData...");
                 try {
                     long slotDataVersion = APSlotData.GetSlotDataVersion(loginData.SlotData);
-                    if (slotDataVersion != APSlotData.AP_SLOTDATA_VERSION) {
-                        Logging.LogError($"[APClient] SlotData version mismatch: C:{APSlotData.AP_SLOTDATA_VERSION} != S:{slotDataVersion}! Incompatible client!");
+                    if (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION || slotDataVersion < APSlotData.AP_SLOTDATA_MIN_VERSION) {
+                        Logging.LogError($"[APClient] Incompatible SlotData version: C:{APSlotData.AP_SLOTDATA_VERSION}, S:{slotDataVersion}! Incompatible client!");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -3;
                         return false;
@@ -222,6 +222,8 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DeathLink = SlotData.deathlink;
+
+                    ShopMap.SetShopMap(SlotData.shop_map);
                     
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
@@ -653,7 +655,7 @@ namespace CupheadArchipelago.AP {
         }
         private static void QueueItem(APItemData item) => QueueItem(item, ReceivedItems.Count-1);
         private static void QueueItem(APItemData item, int itemIndex) {
-            if (ItemMap.GetItemType(item.id)==ItemType.Level) {
+            if (ItemMap.GetItemType(item.id)==APItemType.Level) {
                 QueueItem(itemApplyLevelQueue, itemIndex);
             }
             else {
