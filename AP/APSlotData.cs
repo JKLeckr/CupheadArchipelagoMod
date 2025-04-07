@@ -92,7 +92,7 @@ namespace CupheadArchipelago.AP {
         private static T GetAPSlotDataValue<T>(Dictionary<string, object> slotData, string key) {
             if (slotData.ContainsKey(key)) {
                 try {
-                    return (T)slotData[key];
+                    return CastAPSlotDataValue<T>(slotData[key]);
                 } catch (InvalidCastException e) {
                     throw new InvalidCastException($"GetOptionalAPSlotData: Could not get value from \"{key}\". Exception: {e.Message}");
                 }
@@ -103,7 +103,7 @@ namespace CupheadArchipelago.AP {
         private static T GetOptionalAPSlotDataValue<T>(Dictionary<string, object> slotData, string key, T fallbackValue) {
             if (slotData.ContainsKey(key)) {
                 try {
-                    return (T)slotData[key];
+                    return CastAPSlotDataValue<T>(slotData[key]);
                 } catch (InvalidCastException e) {
                     Logging.LogWarning($"GetOptionalAPSlotDataValue: Could not get value from \"{key}\". Exception: {e.Message}");
                 }
@@ -112,6 +112,19 @@ namespace CupheadArchipelago.AP {
             }
             Logging.LogWarning($"Using fallback value of \"{fallbackValue}\" for \"{key}\"");
             return fallbackValue;
+        }
+        private static T CastAPSlotDataValue<T>(object value) {
+            Type T_Type = typeof(T);
+            if (T_Type.IsEnum) {
+                return (T)Enum.Parse(T_Type, value.ToString());
+            }
+            if (T_Type == typeof(string)) {
+                return (T)(object)value.ToString();
+            }
+            if (T_Type == typeof(bool)) {
+                return (T)(object)Convert.ToBoolean((long)value);
+            }
+            return (T)value;
         }
         private static FVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
             string vraw = GetAPSlotDataValueString(slotData, key);
