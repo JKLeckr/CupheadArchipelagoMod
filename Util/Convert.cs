@@ -15,13 +15,13 @@ namespace CupheadArchipelago.Util {
                     ConvertTo = value => (T)(object)value.ToString();
                 }
                 else if (T_Type == typeof(bool)) {
-                    ConvertTo = value => (T)(object)System.Convert.ToBoolean((long)value);
+                    ConvertTo = value => (T)(object)Convert.ToBoolean((long)value);
                 }
                 else if (T_Type == typeof(sbyte)) {
-                    ConvertTo = value => (T)(object)System.Convert.ToSByte(value);
+                    ConvertTo = value => (T)(object)Convert.ToSByte(value);
                 }
                 else if (T_Type == typeof(int)) {
-                    ConvertTo = value => (T)(object)System.Convert.ToInt32(value);
+                    ConvertTo = value => (T)(object)Convert.ToInt32(value);
                 }
                 else if (T_Type.IsEnum) {
                     ConvertTo = value => (T)Enum.Parse(T_Type, value.ToString());
