@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using FVer;
 
 namespace CupheadArchipelago.AP {
-    public class APSlotData {
+    internal class APSlotData {
         internal const long AP_SLOTDATA_VERSION = 2;
         internal const long AP_SLOTDATA_MIN_VERSION = 2;
 
@@ -76,8 +76,8 @@ namespace CupheadArchipelago.AP {
             deathlink = GetAPSlotDataValue<bool>(slotData, "deathlink");
         }
 
-        public static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataValue<long>(slotData, "version");
-        public static string GetAPWorldVersionString(Dictionary<string, object> slotData) => GetAPSlotDataValue<string>(slotData, "world_version");
+        internal static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataValue<long>(slotData, "version");
+        internal static string GetAPWorldVersionString(Dictionary<string, object> slotData) => GetAPSlotDataValue<string>(slotData, "world_version");
         
         private static T GetAPSlotDataDeserializedValue<T>(Dictionary<string, object> slotData, string key) {
             try {
