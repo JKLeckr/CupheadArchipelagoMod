@@ -43,7 +43,7 @@ namespace CupheadArchipelago.Util {
         public static T[] ArrayRange<T>(T[] arr, int end) => ArrayRange(arr, 0, end);
 
         public static void Shuffle<T>(this IList<T> list, Random rand=null) {  
-            if (rand==null) rand = new Random();
+            rand ??= new Random();
             int n = list.Count;  
             while (n > 1) {  
                 n--;  
