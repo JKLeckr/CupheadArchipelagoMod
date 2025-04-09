@@ -8,7 +8,7 @@ namespace CupheadArchipelago.AP {
         private static readonly Dictionary<long, APItemType> itemTypes = new() {
             {APItem.level_generic, APItemType.NoType},
             {APItem.level_extrahealth, APItemType.Level},
-            {APItem.level_superrecharge, APItemType.Level},
+            {APItem.level_supercharge, APItemType.Level},
             {APItem.level_fastfire, APItemType.Level},
             {APItem.level_4, APItemType.Level},
             {APItem.level_trap_fingerjam, APItemType.Level},
