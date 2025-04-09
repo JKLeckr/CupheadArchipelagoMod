@@ -147,7 +147,7 @@ namespace CupheadArchipelago.AP {
                         stats1.SetHealth(stats1.Health + 1);
                         stats2?.SetHealth(stats2.Health + 1);
                     }
-                    else if (itemId==APItem.level_superrecharge) {
+                    else if (itemId==APItem.level_supercharge) {
                         if (stats1.CanGainSuperMeter) {
                             Logging.Log("Can gain super");
                             PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
