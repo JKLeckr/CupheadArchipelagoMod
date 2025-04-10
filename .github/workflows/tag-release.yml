@@ -64,7 +64,7 @@ jobs:
         with:
           draft: true
           prerelease: true
-          name: Preview (${{ env.RELEASE_VERSION }})
+          name: CupheadArchipelago Mod ${{ env.RELEASE_VERSION }}
           token: ${{ secrets.AP_TOKEN }}
           files: |
             ${{ env.FILE_NAME }}
