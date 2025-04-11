@@ -40,6 +40,16 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_dlc_converge, ItemType.Weapon},
             {APItem.weapon_dlc_twistup, ItemType.Weapon},
 
+            {APItem.p_weapon_peashooter, ItemType.Weapon},
+            {APItem.p_weapon_spread, ItemType.Weapon},
+            {APItem.p_weapon_chaser, ItemType.Weapon},
+            {APItem.p_weapon_lobber, ItemType.Weapon},
+            {APItem.p_weapon_charge, ItemType.Weapon},
+            {APItem.p_weapon_roundabout, ItemType.Weapon},
+            {APItem.p_weapon_dlc_crackshot, ItemType.Weapon},
+            {APItem.p_weapon_dlc_converge, ItemType.Weapon},
+            {APItem.p_weapon_dlc_twistup, ItemType.Weapon},
+
             {APItem.charm_heart, ItemType.Charm},
             {APItem.charm_smokebomb, ItemType.Charm},
             {APItem.charm_psugar, ItemType.Charm},
@@ -97,6 +107,16 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_dlc_converge, Weapon.level_weapon_wide_shot},
             {APItem.weapon_dlc_twistup, Weapon.level_weapon_upshot},
 
+            {APItem.p_weapon_peashooter, Weapon.level_weapon_peashot},
+            {APItem.p_weapon_spread, Weapon.level_weapon_spreadshot},
+            {APItem.p_weapon_chaser, Weapon.level_weapon_homing},
+            {APItem.p_weapon_lobber, Weapon.level_weapon_bouncer},
+            {APItem.p_weapon_charge, Weapon.level_weapon_charge},
+            {APItem.p_weapon_roundabout, Weapon.level_weapon_boomerang},
+            {APItem.p_weapon_dlc_crackshot, Weapon.level_weapon_crackshot},
+            {APItem.p_weapon_dlc_converge, Weapon.level_weapon_wide_shot},
+            {APItem.p_weapon_dlc_twistup, Weapon.level_weapon_upshot},
+
             {APItem.plane_gun, Weapon.plane_weapon_peashot},
             {APItem.plane_bombs, Weapon.plane_weapon_bomb},
 
@@ -105,7 +125,7 @@ namespace CupheadArchipelago.AP {
             
             /* More unimplemented ones to check out */
         };
-        private static readonly HashSet<Weapon> upgradableWeapons = new () {
+        private static readonly HashSet<Weapon> upgradableWeapons = [
             Weapon.level_weapon_peashot,
             Weapon.level_weapon_spreadshot,
             Weapon.level_weapon_homing,
@@ -114,12 +134,14 @@ namespace CupheadArchipelago.AP {
             Weapon.level_weapon_boomerang,
             Weapon.level_weapon_crackshot,
             Weapon.level_weapon_wide_shot,
-        };
+        ];
         public static Weapon GetWeapon(long item) => idToWeapon[item];
         public static IEnumerable<Weapon> GetUpgradableWeapons() {
             return upgradableWeapons;
         }
         public static bool IsWeaponUpgradable(Weapon weapon) => upgradableWeapons.Contains(weapon);
+        public static bool IsItemUpgradableWeapon(long itemId) => 
+            idToWeapon.ContainsKey(itemId) && upgradableWeapons.Contains(idToWeapon[itemId]);
         private static readonly Dictionary<long, Charm> idToCharm = new() {
             {APItem.charm_heart, Charm.charm_health_up_1},
             {APItem.charm_smokebomb, Charm.charm_smoke_dash},

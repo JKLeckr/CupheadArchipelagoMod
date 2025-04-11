@@ -333,6 +333,9 @@ namespace CupheadArchipelago.AP {
                 if ((setTarget&SetTarget.Essential)>0) dlc_ingredients = value;
             }
 
+            internal void ClearWeaponUpgrades() {
+                weaponupgrades = [];
+            }
             public void AddWeaponUpgrade(Weapon weapon) {
                 if (!weaponupgrades.Contains(weapon)) {
                     weaponupgrades.Add(weapon);
@@ -341,10 +344,7 @@ namespace CupheadArchipelago.AP {
             public void AddWeaponUpgrades(IEnumerable<Weapon> weapons) {
                 weaponupgrades.UnionWith(weapons);
             }
-            public void ClearWeaponUpgrades() {
-                weaponupgrades = new();
-            }
-            public bool GetWeaponUpgrade(Weapon weapon) {
+            public bool IsWeaponUpgraded(Weapon weapon) {
                 return weaponupgrades.Contains(weapon);
             }
 
