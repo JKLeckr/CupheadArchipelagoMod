@@ -123,8 +123,8 @@ namespace CupheadArchipelago.AP {
                     res = new APVersion(vraw).AsFVersion();
                 }
                 else res = new FVersion(vraw);
-            } catch (Exception) {
-                Logging.LogWarning($"[APSlotData] Invalid version {vraw}");
+            } catch (Exception e) {
+                Logging.LogWarning($"[APSlotData] Invalid version {vraw}. Exception: {e}");
                 res = FVersion.Zero();
             }
             return res;

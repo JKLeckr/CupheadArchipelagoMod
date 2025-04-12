@@ -33,8 +33,8 @@
       "FVer": {
         "type": "Direct",
         "requested": "[0.1.0-*, )",
-        "resolved": "0.1.0-draft01d",
-        "contentHash": "oh0mqxg1g8CK0EUPAwUItVZUh5qlcaemdGMpqR+2TbxWhJDIeolJrlBRPkY8GNKDK3ONW6FIoOvDr0ydubmcsA=="
+        "resolved": "0.1.0-draft01e",
+        "contentHash": "M9rUx3nzHMRaPecR8yBxYoD6ffXna2UcrjVe9F0LmbzucfVLuA//TFJWSLrNIsrt4fyADpy18TTaXF9qDyh+Kw=="
       },
       "Microsoft.NETFramework.ReferenceAssemblies": {
         "type": "Direct",

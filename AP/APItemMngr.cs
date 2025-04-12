@@ -18,8 +18,10 @@ namespace CupheadArchipelago.AP {
                 case ItemType.Weapon: {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
                     Gift(weapon);
-                    if (ItemMap.IsItemUpgradableWeapon(itemId) && APClient.GetReceivedItemCount(itemId) > 1) {
-                        APClient.APSessionGSPlayerData.AddWeaponUpgrade(weapon);
+                    if (APSettings.RandomizeWeaponEX > 0 && ItemMap.IsItemUpgradableWeapon(itemId)) {
+                        if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
+                            APClient.APSessionGSPlayerData.AddWeaponUpgrade(weapon);
+                        }
                     }
                     if (itemId==APItem.plane_gun && !IsChaliceSeparate(ItemGroups.Essential)) {
                         Gift(Weapon.plane_chalice_weapon_3way);

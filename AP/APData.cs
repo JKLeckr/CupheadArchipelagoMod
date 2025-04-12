@@ -338,6 +338,7 @@ namespace CupheadArchipelago.AP {
             }
             public void AddWeaponUpgrade(Weapon weapon) {
                 if (!weaponupgrades.Contains(weapon)) {
+                    Logging.Log($"Upgrading {weapon}");
                     weaponupgrades.Add(weapon);
                 }
             }
