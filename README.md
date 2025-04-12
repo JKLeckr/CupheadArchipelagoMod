@@ -71,7 +71,7 @@ In the directory, on the terminal:
 
 `dotnet build`
 
-The built DLL's are in `bin/Debug/net35`.
+The built DLL's are in `CupheadArchipelago/bin/Debug/CupheadArchipelago`.
 
 #### 4. Copy the result:
 In the game directory:
