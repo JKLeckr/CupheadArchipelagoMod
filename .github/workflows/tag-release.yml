@@ -44,7 +44,7 @@ jobs:
           dotnet-version: "9.0.x"
       
       - name: Build Project
-        working-directory: CupheadArchipelago
+        working-directory: ${{ env.MOD_NAME }}
         run: |
           mkdir ../build
           dotnet restore
