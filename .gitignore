@@ -35,8 +35,8 @@ bld/
 [Ll]og/
 
 # References
-[Rr]ef/*
-![Rr]ef/.folder
+**/[Rr]ef/*
+!**/[Rr]ef/.folder
 
 # Visual Studio 2015 cache/options directory
 .vs/

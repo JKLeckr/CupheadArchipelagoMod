@@ -57,7 +57,7 @@ Extract BepInEx 5.x x64 for your OS (PC or mac) into the Cuphead installation fo
 (Replace `main` with `dev` if you want more cutting edge but definately more broken changes included)
 
 #### 3. Copy the required files
-Note the `ref` folder in the project directory you just clone.
+Note the `ref` folder in the project directory (`CupheadArchipelago`) you just cloned.
 
 1. Copy the following dll files from `Cuphead_Data/Managed` in the game directory to the `ref` folder mentioned before:
     - `Assembly-CSharp.dll`

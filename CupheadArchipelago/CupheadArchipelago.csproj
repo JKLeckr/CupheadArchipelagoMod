@@ -64,8 +64,8 @@
 
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">
     <Delete Files="$(OutputPath)websocket-sharp.dll" />
-    <Copy SourceFiles="$(ProjectDir)../ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="$(ProjectDir)../ref/c-wspp.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)./ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)./ref/c-wspp.dll" DestinationFolder="$(OutputPath)" />
   </Target>
 
   <Target Name="CleanupExtraFiles" AfterTargets="Clean">
@@ -74,15 +74,15 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>../ref/Assembly-CSharp.dll</HintPath>
+      <HintPath>./ref/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>../ref/UnityEngine.dll</HintPath>
+      <HintPath>./ref/UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>../ref/UnityEngine.UI.dll</HintPath>
+      <HintPath>./ref/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
