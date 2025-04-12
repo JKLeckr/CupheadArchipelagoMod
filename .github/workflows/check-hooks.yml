@@ -3,12 +3,12 @@ name: Check Hooks
 on:
   pull_request:
     paths:
-      - "Hooks/**.cs"
+      - "CupheadArchipelago/Hooks/**.cs"
       - ".github/check-hooks.py"
       - ".github/workflows/check-hooks.yml"
   push:
     paths:
-      - "Hooks/**.cs"
+      - "CupheadArchipelago/Hooks/**.cs"
       - ".github/check-hooks.py"
       - ".github/workflows/check-hooks.yml"
 
@@ -24,4 +24,4 @@ jobs:
 
       - name: Run HarmonyPatch consistency check
         run: |
-          python .github/check-hooks.py ./Hooks
+          python .github/check-hooks.py ./CupheadArchipelago/Hooks

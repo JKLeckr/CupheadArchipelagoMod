@@ -44,11 +44,12 @@ jobs:
           dotnet-version: "9.0.x"
       
       - name: Build Project
+        working-directory: ${{ env.PROJECT_NAME }}
         run: |
-          mkdir build
+          mkdir ../build
           dotnet restore
           dotnet clean
-          dotnet build --no-restore -o build/${{ env.MOD_NAME }}
+          dotnet build --no-restore -o ../build/${{ env.MOD_NAME }}
 
       - name: Build ZIP package
         working-directory: build

@@ -18,6 +18,9 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefaultItemExcludes>$(DefaultItemExcludes);ref/**;Excluded/**;Exclude/**;Restricted/**;excluded/**;exclude/**;restricted/**;Templates/**</DefaultItemExcludes>
     <RootNamespace>CupheadArchipelago</RootNamespace>
+    <OutputPath>$(ProjectDir)bin/$(Configuration)/$(Product)/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!--<BaseOutputPath>$(ProjectDir)bin/</BaseOutputPath>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,17 +40,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="README.md" CopyToOutputDirectory="Always" />
-    <None Update="LICENSE.txt" CopyToOutputDirectory="Always" />
-    <None Update="NOTICE.txt" CopyToOutputDirectory="Always" />
-    <None Update="LICENSE.3rd-party.txt" CopyToOutputDirectory="Always" />
-    <None Update="known-issues.txt" CopyToOutputDirectory="Always" />
+    <None Include="../README.md">
+      <Link>README.md</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="../LICENSE.txt">
+      <Link>LICENSE.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="../NOTICE.txt">
+      <Link>NOTICE.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="../LICENSE.3rd-party.txt">
+      <Link>LICENSE.3rd-party.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="../known-issues.txt">
+      <Link>known-issues.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">
     <Delete Files="$(OutputPath)websocket-sharp.dll" />
-    <Copy SourceFiles="$(ProjectDir)ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="$(ProjectDir)ref/c-wspp.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)../ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)../ref/c-wspp.dll" DestinationFolder="$(OutputPath)" />
   </Target>
 
   <Target Name="CleanupExtraFiles" AfterTargets="Clean">
@@ -56,15 +74,15 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>.\ref\Assembly-CSharp.dll</HintPath>
+      <HintPath>../ref/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>.\ref\UnityEngine.dll</HintPath>
+      <HintPath>../ref/UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>.\ref\UnityEngine.UI.dll</HintPath>
+      <HintPath>../ref/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
