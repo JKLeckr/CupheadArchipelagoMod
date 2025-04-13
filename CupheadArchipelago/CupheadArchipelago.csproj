@@ -20,7 +20,6 @@
     <RootNamespace>CupheadArchipelago</RootNamespace>
     <OutputPath>$(ProjectDir)bin/$(Configuration)/$(Product)/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <!--<BaseOutputPath>$(ProjectDir)bin/</BaseOutputPath>-->
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,18 +5,24 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CupheadArchipelago", "CupheadArchipelago\CupheadArchipelago.csproj", "{1E96F31F-927D-4E76-84D9-85402CB66418}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CupheadArchipelago.Tests", "CupheadArchipelago.Tests\CupheadArchipelago.Tests.csproj", "{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E96F31F-927D-4E76-84D9-85402CB66418}.Debug|x64.ActiveCfg = Debug|x64
+		{1E96F31F-927D-4E76-84D9-85402CB66418}.Debug|x64.Build.0 = Debug|x64
+		{1E96F31F-927D-4E76-84D9-85402CB66418}.Release|x64.ActiveCfg = Release|x64
+		{1E96F31F-927D-4E76-84D9-85402CB66418}.Release|x64.Build.0 = Release|x64
+		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Debug|x64.ActiveCfg = Debug|x64
+		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Debug|x64.Build.0 = Debug|x64
+		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Release|x64.ActiveCfg = Release|x64
+		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1E96F31F-927D-4E76-84D9-85402CB66418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E96F31F-927D-4E76-84D9-85402CB66418}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E96F31F-927D-4E76-84D9-85402CB66418}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E96F31F-927D-4E76-84D9-85402CB66418}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

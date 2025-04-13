@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net35</TargetFramework>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json;
+    </RestoreAdditionalProjectSources>
+    <BaseOutputPath>$(ProjectDir)bin/</BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.*" />
+    <PackageReference Include="NUnit.Analyzers" Version="2.*" />
+    <PackageReference Include="NUnitLite" Version="3.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CupheadArchipelago\CupheadArchipelago.csproj" />
+  </ItemGroup>
+
+</Project>
