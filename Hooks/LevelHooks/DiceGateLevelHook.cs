@@ -16,11 +16,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(DiceGateLevel), "Start")]
         internal static class Start {
-            static bool Prefix() {
-                if (!Logging.IsDebugEnabled())
-                    Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
-                return true;
-            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
@@ -31,7 +26,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_get_PlayerData_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
                 MethodInfo _mi_CheckLevelCompleted = typeof(PlayerData).GetMethod("CheckLevelCompleted", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_CheckLevelsCompleted = typeof(PlayerData).GetMethod("CheckLevelsCompleted", BindingFlags.Public | BindingFlags.Instance);
-                MethodInfo _mi_APCondition = typeof(Start).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_APTallyCondition = typeof(Start).GetMethod("APTallyCondition", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_APOpenCondition = typeof(Start).GetMethod("APOpenCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
@@ -41,9 +37,18 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         codes[i+2].opcode == OpCodes.Callvirt && ((MethodInfo)codes[i+2].operand == _mi_CheckLevelCompleted || 
                         (MethodInfo)codes[i+2].operand == _mi_CheckLevelsCompleted) && codes[i+3].opcode == OpCodes.Brfalse) {
                             bool countCondition = codes[i+1].opcode == OpCodes.Ldsfld;
-                            int testCount = countCondition?APSettings.RequiredContracts[ClampReqIndex(req_index)]:index;
-                            codes.Insert(i+3, new CodeInstruction(OpCodes.Ldc_I4, testCount));
-                            codes.Insert(i+4, new CodeInstruction(OpCodes.Call, _mi_APCondition));
+                            int dieIndex = ClampReqIndex(req_index);
+                            int testCount = index;
+                            List<CodeInstruction> ncodes = countCondition ? [
+                                new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
+                                new CodeInstruction(OpCodes.Call, _mi_APOpenCondition),
+                            ] : [
+                                new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
+                                new CodeInstruction(OpCodes.Ldc_I4, testCount),
+                                new CodeInstruction(OpCodes.Call, _mi_APTallyCondition),
+                            ];
+                            codes.InsertRange(i+3, ncodes);
+                            i += ncodes.Count;
                             if (countCondition) req_index++;
                             else index++;
                             insertCount++;
@@ -63,10 +68,20 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 else if (i>=APSettings.RequiredContracts.Length) return APSettings.RequiredContracts.Length-1;
                 else return i;
             }
-            private static bool APCondition(bool vanillaCondition, int testCount) {
+            private static bool APTallyCondition(bool vanillaCondition, int testIndex, int testCount) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Logging.LogDebug($"Contracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
-                    return APClient.APSessionGSPlayerData.contracts>=testCount;
+                    int contractReq = APSettings.RequiredContracts[testIndex];
+                    bool maxCount = testCount > contractReq;
+                    if (!maxCount) Logging.LogDebug($"TallyContracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
+                    return APClient.APSessionGSPlayerData.contracts >= testCount || maxCount;
+                }
+                else return vanillaCondition;
+            }
+            private static bool APOpenCondition(bool vanillaCondition, int testIndex) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    int testCount = APSettings.RequiredContracts[testIndex];
+                    Logging.Log($"ReqContracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
+                    return APClient.APSessionGSPlayerData.contracts >= testCount;
                 }
                 else return vanillaCondition;
             }

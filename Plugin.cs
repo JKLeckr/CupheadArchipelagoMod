@@ -68,7 +68,7 @@ namespace CupheadArchipelago {
 
             if (configEnabled.Value) {
                 if (configModLogs.Value) SetupLogging(this);
-                Logging.Log($"CupheadArchipelago {Version} by JKLeckr");
+                Logging.Log($"CupheadArchipelago {FullVersion} by JKLeckr");
                 
                 /*Logging.Log("[Log] Info", LoggingFlags.Debug);
                 Logging.LogWarning("[Log] Warning", LoggingFlags.Debug);
