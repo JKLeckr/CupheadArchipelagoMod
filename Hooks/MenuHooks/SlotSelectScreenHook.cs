@@ -462,7 +462,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 50) {
                         if (debug) {
                             for (int j=0;j<6;j++) {
-                            Logging.Log($"REMOVING {codes[i+j].opcode}: {codes[i+j].operand}");
+                                Logging.Log($"REMOVING {codes[i+j].opcode}: {codes[i+j].operand}");
                             }
                         }
                         codes.RemoveRange(i,6);

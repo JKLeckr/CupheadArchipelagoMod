@@ -14,7 +14,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(CheckBasic));
             Harmony.CreateAndPatchAll(typeof(StartBasic));
-            Harmony.CreateAndPatchAll(typeof(CheckEx));
+            Harmony.CreateAndPatchAll(typeof(StartEx));
+            Harmony.CreateAndPatchAll(typeof(StartSuper));
             Harmony.CreateAndPatchAll(typeof(HandleWeaponSwitch));
         }
 
@@ -49,55 +50,23 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             }
         }
 
-        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "CheckEx")]
-        internal static class CheckEx {
-            static bool Prefix(PlanePlayerWeaponManager __instance) {
-                if (__instance.player.stats.isChalice) {
-                    return APClient.APSessionGSPlayerData.dlc_cplane_ex;
-                }
-                return APClient.APSessionGSPlayerData.plane_ex;
-            }
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
-                List<CodeInstruction> codes = new(instructions);
-                bool success = false;
-                bool debug = false;
-
-                MethodInfo _mi_get_SuperMeter = typeof(PlayerStatsManager).GetProperty("SuperMeter", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
-                MethodInfo _mi_get_SuperMeterMax = typeof(PlayerStatsManager).GetProperty("SuperMeterMax", BindingFlags.Public | BindingFlags.Instance).GetGetMethod();
-
-                if (debug) {
-                    Dbg.LogCodeInstructions(codes);
-                }
-                for (int i=0;i<codes.Count-8;i++) {
-                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && codes[i+2].opcode == OpCodes.Callvirt &&
-                        codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_get_SuperMeter && codes[i+4].opcode == OpCodes.Ldarg_0 &&
-                        codes[i+5].opcode == OpCodes.Call && codes[i+6].opcode == OpCodes.Callvirt && codes[i+7].opcode == OpCodes.Callvirt &&
-                        (MethodInfo)codes[i+7].operand == _mi_get_SuperMeterMax && codes[i+8].opcode == OpCodes.Blt_Un) {
-                            List<Label> orig_labels = codes[i].labels;
-                            codes[i].labels = [];
-                            Label lskip = (Label)codes[i+8].operand;
-                            List<CodeInstruction> ncodes = [
-                                CodeInstruction.Call(() => APCanSuper()),
-                                new CodeInstruction(OpCodes.Brfalse, lskip),
-                            ];
-                            codes.InsertRange(i, ncodes);
-                            codes[i].labels = orig_labels;
-                            success = true;
-                            break;
+        [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartEx")]
+        internal static class StartEx {
+            static bool Prefix(LevelPlayerWeaponManager __instance) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    if (__instance.player.stats.isChalice) {
+                        return APClient.APSessionGSPlayerData.dlc_cplane_ex;
                     }
+                    return APClient.APSessionGSPlayerData.plane_ex;
                 }
-                if (!success) throw new Exception($"{nameof(HandleWeaponSwitch)}: Patch Failed!");
-                if (debug) {
-                    Logging.Log("---");
-                    Dbg.LogCodeInstructions(codes);
-                }
-
-                return codes;
+                return true;
             }
+        }
 
-            private static bool APCanSuper() {
-                return !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.plane_super;
-            }
+        [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartSuper")]
+        internal static class StartSuper {
+            static bool Prefix() =>
+                !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.plane_super;
         }
 
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "HandleWeaponSwitch")]
