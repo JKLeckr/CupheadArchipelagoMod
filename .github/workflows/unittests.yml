@@ -1,0 +1,54 @@
+name: UnitTests
+
+on:
+  push:
+    paths:
+      - "**.cs"
+      - '**.csproj'
+      - '**/packages.lock.json'
+      - '.github/workflows/unittests.yml'
+      - '!**/Templates/**'
+  pull_request:
+    paths:
+      - "**.cs"
+      - '**.csproj'
+      - '**/packages.lock.json'
+      - '.github/workflows/unittests.yml'
+      - '!**/Templates/**'
+
+jobs:
+  build-release:
+    name: Test Win64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        #with:
+        #  fetch-depth: 0  # Fetch all history for possible versioning
+
+      - name: Clean project directory
+        run: |
+          rm -Recurse -Force CupheadArchipelago\ref
+      
+      - name: Checkout Private Reference Assemblies
+        uses: actions/checkout@v4
+        with:
+          repository: JKLeckr/CupheadArchipelagoMod-Private
+          token: ${{ secrets.AP_PRIVATE_TOKEN }}
+          path: CupheadArchipelago\ref
+      
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+      
+      - name: Build Solution
+        run: |
+          dotnet restore
+          dotnet clean
+          dotnet build --no-restore
+
+      - name: Unittests
+        run: |
+          dotnet run --project .\CupheadArchipelago.Tests
