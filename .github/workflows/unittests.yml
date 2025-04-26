@@ -43,11 +43,10 @@ jobs:
         with:
           dotnet-version: "9.0.x"
       
-      - name: Build Solution
+      - name: Setup Solution
         run: |
           dotnet restore
           dotnet clean
-          dotnet build --no-restore
 
       - name: Unittests
         run: |
