@@ -19,7 +19,7 @@ namespace CupheadArchipelago.AP {
                     Weapon weapon = ItemMap.GetWeapon(itemId);
                     Gift(weapon);
                     APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllBasic);
-                    if (APSettings.RandomizeWeaponEX > 0 && ItemMap.IsItemUpgradableWeapon(itemId)) {
+                    if (APSettings.WeaponMode > 0 && ItemMap.IsItemUpgradableWeapon(itemId)) {
                         if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
                             APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
                         }
@@ -30,7 +30,7 @@ namespace CupheadArchipelago.AP {
                     else if (itemId==APItem.plane_bombs && !IsChaliceSeparate(ItemGroups.Essential)) {
                         Gift(Weapon.plane_chalice_weapon_bomb);
                     }
-                    if (APSettings.RandomizeWeaponEX == WeaponExMode.Off) {
+                    if (APSettings.WeaponMode == WeaponModes.Normal) {
                         if (itemId==APItem.plane_gun || itemId==APItem.plane_bombs) {
                             APClient.APSessionGSPlayerData.plane_ex = true;
                         }
@@ -86,7 +86,7 @@ namespace CupheadArchipelago.AP {
                             APClient.APSessionGSPlayerData.contracts++;
                         } else Logging.Log("Contract is already applied. Skipping.");
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
-                        if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
+                        if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
                             Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
                             if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
                                 APClient.GoalComplete(Goals.Contracts, true);
@@ -122,7 +122,7 @@ namespace CupheadArchipelago.AP {
                             APClient.APSessionGSPlayerData.dlc_ingredients++;
                         } else Logging.Log("Ingredient is already applied. Skipping.");
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
-                        if ((APSettings.Mode & GameMode.CollectContracts) > 0) {
+                        if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
                             Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
                             if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
                                 APClient.GoalComplete(Goals.Ingredients, true);

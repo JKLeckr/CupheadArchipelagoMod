@@ -153,9 +153,9 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return codes;
             }
             private static bool APCookieCondition() {
-                if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode != DlcChaliceMode.Vanilla) {
+                if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode != DlcChaliceModes.Vanilla) {
                     Logging.Log("Cookie: false");
-                    if (APSettings.DLCChaliceMode == DlcChaliceMode.Randomized) {
+                    if (APSettings.DLCChaliceMode == DlcChaliceModes.Randomized) {
                         APClient.Check(locationID, true);
                     }
                     return false;

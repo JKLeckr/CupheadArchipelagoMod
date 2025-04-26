@@ -16,7 +16,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         internal static class Awake {
             static void Postfix(MapLevelLoader __instance) {
                 if (__instance is MapLevelLoaderChaliceTutorial) {
-                    if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode == DlcChaliceMode.Disabled) {
+                    if (APData.IsCurrentSlotEnabled() && APSettings.DLCChaliceMode == DlcChaliceModes.Disabled) {
                         __instance.gameObject.AddComponent<Disabler>().Init(__instance);
                     }
                 }

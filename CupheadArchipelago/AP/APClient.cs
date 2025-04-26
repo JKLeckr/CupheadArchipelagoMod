@@ -217,7 +217,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.Mode = SlotData.mode;
                     APSettings.Hard = SlotData.expert_mode;
                     APSettings.StartWeapon = SlotData.start_weapon;
-                    APSettings.RandomizeWeaponEX = SlotData.randomize_weapon_ex;
+                    APSettings.WeaponMode = SlotData.weapon_mode;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
                     APSettings.BossSecretChecks = LocationExists(APLocation.level_boss_veggies_secret);
@@ -243,12 +243,12 @@ namespace CupheadArchipelago.AP {
                     
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
-                    if (APSettings.RandomizeWeaponEX == WeaponExMode.AllButStart) {
+                    if (APSettings.WeaponMode == WeaponModes.ProgressiveNoStart) {
                         Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
                         uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
                         APSessionGSPlayerData.AddWeaponBit(weapon, upgradeBit);
                     }
-                    else if (APSettings.RandomizeWeaponEX == WeaponExMode.Off) {
+                    else if (APSettings.WeaponMode == WeaponModes.Normal) {
                         uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
                     }
@@ -581,12 +581,12 @@ namespace CupheadArchipelago.AP {
         }
         public static bool IsAPGoalComplete() {
             Goals goals = APSettings.Mode switch {
-                GameMode.CollectContracts => Goals.Contracts,
-                GameMode.DlcBeatSaltbaker => Goals.Saltbaker,
-                GameMode.DlcBeatBoth => Goals.DevilAndSaltbaker,
-                GameMode.DlcCollectIngradients => Goals.Ingredients,
-                GameMode.DlcCollectBoth => Goals.ContractsAndIngredients,
-                GameMode.BuyOutShop => Goals.ShopBuyout,
+                GameModes.CollectContracts => Goals.Contracts,
+                GameModes.DlcBeatSaltbaker => Goals.Saltbaker,
+                GameModes.DlcBeatBoth => Goals.DevilAndSaltbaker,
+                GameModes.DlcCollectIngradients => Goals.Ingredients,
+                GameModes.DlcCollectBoth => Goals.ContractsAndIngredients,
+                GameModes.BuyOutShop => Goals.ShopBuyout,
                 _ => Goals.Devil,
             };
             return APSessionGSData.IsGoalsCompleted(goals);

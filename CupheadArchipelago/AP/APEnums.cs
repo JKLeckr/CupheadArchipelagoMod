@@ -17,7 +17,7 @@ namespace CupheadArchipelago.AP {
         Graveyard = 5,
     }
 
-    public enum GameMode {
+    public enum GameModes {
         BeatDevil = 0,
         CollectContracts = 1,
         BuyOutShop = 2,
@@ -27,10 +27,10 @@ namespace CupheadArchipelago.AP {
         DlcCollectBoth = 6,
     }
 
-    public enum WeaponExMode : byte {
-        Off = 0,
-        Randomized = 1,
-        AllButStart = 2,
+    public enum WeaponModes : byte {
+        Normal = 1,
+        Progressive = 2,
+        ProgressiveNoStart = 3,
     }
 
     public enum GradeChecks {
@@ -53,7 +53,7 @@ namespace CupheadArchipelago.AP {
         Level = 64,
     }
 
-    public enum DlcChaliceMode {
+    public enum DlcChaliceModes {
         Disabled = 0,
         Start = 1,
         Vanilla = 2,
@@ -66,7 +66,7 @@ namespace CupheadArchipelago.AP {
         Separate = 2,
     }
 
-    public enum DlcCurseMode {
+    public enum DlcCurseModes {
         Off = 0,
         Normal = 1,
         Reverse = 2,

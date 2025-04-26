@@ -43,7 +43,7 @@ namespace CupheadArchipelago.Hooks {
                     data.Loadouts.playerOne.primaryWeapon = weapon;
                     inventories.playerTwo._weapons = [weapon];
                     data.Loadouts.playerTwo.primaryWeapon = weapon;
-                    if (APSettings.UseDLC && APSettings.DLCChaliceMode == DlcChaliceMode.Start) {
+                    if (APSettings.UseDLC && APSettings.DLCChaliceMode == DlcChaliceModes.Start) {
                         Data.Gift(PlayerId.PlayerOne, Charm.charm_chalice);
                     }
                     return false;

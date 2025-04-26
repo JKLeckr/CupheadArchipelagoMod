@@ -9,18 +9,18 @@ using FVer;
 
 namespace CupheadArchipelago.AP {
     internal class APSlotData {
-        internal const long AP_SLOTDATA_VERSION = 2;
-        internal const long AP_SLOTDATA_MIN_VERSION = 2;
+        internal const long AP_SLOTDATA_VERSION = 3;
+        internal const long AP_SLOTDATA_MIN_VERSION = 3;
 
         internal readonly long version;
         internal readonly FVersion world_version;
         internal readonly LevelShuffleMap level_shuffle_map;
         internal readonly ShopSet[] shop_map;
         internal readonly bool use_dlc;
-        internal readonly GameMode mode;
+        internal readonly GameModes mode;
         internal readonly bool expert_mode;
         internal readonly APItem start_weapon;
-        internal readonly WeaponExMode randomize_weapon_ex;
+        internal readonly WeaponModes weapon_mode;
         internal readonly int[] contract_requirements;
         internal readonly int dlc_ingredient_requirements;
         internal readonly int contract_goal_requirements;
@@ -31,8 +31,8 @@ namespace CupheadArchipelago.AP {
         internal readonly GradeChecks boss_grade_checks;
         internal readonly GradeChecks rungun_grade_checks;
         internal readonly int start_maxhealth;
-        internal readonly DlcChaliceMode dlc_chalice;
-        internal readonly DlcCurseMode dlc_curse_mode;
+        internal readonly DlcChaliceModes dlc_chalice;
+        internal readonly DlcCurseModes dlc_curse_mode;
         internal readonly bool trap_loadout_anyweapon;
         internal readonly MusicGroups music_shuffle;
         internal readonly bool deathlink;
@@ -44,7 +44,7 @@ namespace CupheadArchipelago.AP {
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataValue<bool>(slotData, "use_dlc");
-            mode = GetAPSlotDataValue<GameMode>(slotData, "mode");
+            mode = GetAPSlotDataValue<GameModes>(slotData, "mode");
             expert_mode = GetAPSlotDataValue<bool>(slotData, "expert_mode");
             start_weapon = GetAPSlotDataValue<sbyte>(slotData, "start_weapon") switch {
                 1 => APItem.weapon_spread,
@@ -58,7 +58,7 @@ namespace CupheadArchipelago.AP {
                 _ => APItem.weapon_peashooter,
             };
             Logging.Log($"start_weapon: {start_weapon.id}");
-            randomize_weapon_ex = GetAPSlotDataValue<WeaponExMode>(slotData, "randomize_weapon_ex");
+            weapon_mode = GetAPSlotDataValue<WeaponModes>(slotData, "weapon_mode");
             contract_requirements = GetAPSlotDataDeserializedValue<List<int>>(slotData, "contract_requirements").ToArray();
             dlc_ingredient_requirements = GetAPSlotDataValue<int>(slotData, "dlc_ingredient_requirements");
             contract_goal_requirements = GetAPSlotDataValue<int>(slotData, "contract_goal_requirements");
@@ -69,8 +69,8 @@ namespace CupheadArchipelago.AP {
             boss_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "boss_grade_checks");
             rungun_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "rungun_grade_checks");
             start_maxhealth = GetAPSlotDataValue<int>(slotData, "start_maxhealth");
-            dlc_chalice = GetAPSlotDataValue<DlcChaliceMode>(slotData, "dlc_chalice");
-            dlc_curse_mode = GetAPSlotDataValue<DlcCurseMode>(slotData, "dlc_curse_mode");
+            dlc_chalice = GetAPSlotDataValue<DlcChaliceModes>(slotData, "dlc_chalice");
+            dlc_curse_mode = GetAPSlotDataValue<DlcCurseModes>(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
             deathlink = GetAPSlotDataValue<bool>(slotData, "deathlink");
