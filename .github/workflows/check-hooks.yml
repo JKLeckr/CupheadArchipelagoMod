@@ -3,15 +3,17 @@ name: Check Hooks
 on:
   pull_request:
     paths:
-      - "CupheadArchipelago/Hooks/**.cs"
+      - "Hooks/**.cs"
       - ".github/check-hooks.py"
+      - ".github/workflows/check-hooks.yml"
   push:
     paths:
-      - "CupheadArchipelago/Hooks/**.cs"
+      - "Hooks/**.cs"
       - ".github/check-hooks.py"
+      - ".github/workflows/check-hooks.yml"
 
 jobs:
-  verify-patches:
+  consistency-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,6 +23,5 @@ jobs:
           python-version: '3.12'
 
       - name: Run HarmonyPatch consistency check
-        working-directory:
         run: |
           python .github/check-hooks.py ./Hooks
