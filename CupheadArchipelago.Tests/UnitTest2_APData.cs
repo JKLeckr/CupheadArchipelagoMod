@@ -72,12 +72,12 @@ namespace CupheadArchipelago.Tests {
             }
 
             [Test]
-            public void TestTimestamp_IsZero() {
+            public void TestTimestamp1_IsZero() {
                 Assert.That(APData.SData[0].GetFTime(), Is.Zero);
             }
 
             [Test]
-            public void TestTimestamp_IsOneSecond() {
+            public void TestTimestamp2_IsOneSecond() {
                 APData.LoadData(false);
                 Console.WriteLine("Twiddling thumbs for 1 second");
                 Thread.Sleep(1000);
@@ -88,7 +88,7 @@ namespace CupheadArchipelago.Tests {
             }
 
             [Test]
-            public void TestTimestamp_Accumulation() {
+            public void TestTimestamp3_Accumulation() {
                 APData.LoadData(false);
                 Console.WriteLine("Twiddling thumbs for .5 seconds");
                 Thread.Sleep(500);

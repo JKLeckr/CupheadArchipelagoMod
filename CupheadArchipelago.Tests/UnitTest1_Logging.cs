@@ -9,9 +9,10 @@ namespace CupheadArchipelago.Tests {
         public void Setup() {}
 
         [Test]
-        public void TestLog() {
-            Logging.Log("Pass");
-            Assert.Pass();
+        public void TestLog1_Logged() {
+            string log = "Pass";
+            Logging.Log(log);
+            Assert.That(TLogging.RecentLog, Is.EqualTo(log));
         }
     }
 }

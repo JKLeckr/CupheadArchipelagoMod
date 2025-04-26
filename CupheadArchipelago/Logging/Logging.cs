@@ -8,11 +8,20 @@ namespace CupheadArchipelago {
     public class Logging {
         private static bool init = false;
         private static ManualLogSource logSource;
+        private static Action<LogLevel, object> logAction;
         private static LoggingFlags loggingFlags;
         
         internal static void Init(ManualLogSource logSource, LoggingFlags loggingFlags) {
-            if (init) throw new Exception("Logging is already initialized!");
-            Logging.logSource = logSource;
+            if (init) Console.WriteLine("Reinitializing Logging...");
+            Logging.logSource = logSource ?? throw new ArgumentNullException("logSource cannot be null.");
+            logAction = logSource.Log;
+            Logging.loggingFlags = loggingFlags;
+            init = true;
+        }
+        internal static void Init(Action<LogLevel, object> logAction, LoggingFlags loggingFlags) {
+            if (init) Console.WriteLine("Reinitializing Logging...");
+            logSource = null;
+            Logging.logAction = logAction;
             Logging.loggingFlags = loggingFlags;
             init = true;
         }
@@ -33,13 +42,7 @@ namespace CupheadArchipelago {
                 throw new Exception("Logging not initialized.");
             }
             if (IsLoggingFlagsEnabled(requiredFlags)) {
-                if (logSource != null) {
-                    logSource.Log(logLevel, data);
-                } else if (logLevel == LogLevel.Error || logLevel == LogLevel.Fatal) {
-                    Console.Error.WriteLine(data);
-                } else {
-                    Console.WriteLine(data);
-                }
+                logAction(logLevel, data);
             }
         }
         public static void LogMessage(object data) => LogMessage(data, LoggingFlags.Message);
@@ -66,5 +69,7 @@ namespace CupheadArchipelago {
             return (((int)flags)&((int)loggingFlags))==(int)flags;
         }
         public static bool IsDebugEnabled() => IsLoggingFlagsEnabled(LoggingFlags.Debug);
+
+        public static string GetLogSourceName() => logSource?.SourceName;
     }
 }
