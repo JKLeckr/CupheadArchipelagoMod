@@ -10,7 +10,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
             Harmony.CreateAndPatchAll(typeof(Start));
         }
 
-        [HarmonyPatch(typeof(CreditsScreen), "Start")]
+        [HarmonyPatch(typeof(DLCCreditsComicCutscene), "Start")]
         internal static class Start {
             static bool Prefix() {
                 APClient.SendChecks(true);

@@ -134,6 +134,7 @@ namespace CupheadArchipelago.AP {
             Weapon.level_weapon_boomerang,
             Weapon.level_weapon_crackshot,
             Weapon.level_weapon_wide_shot,
+            Weapon.level_weapon_upshot,
         ];
         public static Weapon GetWeapon(long item) => idToWeapon[item];
         public static IEnumerable<Weapon> GetUpgradableWeapons() {

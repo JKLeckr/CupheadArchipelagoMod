@@ -50,9 +50,9 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             }
         }
 
-        [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartEx")]
+        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "StartEx")]
         internal static class StartEx {
-            static bool Prefix(LevelPlayerWeaponManager __instance) {
+            static bool Prefix(PlanePlayerWeaponManager __instance) {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (__instance.player.stats.isChalice) {
                         return APClient.APSessionGSPlayerData.dlc_cplane_ex;
@@ -63,9 +63,42 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             }
         }
 
-        [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartSuper")]
-        internal static class StartSuper {
-            static bool Prefix() =>
+        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "StartSuper")]
+        internal static class StartSuper {                
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+                List<CodeInstruction> codes = new(instructions);
+                bool debug = false;
+
+                MethodInfo _mi_StartEx = typeof(PlanePlayerWeaponManager).GetMethod("StartEx", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo _mi_APCondition = typeof(StartSuper).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
+
+                Label l_vanilla = il.DefineLabel();
+                Label l_end = il.DefineLabel();
+
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
+                codes[0].labels.Add(l_vanilla);
+                codes[codes.Count-1].labels.Add(l_end);
+                List<CodeInstruction> ncodes = [
+                    new CodeInstruction(OpCodes.Call, _mi_APCondition),
+                    new CodeInstruction(OpCodes.Brtrue, l_vanilla),
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Call, _mi_StartEx),
+                    new CodeInstruction(OpCodes.Br, l_end),
+                ];
+                codes.InsertRange(0, ncodes);
+                if (debug) {
+                    Logging.Log("---");
+                    foreach (CodeInstruction code in codes) {
+                        Logging.Log($"{code.opcode}: {code.operand}");
+                    }
+                }
+
+                return codes;
+            }
+
+            private static bool APCondition() =>
                 !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.plane_super;
         }
 
@@ -104,8 +137,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 }
                 if (!success) throw new Exception($"{nameof(HandleWeaponSwitch)}: Patch Failed!");
                 if (debug) {
+                    Logging.Log("---");
                     foreach (CodeInstruction code in codes) {
-                        Logging.Log("---");
                         Logging.Log($"{code.opcode}: {code.operand}");
                     }
                 }

@@ -1,0 +1,26 @@
+name: Check Hooks
+
+on:
+  pull_request:
+    paths:
+      - "CupheadArchipelago/Hooks/**.cs"
+      - ".github/check-hooks.py"
+  push:
+    paths:
+      - "CupheadArchipelago/Hooks/**.cs"
+      - ".github/check-hooks.py"
+
+jobs:
+  verify-patches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Run HarmonyPatch consistency check
+        working-directory:
+        run: |
+          python .github/check-hooks.py ./Hooks
