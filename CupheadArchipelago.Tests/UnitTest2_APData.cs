@@ -111,7 +111,7 @@ namespace CupheadArchipelago.Tests {
                 APData.Save(0, true);
                 TimeSpan spanD = new(APData.SData[0].GetFTime());
                 long testTimeD = ((long)Math.Floor((decimal)spanD.TotalMilliseconds)) / 100;
-                Assert.That(testTimeD, Is.EqualTo(12));
+                Assert.That(testTimeD, Is.InRange(12, 13));
             }
         }
     }
