@@ -53,11 +53,14 @@ namespace CupheadArchipelago.AP {
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new(0,6,0,0);
         internal const long AP_ID_VERSION = 0;
-        private const int STATUS_READY = 1;
+        protected const int STATUS_READY = 1;
+        protected const string GAME_NAME = "Cuphead";
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
 
-        public static bool CreateAndStartArchipelagoSession(int index) {
+        public delegate ArchipelagoSession ArchipelagoSessionCreate(string hostname, int port);
+
+        private static bool ArchipelagoSessionPre() {
             if (IsTryingSessionConnect) {
                 Logging.LogError($"[APClient] Already Trying to Connect. Aborting.");
                 return false;
@@ -70,11 +73,10 @@ namespace CupheadArchipelago.AP {
                     Reset(false);
                 }
             }
-            bool res = false;
+            return true;
+        }
 
-            APData data = APData.SData[index];
-            session = ArchipelagoSessionFactory.CreateSession(data.address, data.port);
-            APSessionPlayerName = data.player;
+        private static void SetupArchipelagoSession(int index) {
             APSessionGSDataSlot = index;
             session.MessageLog.OnMessageReceived += OnMessageReceived;
             session.Socket.ErrorReceived += OnError;
@@ -82,6 +84,20 @@ namespace CupheadArchipelago.AP {
             session.Items.ItemReceived += OnItemReceived;
             session.Socket.PacketReceived += OnPacketReceived;
             session.Socket.SocketOpened += () => {Logging.Log("Socket Opened");};
+        }
+
+        public static bool CreateAndStartArchipelagoSession(int index) =>
+            CreateAndStartArchipelagoSession(index, ArchipelagoSessionFactory.CreateSession);
+
+        public static bool CreateAndStartArchipelagoSession(int index, ArchipelagoSessionCreate sessionCreate) {
+            if (!ArchipelagoSessionPre()) return false;
+            
+            bool res = false;
+
+            APData data = APData.SData[index];
+            session = sessionCreate(data.address, data.port);
+            APSessionPlayerName = data.player;
+            SetupArchipelagoSession(index);
 
             res = ConnectArchipelagoSession();
 
@@ -229,10 +245,12 @@ namespace CupheadArchipelago.AP {
                     doneChecksUnique = new(DoneChecks);
                     if (APSettings.RandomizeWeaponEX == WeaponExMode.AllButStart) {
                         Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
-                        APSessionGSPlayerData.AddWeaponUpgrade(weapon);
+                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
+                        APSessionGSPlayerData.AddWeaponBit(weapon, upgradeBit);
                     }
                     else if (APSettings.RandomizeWeaponEX == WeaponExMode.Off) {
-                        APSessionGSPlayerData.AddWeaponUpgrades(ItemMap.GetUpgradableWeapons());
+                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
+                        APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
                     }
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);

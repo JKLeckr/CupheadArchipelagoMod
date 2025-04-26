@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace CupheadArchipelago.AP {
     public class APData {
-        internal const int AP_DATA_VERSION = 1;
+        internal const int AP_DATA_VERSION = 2;
 
         public static bool Loaded { get; private set; } = false;
         public static APData[] SData { get; private set; }
@@ -52,95 +52,115 @@ namespace CupheadArchipelago.AP {
 
         static APData() {
             SData = new APData[3];
+            Init();
+        }
+
+        internal static void Init() {
             for (int i=0;i<SData.Length;i++) {
-                SData[i] = new APData();
+                SData[i] = new APData() {
+                    index = i
+                };
             }
         }
 
-        public static void LoadData() {
+        public static void LoadData() => LoadData(true);
+        public static void LoadData(bool showPath) {
             if (!SaveData.IsInitialized()) {
                 Logging.LogError("[APData] Not initialized! Cannot load data!");
                 return;
             }
-            Logging.Log($"[APData] Loading Data from {SaveData.AP_SAVE_PATH}");
+            if (showPath)
+                Logging.Log($"[APData] Loading APData from \"{SaveData.APSavePath}\"...");
+            else
+                Logging.Log("[APData] Loading APData...");
             for (int i=0;i<SaveData.AP_SAVE_FILE_KEYS.Length;i++) {
-                string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[i]+".sav");
-                if (File.Exists(filename)) {
-                    APData data = null;
-                    sbyte state = 0;
-                    try {
-                        string sdata = File.ReadAllText(filename);
-                        data = JsonConvert.DeserializeObject<APData>(sdata);
-                        data.ltime = DateTime.UtcNow.Ticks;
-                        //Logging.Log($"Dump:\n{sdata}");
-                        //Logging.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");
-                    }
-                    catch (Exception e) {
-                        Logging.LogError($"[APData] Unable to read AP Save Data for slot {i}: {e}");
-                        state = -1;
-                    }
-                    if (data == null) {
-                        Logging.LogError($"[APData] Data could not be unserialized for key: {SaveData.AP_SAVE_FILE_KEYS[i]}. Loading defaults.");
-                        SData[i] = new APData {
-                            state = state
-                        };
-                    }
-                    else {
-                        data.index = i;
-                        SData[i] = data;
-                        if (data._override != 0) {
-                            Logging.LogWarning($"[APData] Slot {i}: There are overrides enabled ({data._override}). I hope you know what you are doing!");
-                        } 
-                        if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(1)) {
-                            Logging.LogWarning($"[APData] Slot {i}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
-                            data.state = 1;
-                        }
-                        if (data.IsOverridden(512)) {
-                            data._override &= ~512;
-                            Logging.LogWarning($"[APData] Slot {i}: Cleaning up received items...");
-                            int counter = 0;
-                            for (int j=0;j<data.receivedItems.Count;j++) {
-                                if ((data.receivedItems[i]?.id ?? -1) == -1) {
-                                    data.receivedItems.RemoveAt(i);
-                                    counter++;
-                                }
-                            }
-                            Logging.LogWarning($"[APData] Slot {i}: Removed {counter} items.");
-                        }
-                    }
-                }
-                else {
-                    Logging.LogWarning($"[APData] No data. Saving default data for slot {i}");
-                    Save(i);
-                }
+                Load(i);
             }
             Loaded = true;
         }
+        private static void Load(int index) {
+            string filename = SaveData.AP_SAVE_FILE_KEYS[index]+".sav";
+            string filepath = Path.Combine(SaveData.APSavePath, filename);
+            if (File.Exists(filepath)) {
+                APData data = null;
+                sbyte state = 0;
+                try {
+                    string sdata = File.ReadAllText(filepath);
+                    data = JsonConvert.DeserializeObject<APData>(sdata);
+                    data.ltime = DateTime.UtcNow.Ticks;
+                    //Logging.Log($"Dump:\n{sdata}");
+                    //Logging.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");
+                }
+                catch (Exception e) {
+                    Logging.LogError($"[APData] Unable to read AP Save Data for slot {index}: {e}");
+                    state = -1;
+                }
+                if (data == null) {
+                    Logging.LogError($"[APData] Data could not be unserialized for key: {filename}. Loading defaults.");
+                    SData[index] = new APData {
+                        state = state
+                    };
+                }
+                else {
+                    data.index = index;
+                    SData[index] = data;
+                    if (data._override != 0) {
+                        Logging.LogWarning($"[APData] Slot {index}: There are overrides enabled ({data._override}). I hope you know what you are doing!");
+                    } 
+                    if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(1)) {
+                        Logging.LogWarning($"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
+                        data.state = 1;
+                    }
+                    if (data.IsOverridden(512)) {
+                        data._override &= ~512;
+                        Logging.LogWarning($"[APData] Slot {index}: Cleaning up received items...");
+                        int counter = 0;
+                        for (int j=0;j<data.receivedItems.Count;j++) {
+                            if ((data.receivedItems[index]?.id ?? -1) == -1) {
+                                data.receivedItems.RemoveAt(index);
+                                counter++;
+                            }
+                        }
+                        Logging.LogWarning($"[APData] Slot {index}: Removed {counter} items.");
+                    }
+                }
+            }
+            else {
+                Logging.LogWarning($"[APData] No data. Saving default data for slot {index}");
+                Save(index, false);
+                SData[index].ltime = DateTime.UtcNow.Ticks;
+            }
+        }
         public static void Save(int index) {
+            SData[index].Save(global::PlayerData.inGame);
+        }
+        internal static void Save(int index, bool writeTime) {
+            SData[index].Save(writeTime);
+        }
+        private void Save(bool writeTime) {
             if (!SaveData.IsInitialized()) {
-                Logging.LogError("[APData] Not initialized! Cannot save data!");
+                Logging.LogError("[APData] SaveData Not initialized! Cannot save data!");
                 return;
             }
             Logging.Log($"[APData] Saving slot {index}");
-            APData data = SData[index];
-            if (data.version != AP_DATA_VERSION && !data.IsOverridden(1)) {
-                Logging.LogError($"[APData] Slot {index} Data version mismatch. {data.version} != {AP_DATA_VERSION}. Skipping.");
+            if (version != AP_DATA_VERSION && !IsOverridden(1)) {
+                Logging.LogError($"[APData] Slot {index} Data version mismatch. {version} != {AP_DATA_VERSION}. Skipping.");
                 return;
             }
-            data.version = AP_DATA_VERSION;
-            if (data.dlock) {
+            version = AP_DATA_VERSION;
+            if (dlock) {
                 Logging.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
                 return;
             }
-            string filename = Path.Combine(SaveData.AP_SAVE_PATH, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
-            if (global::PlayerData.inGame) {
-                long diff = DateTime.UtcNow.Ticks - data.ltime;
-                if (diff > 0) data.ftime += diff;
+            string filename = Path.Combine(SaveData.APSavePath, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
+            if (writeTime) {
+                long diff = DateTime.UtcNow.Ticks - ltime;
+                if (diff > 0) ftime += diff;
                 else Logging.LogWarning("[APData] File time elapsed is negative!");
+                ltime = DateTime.UtcNow.Ticks;
             }
-            data.ltime = DateTime.UtcNow.Ticks;
             try {
-                string sdata = JsonConvert.SerializeObject(data);
+                string sdata = JsonConvert.SerializeObject(this);
                 File.WriteAllText(filename, sdata);
             }
             catch (Exception e) {
@@ -148,17 +168,22 @@ namespace CupheadArchipelago.AP {
                 return;
             }
         }
-        public static void SaveAll() {
+        public static void SaveAll() => SaveAll(global::PlayerData.inGame);
+        public static void SaveAll(bool writeTime) {
             if (!SaveData.IsInitialized()) {
                 Logging.LogError("[APData] Not initialized! Cannot save data!");
                 return;
             }
             for (int i=0;i<SaveData.AP_SAVE_FILE_KEYS.Length;i++) {
-                Save(i);
+                Save(i, writeTime);
             }
         }
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
+        public static void ResetAllData() {
+            bool reset = Config.ResetAPConfigOnFileDelete();
+            for (int i=0;i<SData.Length;i++) ResetData(i, reset, reset);
+        }
         public static void ResetData(int index) {
             bool reset = Config.ResetAPConfigOnFileDelete();
             ResetData(index, reset, reset);
@@ -182,7 +207,8 @@ namespace CupheadArchipelago.AP {
             }
             Save(index);
         }
-        public void ResetLTime() {
+        internal long GetFTime() => ftime;
+        internal void ResetLTime() {
             ltime = DateTime.UtcNow.Ticks;
         }
 
@@ -245,24 +271,38 @@ namespace CupheadArchipelago.AP {
                 AllEssential = 3,
                 Super = 4,
                 ChaliceSuper = 8,
-                AllSuper = 12,
-                BasicAbilities = 16,
+                AllSuper = Super | ChaliceSuper,
+                Abilities = 16,
                 ChaliceAbilities = 32,
-                AllAbilities = 48,
+                AllAbilities = Abilities | ChaliceAbilities,
+                Aim = 64,
+                ChaliceAim = 128,
+                AllAim = Aim | ChaliceAim,
                 All = int.MaxValue,
             }
             [Flags]
-            public enum AimDirections {
+            public enum WeaponParts : uint {
                 None = 0,
-                Left = 1,
-                Right = 2,
-                Up = 4,
-                Down = 8,
-                UpLeft = 16,
-                UpRight = 32,
-                DownLeft = 64,
-                DownRight = 128,
-                All = 255
+                Basic = 1,
+                Ex = 2,
+                CBasic = 4,
+                CEx = 8,
+                AllBasic = Basic | CBasic,
+                AllEx = Ex | CEx,
+                All = Basic | Ex | CBasic | CEx
+            }
+            [Flags]
+            public enum AimDirections : uint {
+                None = 0,
+                Left = 256,
+                Right = 512,
+                Up = 1024,
+                Down = 2048,
+                UpLeft = 4096,
+                UpRight = 8192,
+                DownLeft = 16384,
+                DownRight = 32768,
+                All = Left | Right | Up | Down | UpLeft | UpRight | DownLeft | DownRight
             }
             
             [JsonProperty("contracts")]
@@ -308,16 +348,15 @@ namespace CupheadArchipelago.AP {
             public int coins_collected = 0;
             [JsonProperty("aim_directions")]
             public AimDirections aim_directions = 0;
-
-            [JsonProperty("weaponupgrades")]
-            private HashSet<Weapon> weaponupgrades = [];
+            [JsonProperty("weapons")]
+            private Dictionary<Weapon, uint> weapons = [];
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
-                if ((setTarget&SetTarget.BasicAbilities)>0) dash = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) duck = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) parry = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) plane_parry = value;
-                if ((setTarget&SetTarget.BasicAbilities)>0) plane_shrink = value;
+                if ((setTarget&SetTarget.Abilities)>0) dash = value;
+                if ((setTarget&SetTarget.Abilities)>0) duck = value;
+                if ((setTarget&SetTarget.Abilities)>0) parry = value;
+                if ((setTarget&SetTarget.Abilities)>0) plane_parry = value;
+                if ((setTarget&SetTarget.Abilities)>0) plane_shrink = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cdash = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cduck = value;
                 if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cparry = value;
@@ -334,19 +373,23 @@ namespace CupheadArchipelago.AP {
             }
 
             internal void ClearWeaponUpgrades() {
-                weaponupgrades = [];
+                weapons = [];
             }
-            public void AddWeaponUpgrade(Weapon weapon) {
-                if (!weaponupgrades.Contains(weapon)) {
-                    Logging.Log($"Upgrading {weapon}");
-                    weaponupgrades.Add(weapon);
+            public void AddWeaponBit(Weapon weapon, uint bit) {
+                if (!weapons.ContainsKey(weapon)) {
+                    Logging.Log($"Adding {weapon}");
+                    weapons.Add(weapon, 0);
+                }
+                if ((weapons[weapon] & bit)==0) Logging.Log($"Adding {weapon} bit {bit}");
+                weapons[weapon] |= bit;
+            }
+            public void AddWeaponsBit(IEnumerable<Weapon> weapons, uint bit) {
+                foreach (Weapon w in weapons) {
+                    AddWeaponBit(w, bit);
                 }
             }
-            public void AddWeaponUpgrades(IEnumerable<Weapon> weapons) {
-                weaponupgrades.UnionWith(weapons);
-            }
-            public bool IsWeaponUpgraded(Weapon weapon) {
-                return weaponupgrades.Contains(weapon);
+            public bool WeaponHasBit(Weapon weapon, uint bit) {
+                return weapons.ContainsKey(weapon) ? (weapons[weapon] & bit) == bit : false;
             }
 
             [JsonProperty("got_start_weapon")]

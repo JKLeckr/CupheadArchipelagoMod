@@ -10,11 +10,14 @@ namespace CupheadArchipelago {
         private static ManualLogSource logSource;
         private static LoggingFlags loggingFlags;
         
-        public static void Init(ManualLogSource logSource, LoggingFlags loggingFlags) {
+        internal static void Init(ManualLogSource logSource, LoggingFlags loggingFlags) {
+            if (init) throw new Exception("Logging is already initialized!");
             Logging.logSource = logSource;
             Logging.loggingFlags = loggingFlags;
             init = true;
         }
+
+        internal static bool IsLoggingInitialized() => init;
 
         public static void Log(object data) {
             Log(data, LogLevel.Info);
@@ -30,7 +33,13 @@ namespace CupheadArchipelago {
                 throw new Exception("Logging not initialized.");
             }
             if (IsLoggingFlagsEnabled(requiredFlags)) {
-                logSource.Log(logLevel, data);
+                if (logSource != null) {
+                    logSource.Log(logLevel, data);
+                } else if (logLevel == LogLevel.Error || logLevel == LogLevel.Fatal) {
+                    Console.Error.WriteLine(data);
+                } else {
+                    Console.WriteLine(data);
+                }
             }
         }
         public static void LogMessage(object data) => LogMessage(data, LoggingFlags.Message);

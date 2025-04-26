@@ -42,12 +42,11 @@ namespace CupheadArchipelago.AP {
         None = 0,
         Essential = 1,
         Super = 2,
-        //CoreItems = 3,
-        Abilities = 4,
-        //CoreAndAbilities = 7,
-        AimAbilities = 8,
-        //CoreAndAim = 11,
-        //AbilitiesAndAim = 12,
+        CoreItems = Essential | Super,
+        WeaponBasic = 4,
+        WeaponEx = 8,
+        Abilities = 32,
+        AimAbilities = 64,
         All = 255,
     }
 }

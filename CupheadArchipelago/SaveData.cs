@@ -5,18 +5,22 @@ using System;
 using System.IO;
 
 namespace CupheadArchipelago {
-    internal class SaveData {
+    public class SaveData {
         private static bool initted = false;
 
         private const string AP_SAVE_FILE_KEY_SUFFIX = "_apdata";
-        internal static readonly string AP_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
-
+        
+        internal static readonly string DEFAULT_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
         internal static readonly string[] AP_SAVE_FILE_KEYS = new string[3];
 
-        internal static void Init(string saveKeyName) {
+        internal static string APSavePath { get; private set; } = "";
+
+        public static void Init(string saveKeyName) => Init(saveKeyName, DEFAULT_SAVE_PATH);
+        public static void Init(string saveKeyName, string savePath) {
             for (int i=0;i<3;i++) {
                 AP_SAVE_FILE_KEYS[i] = $"{saveKeyName}{i}{AP_SAVE_FILE_KEY_SUFFIX}";
             }
+            APSavePath = savePath;
             initted = true;
         }
 

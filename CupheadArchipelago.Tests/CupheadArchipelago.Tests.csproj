@@ -3,12 +3,15 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net35</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json;
     </RestoreAdditionalProjectSources>
-    <BaseOutputPath>$(ProjectDir)bin/</BaseOutputPath>
+    <OutputPath>$(ProjectDir)bin/$(Configuration)/Test/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Assembly-CSharp.Stub/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CupheadArchipelago\CupheadArchipelago.csproj" />
+    <ProjectReference Include="../CupheadArchipelago/CupheadArchipelago.csproj" />
+    <ProjectReference Include="./Assembly-CSharp.Stub/Assembly-CSharp.Stub.csproj" />
   </ItemGroup>
 
 </Project>

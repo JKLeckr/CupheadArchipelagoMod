@@ -1,12 +1,20 @@
-﻿using System;
+﻿/// Copyright 2025 JKLeckr
+/// SPDX-License-Identifier: Apache-2.0
+
+using System;
 using System.Collections.Generic;
 using NUnitLite;
 
 namespace CupheadArchipelago.Tests {
     public class TestMain {
         public static int Main(string[] args) {
-            List<string> largs = new List<string>(args) {
-                "--noresult",
+            Console.WriteLine($"-- CupheadArchipelago Test Suite --");
+            TLogging.SetupLogging();
+            TestData.Setup();
+            Console.WriteLine();
+            // The tests only work with 1 thread.
+            List<string> largs = new(args) {
+                "--noresult", "--workers=1",
             };
             Console.WriteLine($"Running NUnitLite with args [{ArgsToString(largs)}]");
             Console.WriteLine();

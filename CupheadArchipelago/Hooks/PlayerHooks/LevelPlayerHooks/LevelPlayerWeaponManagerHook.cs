@@ -21,7 +21,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
         [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartEx")]
         internal static class StartEx {
             static bool Prefix(LevelPlayerWeaponManager __instance) {
-                return !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.IsWeaponUpgraded(__instance.CurrentWeapon.id);
+                uint exBit = (uint)(__instance.player.stats.isChalice ? APData.PlayerData.WeaponParts.CEx : APData.PlayerData.WeaponParts.Ex);
+                return !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.WeaponHasBit(__instance.CurrentWeapon.id, exBit);
             }
         }
     }
