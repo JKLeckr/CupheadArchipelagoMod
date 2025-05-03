@@ -78,7 +78,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     APClient.SendChecks(true);
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
-                    apmngr.Init(IsValidLevel(__instance) ? APManager.Type.Level : APManager.Type.Normal, false);
+                    apmngr.Init(GetLevelType(__instance), IsValidDeathLinkLevel(__instance));
                 }
             }
         }
@@ -345,15 +345,16 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
         }
 
-        private static bool IsValidLevel(Level instance) {
+        private static APManager.MngrType GetLevelType(Level instance) {
             Logging.Log($"Level: {instance.CurrentLevel} | LevelType: {instance.LevelType} | Difficulty: {instance.mode}");
             return instance.LevelType switch {
                 Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                 _ => false,
-            } && instance.CurrentLevel switch {
-                Levels.House or Levels.ShmupTutorial or Levels.Mausoleum or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
-                _ => true,
-            };
+            } ? instance.CurrentLevel switch {
+                Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => APManager.MngrType.Normal,
+                Levels.Mausoleum => APManager.MngrType.SpecialLevel,
+                _ => APManager.MngrType.Level,
+            } : APManager.MngrType.Normal;
         }
         private static bool IsValidDeathLinkLevel(Level instance) {
             Logging.Log($"Level: {instance.CurrentLevel} | LevelType: {instance.LevelType} | Difficulty: {instance.mode}");
@@ -361,7 +362,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Level.Type.Battle or Level.Type.Platforming or Level.Type.Tutorial => true,
                 _ => false,
             } && instance.CurrentLevel switch {
-                Levels.House or Levels.ShmupTutorial or Levels.Mausoleum or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
+                Levels.House or Levels.ShmupTutorial or Levels.DiceGate or Levels.Kitchen or Levels.ChessCastle => false,
                 _ => true,
             };
         }

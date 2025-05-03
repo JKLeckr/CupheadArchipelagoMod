@@ -39,7 +39,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     Logging.Log($"Current Map Scene: {___scene}");
                     LogMapsVisited();
-                    apmngr.Init(APManager.Type.Normal);
+                    apmngr.Init(APManager.MngrType.Normal);
                     apmngr.SetActive(true);
                     __instance.StartCoroutine(UpdateCoins_cr());
                 }

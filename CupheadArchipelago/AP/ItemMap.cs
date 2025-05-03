@@ -101,6 +101,7 @@ namespace CupheadArchipelago.AP {
 >>>>>>> c4dce37 (Code organization and cleanup)
             }
         }
+        public static APItemType GetItemType(this APItem item) => GetItemType(item.id);
 
         private static readonly Dictionary<long, Weapon> idToWeapon = new() {
             {APItem.weapon_peashooter, Weapon.level_weapon_peashot},
@@ -149,6 +150,7 @@ namespace CupheadArchipelago.AP {
         public static bool IsWeaponUpgradable(Weapon weapon) => upgradableWeapons.Contains(weapon);
         public static bool IsItemUpgradableWeapon(long itemId) => 
             idToWeapon.ContainsKey(itemId) && upgradableWeapons.Contains(idToWeapon[itemId]);
+        public static bool IsItemUpgradableWeapon(this APItem item) => IsItemUpgradableWeapon(item.id);
         private static readonly Dictionary<long, Charm> idToCharm = new() {
             {APItem.charm_heart, Charm.charm_health_up_1},
             {APItem.charm_smokebomb, Charm.charm_smoke_dash},
@@ -179,5 +181,6 @@ namespace CupheadArchipelago.AP {
             APItem.ability_plane_shrink,
         };
         public static bool IsPlaneItem(long item) => planeItems.Contains(item);
+        public static bool IsPlaneItem(this APItem item) => planeItems.Contains(item);
     }
 }

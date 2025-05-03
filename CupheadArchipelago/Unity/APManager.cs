@@ -9,9 +9,10 @@ namespace CupheadArchipelago.Unity {
     public class APManager : MonoBehaviour {
         public static APManager Current { get; private set; } = null;
 
-        public enum Type {
+        public enum MngrType {
             Normal,
-            Level
+            Level,
+            SpecialLevel,
         }
 
         [SerializeField]
@@ -22,7 +23,7 @@ namespace CupheadArchipelago.Unity {
         private float mapApplyInterval = 0.25f;
         private bool init = false;
         private bool active = false;
-        private Type type = Type.Normal;
+        private MngrType type = MngrType.Normal;
         private float timer = 0f;
         [SerializeField]
         private bool deathLink = false;
@@ -38,7 +39,8 @@ namespace CupheadArchipelago.Unity {
         [SerializeField]
         private float slowFire = 0f;
         
-        public void Init(Type type, bool disableDeathLink = false) {
+        public void Init(MngrType type) => Init(type, type == MngrType.Level);
+        public void Init(MngrType type, bool deathLink) {
             if (init) return;
             if (Current!=this) {
                 if (Current!=null) Destroy(Current);
@@ -46,7 +48,7 @@ namespace CupheadArchipelago.Unity {
             }
             Logging.Log($"[APManager] Initialized as Current {type}");
             this.type = type;
-            deathLink = type == Type.Level && !disableDeathLink;
+            this.deathLink = deathLink;
             init = true;
         }
         public bool IsActive() => active;
@@ -54,7 +56,7 @@ namespace CupheadArchipelago.Unity {
         
         public bool IsDeathTriggered() => death;
         public void TriggerDeath(string deathCause = null) {
-            if (type != Type.Level) return;
+            if (type != MngrType.Level) return;
             if (IsDeathTriggered()) {
                 Logging.LogWarning("[APManager] Death already triggered!");
                 return;
@@ -87,7 +89,7 @@ namespace CupheadArchipelago.Unity {
                 }
                 else if (active && PauseManager.state != PauseManager.State.Paused) {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
-                    if (type == Type.Level && deathLink && death && !deathExecuted) {
+                    if (type == MngrType.Level && deathLink && death && !deathExecuted) {
                         Logging.Log($"[APManager] Killing Players. Cause: \"{deathCause}\"");
                         PlayerStatsManagerHook.KillPlayer(PlayerId.Any);
                         deathExecuted = true;
@@ -107,8 +109,23 @@ namespace CupheadArchipelago.Unity {
                         if (slowFire<0) slowFire = 0;
                     }
                     APClient.ItemUpdate();
-                    float applyInterval = type == Type.Level ? levelApplyInterval : mapApplyInterval;
-                    if (type == Type.Level) {
+                    float applyInterval = type switch {
+                        MngrType.Level or MngrType.SpecialLevel => levelApplyInterval,
+                        _ => mapApplyInterval,
+                    };
+                    if (type == MngrType.Level || type == MngrType.SpecialLevel) {
+                        if (debug) Logging.Log($"ItemSpecialLevelQueue {APClient.ItemApplySpecialLevelQueueCount()}");
+                        if (!APClient.ItemApplySpecialLevelQueueIsEmpty()) {
+                            if (debug) Logging.Log($"ItemSpecialLevelQueue has item");
+                            if (timer>=applyInterval) {
+                                if (debug) Logging.Log($"ItemSpecialLevelQueue is applying");
+                                APClient.PopItemApplyLevelQueue();
+                                AudioManager.Play("level_coin_pickup"); //TEMP
+                                timer = 0f;
+                            }
+                        }
+                    }
+                    if (type == MngrType.Level) {
                         if (debug) Logging.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
                         if (!APClient.ItemApplyLevelQueueIsEmpty()) {
                             if (debug) Logging.Log($"ItemLevelQueue has item");

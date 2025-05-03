@@ -15,6 +15,7 @@ using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using CupheadArchipelago.Unity;
+using System.Net;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
@@ -45,6 +46,7 @@ namespace CupheadArchipelago.AP {
         private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
         private static Queue<int> itemApplyLevelQueue = new();
+        private static Queue<int> itemApplySpecialLevelQueue = new();
         private static int itemApplyIndex = 0;
         private static int scoutMapStatus = 0;
         private static bool sending = false;
@@ -406,6 +408,7 @@ namespace CupheadArchipelago.AP {
             receivedItemsQueue = new();
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
+            itemApplySpecialLevelQueue = new();
             APSettings.Init();
         }
 
@@ -676,6 +679,9 @@ namespace CupheadArchipelago.AP {
             if (ItemMap.GetItemType(item.id)==APItemType.Level) {
                 QueueItem(itemApplyLevelQueue, itemIndex);
             }
+            else if (ItemMap.GetItemType(item.id)==APItemType.SpecialLevel) {
+                QueueItem(itemApplySpecialLevelQueue, itemIndex);
+            }
             else {
                 QueueItem(itemApplyQueue, itemIndex);
             }
@@ -726,11 +732,14 @@ namespace CupheadArchipelago.AP {
         public static bool ItemReceiveQueueIsEmpty() => receivedItemsQueue.Count==0;
         public static bool ItemApplyQueueIsEmpty() => itemApplyQueue.Count==0;
         public static bool ItemApplyLevelQueueIsEmpty() => itemApplyLevelQueue.Count==0;
+        public static bool ItemApplySpecialLevelQueueIsEmpty() => itemApplySpecialLevelQueue.Count==0;
         public static int ItemReceiveQueueCount() => receivedItemsQueue.Count;
         public static int ItemApplyQueueCount() => itemApplyQueue.Count;
         public static int ItemApplyLevelQueueCount() => itemApplyLevelQueue.Count;
+        public static int ItemApplySpecialLevelQueueCount() => itemApplySpecialLevelQueue.Count;
         public static APItemData PopItemApplyQueue() => PopItemQueue(itemApplyQueue);
         public static APItemData PopItemApplyLevelQueue() => PopItemQueue(itemApplyLevelQueue);
+        public static APItemData PopItemApplySpecialLevelQueue() => PopItemQueue(itemApplySpecialLevelQueue);
         private static APItemData PopItemQueue(Queue<int> itemQueue) {
             int index = itemQueue.Peek();
             if (index >= 0 && index < ReceivedItems.Count) { 

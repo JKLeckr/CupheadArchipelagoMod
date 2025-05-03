@@ -51,6 +51,7 @@ namespace CupheadArchipelago.AP {
         Essential = 16,
         Special = 32,
         Level = 64,
+        SpecialLevel = 96,
     }
 
     public enum DlcChaliceModes {
