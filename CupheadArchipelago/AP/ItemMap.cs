@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.AP {
     public static class ItemMap {
         private static readonly Dictionary<long, APItemType> itemTypes = new() {
-            {APItem.level_generic, APItemType.NoType},
+            {APItem.level_generic, APItemType.None},
             {APItem.level_extrahealth, APItemType.Level},
             {APItem.level_supercharge, APItemType.Level},
             {APItem.level_fastfire, APItemType.Level},
@@ -92,13 +92,8 @@ namespace CupheadArchipelago.AP {
             if (itemTypes.ContainsKey(item))
                 return itemTypes[item];
             else {
-<<<<<<< HEAD
                 Logging.LogWarning($"[APItemMngr] Item Id {item} has an unknown type!");
-                return ItemType.NoType;
-=======
-                Logging.LogWarning($"[APItemMngr] Item Id: {item} does not exist!");
-                return APItemType.NoType;
->>>>>>> c4dce37 (Code organization and cleanup)
+                return APItemType.None;
             }
         }
         public static APItemType GetItemType(this APItem item) => GetItemType(item.id);

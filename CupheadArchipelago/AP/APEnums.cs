@@ -43,7 +43,7 @@ namespace CupheadArchipelago.AP {
     }
 
     public enum APItemType {
-        NoType = 0,
+        None = 0,
         Weapon = 1,
         Charm = 2,
         Super = 4,

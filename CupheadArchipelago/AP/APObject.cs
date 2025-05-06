@@ -106,6 +106,9 @@ namespace CupheadArchipelago.AP {
         public static void Register(APItem item) => id_map.Add(item.id, item);
         public static APItem FromId(long id) => id_map[id];
         public static bool IdExists(long id) => id_map.ContainsKey(id);
+        public static IEnumerable<long> GetAllItemIds() => id_map.Keys;
+        public static IEnumerable<APItem> GetAllItems() => id_map.Values;
+        
         public override string ToString() { return $"APItem {id}"; }
 
         public static explicit operator APItem(long a) {
@@ -328,6 +331,9 @@ namespace CupheadArchipelago.AP {
         public static void Register(APLocation loc) => id_map.Add(loc.id, loc);
         public static APLocation FromId(long id) => id_map[id];
         public static bool IdExists(long id) => id_map.ContainsKey(id);
+        public static IEnumerable<long> GetAllLocationIds() => id_map.Keys;
+        public static IEnumerable<APLocation> GetAllLocations() => id_map.Values;
+
         public override string ToString() { return $"APLocation {id}"; }
 
         public static explicit operator APLocation(long a) {

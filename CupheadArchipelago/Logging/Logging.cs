@@ -10,12 +10,14 @@ namespace CupheadArchipelago {
         private static ManualLogSource logSource;
         private static Action<LogLevel, object> logAction;
         private static LoggingFlags loggingFlags;
+        private static LoggingFlags permLoggingFlags;
         
         internal static void Init(ManualLogSource logSource, LoggingFlags loggingFlags) {
             if (init) Console.WriteLine("Reinitializing Logging...");
             Logging.logSource = logSource ?? throw new ArgumentNullException("logSource cannot be null.");
             logAction = logSource.Log;
             Logging.loggingFlags = loggingFlags;
+            permLoggingFlags = loggingFlags;
             init = true;
         }
         internal static void Init(Action<LogLevel, object> logAction, LoggingFlags loggingFlags) {
@@ -23,6 +25,7 @@ namespace CupheadArchipelago {
             logSource = null;
             Logging.logAction = logAction;
             Logging.loggingFlags = loggingFlags;
+            permLoggingFlags = loggingFlags;
             init = true;
         }
 
@@ -65,10 +68,15 @@ namespace CupheadArchipelago {
         public static void LogDebug(object data, LoggingFlags requiredFlags) {
             Log(data, requiredFlags, Config.IsDebugLogsInfo() ? LogLevel.Info : LogLevel.Debug);
         }
+
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {
             return (((int)flags)&((int)loggingFlags))==(int)flags;
         }
         public static bool IsDebugEnabled() => IsLoggingFlagsEnabled(LoggingFlags.Debug);
+        internal static void SetLoggingFlags(LoggingFlags flags) => loggingFlags = flags;
+        internal static void AddLoggingFlags(LoggingFlags flags) => loggingFlags |= flags;
+        internal static void RemoveLoggingFlags(LoggingFlags flags) => loggingFlags &= ~flags;
+        internal static void ResetLoggingFlags() => loggingFlags = permLoggingFlags;
 
         public static string GetLogSourceName() => logSource?.SourceName;
     }
