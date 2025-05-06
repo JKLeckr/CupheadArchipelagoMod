@@ -2,7 +2,6 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CupheadArchipelago.AP {
     public static class ItemMap {
@@ -16,11 +15,13 @@ namespace CupheadArchipelago.AP {
             {APItem.level_trap_slowfire, ItemType.Level},
             {APItem.level_trap_superdrain, ItemType.Level},
             {APItem.level_trap_loadout, ItemType.Level},
+
             {APItem.coin, ItemType.Essential},
             {APItem.coin2, ItemType.Essential},
             {APItem.coin3, ItemType.Essential},
             {APItem.contract, ItemType.Essential},
             {APItem.plane_super, ItemType.Essential},
+            {APItem.healthupgrade, ItemType.Essential},
             {APItem.dlc_boat, ItemType.Essential},
             {APItem.dlc_ingredient, ItemType.Essential},
             {APItem.dlc_cplane_super, ItemType.Essential},
@@ -91,7 +92,7 @@ namespace CupheadArchipelago.AP {
             if (itemTypes.ContainsKey(item))
                 return itemTypes[item];
             else {
-                Logging.LogWarning($"[APItemMngr] Item Id: {item} does not exist!");
+                Logging.LogWarning($"[APItemMngr] Item Id {item} has an unknown type!");
                 return ItemType.NoType;
             }
         }
