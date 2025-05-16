@@ -154,7 +154,8 @@ namespace CupheadArchipelago.AP {
             {APItem.charm_twinheart, Charm.charm_health_up_2},
             {APItem.charm_whetstone, Charm.charm_parry_attack},
             {APItem.charm_dlc_heartring, Charm.charm_healer},
-            {APItem.charm_dlc_broken_relic, Charm.charm_curse}, // Is this right?
+            {APItem.charm_dlc_cookie, Charm.charm_chalice},
+            {APItem.charm_dlc_broken_relic, Charm.charm_curse},
         };
         public static Charm GetCharm(long item) => idToCharm[item];
         private static readonly Dictionary<long, Super> idToSuper = new() {
