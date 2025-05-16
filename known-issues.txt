@@ -1,17 +1,21 @@
 Known Issues:
 
-There are too many bugs. While I have fixed a lot of them, there are still issues that need to be worked out. There are some that I already aware of that you can brace yourself for.
+There are bugs that are known. There are less than before, but new alpha releases can cause breakages. Tread carefully!
 
-- There are visual glitches with the shop. I remember one time (ONLY ONCE) after buying an item, an unavailable item (labeled already bought) would appear. This is harmless, and if it is clogging the shop, then just leave and re-enter.
+- Sometimes the items do not restock, or a "sold" item clogs the shop. Leave and re-enter to fix.
 
 - Traps are still disabled. This is because they have not been resolved at this time.
 
 - Chalice is disabled for now. There are technical issues to get around.
 
-- Some settings in the config do not work (For example, some cutscenes will not be skipped despite the config). Do not take it to heart.
+- Some cutscenes cannot be configured to autoskip (incomplete). Just press start to skip them.
 
-- There are certain instabilities when it comes to the client connecting and reconnecting.
+- Once in awhile, the client will crash.
 
-- The client may be more reliable, but it is more unstable. The game may crash when sending checks.
+- Make sure a specific configuration works before starting a multiworld! There are certain combinations that I have not tested.
 
-- I did not test all of the modes (goals). In only tested the devil and saltbaker goal. Make sure it works before doing an important multiworld.
+- The die house chalkboard is inaccurate (in some places) when required contracts is lower than default.
+
+- There is a possibility (cannot confirm) that you can drop platforms without duck.
+
+- Chalice ingredient notification when all Isle 4 bosses are finished (this does mean you have the required ingredients!)
