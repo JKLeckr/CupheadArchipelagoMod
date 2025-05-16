@@ -15,6 +15,7 @@ namespace CupheadArchipelago.AP {
             {APItem.level_trap_slowfire, APItemType.Level},
             {APItem.level_trap_superdrain, APItemType.Level},
             {APItem.level_trap_loadout, APItemType.Level},
+            {APItem.level_trap_screen, APItemType.Level},
 
             {APItem.coin, APItemType.Essential},
             {APItem.coin2, APItemType.Essential},
@@ -22,11 +23,13 @@ namespace CupheadArchipelago.AP {
             {APItem.contract, APItemType.Essential},
             {APItem.plane_super, APItemType.Essential},
             {APItem.healthupgrade, APItemType.Essential},
+            {APItem.plane_ex, APItemType.Essential},
             {APItem.dlc_boat, APItemType.Essential},
             {APItem.dlc_ingredient, APItemType.Essential},
             {APItem.dlc_cplane_super, APItemType.Essential},
+            {APItem.dlc_cplane_ex, APItemType.Essential},
 
-            {APItem.plane_gun, APItemType.Weapon},
+            { APItem.plane_gun, APItemType.Weapon},
             {APItem.plane_bombs, APItemType.Weapon},
             {APItem.dlc_cplane_gun, APItemType.Weapon},
             {APItem.dlc_cplane_bombs, APItemType.Weapon},
@@ -87,6 +90,15 @@ namespace CupheadArchipelago.AP {
             {APItem.ability_aim_upright, APItemType.Ability},
             {APItem.ability_aim_downleft, APItemType.Ability},
             {APItem.ability_aim_downright, APItemType.Ability},
+
+            {APItem.ability_dlc_c_aim_left, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_right, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_up, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_down, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_upleft, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_upright, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_downleft, APItemType.Ability},
+            {APItem.ability_dlc_c_aim_downright, APItemType.Ability},
         };
         public static APItemType GetItemType(long item) {
             if (itemTypes.ContainsKey(item))
