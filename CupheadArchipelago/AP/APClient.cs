@@ -252,6 +252,8 @@ namespace CupheadArchipelago.AP {
                     else if (APSettings.WeaponMode == WeaponModes.Normal) {
                         uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
+                        APSessionGSPlayerData.plane_ex = true;
+                        APSessionGSPlayerData.dlc_cplane_ex = true;
                     }
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
