@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
-using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class LevelCoinHook {

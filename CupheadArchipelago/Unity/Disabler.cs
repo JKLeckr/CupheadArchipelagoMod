@@ -2,7 +2,6 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections;
-using CupheadArchipelago.AP;
 using UnityEngine;
 
 namespace CupheadArchipelago.Unity {

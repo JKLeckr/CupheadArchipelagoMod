@@ -15,7 +15,6 @@ using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using CupheadArchipelago.Unity;
-using System.Net;
 
 namespace CupheadArchipelago.AP {
     public class APClient {
