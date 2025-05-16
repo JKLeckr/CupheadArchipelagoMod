@@ -125,18 +125,12 @@ namespace CupheadArchipelago.AP {
         }
         private static FVersion GetAPSlotDataVersion(Dictionary<string, object> slotData, string key) {
             string vraw = GetAPSlotDataValue<string>(slotData, key);
-            string[] mainParts = vraw.Split(['-'], 2);
-            string[] versionParts = mainParts[0].Split(['.'], 4);
             FVersion res;
             try {
-                if (mainParts.Length > 1 && versionParts.Length >= 3) {
-                    Logging.Log($"[APSlotData] Got legacy version format. Converting.");
-                    res = new APVersion(vraw).AsFVersion();
-                }
-                else res = new FVersion(vraw);
+                res = new FVersion(vraw);
             } catch (Exception e) {
                 Logging.LogWarning($"[APSlotData] Invalid version {vraw}. Exception: {e}");
-                res = FVersion.Zero();
+                res = new FVersion(0, 0, 0, "unsupported");
             }
             return res;
         }
