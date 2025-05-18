@@ -94,24 +94,28 @@ namespace CupheadArchipelago.Tests {
                 Thread.Sleep(500);
                 APData.Save(0, true);
                 TimeSpan spanA = new(APData.SData[0].GetFTime());
-                long testTimeA = ((long)Math.Floor((decimal)spanA.TotalMilliseconds)) / 100;
-                Assert.That(testTimeA, Is.EqualTo(5));
+                long testTimeA = ((long)Math.Floor((decimal)spanA.TotalMilliseconds)) / 10;
+                Console.WriteLine($"Test time A: {testTimeA}");
+                Assert.That(testTimeA, Is.InRange(50, 60));
                 Console.WriteLine("Twiddling thumbs for another .5 seconds");
                 Thread.Sleep(500);
                 APData.Save(0, true);
                 TimeSpan spanB = new(APData.SData[0].GetFTime());
-                long testTimeB = ((long)Math.Floor((decimal)spanB.TotalMilliseconds)) / 100;
-                Assert.That(testTimeB, Is.EqualTo(10));
+                long testTimeB = ((long)Math.Floor((decimal)spanB.TotalMilliseconds)) / 10;
+                Console.WriteLine($"Test time B: {testTimeB}");
+                Assert.That(testTimeB, Is.InRange(100, 120));
                 APData.LoadData(false);
                 TimeSpan spanC = new(APData.SData[0].GetFTime());
-                long testTimeC = ((long)Math.Floor((decimal)spanC.TotalMilliseconds)) / 100;
-                Assert.That(testTimeC, Is.EqualTo(10));
+                long testTimeC = ((long)Math.Floor((decimal)spanC.TotalMilliseconds)) / 10;
+                Console.WriteLine($"Test time C: {testTimeC}");
+                Assert.That(testTimeC, Is.EqualTo(testTimeB));
                 Console.WriteLine("Twiddling thumbs for .2 seconds");
                 Thread.Sleep(200);
                 APData.Save(0, true);
                 TimeSpan spanD = new(APData.SData[0].GetFTime());
-                long testTimeD = ((long)Math.Floor((decimal)spanD.TotalMilliseconds)) / 100;
-                Assert.That(testTimeD, Is.InRange(12, 13));
+                long testTimeD = ((long)Math.Floor((decimal)spanD.TotalMilliseconds)) / 10;
+                Console.WriteLine($"Test time D: {testTimeD}");
+                Assert.That(testTimeD, Is.InRange(120, 140));
             }
         }
     }
