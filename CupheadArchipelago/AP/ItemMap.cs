@@ -185,6 +185,7 @@ namespace CupheadArchipelago.AP {
             APItem.plane_gun,
             APItem.plane_bombs,
             APItem.plane_super,
+            APItem.plane_ex,
             APItem.ability_plane_parry,
             APItem.ability_plane_shrink,
         };
