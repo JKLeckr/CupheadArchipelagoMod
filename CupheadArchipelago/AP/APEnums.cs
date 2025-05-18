@@ -28,9 +28,11 @@ namespace CupheadArchipelago.AP {
     }
 
     public enum WeaponModes : byte {
-        Normal = 1,
-        Progressive = 2,
-        ProgressiveNoStart = 3,
+        Normal = 0,
+        Progressive = 1,
+        ProgressiveNoStart = 5,
+        ExSeparate = 2,
+        ExSeparateNoStart = 6,
     }
 
     public enum GradeChecks {

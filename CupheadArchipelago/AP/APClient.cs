@@ -227,7 +227,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.RungunGradeChecks = SlotData.rungun_grade_checks;
                     APSettings.QuestPacifist = LocationExists(APLocation.quest_pacifist);
                     APSettings.QuestProfessional = LocationExists(APLocation.quest_silverworth);
-                    APSettings.QuestJuggler = LocationExists(APLocation.quest_4parries);
+                    APSettings.QuestJuggler = LocationExists(APLocation.quest_buster);
                     APSettings.StartMaxHealth = SlotData.start_maxhealth;
                     APSettings.RequiredContracts = SlotData.contract_requirements;
                     APSettings.DLCRequiredIngredients = SlotData.dlc_ingredient_requirements;
