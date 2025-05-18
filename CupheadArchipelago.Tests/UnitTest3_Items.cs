@@ -26,12 +26,12 @@ namespace CupheadArchipelago.Tests {
             ];
 
             [SetUp]
-            public void Setup() {}
+            public void Setup() { }
 
             [Test]
             public void ItemMap_All_Items_Have_Type() {
                 bool fail = false;
-                
+
                 foreach (string itemname in apItems.Keys) {
                     APItem item = apItems[itemname];
                     if (!skip.Contains(item) && ItemMap.GetItemType(item) == APItemType.None) {
@@ -42,6 +42,12 @@ namespace CupheadArchipelago.Tests {
 
                 Assert.That(fail, Is.False);
             }
+
+            [Test]
+            public void ItemMap_Mapped_Weapons_Are_Defined() {}
+            
+            [Test]
+            public void ItemMap_Mapped_Charms_Are_Defined() {}
         }
     }
 }

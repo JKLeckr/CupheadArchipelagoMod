@@ -29,7 +29,7 @@ namespace CupheadArchipelago.AP {
             {APItem.dlc_cplane_super, APItemType.Essential},
             {APItem.dlc_cplane_ex, APItemType.Essential},
 
-            { APItem.plane_gun, APItemType.Weapon},
+            {APItem.plane_gun, APItemType.Weapon},
             {APItem.plane_bombs, APItemType.Weapon},
             {APItem.dlc_cplane_gun, APItemType.Weapon},
             {APItem.dlc_cplane_bombs, APItemType.Weapon},
@@ -43,6 +43,16 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_dlc_crackshot, APItemType.Weapon},
             {APItem.weapon_dlc_converge, APItemType.Weapon},
             {APItem.weapon_dlc_twistup, APItemType.Weapon},
+            
+            {APItem.weapon_peashooter_ex, APItemType.Weapon},
+            {APItem.weapon_spread_ex, APItemType.Weapon},
+            {APItem.weapon_chaser_ex, APItemType.Weapon},
+            {APItem.weapon_lobber_ex, APItemType.Weapon},
+            {APItem.weapon_charge_ex, APItemType.Weapon},
+            {APItem.weapon_roundabout_ex, APItemType.Weapon},
+            {APItem.weapon_dlc_crackshot_ex, APItemType.Weapon},
+            {APItem.weapon_dlc_converge_ex, APItemType.Weapon},
+            {APItem.weapon_dlc_twistup_ex, APItemType.Weapon},
 
             {APItem.p_weapon_peashooter, APItemType.Weapon},
             {APItem.p_weapon_spread, APItemType.Weapon},
@@ -120,6 +130,16 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_dlc_crackshot, Weapon.level_weapon_crackshot},
             {APItem.weapon_dlc_converge, Weapon.level_weapon_wide_shot},
             {APItem.weapon_dlc_twistup, Weapon.level_weapon_upshot},
+            
+            {APItem.weapon_peashooter_ex, Weapon.level_weapon_peashot},
+            {APItem.weapon_spread_ex, Weapon.level_weapon_spreadshot},
+            {APItem.weapon_chaser_ex, Weapon.level_weapon_homing},
+            {APItem.weapon_lobber_ex, Weapon.level_weapon_bouncer},
+            {APItem.weapon_charge_ex, Weapon.level_weapon_charge},
+            {APItem.weapon_roundabout_ex, Weapon.level_weapon_boomerang},
+            {APItem.weapon_dlc_crackshot_ex, Weapon.level_weapon_crackshot},
+            {APItem.weapon_dlc_converge_ex, Weapon.level_weapon_wide_shot},
+            {APItem.weapon_dlc_twistup_ex, Weapon.level_weapon_upshot},
 
             {APItem.p_weapon_peashooter, Weapon.level_weapon_peashot},
             {APItem.p_weapon_spread, Weapon.level_weapon_spreadshot},
@@ -181,14 +201,21 @@ namespace CupheadArchipelago.AP {
         };
         public static Super GetSuper(long item) => idToSuper[item];
 
-        private static readonly HashSet<long> planeItems = new() {
+        private static readonly HashSet<long> planeItems = [
             APItem.plane_gun,
             APItem.plane_bombs,
             APItem.plane_super,
             APItem.plane_ex,
             APItem.ability_plane_parry,
             APItem.ability_plane_shrink,
-        };
+
+            APItem.dlc_cplane_gun,
+            APItem.dlc_cplane_bombs,
+            APItem.dlc_cplane_super,
+            APItem.dlc_cplane_ex,
+            APItem.ability_dlc_cplane_parry,
+            APItem.ability_dlc_cplane_shrink,
+        ];
         public static bool IsPlaneItem(long item) => planeItems.Contains(item);
         public static bool IsPlaneItem(this APItem item) => planeItems.Contains(item);
     }
