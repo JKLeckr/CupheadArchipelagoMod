@@ -26,7 +26,7 @@ namespace CupheadArchipelago.Tests {
             ];
 
             [SetUp]
-            public void Setup() { }
+            public void Setup() {}
 
             [Test]
             public void ItemMap_All_Items_Have_Type() {
@@ -43,11 +43,68 @@ namespace CupheadArchipelago.Tests {
                 Assert.That(fail, Is.False);
             }
 
-            [Test]
-            public void ItemMap_Mapped_Weapons_Are_Defined() {}
-            
-            [Test]
-            public void ItemMap_Mapped_Charms_Are_Defined() {}
+            public sealed class APItemMap_Weapons {
+                private static readonly HashSet<APItem> weapons;
+
+                static APItemMap_Weapons() {
+                    weapons = [];
+                    foreach (APItem item in apItems.Values) {
+                        if (ItemMap.GetItemType(item) == APItemType.Weapon) {
+                            weapons.Add(item);
+                        }
+                    }
+                }
+
+                [Test]
+                public void ItemMap_Mapped_Weapons_Are_Defined() {
+                    bool fail = false;
+
+                    foreach (APItem weapon in weapons) {
+                        try {
+                            ItemMap.GetWeapon(weapon);
+                        }
+                        catch (KeyNotFoundException) {
+                            fail = true;
+                            Logging.Log($"Item {weapon} failed.");
+                        }
+                    }
+
+                    Assert.That(fail, Is.False);
+                }
+            }
+
+            public sealed class APItemMap_Charms {
+                private static readonly HashSet<APItem> charms;
+
+                static APItemMap_Charms() {
+                    charms = [];
+                    foreach (APItem item in apItems.Values) {
+                        if (ItemMap.GetItemType(item) == APItemType.Charm) {
+                            charms.Add(item);
+                        }
+                    }
+                }
+
+                [SetUp]
+                public void Setup() {}
+
+                [Test]
+                public void ItemMap_Mapped_Charms_Are_Defined() {
+                    bool fail = false;
+
+                    foreach (APItem charm in charms) {
+                        try {
+                            ItemMap.GetCharm(charm);
+                        }
+                        catch (KeyNotFoundException) {
+                            fail = true;
+                            Logging.Log($"Item {charm} failed.");
+                        }
+                    }
+
+                    Assert.That(fail, Is.False);
+                }
+            }
         }
     }
 }
