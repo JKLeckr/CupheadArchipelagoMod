@@ -145,7 +145,7 @@ namespace CupheadArchipelago {
                 2 => "alpha",
                 3 => "beta",
                 4 => "rc",
-                _ => "branch"
+                _ => "unknown"
             };
             int baseline = int.Parse(versionParts[2]) + 1;
             int rev = int.Parse(versionParts[3]);

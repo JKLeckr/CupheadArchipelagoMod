@@ -14,7 +14,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             Harmony.CreateAndPatchAll(typeof(OnDialoguerMessageEvent));
         }
 
-        private static readonly long locationId = APLocation.quest_4parries;
+        private static readonly long locationId = APLocation.quest_buster;
 
         [HarmonyPatch(typeof(MapNPCJuggler), "Start")]
         internal static class Start {
