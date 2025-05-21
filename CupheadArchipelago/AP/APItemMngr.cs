@@ -23,20 +23,23 @@ namespace CupheadArchipelago.AP {
                         if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
                             APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
                         }
-                    }
-                    if (itemId==APItem.plane_gun && !IsChaliceSeparate(ItemGroups.Essential)) {
-                        Gift(Weapon.plane_chalice_weapon_3way);
-                    }
-                    else if (itemId==APItem.plane_bombs && !IsChaliceSeparate(ItemGroups.Essential)) {
-                        Gift(Weapon.plane_chalice_weapon_bomb);
-                    }
+                    } // FIXME: Finish these weapon modes scenarios!
                     if (APSettings.WeaponMode == WeaponModes.Normal) {
-                        if (itemId==APItem.plane_gun || itemId==APItem.plane_bombs) {
-                            APClient.APSessionGSPlayerData.plane_ex = true;
-                        }
+                        uint weaponbits = (uint)(APData.PlayerData.WeaponParts.Basic | APData.PlayerData.WeaponParts.Ex);
+                        if (IsChaliceSeparate(ItemGroups.WeaponBasic | ItemGroups.WeaponEx)) 
+                        APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.All);
+                        if (itemId == APItem.plane_gun || itemId == APItem.plane_bombs) {
+                                    APClient.APSessionGSPlayerData.plane_ex = true;
+                                }
                         if (itemId==APItem.dlc_cplane_gun || itemId==APItem.dlc_cplane_bombs) {
                             APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
                         }
+                    }
+                    if (itemId == APItem.plane_gun && !IsChaliceSeparate(ItemGroups.Essential)) {
+                        Gift(Weapon.plane_chalice_weapon_3way);
+                    }
+                    else if (itemId == APItem.plane_bombs && !IsChaliceSeparate(ItemGroups.Essential)) {
+                        Gift(Weapon.plane_chalice_weapon_bomb);
                     }
                     if ((PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) ||
                         (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb))) {

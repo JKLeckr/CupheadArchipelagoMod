@@ -33,6 +33,7 @@ namespace CupheadArchipelago.AP {
         ProgressiveNoStart = 5,
         ExSeparate = 2,
         ExSeparateNoStart = 6,
+        NoStart = 4, // Not functional on its own
     }
 
     public enum GradeChecks {
