@@ -244,16 +244,21 @@ namespace CupheadArchipelago.AP {
                     
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
-                    if (APSettings.WeaponMode == WeaponModes.ProgressiveNoStart) {
-                        Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
-                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
-                        APSessionGSPlayerData.AddWeaponBit(weapon, upgradeBit);
-                    }
-                    else if (APSettings.WeaponMode == WeaponModes.Normal) {
-                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
+                    if (APSettings.WeaponMode == WeaponModes.Normal) {
+                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.All;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
                         APSessionGSPlayerData.plane_ex = true;
                         APSessionGSPlayerData.dlc_cplane_ex = true;
+                    }
+                    else {
+                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
+                        APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
+
+                        if (APSettings.WeaponMode == WeaponModes.ProgressiveNoStart) {
+                            Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
+                            uint supgradeBit = (uint)APData.PlayerData.WeaponParts.AllEx;
+                            APSessionGSPlayerData.AddWeaponBit(weapon, supgradeBit);
+                        }
                     }
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
