@@ -249,8 +249,8 @@ namespace CupheadArchipelago.AP {
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
                         APSessionGSPlayerData.plane_ex = true;
                         APSessionGSPlayerData.dlc_cplane_ex = true;
-                    }
-                    else {
+                    } // FIXME: Finish including Ex Separate weapon modes
+                    else if ((APSettings.WeaponMode & WeaponModes.Progressive) > 0) {
                         uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
 
@@ -260,6 +260,7 @@ namespace CupheadArchipelago.AP {
                             APSessionGSPlayerData.AddWeaponBit(weapon, supgradeBit);
                         }
                     }
+                    else {}
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
                     if (!APSettings.RandomizeAimAbilities)
