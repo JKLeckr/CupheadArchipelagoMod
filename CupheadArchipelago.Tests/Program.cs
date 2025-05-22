@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using CupheadArchipelago.Tests.Core;
 using NUnitLite;
 
 namespace CupheadArchipelago.Tests {
@@ -13,9 +14,9 @@ namespace CupheadArchipelago.Tests {
             TestData.Setup();
             Console.WriteLine();
             // The tests only work with 1 thread.
-            List<string> largs = new(args) {
+            List<string> largs = [.. args,
                 "--noresult", "--workers=1",
-            };
+            ];
             Console.WriteLine($"Running NUnitLite with args [{ArgsToString(largs)}]");
             Console.WriteLine();
             return new AutoRun().Execute(largs.ToArray());

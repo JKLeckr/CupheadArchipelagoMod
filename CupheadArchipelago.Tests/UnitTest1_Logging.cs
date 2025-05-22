@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using CupheadArchipelago.Tests.Core;
 using NUnit.Framework;
 
 namespace CupheadArchipelago.Tests {

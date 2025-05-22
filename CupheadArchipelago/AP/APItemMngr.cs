@@ -13,13 +13,10 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"[APItemMngr] Applying item {itemName} ({item.id})...");
 
             ItemMap.GetItemType(itemId);
-
-            try {switch (ItemMap.GetItemType(itemId)) {
-                case APItemType.Weapon: {
-                    Weapon weapon = ItemMap.GetWeapon(itemId);
-                    Gift(weapon);
-                    APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllBasic);
-                    if (APSettings.WeaponMode > 0 && ItemMap.IsItemUpgradableWeapon(itemId)) {
+            
+            /*
+            APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllBasic);
+                    if (APSettings.WeaponMode > 0 && ItemMap.IsItemModularWeapon(itemId)) {
                         if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
                             APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
                         }
@@ -28,149 +25,164 @@ namespace CupheadArchipelago.AP {
                         uint weaponbits = (uint)(APData.PlayerData.WeaponParts.Basic | APData.PlayerData.WeaponParts.Ex);
                         if (IsChaliceSeparate(ItemGroups.WeaponBasic | ItemGroups.WeaponEx)) 
                         APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.All);
-                        if (itemId == APItem.plane_gun || itemId == APItem.plane_bombs) {
-                                    APClient.APSessionGSPlayerData.plane_ex = true;
+                    }
+            */
+
+            try {
+                switch (ItemMap.GetItemType(itemId)) {
+                    case APItemType.Weapon: {
+                            Weapon weapon = ItemMap.GetWeapon(itemId);
+                            // TODO: Finish!
+                            Gift(weapon);
+                            if (ItemMap.IsPlaneItem(itemId)) {
+                                ResolvePlaneWeapons(itemId);
+                            }
+                            else if (ItemMap.IsItemWeaponEx(itemId)) {
+                                uint weaponbits = GetWeaponBit(APData.PlayerData.WeaponParts.Ex);
+                                APClient.APSessionGSPlayerData.AddWeaponBit(weapon, weaponbits);
+                            }
+                            else if (ItemMap.IsItemProgressiveWeapon(itemId)) {
+                                uint weaponbits = GetWeaponBit(APData.PlayerData.WeaponParts.Basic);
+                                if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
+                                    weaponbits |= GetWeaponBit(APData.PlayerData.WeaponParts.Ex);
                                 }
-                        if (itemId==APItem.dlc_cplane_gun || itemId==APItem.dlc_cplane_bombs) {
-                            APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                                APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
+                            }
+                            if ((PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) ||
+                                (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb))) {
+                                PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).HasEquippedSecondarySHMUPWeapon = true;
+                                PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).HasEquippedSecondarySHMUPWeapon = true;
+                            }
+                            break;
                         }
-                    }
-                    if (itemId == APItem.plane_gun && !IsChaliceSeparate(ItemGroups.Essential)) {
-                        Gift(Weapon.plane_chalice_weapon_3way);
-                    }
-                    else if (itemId == APItem.plane_bombs && !IsChaliceSeparate(ItemGroups.Essential)) {
-                        Gift(Weapon.plane_chalice_weapon_bomb);
-                    }
-                    if ((PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) ||
-                        (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb))) {
-                            PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).HasEquippedSecondarySHMUPWeapon = true;
-                            PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).HasEquippedSecondarySHMUPWeapon = true;
-                    }
-                    break;
-                }
-                case APItemType.Charm: {
-                    Charm charm = ItemMap.GetCharm(itemId);
-                    Gift(charm);
-                    break;
-                }
-                case APItemType.Super: {
-                    Gift(ItemMap.GetSuper(itemId));
-                    if (itemId==APItem.super_i && !IsChaliceSeparate(ItemGroups.Super)) {
-                        Gift(Super.level_super_chalice_vert_beam);
-                    }
-                    else if (itemId==APItem.super_ii && !IsChaliceSeparate(ItemGroups.Super)) {
-                        Gift(Super.level_super_chalice_shield);
-                    }
-                    else if (itemId==APItem.super_iii && !IsChaliceSeparate(ItemGroups.Super)) {
-                        Gift(Super.level_super_chalice_iii);
-                    }
-                    break;
-                }
-                case APItemType.Ability: {
-                    ApplyAbiltiy(itemId);
-                    break;
-                }
-                case APItemType.Essential: {
-                    if (itemId==APItem.coin) {
-                        Logging.Log("AddCurrency");
-                        AddCoins(1);
-                    }
-                    else if (itemId==APItem.coin2) {
-                        Logging.Log("AddCurrency x2");
-                        AddCoins(2);
-                    }
-                    else if (itemId==APItem.coin3) {
-                        Logging.Log("AddCurrency x3");
-                        AddCoins(3);
-                    }
-                    else if (itemId==APItem.contract) {
-                        if (APClient.APSessionGSPlayerData.contracts < APClient.GetReceivedItemCount(APItem.contract)) {
-                            Logging.Log($"Adding Contract...");
-                            APClient.APSessionGSPlayerData.contracts++;
-                        } else Logging.Log("Contract is already applied. Skipping.");
-                        Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
-                    }
-                    else if (itemId==APItem.plane_ex) {
-                        APClient.APSessionGSPlayerData.plane_ex = true;
-                        if (!IsChaliceSeparate(ItemGroups.Essential))
-                            APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
-                    }
-                    else if (itemId==APItem.plane_super) {
-                        APClient.APSessionGSPlayerData.plane_super=true;
-                        if (!IsChaliceSeparate(ItemGroups.Essential))
-                            APClient.APSessionGSPlayerData.dlc_cplane_super = true;
-                    }
-                    else if (itemId==APItem.dlc_cplane_super) {
-                        APClient.APSessionGSPlayerData.dlc_cplane_super=true;
-                    }
-                    else if (itemId==APItem.dlc_boat) {
-                        APClient.APSessionGSPlayerData.dlc_boat=true;
-                    }
-                    else if (itemId==APItem.healthupgrade) {
-                        if (APClient.APSessionGSPlayerData.healthupgrades < APClient.GetReceivedItemCount(APItem.healthupgrade)) {
-                            Logging.Log($"Adding Health Upgrade...");
-                            APClient.APSessionGSPlayerData.healthupgrades++;
-                        } else Logging.Log("Health Upgrade is already applied. Skipping.");
-                        Logging.Log($"Health Upgrades: {APClient.APSessionGSPlayerData.healthupgrades}");
-                    }
-                    else if (itemId==APItem.dlc_ingredient) {
-                        if (APClient.APSessionGSPlayerData.dlc_ingredients < APClient.GetReceivedItemCount(APItem.dlc_ingredient)) {
-                            Logging.Log($"Adding Ingredient...");
-                            APClient.APSessionGSPlayerData.dlc_ingredients++;
-                        } else Logging.Log("Ingredient is already applied. Skipping.");
-                        Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
-                    }
-                    break;
-                }
-                case APItemType.Special: {
-                    break;
-                }
-                case APItemType.Level: {
-                    PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
-                    PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
-                    PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
-                    PlayersStatsBossesHub bstats2 = (stats2!=null) ? Level.GetPlayerStats(stats2.basePlayer.id) : null;
-                    
-                    if (itemId==APItem.level_extrahealth) {
-                        if (Level.IsInBossesHub) {
-                            bstats1.BonusHP++;
-                            if (bstats2!=null) bstats2.BonusHP++;
+                    case APItemType.Charm: {
+                            Charm charm = ItemMap.GetCharm(itemId);
+                            Gift(charm);
+                            break;
                         }
-                        stats1.SetHealth(stats1.Health + 1);
-                        stats2?.SetHealth(stats2.Health + 1);
-                    }
-                    else if (itemId==APItem.level_supercharge) {
-                        if (stats1.CanGainSuperMeter) {
-                            Logging.Log("Can gain super");
-                            PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                    case APItemType.Super: {
+                            Gift(ItemMap.GetSuper(itemId));
+                            if (itemId == APItem.super_i && !IsChaliceSeparate(ItemGroups.Super)) {
+                                Gift(Super.level_super_chalice_vert_beam);
+                            }
+                            else if (itemId == APItem.super_ii && !IsChaliceSeparate(ItemGroups.Super)) {
+                                Gift(Super.level_super_chalice_shield);
+                            }
+                            else if (itemId == APItem.super_iii && !IsChaliceSeparate(ItemGroups.Super)) {
+                                Gift(Super.level_super_chalice_iii);
+                            }
+                            break;
                         }
-                        if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
-                    }
-                    else if (itemId==APItem.level_fastfire) {
-                        AudioManager.Play("pop_up");
-                        APManager.Current.SlowFire();
-                    }
-                    else if (itemId==APItem.level_trap_fingerjam) {
-                        AudioManager.Play("level_menu_select");
-                        APManager.Current.FingerJam();
-                    }
-                    else if (itemId==APItem.level_trap_slowfire) {
-                        AudioManager.Play("level_menu_select");
-                        APManager.Current.SlowFire();
-                    }
-                    else if (itemId==APItem.level_trap_superdrain) {
-                        AudioManager.Play("level_menu_select");
-                        if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
-                        if (stats2!=null&&stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
-                    }
-                    else if (itemId==APItem.level_trap_loadout) {
-                        AudioManager.Play("level_menu_select");
-                        Stub("Loadout Trap");
-                    }
-                    break;
+                    case APItemType.Ability: {
+                            ApplyAbiltiy(itemId);
+                            break;
+                        }
+                    case APItemType.Essential: {
+                            if (itemId == APItem.coin) {
+                                Logging.Log("AddCurrency");
+                                AddCoins(1);
+                            }
+                            else if (itemId == APItem.coin2) {
+                                Logging.Log("AddCurrency x2");
+                                AddCoins(2);
+                            }
+                            else if (itemId == APItem.coin3) {
+                                Logging.Log("AddCurrency x3");
+                                AddCoins(3);
+                            }
+                            else if (itemId == APItem.contract) {
+                                if (APClient.APSessionGSPlayerData.contracts < APClient.GetReceivedItemCount(APItem.contract)) {
+                                    Logging.Log($"Adding Contract...");
+                                    APClient.APSessionGSPlayerData.contracts++;
+                                }
+                                else Logging.Log("Contract is already applied. Skipping.");
+                                Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
+                            }
+                            else if (itemId == APItem.plane_ex) {
+                                APClient.APSessionGSPlayerData.plane_ex = true;
+                                if (!IsChaliceSeparate(ItemGroups.WeaponEx))
+                                    APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                            }
+                            else if (itemId == APItem.plane_super) {
+                                APClient.APSessionGSPlayerData.plane_super = true;
+                                if (!IsChaliceSeparate(ItemGroups.Super))
+                                    APClient.APSessionGSPlayerData.dlc_cplane_super = true;
+                            }
+                            else if (itemId == APItem.dlc_cplane_super) {
+                                APClient.APSessionGSPlayerData.dlc_cplane_super = true;
+                            }
+                            else if (itemId == APItem.dlc_boat) {
+                                APClient.APSessionGSPlayerData.dlc_boat = true;
+                            }
+                            else if (itemId == APItem.healthupgrade) {
+                                if (APClient.APSessionGSPlayerData.healthupgrades < APClient.GetReceivedItemCount(APItem.healthupgrade)) {
+                                    Logging.Log($"Adding Health Upgrade...");
+                                    APClient.APSessionGSPlayerData.healthupgrades++;
+                                }
+                                else Logging.Log("Health Upgrade is already applied. Skipping.");
+                                Logging.Log($"Health Upgrades: {APClient.APSessionGSPlayerData.healthupgrades}");
+                            }
+                            else if (itemId == APItem.dlc_ingredient) {
+                                if (APClient.APSessionGSPlayerData.dlc_ingredients < APClient.GetReceivedItemCount(APItem.dlc_ingredient)) {
+                                    Logging.Log($"Adding Ingredient...");
+                                    APClient.APSessionGSPlayerData.dlc_ingredients++;
+                                }
+                                else Logging.Log("Ingredient is already applied. Skipping.");
+                                Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
+                            }
+                            break;
+                        }
+                    case APItemType.Special: {
+                            break;
+                        }
+                    case APItemType.Level: {
+                            PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
+                            PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
+                            PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
+                            PlayersStatsBossesHub bstats2 = (stats2 != null) ? Level.GetPlayerStats(stats2.basePlayer.id) : null;
+
+                            if (itemId == APItem.level_extrahealth) {
+                                if (Level.IsInBossesHub) {
+                                    bstats1.BonusHP++;
+                                    if (bstats2 != null) bstats2.BonusHP++;
+                                }
+                                stats1.SetHealth(stats1.Health + 1);
+                                stats2?.SetHealth(stats2.Health + 1);
+                            }
+                            else if (itemId == APItem.level_supercharge) {
+                                if (stats1.CanGainSuperMeter) {
+                                    Logging.Log("Can gain super");
+                                    PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                                }
+                                if (stats2 != null && stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                            }
+                            else if (itemId == APItem.level_fastfire) {
+                                AudioManager.Play("pop_up");
+                                APManager.Current.SlowFire();
+                            }
+                            else if (itemId == APItem.level_trap_fingerjam) {
+                                AudioManager.Play("level_menu_select");
+                                APManager.Current.FingerJam();
+                            }
+                            else if (itemId == APItem.level_trap_slowfire) {
+                                AudioManager.Play("level_menu_select");
+                                APManager.Current.SlowFire();
+                            }
+                            else if (itemId == APItem.level_trap_superdrain) {
+                                AudioManager.Play("level_menu_select");
+                                if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
+                                if (stats2 != null && stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
+                            }
+                            else if (itemId == APItem.level_trap_loadout) {
+                                AudioManager.Play("level_menu_select");
+                                Stub("Loadout Trap");
+                            }
+                            break;
+                        }
+                    default: break;
                 }
-                default: break;
-            }} catch (Exception e) {Logging.LogError(e); return false;}
+            }
+            catch (Exception e) { Logging.LogError(e); return false; }
             APClient.UpdateGoalFlags();
             return true;
         }
@@ -231,8 +243,12 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"Total coins: {APClient.APSessionGSPlayerData.coins_collected}");
         }
 
-        private static bool IsChaliceSeparate(ItemGroups group) {
-            return (APSettings.DLCChaliceItemsSeparate & group) > 0;
+        private static bool IsChaliceSeparate(ItemGroups group) => APSettings.IsItemGroupChaliceSeparate(group, false);
+
+        // TODO Finish!
+        private static uint GetWeaponBit(APData.PlayerData.WeaponParts weaponParts) {
+            uint weaponbits = (uint)weaponParts;
+            return weaponbits;
         }
 
         private static void Gift(Weapon weapon) {
@@ -252,6 +268,28 @@ namespace CupheadArchipelago.AP {
                 PlayerData.Data.Gift(PlayerId.PlayerOne, super);
             if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, super))
                 PlayerData.Data.Gift(PlayerId.PlayerTwo, super);
+        }
+
+        private static void ResolvePlaneWeapons(long itemId) {
+            if (itemId == APItem.plane_gun) {
+                bool normal = APSettings.WeaponMode == WeaponModes.Normal;
+                if (normal) APClient.APSessionGSPlayerData.plane_ex = true;
+                if (!IsChaliceSeparate(ItemGroups.WeaponBasic)) {
+                    Gift(Weapon.plane_chalice_weapon_3way);
+                    if (normal) APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                }
+            }
+            else if (itemId == APItem.plane_bombs) {
+                bool normal = APSettings.WeaponMode == WeaponModes.Normal;
+                if (normal) APClient.APSessionGSPlayerData.plane_ex = true;
+                if (!IsChaliceSeparate(ItemGroups.WeaponBasic)) {
+                    Gift(Weapon.plane_chalice_weapon_bomb);
+                    if (normal) APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                }
+            }
+            else {
+                Logging.LogWarning($"Item {itemId} isn't supported as a plane weapon!");
+            }
         }
 
         private static void Stub(string itemName) => Logging.LogWarning($"Item handling unimplemented: {itemName}");
