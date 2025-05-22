@@ -43,7 +43,7 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_dlc_crackshot, APItemType.Weapon},
             {APItem.weapon_dlc_converge, APItemType.Weapon},
             {APItem.weapon_dlc_twistup, APItemType.Weapon},
-            
+
             {APItem.weapon_peashooter_ex, APItemType.Weapon},
             {APItem.weapon_spread_ex, APItemType.Weapon},
             {APItem.weapon_chaser_ex, APItemType.Weapon},
@@ -130,7 +130,7 @@ namespace CupheadArchipelago.AP {
             {APItem.weapon_dlc_crackshot, Weapon.level_weapon_crackshot},
             {APItem.weapon_dlc_converge, Weapon.level_weapon_wide_shot},
             {APItem.weapon_dlc_twistup, Weapon.level_weapon_upshot},
-            
+
             {APItem.weapon_peashooter_ex, Weapon.level_weapon_peashot},
             {APItem.weapon_spread_ex, Weapon.level_weapon_spreadshot},
             {APItem.weapon_chaser_ex, Weapon.level_weapon_homing},
@@ -170,7 +170,7 @@ namespace CupheadArchipelago.AP {
             Weapon.level_weapon_wide_shot,
             Weapon.level_weapon_upshot,
         ];
-        private static readonly HashSet<APItem> weaponExItems = [
+        private static readonly HashSet<long> weaponExItems = [
             APItem.weapon_peashooter_ex,
             APItem.weapon_spread_ex,
             APItem.weapon_chaser_ex,
@@ -181,7 +181,7 @@ namespace CupheadArchipelago.AP {
             APItem.weapon_dlc_converge_ex,
             APItem.weapon_dlc_twistup_ex,
         ];
-        private static readonly HashSet<APItem> weaponProgressiveItems = [
+        private static readonly HashSet<long> weaponProgressiveItems = [
             APItem.p_weapon_peashooter,
             APItem.p_weapon_spread,
             APItem.p_weapon_chaser,
@@ -197,7 +197,7 @@ namespace CupheadArchipelago.AP {
             return modularWeapons;
         }
         public static bool IsWeaponModular(Weapon weapon) => modularWeapons.Contains(weapon);
-        public static bool IsItemModularWeapon(long itemId) => 
+        public static bool IsItemModularWeapon(long itemId) =>
             idToWeapon.ContainsKey(itemId) && modularWeapons.Contains(idToWeapon[itemId]);
         public static bool IsItemModularWeapon(this APItem item) => IsItemModularWeapon(item.id);
         public static bool IsItemWeaponEx(APItem item) => weaponExItems.Contains(item);
@@ -244,5 +244,34 @@ namespace CupheadArchipelago.AP {
         ];
         public static bool IsPlaneItem(long item) => planeItems.Contains(item);
         public static bool IsPlaneItem(this APItem item) => planeItems.Contains(item);
+
+        private static readonly HashSet<long> chaliceItems = [
+            APItem.dlc_cplane_super,
+            APItem.dlc_cplane_ex,
+            
+            APItem.dlc_cplane_gun,
+
+            APItem.dlc_cplane_bombs,
+            APItem.super_dlc_c_i,
+            APItem.super_dlc_c_ii,
+            APItem.super_dlc_c_iii,
+            
+            APItem.ability_dlc_p_cdash,
+            APItem.ability_dlc_cduck,
+            APItem.ability_dlc_cdoublejump,
+            APItem.ability_dlc_cplane_parry,
+            APItem.ability_dlc_cplane_shrink,
+            
+            APItem.ability_dlc_c_aim_left,
+            APItem.ability_dlc_c_aim_right,
+            APItem.ability_dlc_c_aim_up,
+            APItem.ability_dlc_c_aim_down,
+            APItem.ability_dlc_c_aim_upleft,
+            APItem.ability_dlc_c_aim_upright,
+            APItem.ability_dlc_c_aim_downleft,
+            APItem.ability_dlc_c_aim_downright,
+        ];
+        public static bool IsChaliceItem(long item) => chaliceItems.Contains(item);
+        public static bool IsChaliceItem(this APItem item) => chaliceItems.Contains(item);
     }
 }
