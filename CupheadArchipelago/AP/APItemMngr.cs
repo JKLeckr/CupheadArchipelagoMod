@@ -21,32 +21,20 @@ namespace CupheadArchipelago.AP {
                             APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
                         }
                     } // FIXME: Finish these weapon modes scenarios!
-                    if (APSettings.WeaponMode == WeaponModes.Normal) {
-                        uint weaponbits = (uint)(APData.PlayerData.WeaponParts.Basic | APData.PlayerData.WeaponParts.Ex);
-                        if (IsChaliceSeparate(ItemGroups.WeaponBasic | ItemGroups.WeaponEx)) 
-                        APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.All);
-                    }
+                    
             */
 
             try {
                 switch (ItemMap.GetItemType(itemId)) {
                     case APItemType.Weapon: {
                             Weapon weapon = ItemMap.GetWeapon(itemId);
-                            // TODO: Finish!
                             Gift(weapon);
                             if (ItemMap.IsPlaneItem(itemId)) {
                                 ResolvePlaneWeapons(itemId);
                             }
-                            else if (ItemMap.IsItemWeaponEx(itemId)) {
-                                uint weaponbits = GetWeaponBit(APData.PlayerData.WeaponParts.Ex);
+                            else {
+                                uint weaponbits = GetWeaponBit(itemId);
                                 APClient.APSessionGSPlayerData.AddWeaponBit(weapon, weaponbits);
-                            }
-                            else if (ItemMap.IsItemProgressiveWeapon(itemId)) {
-                                uint weaponbits = GetWeaponBit(APData.PlayerData.WeaponParts.Basic);
-                                if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
-                                    weaponbits |= GetWeaponBit(APData.PlayerData.WeaponParts.Ex);
-                                }
-                                APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
                             }
                             if ((PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) ||
                                 (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb))) {
@@ -243,11 +231,32 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"Total coins: {APClient.APSessionGSPlayerData.coins_collected}");
         }
 
-        private static bool IsChaliceSeparate(ItemGroups group) => APSettings.IsItemGroupChaliceSeparate(group, false);
+        private static bool IsChaliceSeparate(ItemGroups group, bool anybit = false) =>
+            APSettings.IsItemGroupChaliceSeparate(group, anybit);
 
-        // TODO Finish!
-        private static uint GetWeaponBit(APData.PlayerData.WeaponParts weaponParts) {
-            uint weaponbits = (uint)weaponParts;
+        private static uint GetWeaponBit(long itemId) {
+            uint weaponbits = 0;
+            if (ItemMap.IsItemWeaponEx(itemId)) {
+                if (ItemMap.IsChaliceItem(itemId))
+                    weaponbits |= (uint)WeaponParts.CEx;
+                else {
+                    weaponbits |= (uint)WeaponParts.Ex;
+                    if (IsChaliceSeparate(ItemGroups.WeaponEx))
+                        weaponbits |= (uint)WeaponParts.CEx;
+                }
+            }
+            else {
+                bool basebit = ItemMap.IsChaliceItem(itemId);
+                bool chalicebit = ItemMap.IsChaliceItem(itemId) || !IsChaliceSeparate(ItemGroups.WeaponBasic, true);
+                weaponbits |= (basebit ? (uint)WeaponParts.Basic : 0) | (chalicebit ? (uint)WeaponParts.CBasic : 0);
+                // TODO: Adopt this style of multiline if statements
+                if ((ItemMap.IsItemProgressiveWeapon(itemId) &&
+                    (APClient.GetReceivedItemCount(itemId) > 1 || APSettings.StartWeapon.id == itemId)) ||
+                    APSettings.WeaponMode == WeaponModes.Normal
+                ) {
+                    weaponbits |= (basebit ? (uint)WeaponParts.Ex : 0) | (chalicebit ? (uint)WeaponParts.CEx : 0);
+                }
+            }
             return weaponbits;
         }
 

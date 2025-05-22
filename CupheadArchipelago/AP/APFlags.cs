@@ -45,8 +45,37 @@ namespace CupheadArchipelago.AP {
         CoreItems = Essential | Super,
         WeaponBasic = 4,
         WeaponEx = 8,
+        Weapons = 12,
         Abilities = 32,
         AimAbilities = 64,
         All = 255,
+    }
+
+    [Flags]
+    public enum WeaponParts : uint {
+        None = 0,
+        Basic = 1,
+        Ex = 2,
+        CBasic = 4,
+        CEx = 8,
+        AllBase = Basic | Ex,
+        AllC = CBasic | CEx,
+        AllBasic = Basic | CBasic,
+        AllEx = Ex | CEx,
+        All = Basic | Ex | CBasic | CEx
+    }
+
+    [Flags]
+    public enum AimDirections : uint {
+        None = 0,
+        Left = 256,
+        Right = 512,
+        Up = 1024,
+        Down = 2048,
+        UpLeft = 4096,
+        UpRight = 8192,
+        DownLeft = 16384,
+        DownRight = 32768,
+        All = Left | Right | Up | Down | UpLeft | UpRight | DownLeft | DownRight
     }
 }
