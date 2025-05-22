@@ -280,30 +280,6 @@ namespace CupheadArchipelago.AP {
                 AllAim = Aim | ChaliceAim,
                 All = int.MaxValue,
             }
-            [Flags]
-            public enum WeaponParts : uint {
-                None = 0,
-                Basic = 1,
-                Ex = 2,
-                CBasic = 4,
-                CEx = 8,
-                AllBasic = Basic | CBasic,
-                AllEx = Ex | CEx,
-                All = Basic | Ex | CBasic | CEx
-            }
-            [Flags]
-            public enum AimDirections : uint {
-                None = 0,
-                Left = 256,
-                Right = 512,
-                Up = 1024,
-                Down = 2048,
-                UpLeft = 4096,
-                UpRight = 8192,
-                DownLeft = 16384,
-                DownRight = 32768,
-                All = Left | Right | Up | Down | UpLeft | UpRight | DownLeft | DownRight
-            }
             
             [JsonProperty("contracts")]
             public int contracts = 0;

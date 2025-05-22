@@ -43,6 +43,7 @@ namespace CupheadArchipelago.AP {
             {109, Levels.ChessBishop},
             {110, Levels.ChessRook},
             {111, Levels.ChessQueen},
+            {112, Levels.ChessCastle},
         };
         private static readonly Dictionary<Levels, long> levelIdMap = [];
 
