@@ -1,13 +1,21 @@
+# justfile
+
 set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
 
 proj_name := 'CupheadArchipelago'
 test_proj_name := 'CupheadArchipelago.Tests'
 
-build:
-    dotnet build {{ proj_name }}
+default:
+    @just --list
 
 setup:
     dotnet restore
+
+build:
+    dotnet build {{ proj_name }}
+
+build-tests:
+    dotnet build {{ test_proj_name }}
 
 build-all:
     dotnet build

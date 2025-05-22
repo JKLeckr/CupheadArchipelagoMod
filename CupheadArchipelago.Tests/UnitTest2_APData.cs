@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using CupheadArchipelago.Tests.Core;
 using CupheadArchipelago.AP;
 using NUnit.Framework;
 

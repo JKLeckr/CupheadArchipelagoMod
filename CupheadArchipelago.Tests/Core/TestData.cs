@@ -4,7 +4,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace CupheadArchipelago.Tests {
+namespace CupheadArchipelago.Tests.Core {
     internal class TestData {
         private static readonly string EXE_DIR = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         internal static string TestDir = Path.Combine(Path.Combine(EXE_DIR, ".."), "TestData");

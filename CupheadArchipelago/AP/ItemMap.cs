@@ -159,7 +159,7 @@ namespace CupheadArchipelago.AP {
             
             /* More unimplemented ones to check out */
         };
-        private static readonly HashSet<Weapon> upgradableWeapons = [
+        private static readonly HashSet<Weapon> modularWeapons = [
             Weapon.level_weapon_peashot,
             Weapon.level_weapon_spreadshot,
             Weapon.level_weapon_homing,
@@ -170,14 +170,40 @@ namespace CupheadArchipelago.AP {
             Weapon.level_weapon_wide_shot,
             Weapon.level_weapon_upshot,
         ];
+        private static readonly HashSet<APItem> weaponExItems = [
+            APItem.weapon_peashooter_ex,
+            APItem.weapon_spread_ex,
+            APItem.weapon_chaser_ex,
+            APItem.weapon_lobber_ex,
+            APItem.weapon_charge_ex,
+            APItem.weapon_roundabout_ex,
+            APItem.weapon_dlc_crackshot_ex,
+            APItem.weapon_dlc_converge_ex,
+            APItem.weapon_dlc_twistup_ex,
+        ];
+        private static readonly HashSet<APItem> weaponProgressiveItems = [
+            APItem.p_weapon_peashooter,
+            APItem.p_weapon_spread,
+            APItem.p_weapon_chaser,
+            APItem.p_weapon_lobber,
+            APItem.p_weapon_charge,
+            APItem.p_weapon_roundabout,
+            APItem.p_weapon_dlc_crackshot,
+            APItem.p_weapon_dlc_converge,
+            APItem.p_weapon_dlc_twistup,
+        ];
         public static Weapon GetWeapon(long item) => idToWeapon[item];
-        public static IEnumerable<Weapon> GetUpgradableWeapons() {
-            return upgradableWeapons;
+        public static IEnumerable<Weapon> GetModularWeapons() {
+            return modularWeapons;
         }
-        public static bool IsWeaponUpgradable(Weapon weapon) => upgradableWeapons.Contains(weapon);
-        public static bool IsItemUpgradableWeapon(long itemId) => 
-            idToWeapon.ContainsKey(itemId) && upgradableWeapons.Contains(idToWeapon[itemId]);
-        public static bool IsItemUpgradableWeapon(this APItem item) => IsItemUpgradableWeapon(item.id);
+        public static bool IsWeaponModular(Weapon weapon) => modularWeapons.Contains(weapon);
+        public static bool IsItemModularWeapon(long itemId) => 
+            idToWeapon.ContainsKey(itemId) && modularWeapons.Contains(idToWeapon[itemId]);
+        public static bool IsItemModularWeapon(this APItem item) => IsItemModularWeapon(item.id);
+        public static bool IsItemWeaponEx(APItem item) => weaponExItems.Contains(item);
+        public static bool IsItemWeaponEx(long itemId) => APItem.IdExists(itemId) && IsItemWeaponEx(APItem.FromId(itemId));
+        public static bool IsItemProgressiveWeapon(APItem item) => weaponProgressiveItems.Contains(item);
+        public static bool IsItemProgressiveWeapon(long itemId) => APItem.IdExists(itemId) && IsItemProgressiveWeapon(APItem.FromId(itemId));
         private static readonly Dictionary<long, Charm> idToCharm = new() {
             {APItem.charm_heart, Charm.charm_health_up_1},
             {APItem.charm_smokebomb, Charm.charm_smoke_dash},

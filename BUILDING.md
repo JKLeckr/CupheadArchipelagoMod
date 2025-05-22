@@ -4,6 +4,7 @@
 ### Prerequisites
 - A copy of Cuphead
 - [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your path.
+- [just](https://github.com/casey/just?tab=readme-ov-file#installation). You need the `just` program in your path.
 - [c-wspp websocket-sharp](https://github.com/black-sliver/c-wspp-websocket-sharp). Note that it must be the windows version (even on Wine/Proton). If you are running the macOS version, you have to build this yourself.
 
 ### Notes
@@ -32,19 +33,19 @@ Note the `ref` folder in the project directory (`CupheadArchipelago`) you just c
 #### 4. Prepare Project:
 In the directory, on the terminal:
 
-`dotnet restore`
+`just setup`
 
 #### 5. Build the project:
 In the directory, on the terminal:
 
-`dotnet build .\CupheadArchipelago`
+`just build`
 
 The built DLL's are in `CupheadArchipelago/bin/Debug/CupheadArchipelago`.
 
 #### 6. Run Tests (Optional):
-In the directory, on the terminal:
+In the directory, on the terminal (you need .NET Framework/mono installed):
 
-`dotnet run --project ./CupheadArchipelago.Tests`
+`just test`
 
 Hopefully they pass!
 

@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CupheadArchipelago.Tests.Core;
 using CupheadArchipelago.AP;
 using NUnit.Framework;
 
