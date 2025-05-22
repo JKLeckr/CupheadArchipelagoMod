@@ -4,7 +4,7 @@
 using System;
 using BepInEx.Logging;
 
-namespace CupheadArchipelago.Tests {
+namespace CupheadArchipelago.Tests.Core {
     internal class TLogging {
         internal const LoggingFlags LOGGING_FLAGS = (LoggingFlags)255;
         internal static string RecentLog { get; private set; } = "";
