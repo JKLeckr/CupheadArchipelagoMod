@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.AP {
-    public class LevelShuffleMap {
+    public class LevelMap {
         private static readonly Dictionary<long, Levels> levelMap = new() {
             {0, Levels.Veggies},
             {1, Levels.Slime},
@@ -25,6 +25,15 @@ namespace CupheadArchipelago.AP {
             {16, Levels.Robot},
             {17, Levels.DicePalaceMain},
             {18, Levels.Devil},
+            {19, Levels.DicePalaceBooze},
+            {20, Levels.DicePalaceChips},
+            {21, Levels.DicePalaceCigar},
+            {22, Levels.DicePalaceDomino},
+            {23, Levels.DicePalaceRabbit},
+            {24, Levels.DicePalaceFlyingHorse},
+            {25, Levels.DicePalaceRoulette},
+            {26, Levels.DicePalaceEightBall},
+            {27, Levels.DicePalaceFlyingMemory},
             {28, Levels.Platforming_Level_1_1},
             {29, Levels.Platforming_Level_1_2},
             {30, Levels.Platforming_Level_2_1},
@@ -47,7 +56,7 @@ namespace CupheadArchipelago.AP {
         };
         private static readonly Dictionary<Levels, long> levelIdMap = [];
 
-        static LevelShuffleMap() {
+        static LevelMap() {
             foreach (long key in levelMap.Keys) {
                 levelIdMap.Add(levelMap[key], key);
             }
@@ -55,7 +64,7 @@ namespace CupheadArchipelago.AP {
 
         private readonly Dictionary<Levels, Levels> shuffleMap;
 
-        public LevelShuffleMap(IDictionary<long, long> map) {
+        public LevelMap(IDictionary<long, long> map) {
             shuffleMap = [];
             foreach (long lid in levelMap.Keys) {
                 if (map.ContainsKey(lid)) {
@@ -66,7 +75,15 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        public Levels GetShuffledLevel(Levels orig) => shuffleMap[orig];
-        public long GetLevelShuffleId(Levels level) => levelIdMap[level];
+        public bool LevelIsMapped(Levels level) => levelIdMap.ContainsKey(level);
+        public Levels GetMappedLevel(Levels orig) {
+            if (LevelIsMapped(orig))
+                return shuffleMap[orig];
+            else {
+                Logging.LogWarning($"[GetMappedLevel] Level \"{orig}\" is not mapped. Returning original level.");
+                return orig;
+            }
+        }
+        public long GetLevelMapId(Levels level) => levelIdMap[level];
     }
 }
