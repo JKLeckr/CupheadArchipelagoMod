@@ -38,6 +38,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 ### Extra Notes
 - There are no binary builds of CupheadArchipelago for macOS. You can build from source, but you are on your own. 
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
+- If you are on the Steam version, and the mod does not load, launch the game directly from Steam.
 
 ## Building
 See BUILDING.md
