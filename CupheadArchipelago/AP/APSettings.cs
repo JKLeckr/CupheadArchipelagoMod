@@ -58,7 +58,7 @@ namespace CupheadArchipelago.AP {
             QuestProfessional = false;
             StartMaxHealth = 3;
             TrapLoadoutAnyWeapon = false;
-            RequiredContracts = [5,10,17];
+            RequiredContracts = [5, 10, 17];
             DLCRequiredIngredients = 5;
             ContractsGoal = RequiredContracts[2];
             DLCIngredientsGoal = DLCRequiredIngredients;
@@ -76,6 +76,11 @@ namespace CupheadArchipelago.AP {
             ShuffleMusic = MusicGroups.None;
             RandomizeAimAbilities = false;
             ClassicShop = false;
+        }
+
+        public static bool IsItemGroupChaliceSeparate(ItemGroups group, bool anybit = false) {
+            if (anybit) return (DLCChaliceItemsSeparate & group) > group;
+            else return (DLCChaliceItemsSeparate & group) == group;
         }
     }
 }

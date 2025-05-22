@@ -246,21 +246,15 @@ namespace CupheadArchipelago.AP {
                     doneChecksUnique = new(DoneChecks);
                     if (APSettings.WeaponMode == WeaponModes.Normal) {
                         uint upgradeBit = (uint)APData.PlayerData.WeaponParts.All;
-                        APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
+                        APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetModularWeapons(), upgradeBit);
                         APSessionGSPlayerData.plane_ex = true;
                         APSessionGSPlayerData.dlc_cplane_ex = true;
-                    } // FIXME: Finish including Ex Separate weapon modes
-                    else if ((APSettings.WeaponMode & WeaponModes.Progressive) > 0) {
-                        uint upgradeBit = (uint)APData.PlayerData.WeaponParts.AllBasic;
-                        APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetUpgradableWeapons(), upgradeBit);
-
-                        if (APSettings.WeaponMode == WeaponModes.ProgressiveNoStart) {
-                            Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
-                            uint supgradeBit = (uint)APData.PlayerData.WeaponParts.AllEx;
-                            APSessionGSPlayerData.AddWeaponBit(weapon, supgradeBit);
-                        }
                     }
-                    else {}
+                    else if ((APSettings.WeaponMode & WeaponModes.NoStart) > 0) {
+                        Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
+                        uint supgradeBit = (uint)APData.PlayerData.WeaponParts.All;
+                        APSessionGSPlayerData.AddWeaponBit(weapon, supgradeBit);
+                    }
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
                     if (!APSettings.RandomizeAimAbilities)

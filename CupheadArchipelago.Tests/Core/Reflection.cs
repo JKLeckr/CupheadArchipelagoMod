@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace CupheadArchipelago.Tests {
+namespace CupheadArchipelago.Tests.Core {
     internal class TReflection {
         public static FieldInfo[] GetFieldsFromClass(Type type, Type fieldType) {
             return [.. type
