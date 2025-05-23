@@ -60,6 +60,8 @@ namespace CupheadArchipelago.AP {
         private static readonly HashSet<Levels> bossLevels;
         private static readonly HashSet<Levels> rungunLevels;
 
+        private static LevelMap instance = null;
+
         static LevelMap() {
             foreach (long key in levelMap.Keys) {
                 levelIdMap.Add(levelMap[key], key);
@@ -73,6 +75,26 @@ namespace CupheadArchipelago.AP {
             rungunLevels = [.. Level.platformingLevels];
         }
 
+        internal static void Init(LevelMap map) {
+            instance = map;
+        }
+
+        public static bool IsInitted() => instance != null;
+
+        public static bool LevelIdExists(long id) => levelMap.ContainsKey(id);
+        public static bool LevelExists(Levels level) => levelIdMap.ContainsKey(level);
+        public static long GetLevelId(Levels level) => levelIdMap[level];
+        public static bool LevelIsBoss(Levels level) => bossLevels.Contains(level) && LevelExists(level);
+        public static bool LevelIsRungun(Levels level) => rungunLevels.Contains(level) && LevelExists(level);
+
+        public static Levels GetMappedLevel(Levels orig) {
+            if (IsInitted()) return instance.MapLevel(orig);
+            else {
+                Logging.LogError("[LevelMap] Not initted! Cannot Map!");
+                return orig;
+            }
+        }
+
         private readonly Dictionary<Levels, Levels> shuffleMap;
 
         public LevelMap(IDictionary<long, long> map) {
@@ -82,8 +104,8 @@ namespace CupheadArchipelago.AP {
                 if (map.ContainsKey(lid)) {
                     // TODO: eventually support more combinations
                     Levels mappedLevel = levelMap[map[lid]];
-                    if ((LevelIsMappedBoss(level) && LevelIsMappedBoss(mappedLevel)) ||
-                        (LevelIsMappedRungun(level) && LevelIsMappedRungun(mappedLevel))
+                    if ((LevelIsBoss(level) && LevelIsBoss(mappedLevel)) ||
+                        (LevelIsRungun(level) && LevelIsRungun(mappedLevel))
                     ) {
                         shuffleMap.Add(level, mappedLevel);
                     }
@@ -98,16 +120,11 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        public static bool LevelIdExists(long id) => levelMap.ContainsKey(id);
-        public static bool LevelExists(Levels level) => levelIdMap.ContainsKey(level);
-        public static long GetLevelId(Levels level) => levelIdMap[level];
-        public static bool LevelIsMappedBoss(Levels level) => bossLevels.Contains(level) && LevelExists(level);
-        public static bool LevelIsMappedRungun(Levels level) => rungunLevels.Contains(level) && LevelExists(level);
-        public Levels GetMappedLevel(Levels orig) {
-            if (LevelExists(orig))
+        public Levels MapLevel(Levels orig) {
+            if (shuffleMap.ContainsKey(orig))
                 return shuffleMap[orig];
             else {
-                Logging.LogWarning($"[GetMappedLevel] Level \"{orig}\" is not mapped. Returning original level.");
+                Logging.Log($"[GetMappedLevel] Level \"{orig}\" is not mapped. Returning original level.");
                 return orig;
             }
         }
