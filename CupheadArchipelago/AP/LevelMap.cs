@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.AP {
@@ -23,17 +24,17 @@ namespace CupheadArchipelago.AP {
             {14, Levels.FlyingBird},
             {15, Levels.FlyingMermaid},
             {16, Levels.Robot},
-            {17, Levels.DicePalaceMain},
-            {18, Levels.Devil},
-            {19, Levels.DicePalaceBooze},
-            {20, Levels.DicePalaceChips},
-            {21, Levels.DicePalaceCigar},
-            {22, Levels.DicePalaceDomino},
-            {23, Levels.DicePalaceRabbit},
-            {24, Levels.DicePalaceFlyingHorse},
-            {25, Levels.DicePalaceRoulette},
-            {26, Levels.DicePalaceEightBall},
-            {27, Levels.DicePalaceFlyingMemory},
+            //{17, Levels.DicePalaceMain},
+            //{18, Levels.Devil},
+            //{19, Levels.DicePalaceBooze},
+            //{20, Levels.DicePalaceChips},
+            //{21, Levels.DicePalaceCigar},
+            //{22, Levels.DicePalaceDomino},
+            //{23, Levels.DicePalaceRabbit},
+            //{24, Levels.DicePalaceFlyingHorse},
+            //{25, Levels.DicePalaceRoulette},
+            //{26, Levels.DicePalaceEightBall},
+            //{27, Levels.DicePalaceFlyingMemory},
             {28, Levels.Platforming_Level_1_1},
             {29, Levels.Platforming_Level_1_2},
             {30, Levels.Platforming_Level_2_1},
@@ -45,21 +46,31 @@ namespace CupheadArchipelago.AP {
             {102, Levels.SnowCult},
             {103, Levels.Airplane},
             {104, Levels.FlyingCowboy},
-            {105, Levels.Saltbaker},
-            {106, Levels.Graveyard},
-            {107, Levels.ChessPawn},
-            {108, Levels.ChessKnight},
-            {109, Levels.ChessBishop},
-            {110, Levels.ChessRook},
-            {111, Levels.ChessQueen},
-            {112, Levels.ChessCastle},
+            //{105, Levels.Saltbaker},
+            //{106, Levels.Graveyard},
+            //{107, Levels.ChessPawn},
+            //{108, Levels.ChessKnight},
+            //{109, Levels.ChessBishop},
+            //{110, Levels.ChessRook},
+            //{111, Levels.ChessQueen},
+            //{112, Levels.ChessCastle},
         };
         private static readonly Dictionary<Levels, long> levelIdMap = [];
+
+        private static readonly HashSet<Levels> bossLevels;
+        private static readonly HashSet<Levels> rungunLevels;
 
         static LevelMap() {
             foreach (long key in levelMap.Keys) {
                 levelIdMap.Add(levelMap[key], key);
             }
+            bossLevels = [
+                .. Level.world1BossLevels,
+                .. Level.world2BossLevels,
+                .. Level.world3BossLevels,
+                .. Level.worldDLCBossLevels
+            ];
+            rungunLevels = [.. Level.platformingLevels];
         }
 
         private readonly Dictionary<Levels, Levels> shuffleMap;
@@ -67,23 +78,38 @@ namespace CupheadArchipelago.AP {
         public LevelMap(IDictionary<long, long> map) {
             shuffleMap = [];
             foreach (long lid in levelMap.Keys) {
+                Levels level = levelMap[lid];
                 if (map.ContainsKey(lid)) {
-                    shuffleMap.Add(levelMap[lid], levelMap[map[lid]]);
-                } else {
+                    // TODO: eventually support more combinations
+                    Levels mappedLevel = levelMap[map[lid]];
+                    if ((LevelIsMappedBoss(level) && LevelIsMappedBoss(mappedLevel)) ||
+                        (LevelIsMappedRungun(level) && LevelIsMappedRungun(mappedLevel))
+                    ) {
+                        shuffleMap.Add(level, mappedLevel);
+                    }
+                    else {
+                        Logging.LogError($"[LevelMap] Invalid map combination: \"{level} -> {mappedLevel}\" Type mismatch!");
+                        throw new ArgumentException("Levels must be mapped to the same type!");
+                    }
+                }
+                else {
                     shuffleMap.Add(levelMap[lid], levelMap[lid]);
                 }
             }
         }
 
-        public bool LevelIsMapped(Levels level) => levelIdMap.ContainsKey(level);
+        public static bool LevelIdExists(long id) => levelMap.ContainsKey(id);
+        public static bool LevelExists(Levels level) => levelIdMap.ContainsKey(level);
+        public static long GetLevelId(Levels level) => levelIdMap[level];
+        public static bool LevelIsMappedBoss(Levels level) => bossLevels.Contains(level) && LevelExists(level);
+        public static bool LevelIsMappedRungun(Levels level) => rungunLevels.Contains(level) && LevelExists(level);
         public Levels GetMappedLevel(Levels orig) {
-            if (LevelIsMapped(orig))
+            if (LevelExists(orig))
                 return shuffleMap[orig];
             else {
                 Logging.LogWarning($"[GetMappedLevel] Level \"{orig}\" is not mapped. Returning original level.");
                 return orig;
             }
         }
-        public long GetLevelMapId(Levels level) => levelIdMap[level];
     }
 }
