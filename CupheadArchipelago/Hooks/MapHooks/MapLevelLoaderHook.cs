@@ -1,7 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -15,6 +14,35 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             Harmony.CreateAndPatchAll(typeof(Awake));
             //Harmony.CreateAndPatchAll(typeof(Activate));
         }
+
+        /*
+        [Error  : Unity Log] Exception: Asset not cached: TitleCards_W2
+        Stack trace:
+        SpriteAtlas AssetLoader<UnityEngine.U2D.SpriteAtlas>.GetCachedAsset(string assetName)
+        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement)
+        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement, LocalizationSubtext[] subTranslations)
+        void MapDifficultySelectStartUI.In(MapPlayerController playerController)
+        void MapLevelLoader.Activate(MapPlayerController player)
+        void AbstractMapInteractiveEntity.Update()
+
+        [Error  : Unity Log] Exception: Asset not cached: TitleCards_W3
+        Stack trace:
+        SpriteAtlas AssetLoader<UnityEngine.U2D.SpriteAtlas>.GetCachedAsset(string assetName)
+        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement)
+        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement, LocalizationSubtext[] subTranslations)
+        void MapDifficultySelectStartUI.In(MapPlayerController playerController)
+        void MapLevelLoader.Activate(MapPlayerController player)
+        void AbstractMapInteractiveEntity.Update()
+
+        [Error  : Unity Log] Exception: Asset not cached: TitleCards_WDLC
+        Stack trace:
+        SpriteAtlas AssetLoader<UnityEngine.U2D.SpriteAtlas>.GetCachedAsset(string assetName)
+        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement)
+        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement, LocalizationSubtext[] subTranslations)
+        void MapDifficultySelectStartUI.In(MapPlayerController playerController)
+        void MapLevelLoader.Activate(MapPlayerController player)
+        void AbstractMapInteractiveEntity.Update()
+        */
 
         [HarmonyPatch(typeof(MapLevelLoader), "Awake")]
         internal static class Awake {
@@ -35,9 +63,9 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                     new(OpCodes.Brfalse, vanilla),
                     new(OpCodes.Ldarg_0),
+                    new(OpCodes.Ldarg_0),
                     new(OpCodes.Ldfld, _fi_level),
                     new(OpCodes.Call, _mi_MapLevel),
-                    new(OpCodes.Ldarg_0),
                     new(OpCodes.Stfld, _fi_level),
                 ];
                 codes.InsertRange(0, ncodes);
@@ -56,13 +84,11 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 }
             }
 
-            private static Levels MapLevel(Levels level) {
-                // TODO: Finish
-                return level;
-            }
+            private static Levels MapLevel(Levels level) =>
+                LevelMap.GetMappedLevel(level);
         }
 
         [HarmonyPatch(typeof(MapLevelLoader), "Activate")]
-        internal static class Activate {}
+        internal static class Activate { }
     }
 }
