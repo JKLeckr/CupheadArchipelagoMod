@@ -13,16 +13,6 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"[APItemMngr] Applying item {itemName} ({item.id})...");
 
             ItemMap.GetItemType(itemId);
-            
-            /*
-            APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllBasic);
-                    if (APSettings.WeaponMode > 0 && ItemMap.IsItemModularWeapon(itemId)) {
-                        if (APClient.GetReceivedItemCount(itemId) > 1 || ItemMap.GetWeapon(APSettings.StartWeapon.id) == weapon) {
-                            APClient.APSessionGSPlayerData.AddWeaponBit(weapon, (uint)APData.PlayerData.WeaponParts.AllEx);
-                        }
-                    } // FIXME: Finish these weapon modes scenarios!
-                    
-            */
 
             try {
                 switch (ItemMap.GetItemType(itemId)) {
