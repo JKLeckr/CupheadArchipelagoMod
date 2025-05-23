@@ -10,6 +10,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
             Harmony.CreateAndPatchAll(typeof(StartEx));
         }
 
+        // TODO: Handle weapon firing for when basic is not available
+
         //private static PlayerData.PlayerLoadouts loadouts;
 
         [HarmonyPatch(typeof(LevelPlayerWeaponManager), "HandleWeaponFiring")]
@@ -21,7 +23,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
         [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartEx")]
         internal static class StartEx {
             static bool Prefix(LevelPlayerWeaponManager __instance) {
-                uint exBit = (uint)(__instance.player.stats.isChalice ? APData.PlayerData.WeaponParts.CEx : APData.PlayerData.WeaponParts.Ex);
+                uint exBit = (uint)(__instance.player.stats.isChalice ? WeaponParts.CEx : WeaponParts.Ex);
                 return !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.WeaponHasBit(__instance.CurrentWeapon.id, exBit);
             }
         }
