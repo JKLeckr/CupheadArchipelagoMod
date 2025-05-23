@@ -49,7 +49,16 @@ namespace CupheadArchipelago {
                 logFiles.RemoveAt(0);
             }
 
-            uint next = logFiles.Any() ? logFiles.Last().Number.Value + 1 : 0;
+            uint next;
+            if (logFiles.Any()) {
+                next = logFiles.Last().Number.Value;
+                unchecked {
+                    next++;
+                }
+            }
+            else {
+                next = 0;
+            }
             LogFile = $"{logName}.{next}{LOG_FILE_EXTENSION}";
         }
 
