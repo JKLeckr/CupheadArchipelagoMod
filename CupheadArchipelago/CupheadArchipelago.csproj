@@ -51,6 +51,10 @@
       <Link>NOTICE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="../CREDITS.txt">
+      <Link>CREDITS.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="../LICENSE.3rd-party.txt">
       <Link>LICENSE.3rd-party.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
