@@ -2,14 +2,14 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 namespace CupheadArchipelago {
-    public enum LicenseLogModes {
-        Off = 0,
-        FirstParty = 1,
-        All = 3,
-    }
+  public enum LicenseLogModes {
+      Off = 0,
+      FirstParty = 1,
+      All = 3,
+  }
 
-    public class ModLicense {
-        public readonly string PLUGIN_NOTICE =
+  public class ModLicense {
+    public readonly string PLUGIN_NOTICE =
 @"
     Copyright 2025 JKLeckr
 
@@ -25,15 +25,15 @@ namespace CupheadArchipelago {
     See the License for the specific language governing permissions and
     limitations under the License.";
 
-        public readonly string PLUGIN_LIB_NOTICE = 
+    public readonly string PLUGIN_LIB_NOTICE =
 @"
     This mod uses third party libraries.
     For their notices, see the accompanying LICENSE.third-party.txt or a copy at
     You can set ""LogLicense = All"" in the config to print the third party notice.";
-    }
+  }
 
-    public class ModLicenseThirdParty {
-        public readonly string PLUGIN_LIB_FULL_NOTICE =
+  public class ModLicenseThirdParty {
+    public readonly string PLUGIN_LIB_FULL_NOTICE =
 @"CupheadArchipelago uses third party libraries listed in this document.
 
 FVer
