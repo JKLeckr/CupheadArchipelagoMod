@@ -2,8 +2,9 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CupheadArchipelago.AP;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.Mapping {
     public class CoinIdMap {
         private static readonly Dictionary<string,APLocation> idToLoc = new() {
             {"scene_level_tutorial::Level_Coin :: a53bbd1a-734e-4e60-ada8-d11c62eabcec", APLocation.level_tutorial_coin},

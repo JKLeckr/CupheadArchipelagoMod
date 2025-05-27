@@ -2,8 +2,9 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CupheadArchipelago.AP;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.Mapping {
     public class ShopMap {
         private static readonly Dictionary<Weapon, APLocation> weaponLocations = new() {
             {Weapon.level_weapon_homing, APLocation.shop_weapon1},

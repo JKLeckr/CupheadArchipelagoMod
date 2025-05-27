@@ -1,12 +1,13 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using CupheadArchipelago.AP;
-using CupheadArchipelago.Unity;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CupheadArchipelago.AP;
+using CupheadArchipelago.Mapping;
+using CupheadArchipelago.Unity;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {

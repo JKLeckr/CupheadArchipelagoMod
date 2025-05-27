@@ -2,7 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using CupheadArchipelago.AP;
+using CupheadArchipelago.Interfaces;
 
 namespace CupheadArchipelago.Tests.TestClasses {
     internal class TPlayerData {
@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Tests.TestClasses {
         public static void Init() => Data = new TPlayerData();
     }
 
-    internal class TPlayerDataMngr : IPlayerDataMngr {
+    internal class TPlayerDataItfc : IPlayerDataItfc {
         public bool IsUnlocked(Weapon weapon) =>
             TPlayerData.Data.weapons.Contains((int)weapon);
             

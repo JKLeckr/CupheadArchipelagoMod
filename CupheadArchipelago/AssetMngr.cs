@@ -1,7 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 using BepInEx;
 
@@ -13,10 +12,10 @@ namespace CupheadArchipelago {
             {"TitleCards_W3", "atlas_titlecards_w3"},
             {"TitleCards_WDLC", "atlas_titlecards_wdlc"},
         };
-        private static readonly Dictionary<string, HashSet<Levels>> assetScenes = new() { };
+        private static readonly Dictionary<string, HashSet<Levels>> assetScenes = new() {};
         private static readonly HashSet<string> universalAssets = [];
 
-        internal static void Init(BaseUnityPlugin pinstance) { }
+        internal static void Init(BaseUnityPlugin pinstance) {}
         internal static void Unload() { }
 
         internal static int TestDefs() {

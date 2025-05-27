@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.Mapping {
     public class LevelMap {
         private static readonly Dictionary<long, Levels> levelMap = new() {
             {0, Levels.Veggies},

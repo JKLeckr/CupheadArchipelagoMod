@@ -4,11 +4,9 @@
 using System.Collections.Generic;
 using CupheadArchipelago.Tests.Core;
 using CupheadArchipelago.AP;
-using NUnit.Framework;
+using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Tests.TestClasses;
-using System.Runtime.CompilerServices;
-using System;
-using System.Runtime.Remoting.Messaging;
+using NUnit.Framework;
 
 namespace CupheadArchipelago.Tests {
     public sealed class UnitTest4_Items {
@@ -115,7 +113,7 @@ namespace CupheadArchipelago.Tests {
         public sealed class Items_ItemMngr {
             private static readonly HashSet<long> skipItems = [];
             
-            private static readonly TPlayerDataMngr playerDataMngr = new();
+            private static readonly TPlayerDataItfc playerDataMngr = new();
 
             [SetUp]
             public void Setup() {
@@ -126,6 +124,7 @@ namespace CupheadArchipelago.Tests {
                 TUtil.InitAPClient();
             }
 
+            // TODO: finish this test
             [Test]
             public void APItemMngr_WeaponsApplyCorrectly() {
                 bool fail = false;
