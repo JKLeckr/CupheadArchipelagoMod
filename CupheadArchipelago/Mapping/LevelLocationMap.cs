@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using CupheadArchipelago.AP;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.Mapping {
     public class LevelLocationMap {
         private static readonly Dictionary<Levels,APLocation[]> map;
 
