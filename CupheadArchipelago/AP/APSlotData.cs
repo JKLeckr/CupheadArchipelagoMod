@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Util;
 using Newtonsoft.Json;
 using FVer;

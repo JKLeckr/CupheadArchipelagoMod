@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Mapping;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.ShopHooks {

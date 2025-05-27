@@ -5,7 +5,7 @@ using CupheadArchipelago.Hooks.PlayerHooks;
 using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
-    internal class LevelItemMngr {
+    internal class APLevelItemMngr {
         internal static void ApplyLevelItem(long itemId) {
             PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
             PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;

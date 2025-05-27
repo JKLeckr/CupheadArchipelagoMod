@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 

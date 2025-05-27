@@ -2,15 +2,17 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using CupheadArchipelago.Interfaces;
+using CupheadArchipelago.Mapping;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
         public static bool ApplyItem(APItemData item) {
             string itemName = APClient.GetItemName(item.id);
             Logging.Log($"[APItemMngr] Applying item {itemName} ({item.id})...");
-            return ApplyItem(item.id, PlayerDataMngr.Default);
+            return ApplyItem(item.id, PlayerDataItfc.Default);
         }
-        internal static bool ApplyItem(long itemId, IPlayerDataMngr pdMngr) {
+        internal static bool ApplyItem(long itemId, IPlayerDataItfc pdMngr) {
             ItemMap.GetItemType(itemId);
 
             try {
@@ -112,7 +114,7 @@ namespace CupheadArchipelago.AP {
                             break;
                         }
                     case APItemType.Level: {
-                            LevelItemMngr.ApplyLevelItem(itemId);
+                            APLevelItemMngr.ApplyLevelItem(itemId);
                             break;
                         }
                     default: break;
@@ -159,7 +161,7 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        private static void AddCoins(int count, IPlayerDataMngr pdMngr) {
+        private static void AddCoins(int count, IPlayerDataItfc pdMngr) {
             int diff = APClient.GetReceivedCoinCount() - APClient.APSessionGSPlayerData.coins_collected;
             Logging.Log($"[AddCoins] Diff {diff}");
             int ncount = count;

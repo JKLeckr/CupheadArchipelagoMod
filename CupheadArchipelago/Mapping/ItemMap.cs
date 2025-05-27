@@ -2,8 +2,9 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CupheadArchipelago.AP;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.Mapping {
     public static class ItemMap {
         private static readonly Dictionary<long, APItemType> itemTypes = new() {
             {APItem.level_generic, APItemType.None},

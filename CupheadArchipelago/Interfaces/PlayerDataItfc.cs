@@ -1,8 +1,8 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-namespace CupheadArchipelago.AP {
-    internal interface IPlayerDataMngr {
+namespace CupheadArchipelago.Interfaces {
+    internal interface IPlayerDataItfc {
         bool IsUnlocked(Weapon weapon);
         bool IsUnlocked(Charm charm);
         bool IsUnlocked(Super super);
@@ -17,9 +17,9 @@ namespace CupheadArchipelago.AP {
         void DoPlaneSecondaryEquipTrigger();
     }
 
-    internal class PlayerDataMngr : IPlayerDataMngr {
-        internal static PlayerDataMngr Default { get => _default; }
-        private static readonly PlayerDataMngr _default = new();
+    internal class PlayerDataItfc : IPlayerDataItfc {
+        internal static PlayerDataItfc Default { get => _default; }
+        private static readonly PlayerDataItfc _default = new();
 
         public bool IsUnlocked(Weapon weapon) =>
             PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, weapon);

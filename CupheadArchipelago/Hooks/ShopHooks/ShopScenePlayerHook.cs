@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Util;
 using HarmonyLib;
 using UnityEngine;
