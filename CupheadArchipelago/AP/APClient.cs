@@ -32,6 +32,7 @@ namespace CupheadArchipelago.AP {
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
         internal static APSlotData SlotData { get; private set; } = null;
+        private static bool offline = false;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
@@ -411,7 +412,18 @@ namespace CupheadArchipelago.AP {
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
             itemApplySpecialLevelQueue = new();
+            offline = false;
             APSettings.Init();
+        }
+
+        // This is mainly for testing. Not feature complete.
+        internal static void SetupOffline() {
+            offline = true;
+            APSessionGSDataSlot = 0;
+            receivedItemCounts = new();
+        }
+        internal static void ResetOffline() {
+            if (offline) Reset();
         }
 
         public static bool IsLocationChecked(long loc) => doneChecksUnique.Contains(loc);
@@ -898,7 +910,7 @@ namespace CupheadArchipelago.AP {
         }
 
         private static APData GetAPSessionData() {
-            if (session!=null&&APSessionGSDataSlot>=0) {
+            if ((session != null && APSessionGSDataSlot >= 0) || offline) {
                 return APData.SData[APSessionGSDataSlot];
             }
             else {

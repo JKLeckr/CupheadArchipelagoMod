@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>Assembly-CSharp</AssemblyName>
-    <OutputPath>$(ProjectDir)bin/$(Configuration)/Stub/</OutputPath>
+    <LangVersion>latest</LangVersion>
+    <OutputPath>$(ProjectDir)bin/$(Configuration)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 

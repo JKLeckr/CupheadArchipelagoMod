@@ -11,7 +11,7 @@
     </RestoreAdditionalProjectSources>
     <OutputPath>$(ProjectDir)bin/$(Configuration)/Test/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <DefaultItemExcludes>$(DefaultItemExcludes);Assembly-CSharp.Stub/**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);TAssembly-CSharp/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../CupheadArchipelago/CupheadArchipelago.csproj" />
-    <ProjectReference Include="./Assembly-CSharp.Stub/Assembly-CSharp.Stub.csproj" />
+    <ProjectReference Include="./TAssembly-CSharp/TAssembly-CSharp.csproj" />
   </ItemGroup>
 
 </Project>
