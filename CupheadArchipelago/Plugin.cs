@@ -68,8 +68,9 @@ namespace CupheadArchipelago {
 
             if (configEnabled.Value) {
                 if (configModLogs.Value) SetupLogging(this);
-                Logging.Log($"CupheadArchipelago {FullVersion} by JKLeckr");
-                
+                Logging.Log($"CupheadArchipelago {FullVersion}");
+                Logging.Log("Created by JKLeckr");
+
                 /*Logging.Log("[Log] Info", LoggingFlags.Debug);
                 Logging.LogWarning("[Log] Warning", LoggingFlags.Debug);
                 Logging.LogError("[Log] Error", LoggingFlags.Debug);
@@ -106,6 +107,7 @@ namespace CupheadArchipelago {
                 } else Logging.Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
                 try {
                     SaveData.Init(configSaveKeyName.Value);
+                    AssetMngr.Init(this);
                     Hooks.Main.HookMain();
                 } catch (Exception e) {
                     Fail(e, -1);
@@ -118,7 +120,11 @@ namespace CupheadArchipelago {
             }
         }
 
-        private bool IsPluginLoaded(string plugin) => FindPlugin(plugin)>=0;
+        private void OnDestroy() {
+            AssetMngr.Unload();
+        }
+
+        private bool IsPluginLoaded(string plugin) => FindPlugin(plugin) >= 0;
         private int FindPlugin(string plugin) {
             int index = 0;
 

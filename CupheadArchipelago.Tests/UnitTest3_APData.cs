@@ -9,7 +9,7 @@ using CupheadArchipelago.AP;
 using NUnit.Framework;
 
 namespace CupheadArchipelago.Tests {
-    public sealed class UnitTest2_APData {
+    public sealed class UnitTest3_APData {
         [SetUp]
         public void Setup() {}
 

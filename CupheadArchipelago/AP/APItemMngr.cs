@@ -2,52 +2,50 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
-using CupheadArchipelago.Hooks.PlayerHooks;
-using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
     public class APItemMngr {
         public static bool ApplyItem(APItemData item) {
-            long itemId = item.id;
             string itemName = APClient.GetItemName(item.id);
             Logging.Log($"[APItemMngr] Applying item {itemName} ({item.id})...");
-
+            return ApplyItem(item.id, PlayerDataMngr.Default);
+        }
+        internal static bool ApplyItem(long itemId, IPlayerDataMngr pdMngr) {
             ItemMap.GetItemType(itemId);
 
             try {
                 switch (ItemMap.GetItemType(itemId)) {
                     case APItemType.Weapon: {
                             Weapon weapon = ItemMap.GetWeapon(itemId);
-                            Gift(weapon);
+                            pdMngr.Gift(weapon);
                             if (ItemMap.IsPlaneItem(itemId)) {
-                                ResolvePlaneWeapons(itemId);
+                                ResolvePlaneWeapons(itemId, pdMngr.Gift);
                             }
                             else {
                                 uint weaponbits = GetWeaponBit(itemId);
                                 APClient.APSessionGSPlayerData.AddWeaponBit(weapon, weaponbits);
                             }
-                            if ((PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_weapon_bomb)) ||
-                                (PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, Weapon.plane_chalice_weapon_bomb))) {
-                                PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).HasEquippedSecondarySHMUPWeapon = true;
-                                PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).HasEquippedSecondarySHMUPWeapon = true;
+                            if ((pdMngr.IsUnlocked(Weapon.plane_weapon_peashot) && pdMngr.IsUnlocked(Weapon.plane_weapon_bomb)) ||
+                                (pdMngr.IsUnlocked(Weapon.plane_chalice_weapon_3way) && pdMngr.IsUnlocked(Weapon.plane_chalice_weapon_bomb))) {
+                                pdMngr.DoPlaneSecondaryEquipTrigger();
                             }
                             break;
                         }
                     case APItemType.Charm: {
                             Charm charm = ItemMap.GetCharm(itemId);
-                            Gift(charm);
+                            pdMngr.Gift(charm);
                             break;
                         }
                     case APItemType.Super: {
-                            Gift(ItemMap.GetSuper(itemId));
+                            pdMngr.Gift(ItemMap.GetSuper(itemId));
                             if (itemId == APItem.super_i && !IsChaliceSeparate(ItemGroups.Super)) {
-                                Gift(Super.level_super_chalice_vert_beam);
+                                pdMngr.Gift(Super.level_super_chalice_vert_beam);
                             }
                             else if (itemId == APItem.super_ii && !IsChaliceSeparate(ItemGroups.Super)) {
-                                Gift(Super.level_super_chalice_shield);
+                                pdMngr.Gift(Super.level_super_chalice_shield);
                             }
                             else if (itemId == APItem.super_iii && !IsChaliceSeparate(ItemGroups.Super)) {
-                                Gift(Super.level_super_chalice_iii);
+                                pdMngr.Gift(Super.level_super_chalice_iii);
                             }
                             break;
                         }
@@ -58,15 +56,15 @@ namespace CupheadArchipelago.AP {
                     case APItemType.Essential: {
                             if (itemId == APItem.coin) {
                                 Logging.Log("AddCurrency");
-                                AddCoins(1);
+                                AddCoins(1, pdMngr);
                             }
                             else if (itemId == APItem.coin2) {
                                 Logging.Log("AddCurrency x2");
-                                AddCoins(2);
+                                AddCoins(2, pdMngr);
                             }
                             else if (itemId == APItem.coin3) {
                                 Logging.Log("AddCurrency x3");
-                                AddCoins(3);
+                                AddCoins(3, pdMngr);
                             }
                             else if (itemId == APItem.contract) {
                                 if (APClient.APSessionGSPlayerData.contracts < APClient.GetReceivedItemCount(APItem.contract)) {
@@ -114,47 +112,7 @@ namespace CupheadArchipelago.AP {
                             break;
                         }
                     case APItemType.Level: {
-                            PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
-                            PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
-                            PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
-                            PlayersStatsBossesHub bstats2 = (stats2 != null) ? Level.GetPlayerStats(stats2.basePlayer.id) : null;
-
-                            if (itemId == APItem.level_extrahealth) {
-                                if (Level.IsInBossesHub) {
-                                    bstats1.BonusHP++;
-                                    if (bstats2 != null) bstats2.BonusHP++;
-                                }
-                                stats1.SetHealth(stats1.Health + 1);
-                                stats2?.SetHealth(stats2.Health + 1);
-                            }
-                            else if (itemId == APItem.level_supercharge) {
-                                if (stats1.CanGainSuperMeter) {
-                                    Logging.Log("Can gain super");
-                                    PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
-                                }
-                                if (stats2 != null && stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
-                            }
-                            else if (itemId == APItem.level_fastfire) {
-                                AudioManager.Play("pop_up");
-                                APManager.Current.SlowFire();
-                            }
-                            else if (itemId == APItem.level_trap_fingerjam) {
-                                AudioManager.Play("level_menu_select");
-                                APManager.Current.FingerJam();
-                            }
-                            else if (itemId == APItem.level_trap_slowfire) {
-                                AudioManager.Play("level_menu_select");
-                                APManager.Current.SlowFire();
-                            }
-                            else if (itemId == APItem.level_trap_superdrain) {
-                                AudioManager.Play("level_menu_select");
-                                if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
-                                if (stats2 != null && stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
-                            }
-                            else if (itemId == APItem.level_trap_loadout) {
-                                AudioManager.Play("level_menu_select");
-                                Stub("Loadout Trap");
-                            }
+                            LevelItemMngr.ApplyLevelItem(itemId);
                             break;
                         }
                     default: break;
@@ -201,7 +159,7 @@ namespace CupheadArchipelago.AP {
             }
         }
 
-        private static void AddCoins(int count=1) {
+        private static void AddCoins(int count, IPlayerDataMngr pdMngr) {
             int diff = APClient.GetReceivedCoinCount() - APClient.APSessionGSPlayerData.coins_collected;
             Logging.Log($"[AddCoins] Diff {diff}");
             int ncount = count;
@@ -211,13 +169,12 @@ namespace CupheadArchipelago.AP {
             }
             if (ncount > 0) {
                 Logging.Log($"[AddCoins] Adding {ncount} coin{(ncount!=1?"s":"")}...");
-                PlayerData.Data.AddCurrency(PlayerId.PlayerOne, ncount);
-                PlayerData.Data.AddCurrency(PlayerId.PlayerTwo, ncount);
+                pdMngr.AddCoins(ncount);
                 APClient.APSessionGSPlayerData.coins_collected += ncount;
             } else {
                 Logging.Log("[AddCoins] Coins are already applied. Skipping.");
             }
-            Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+            Logging.Log($"Current coins: {pdMngr.GetCoins()}");
             Logging.Log($"Total coins: {APClient.APSessionGSPlayerData.coins_collected}");
         }
 
@@ -250,47 +207,21 @@ namespace CupheadArchipelago.AP {
             return weaponbits;
         }
 
-        private static void Gift(Weapon weapon) {
-            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, weapon))
-                PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
-            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, weapon))
-                PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
-        }
-        private static void Gift(Charm charm) {
-            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, charm))
-                PlayerData.Data.Gift(PlayerId.PlayerOne, charm);
-            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, charm))
-                PlayerData.Data.Gift(PlayerId.PlayerTwo, charm);
-        }
-        private static void Gift(Super super) {
-            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, super))
-                PlayerData.Data.Gift(PlayerId.PlayerOne, super);
-            if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, super))
-                PlayerData.Data.Gift(PlayerId.PlayerTwo, super);
-        }
-
-        private static void ResolvePlaneWeapons(long itemId) {
+        private static void ResolvePlaneWeapons(long itemId, Action<Weapon> giftW) {
             if (itemId == APItem.plane_gun) {
-                bool normal = APSettings.WeaponMode == WeaponModes.Normal;
-                if (normal) APClient.APSessionGSPlayerData.plane_ex = true;
                 if (!IsChaliceSeparate(ItemGroups.WeaponBasic)) {
-                    Gift(Weapon.plane_chalice_weapon_3way);
-                    if (normal) APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                    giftW(Weapon.plane_chalice_weapon_3way);
+                    if (APSettings.WeaponMode == WeaponModes.Normal)
+                        APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
                 }
             }
             else if (itemId == APItem.plane_bombs) {
-                bool normal = APSettings.WeaponMode == WeaponModes.Normal;
-                if (normal) APClient.APSessionGSPlayerData.plane_ex = true;
                 if (!IsChaliceSeparate(ItemGroups.WeaponBasic)) {
-                    Gift(Weapon.plane_chalice_weapon_bomb);
-                    if (normal) APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                    giftW(Weapon.plane_chalice_weapon_bomb);
+                    if (APSettings.WeaponMode == WeaponModes.Normal)
+                        APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
                 }
             }
-            else {
-                Logging.LogWarning($"Item {itemId} isn't supported as a plane weapon!");
-            }
         }
-
-        private static void Stub(string itemName) => Logging.LogWarning($"Item handling unimplemented: {itemName}");
     }
 }

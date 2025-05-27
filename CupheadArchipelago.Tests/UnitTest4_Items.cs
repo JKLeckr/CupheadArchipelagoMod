@@ -5,12 +5,16 @@ using System.Collections.Generic;
 using CupheadArchipelago.Tests.Core;
 using CupheadArchipelago.AP;
 using NUnit.Framework;
+using CupheadArchipelago.Tests.TestClasses;
+using System.Runtime.CompilerServices;
+using System;
+using System.Runtime.Remoting.Messaging;
 
 namespace CupheadArchipelago.Tests {
-    public sealed class UnitTest3_Items {
+    public sealed class UnitTest4_Items {
         private static readonly Dictionary<string, APItem> apItems;
 
-        static UnitTest3_Items() {
+        static UnitTest4_Items() {
             var apItemFields = TReflection.GetFieldsFromClass(typeof(APItem), typeof(APItem));
             apItems = [];
             foreach (var field in apItemFields) {
@@ -19,15 +23,15 @@ namespace CupheadArchipelago.Tests {
         }
 
         [SetUp]
-        public void Setup() {}
+        public void Setup() { }
 
-        public sealed class APItemMap {
+        public sealed class Items_ItemMap {
             private static readonly HashSet<APItem> skip = [
                 APItem.level_generic,
             ];
 
             [SetUp]
-            public void Setup() {}
+            public void Setup() { }
 
             [Test]
             public void ItemMap_All_Items_Have_Type() {
@@ -44,10 +48,10 @@ namespace CupheadArchipelago.Tests {
                 Assert.That(fail, Is.False);
             }
 
-            public sealed class APItemMap_Weapons {
+            public sealed class Items_ItemMap_Weapons {
                 private static readonly HashSet<APItem> weapons;
 
-                static APItemMap_Weapons() {
+                static Items_ItemMap_Weapons() {
                     weapons = [];
                     foreach (APItem item in apItems.Values) {
                         if (ItemMap.GetItemType(item) == APItemType.Weapon) {
@@ -74,10 +78,10 @@ namespace CupheadArchipelago.Tests {
                 }
             }
 
-            public sealed class APItemMap_Charms {
+            public sealed class Items_ItemMap_Charms {
                 private static readonly HashSet<APItem> charms;
 
-                static APItemMap_Charms() {
+                static Items_ItemMap_Charms() {
                     charms = [];
                     foreach (APItem item in apItems.Values) {
                         if (ItemMap.GetItemType(item) == APItemType.Charm) {
@@ -87,7 +91,7 @@ namespace CupheadArchipelago.Tests {
                 }
 
                 [SetUp]
-                public void Setup() {}
+                public void Setup() { }
 
                 [Test]
                 public void ItemMap_Mapped_Charms_Are_Defined() {
@@ -106,6 +110,40 @@ namespace CupheadArchipelago.Tests {
                     Assert.That(fail, Is.False);
                 }
             }
+        }
+
+        public sealed class Items_ItemMngr {
+            private static readonly HashSet<long> skipItems = [];
+            
+            private static readonly TPlayerDataMngr playerDataMngr = new();
+
+            [SetUp]
+            public void Setup() {
+                TestData.Clean();
+                APData.LoadData(false);
+                TPlayerData.Init();
+                APSettings.Init();
+                TUtil.InitAPClient();
+            }
+
+            [Test]
+            public void APItemMngr_WeaponsApplyCorrectly() {
+                bool fail = false;
+                foreach (string itemname in apItems.Keys) {
+                    APItem item = apItems[itemname];
+                    if (ItemMap.GetItemType(item) == APItemType.Weapon) {
+                        Assert.That(ApplyItem(item), Is.True);
+                    }
+                    else {
+                        Logging.Log($"Skipping {itemname}.");
+                    }
+                }
+
+                Assert.That(fail, Is.False);
+            }
+
+            private static bool ApplyItem(APItem item) =>
+                APItemMngr.ApplyItem(item, playerDataMngr);
         }
     }
 }
