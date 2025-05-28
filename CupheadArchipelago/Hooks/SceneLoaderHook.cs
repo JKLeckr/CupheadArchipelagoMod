@@ -68,7 +68,7 @@ namespace CupheadArchipelago.Hooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                for (int i = 0; i < codes.Count - 7; i++) {
+                for (int i = 0; i < codes.Count - 3; i++) {
                     if ((success & 1) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_SceneName &&
                        codes[i + 2].opcode == OpCodes.Call && (MethodInfo)codes[i + 2].operand == _mi_GetPreloadAssetNames_SpriteAtlas &&
                        codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_preloadAtlases
