@@ -107,7 +107,6 @@ namespace CupheadArchipelago {
                 } else Logging.Log($"[CupheadArchipelago] Plugin {DEP_SAVECONFIG_MOD_GUID} is loaded, skipping SaveConfig", LoggingFlags.PluginInfo);
                 try {
                     SaveData.Init(configSaveKeyName.Value);
-                    AssetMngr.Init(this);
                     Hooks.Main.HookMain();
                 } catch (Exception e) {
                     Fail(e, -1);
@@ -118,10 +117,6 @@ namespace CupheadArchipelago {
             else {
                 Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded, but disabled!", LoggingFlags.PluginInfo); 
             }
-        }
-
-        private void OnDestroy() {
-            AssetMngr.Unload();
         }
 
         private bool IsPluginLoaded(string plugin) => FindPlugin(plugin) >= 0;
