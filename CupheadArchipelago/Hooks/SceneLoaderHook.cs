@@ -41,11 +41,11 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(SceneLoader), "load_cr", MethodType.Enumerator)]
         internal static class load_cr {
-            private static readonly Dictionary<string, string> assetBundles = new() {
-                {"TitleCards_W1", "atlas_titlecards_w1"},
-                {"TitleCards_W2", "atlas_titlecards_w2"},
-                {"TitleCards_W3", "atlas_titlecards_w3"},
-                {"TitleCards_WDLC", "atlas_titlecards_wdlc"},
+            private static readonly HashSet<string> titleCardAssets = new() {
+                {"TitleCards_W1"},
+                {"TitleCards_W2"},
+                {"TitleCards_W3"},
+                {"TitleCards_WDLC"},
             };
 
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
@@ -74,7 +74,8 @@ namespace CupheadArchipelago.Hooks {
                        codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_preloadAtlases
                     ) {
                         codes.Insert(i + 3, new(OpCodes.Call, _mi_GetPreloadAtlases));
-                        i += 3;
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, _mi_get_SceneName));
+                        i += 4;
                         success |= 1;
                     }
                     else if ((success & 2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_SceneName &&
@@ -82,7 +83,8 @@ namespace CupheadArchipelago.Hooks {
                        codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_preloadMusic
                     ) {
                         codes.Insert(i + 3, new(OpCodes.Call, _mi_GetPreloadMusic));
-                        i += 3;
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, _mi_get_SceneName));
+                        i += 4;
                         success |= 2;
                     }
                     if (success >= 3) break;
@@ -95,13 +97,37 @@ namespace CupheadArchipelago.Hooks {
                 return codes;
             }
 
-            private static string[] GetPreloadAtlases(string[] preloadAtlases) {
-                Logging.Log($"Atlases: {Aux.CollectionToString(preloadAtlases)}");
-                return preloadAtlases;
+            private static string[] GetPreloadAtlases(string sceneName, string[] preloadAtlases) {
+                Logging.Log($"Scene name: {sceneName}");
+                bool changed = false;
+                HashSet<string> res = [.. preloadAtlases];
+                if (PlayerData.inGame /*&& APData.IsCurrentSlotEnabled()*/) {
+                    if (IsAnyScene(sceneName, [
+                        Scenes.scene_map_world_1, Scenes.scene_map_world_2, Scenes.scene_map_world_3, Scenes.scene_map_world_DLC
+                    ])) {
+                        res.UnionWith(titleCardAssets);
+                        changed = true;
+                    }
+                }
+                Dbg.LogCollectionDiff("Scene Atlases", preloadAtlases, changed ? res : null);
+                return [.. res];
             }
-            private static string[] GetPreloadMusic(string[] preloadMusic) {
-                Logging.Log($"Sounds: {Aux.CollectionToString(preloadMusic)}");
-                return preloadMusic;
+            private static string[] GetPreloadMusic(string sceneName, string[] preloadMusic) {
+                bool changed = false;
+                HashSet<string> res = [.. preloadMusic];
+                Dbg.LogCollectionDiff("Scene Audio", preloadMusic, changed ? res : null);
+                return [.. res];
+            }
+
+            private static bool IsStringSceneName(string str, Scenes scene) {
+                Scenes s = scene;
+                return str == s.ToString();
+            }
+            private static bool IsAnyScene(string name, Scenes[] scenes) {
+                foreach (Scenes scene in scenes) {
+                    if (name == scene.ToString()) return true;
+                }
+                return false;
             }
         }
     }
