@@ -16,35 +16,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             //Harmony.CreateAndPatchAll(typeof(Activate));
         }
 
-        /*
-        [Error  : Unity Log] Exception: Asset not cached: TitleCards_W2
-        Stack trace:
-        SpriteAtlas AssetLoader<UnityEngine.U2D.SpriteAtlas>.GetCachedAsset(string assetName)
-        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement)
-        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement, LocalizationSubtext[] subTranslations)
-        void MapDifficultySelectStartUI.In(MapPlayerController playerController)
-        void MapLevelLoader.Activate(MapPlayerController player)
-        void AbstractMapInteractiveEntity.Update()
-
-        [Error  : Unity Log] Exception: Asset not cached: TitleCards_W3
-        Stack trace:
-        SpriteAtlas AssetLoader<UnityEngine.U2D.SpriteAtlas>.GetCachedAsset(string assetName)
-        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement)
-        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement, LocalizationSubtext[] subTranslations)
-        void MapDifficultySelectStartUI.In(MapPlayerController playerController)
-        void MapLevelLoader.Activate(MapPlayerController player)
-        void AbstractMapInteractiveEntity.Update()
-
-        [Error  : Unity Log] Exception: Asset not cached: TitleCards_WDLC
-        Stack trace:
-        SpriteAtlas AssetLoader<UnityEngine.U2D.SpriteAtlas>.GetCachedAsset(string assetName)
-        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement)
-        void LocalizationHelper.ApplyTranslation(TranslationElement translationElement, LocalizationSubtext[] subTranslations)
-        void MapDifficultySelectStartUI.In(MapPlayerController playerController)
-        void MapLevelLoader.Activate(MapPlayerController player)
-        void AbstractMapInteractiveEntity.Update()
-        */
-
         [HarmonyPatch(typeof(MapLevelLoader), "Awake")]
         internal static class Awake {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
