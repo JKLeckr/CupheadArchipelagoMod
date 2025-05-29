@@ -15,7 +15,7 @@ namespace CupheadArchipelago.AP {
 
         internal readonly long version;
         internal readonly FVersion world_version;
-        internal readonly LevelMap level_shuffle_map;
+        internal readonly LevelMap level_map;
         internal readonly ShopSet[] shop_map;
         internal readonly bool use_dlc;
         internal readonly GameModes mode;
@@ -41,7 +41,7 @@ namespace CupheadArchipelago.AP {
         internal APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataValue<long>(slotData, "version");
             world_version = GetAPSlotDataVersion(slotData, "world_version");
-            level_shuffle_map = new LevelMap(GetAPSlotDataDeserializedValue<Dictionary<long, long>>(slotData, "level_shuffle_map"));
+            level_map = new LevelMap(GetAPSlotDataDeserializedValue<Dictionary<long, long>>(slotData, "level_map"));
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataValue<bool>(slotData, "use_dlc");

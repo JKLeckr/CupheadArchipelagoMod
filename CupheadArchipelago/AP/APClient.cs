@@ -246,7 +246,7 @@ namespace CupheadArchipelago.AP {
                     
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
-                    LevelMap.Init(SlotData.level_shuffle_map);
+                    LevelMap.Init(SlotData.level_map);
                     if (APSettings.WeaponMode == WeaponModes.Normal) {
                         uint upgradeBit = (uint)WeaponParts.All;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetModularWeapons(), upgradeBit);
