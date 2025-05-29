@@ -23,7 +23,7 @@ namespace CupheadArchipelago.Util {
         public static int ArrayNullCount(object[] arr) {
             int c = 0;
             foreach (object o in arr) {
-                if (o==null) c++;
+                if (o == null) c++;
             }
             return c;
         }
@@ -42,15 +42,22 @@ namespace CupheadArchipelago.Util {
         }
         public static T[] ArrayRange<T>(T[] arr, int end) => ArrayRange(arr, 0, end);
 
-        public static void Shuffle<T>(this IList<T> list, Random rand=null) {  
+        public static bool IsAny<T>(T item, T[] values) {
+            foreach (T value in values) {
+                if (item.Equals(value)) return true;
+            }
+            return false;
+        }
+
+        public static void Shuffle<T>(this IList<T> list, Random rand = null) {
             rand ??= new Random();
-            int n = list.Count;  
-            while (n > 1) {  
-                n--;  
-                int k = rand.Next(n + 1);  
-                T value = list[k];  
-                list[k] = list[n];  
-                list[n] = value;  
+            int n = list.Count;
+            while (n > 1) {
+                n--;
+                int k = rand.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
             }
         }
     }
