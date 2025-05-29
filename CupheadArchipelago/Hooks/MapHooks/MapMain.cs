@@ -6,6 +6,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         public static void Hook() {
             AbstractMapLevelDependentEntityHook.Hook();
             MapHook.Hook();
+            MapEventNotificationHook.Hook();
             MapLevelDependentObstacleHook.Hook();
             MapCoinHook.Hook();
             MapLevelLoaderHook.Hook();
