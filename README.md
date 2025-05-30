@@ -31,7 +31,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 ### Instructions
 1. Extract BepInEx 5.x x64 for your OS into the Cuphead installation folder.
 
-2. Place the contents of the extracted CupheadArchipelago folder into the BepInEx/plugins folder.
+2. Place the contents of the extracted CupheadArchipelago folder into the `BepInEx/plugins` folder.
 
 3. Launch game.
 
