@@ -26,15 +26,15 @@ namespace CupheadArchipelago.Mapping {
             {16, Levels.Robot},
             //{17, Levels.DicePalaceMain},
             //{18, Levels.Devil},
-            //{19, Levels.DicePalaceBooze},
-            //{20, Levels.DicePalaceChips},
-            //{21, Levels.DicePalaceCigar},
-            //{22, Levels.DicePalaceDomino},
-            //{23, Levels.DicePalaceRabbit},
-            //{24, Levels.DicePalaceFlyingHorse},
-            //{25, Levels.DicePalaceRoulette},
-            //{26, Levels.DicePalaceEightBall},
-            //{27, Levels.DicePalaceFlyingMemory},
+            {19, Levels.DicePalaceBooze},
+            {20, Levels.DicePalaceChips},
+            {21, Levels.DicePalaceCigar},
+            {22, Levels.DicePalaceDomino},
+            {23, Levels.DicePalaceRabbit},
+            {24, Levels.DicePalaceFlyingHorse},
+            {25, Levels.DicePalaceRoulette},
+            {26, Levels.DicePalaceEightBall},
+            {27, Levels.DicePalaceFlyingMemory},
             {28, Levels.Platforming_Level_1_1},
             {29, Levels.Platforming_Level_1_2},
             {30, Levels.Platforming_Level_2_1},
@@ -59,6 +59,8 @@ namespace CupheadArchipelago.Mapping {
 
         private static readonly HashSet<Levels> bossLevels;
         private static readonly HashSet<Levels> rungunLevels;
+        private static readonly HashSet<Levels> dicePalaceLevels;
+        //private static readonly HashSet<Levels> dlcChessCastleLevels;
 
         private static LevelMap instance = null;
 
@@ -73,6 +75,8 @@ namespace CupheadArchipelago.Mapping {
                 .. Level.worldDLCBossLevels
             ];
             rungunLevels = [.. Level.platformingLevels];
+            dicePalaceLevels = [.. Level.world4MiniBossLevels];
+            //dlcChessCastleLevels = [.. Level.kingOfGamesLevels];
         }
 
         internal static void Init(LevelMap map) {
@@ -86,9 +90,11 @@ namespace CupheadArchipelago.Mapping {
         public static long GetLevelId(Levels level) => levelIdMap[level];
         public static bool LevelIsBoss(Levels level) => bossLevels.Contains(level) && LevelExists(level);
         public static bool LevelIsRungun(Levels level) => rungunLevels.Contains(level) && LevelExists(level);
+        public static bool LevelIsDicePalace(Levels level) => dicePalaceLevels.Contains(level) && LevelExists(level);
+        //public static bool LevelIsDlcChessCastle(Levels level) => dlcChessCastleLevels.Contains(level) && LevelExists(level);
 
-        public static Levels GetMappedLevel(Levels orig) {
-            if (IsInitted()) return instance.MapLevel(orig);
+        public static Levels GetMappedLevel(Levels orig, bool quiet = false) {
+            if (IsInitted()) return instance.MapLevel(orig, quiet);
             else {
                 Logging.LogError("[LevelMap] Not initted! Cannot Map!");
                 return orig;
@@ -105,7 +111,8 @@ namespace CupheadArchipelago.Mapping {
                     // TODO: eventually support more combinations
                     Levels mappedLevel = levelMap[map[lid]];
                     if ((LevelIsBoss(level) && LevelIsBoss(mappedLevel)) ||
-                        (LevelIsRungun(level) && LevelIsRungun(mappedLevel))
+                        (LevelIsRungun(level) && LevelIsRungun(mappedLevel)) ||
+                        (LevelIsDicePalace(level) && LevelIsDicePalace(mappedLevel))
                     ) {
                         shuffleMap.Add(level, mappedLevel);
                     }
@@ -120,11 +127,12 @@ namespace CupheadArchipelago.Mapping {
             }
         }
 
-        public Levels MapLevel(Levels orig) {
+        public Levels MapLevel(Levels orig, bool quiet = false) {
             if (shuffleMap.ContainsKey(orig))
                 return shuffleMap[orig];
             else {
-                Logging.Log($"[GetMappedLevel] Level \"{orig}\" is not mapped. Returning original level.");
+                if (!quiet)
+                    Logging.Log($"[MapLevel] Level \"{orig}\" is not mapped. Returning original level.");
                 return orig;
             }
         }
