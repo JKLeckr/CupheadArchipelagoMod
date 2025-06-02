@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using CupheadArchipelago.AP;
-using CupheadArchipelago.Util;
+using CupheadArchipelago.Mapping;
 using HarmonyLib;
 using static DicePalaceMainLevelGameManager;
 
@@ -14,32 +14,41 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             Harmony.CreateAndPatchAll(typeof(GameSetup));
         }
 
+        private static readonly Dictionary<BoardSpaces, Levels> bossBoardToLevel = new() {
+            {BoardSpaces.Booze, Levels.DicePalaceBooze},
+            {BoardSpaces.Chips, Levels.DicePalaceChips},
+            {BoardSpaces.Cigar, Levels.DicePalaceCigar},
+            {BoardSpaces.Domino, Levels.DicePalaceDomino},
+            {BoardSpaces.Rabbit, Levels.DicePalaceRabbit},
+            {BoardSpaces.FlyingHorse, Levels.DicePalaceFlyingHorse},
+            {BoardSpaces.Roulette, Levels.DicePalaceRoulette},
+            {BoardSpaces.EightBall, Levels.DicePalaceEightBall},
+            {BoardSpaces.FlyingMemory, Levels.DicePalaceFlyingMemory},
+        };
+        private static readonly Dictionary<Levels, BoardSpaces> bossLevelIdToBoard = [];
+
+        static DicePalaceMainLevelGameManagerHook() {
+            foreach (BoardSpaces key in bossBoardToLevel.Keys) {
+                bossLevelIdToBoard.Add(bossBoardToLevel[key], key);
+                if (!LevelMap.LevelExists(bossBoardToLevel[key])) {
+                    throw new KeyNotFoundException("Boss Board Space missing in LevelMap");
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(DicePalaceMainLevelGameManager), "GameSetup")]
         internal static class GameSetup {
-            static bool Prefix(ref BoardSpaces[] ___allBoardSpaces, ref DicePalaceMainLevelBoardSpace[] ___boardSpacesObj) {
+            static bool Prefix(ref BoardSpaces[] ___allBoardSpaces) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    string seed = APClient.APSessionGSData.seed;
-                    Random rand = new(seed.GetHashCode());
                     BoardSpaces[] nboardSpaces = (BoardSpaces[])___allBoardSpaces.Clone();
-                    //DicePalaceMainLevelBoardSpace[] nboardSpacesObj = (DicePalaceMainLevelBoardSpace[])___boardSpacesObj.Clone();
-                    List<int> boardSpaceIndexes = [];
-                    List<int> boardSpaceShuffledIndexes = [];
 
-                    for (int i=0;i<___allBoardSpaces.Length;i++) {
-                        if (___allBoardSpaces[i] != BoardSpaces.FreeSpace && ___allBoardSpaces[i] != BoardSpaces.StartOver) {
-                            boardSpaceIndexes.Add(i);
-                            boardSpaceShuffledIndexes.Add(i);
+                    for (int i = 0; i < nboardSpaces.Length; i++) {
+                        if (bossBoardToLevel.ContainsKey(nboardSpaces[i])) {
+                            nboardSpaces[i] =
+                                bossLevelIdToBoard[LevelMap.GetMappedLevel(bossBoardToLevel[nboardSpaces[i]])];
                         }
                     }
-                    boardSpaceShuffledIndexes.Shuffle(rand);
-                    for (int i=0;i<boardSpaceIndexes.Count;i++) {
-                        int bsindex = boardSpaceIndexes[i];
-                        int bssindex = boardSpaceShuffledIndexes[i];
-                        nboardSpaces[bsindex] = ___allBoardSpaces[bssindex];
-                        //nboardSpacesObj[bsindex+1] = ___boardSpacesObj[bssindex+1];
-                    }
                     ___allBoardSpaces = nboardSpaces;
-                    //___boardSpacesObj = nboardSpacesObj;
                 }
                 return true;
             }
