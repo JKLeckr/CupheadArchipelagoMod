@@ -33,6 +33,8 @@ namespace CupheadArchipelago.AP {
         internal readonly GradeChecks rungun_grade_checks;
         internal readonly int start_maxhealth;
         internal readonly DlcChaliceModes dlc_chalice;
+        internal readonly DlcChaliceCheckModes dlc_boss_chalice_checks;
+        internal readonly DlcChaliceCheckModes dlc_rungun_chalice_checks;
         internal readonly DlcCurseModes dlc_curse_mode;
         internal readonly bool trap_loadout_anyweapon;
         internal readonly MusicGroups music_shuffle;
@@ -71,6 +73,8 @@ namespace CupheadArchipelago.AP {
             rungun_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "rungun_grade_checks");
             start_maxhealth = GetAPSlotDataValue<int>(slotData, "start_maxhealth");
             dlc_chalice = GetAPSlotDataValue<DlcChaliceModes>(slotData, "dlc_chalice");
+            dlc_boss_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_boss_chalice_checks");
+            dlc_rungun_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_rungun_chalice_checks");
             dlc_curse_mode = GetAPSlotDataValue<DlcCurseModes>(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);

@@ -236,8 +236,8 @@ namespace CupheadArchipelago.AP {
                     APSettings.ContractsGoal = SlotData.contract_goal_requirements;
                     APSettings.DLCIngredientsGoal = SlotData.dlc_ingredient_goal_requirements;
                     APSettings.DLCChaliceMode = SlotData.dlc_chalice;
-                    APSettings.DLCBossChaliceChecks = LocationExists(APLocation.level_boss_veggies_dlc_chaliced);
-                    APSettings.DLCRunGunChaliceChecks = LocationExists(APLocation.level_rungun_forest_dlc_chaliced);
+                    APSettings.DLCBossChaliceChecks = SlotData.dlc_boss_chalice_checks;
+                    APSettings.DLCRunGunChaliceChecks = SlotData.dlc_rungun_chalice_checks;
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DeathLink = SlotData.deathlink;

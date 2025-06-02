@@ -28,8 +28,8 @@ namespace CupheadArchipelago.AP {
         public static bool DLCRequiresMausoleum { get; internal set; }
         public static ItemGroups DLCChaliceItemsSeparate { get; internal set; }
         public static DlcChaliceModes DLCChaliceMode { get; internal set; }
-        public static bool DLCBossChaliceChecks { get; internal set; }
-        public static bool DLCRunGunChaliceChecks { get; internal set; }
+        public static DlcChaliceCheckModes DLCBossChaliceChecks { get; internal set; }
+        public static DlcChaliceCheckModes DLCRunGunChaliceChecks { get; internal set; }
         public static bool DLCDicePalaceChaliceChecks { get; internal set; }
         public static bool DLCChessChaliceChecks { get; internal set; }
         public static DlcCurseModes DLCCurseMode { get; internal set; }
@@ -66,8 +66,8 @@ namespace CupheadArchipelago.AP {
             DLCRequiresMausoleum = true;
             DLCChaliceItemsSeparate = ItemGroups.None;
             DLCChaliceMode = DlcChaliceModes.Vanilla;
-            DLCBossChaliceChecks = false;
-            DLCRunGunChaliceChecks = false;
+            DLCBossChaliceChecks = DlcChaliceCheckModes.Disabled;
+            DLCRunGunChaliceChecks = DlcChaliceCheckModes.Disabled;
             DLCDicePalaceChaliceChecks = false;
             DLCChessChaliceChecks = false;
             DLCCurseMode = DlcCurseModes.Normal;
