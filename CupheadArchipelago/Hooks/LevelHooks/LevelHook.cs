@@ -120,7 +120,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             return;
                         }
                     }
-                    if (instance.CurrentLevel == Levels.Mausoleum) {
+                    if (instance.CurrentLevel == Levels.Graveyard) {}
+                    else if (instance.CurrentLevel == Levels.Mausoleum) {
                         Logging.Log("[LevelHook] Mausoleum Type");
                         switch (PlayerData.Data.CurrentMap)
 		                {
