@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
@@ -113,7 +114,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     Logging.Log($"[LevelHook] Level: {instance.CurrentLevel}");
                     if (instance.CurrentLevel == Levels.Devil || instance.CurrentLevel == Levels.Saltbaker) {
-                        Goals goalFlag = (instance.CurrentLevel == Levels.Saltbaker)?Goals.Saltbaker:Goals.Devil;
+                        Goals goalFlag = (instance.CurrentLevel == Levels.Saltbaker) ? Goals.Saltbaker : Goals.Devil;
                         Logging.Log($"[LevelHook] Goal: {goalFlag}");
                         APClient.GoalComplete(goalFlag, false);
                         if (!APClient.LocationExists(LevelLocationMap.GetLocationId(instance.CurrentLevel, 0))) {
@@ -121,96 +122,127 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             return;
                         }
                     }
-                    if (instance.CurrentLevel == Levels.Graveyard) {}
+                    if (instance.CurrentLevel == Levels.Graveyard) {
+                        Logging.Log("[LevelHook] Not a checkable level");
+                    }
                     else if (instance.CurrentLevel == Levels.Mausoleum) {
                         Logging.Log("[LevelHook] Mausoleum Type");
-                        switch (PlayerData.Data.CurrentMap)
-		                {
-		                    case Scenes.scene_map_world_1:
-			                    APClient.Check(APLocation.level_mausoleum_i);
-			                    break;
-		                    case Scenes.scene_map_world_2:
-			                    APClient.Check(APLocation.level_mausoleum_ii);
-			                    break;
-		                    case Scenes.scene_map_world_3:
-			                    APClient.Check(APLocation.level_mausoleum_iii);
-			                    break;
+                        switch (PlayerData.Data.CurrentMap) {
+                            case Scenes.scene_map_world_1:
+                                APClient.Check(APLocation.level_mausoleum_i);
+                                break;
+                            case Scenes.scene_map_world_2:
+                                APClient.Check(APLocation.level_mausoleum_ii);
+                                break;
+                            case Scenes.scene_map_world_3:
+                                APClient.Check(APLocation.level_mausoleum_iii);
+                                break;
                             default:
                                 Logging.LogWarning($"[LevelHook] Invalid Mausoleum Map: {PlayerData.Data.CurrentMap}");
                                 break;
-		                }
-                    } else if (Level.IsChessBoss) {
+                        }
+                    }
+                    else if (Level.IsChessBoss) {
                         Logging.Log("[LevelHook] Chess Castle");
                         Levels clevel = instance.CurrentLevel;
                         if (!IsChalice() || !APSettings.DLCChessChaliceChecks) {
                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
-                        } else if (IsChalice()) {
+                        }
+                        else if (IsChalice()) {
                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
                         }
-                    } else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain) {
+                    }
+                    else if (!Level.IsInBossesHub || instance.CurrentLevel == Levels.DicePalaceMain) {
                         switch (instance.LevelType) {
                             case Level.Type.Battle: {
-                                Logging.Log("[LevelHook] Battle Type");
-                                Level.Mode battleNormalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
-                                Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
-                                if (Level.Difficulty >= battleNormalMode) {
-                                    Levels clevel = instance.CurrentLevel;
-                                    bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
-                                    if (!IsChalice() || !APSettings.DLCBossChaliceChecks) {
-                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret?3:0), false);
-                                    } else if (IsChalice()) {
-                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 2), false);
-                                    }
-                                    if (APSettings.BossGradeChecks>0) {
-                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.BossGradeChecks)-1))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(clevel,1), false);
+                                    Logging.Log("[LevelHook] Battle Type");
+                                    Level.Mode battleNormalMode = APSettings.Hard ? Level.Mode.Hard : Level.Mode.Normal;
+                                    Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
+                                    if (Level.Difficulty >= battleNormalMode) {
+                                        Levels clevel = instance.CurrentLevel;
+                                        bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
+                                        int ccheck = 0;
+                                        // NOTE: Secrets are counted if playing as Chalice
+                                        if (!IsChalice() || (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.Seperate) == 0 || vsecret) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret ? 3 : 0), false);
+                                        }
+                                        if (IsChalice()) {
+                                            if (APSettings.DLCBossChaliceChecks == DlcChaliceCheckModes.Enabled)
+                                                ccheck |= 2;
+                                            ccheck |= 1;
+                                        }
+                                        if (APSettings.BossGradeChecks > 0) {
+                                            if (Level.Grade >= (LevelScoringData.Grade.AMinus + (((int)APSettings.BossGradeChecks) - 1))) {
+                                                if (!IsChalice() || APSettings.DLCBossChaliceChecks != DlcChaliceCheckModes.GradeRequired)
+                                                    APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
+                                                if (IsChalice() && APSettings.DLCBossChaliceChecks != DlcChaliceCheckModes.Disabled)
+                                                    ccheck |= 2;
+                                            }
+                                        }
+                                        if (ccheck >= 3) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 2), false);
                                         }
                                     }
-                                } else {
-                                    Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                                    else {
+                                        Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
                             case Level.Type.Platforming: {
-                                Logging.Log("[LevelHook] Platforming Type");
-                                Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={Level.Mode.Normal}");
-                                if (Level.Difficulty >= Level.Mode.Normal) {    
-                                    Levels clevel = instance.CurrentLevel;
-                                    if (!IsChalice() || !APSettings.DLCRunGunChaliceChecks) {
-                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
-                                    } else if (IsChalice()) {
-                                        APClient.Check(LevelLocationMap.GetLocationId(clevel, 3), false);
-                                    }
-                                    if (APSettings.RungunGradeChecks>0) {
-                                        if (Level.Grade>=(LevelScoringData.Grade.AMinus+(((int)APSettings.RungunGradeChecks)-1))) {
-                                            APClient.Check(LevelLocationMap.GetLocationId(clevel, ((int)APSettings.RungunGradeChecks>3)?2:1), false);
+                                    Logging.Log("[LevelHook] Platforming Type");
+                                    Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={Level.Mode.Normal}");
+                                    if (Level.Difficulty >= Level.Mode.Normal) {
+                                        Levels clevel = instance.CurrentLevel;
+                                        int ccheck = 0;
+                                        if (!IsChalice() || (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.Seperate) == 0) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
+                                        }
+                                        if (IsChalice()) {
+                                            if ((APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) == 0)
+                                                ccheck |= 2;
+                                            ccheck |= 1;
+                                        }
+                                        if (APSettings.RungunGradeChecks > 0) {
+                                            if (Level.Grade >= (LevelScoringData.Grade.AMinus + (((int)APSettings.RungunGradeChecks) - 1))) {
+                                                if (!IsChalice() || (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) == 0)
+                                                    APClient.Check(LevelLocationMap.GetLocationId(clevel, ((int)APSettings.RungunGradeChecks > 3) ? 2 : 1), false);
+                                                if (IsChalice() && APSettings.DLCRunGunChaliceChecks != DlcChaliceCheckModes.Disabled)
+                                                    ccheck |= 2;
+                                            }
+                                        }
+                                        if (ccheck >= 3) {
+                                            APClient.Check(LevelLocationMap.GetLocationId(clevel, 3), false);
                                         }
                                     }
-                                } else {
-                                    Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                                    else {
+                                        Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
                             default: {
-                                Logging.Log("[LevelHook] Other Level Type");
-                                break;
-                            }
+                                    Logging.Log("[LevelHook] Other Level Type");
+                                    break;
+                                }
                         }
-                    } else if (Level.IsDicePalace && APSettings.DicePalaceBossSanity) {
+                    }
+                    else if (Level.IsDicePalace && APSettings.DicePalaceBossSanity) {
                         Logging.Log("[LevelHook] DicePalace Type");
-                        Level.Mode battleNormalMode = APSettings.Hard?Level.Mode.Hard:Level.Mode.Normal;
+                        Level.Mode battleNormalMode = APSettings.Hard ? Level.Mode.Hard : Level.Mode.Normal;
                         Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
                         if (Level.Difficulty >= battleNormalMode) {
                             Levels clevel = instance.CurrentLevel;
                             if (!IsChalice() || !APSettings.DLCDicePalaceChaliceChecks) {
                                 APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
-                            } else if (IsChalice()) {
+                            }
+                            else if (IsChalice()) {
                                 APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
                             }
-                        } else {
+                        }
+                        else {
                             Logging.Log("[LevelHook] Difficulty needs to be higher for there to be checks");
                         }
-                    } else {
+                    }
+                    else {
                         Logging.Log("[LevelHook] Not a checkable level");
                     }
                 }
@@ -256,7 +288,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class zHack_OnWin {
             static bool Prefix(Level __instance) {
                 Logging.Log("zHack_OnWin", LoggingFlags.Debug);
-                if (APData.IsCurrentSlotEnabled()&&APManager.Current!=null)
+                if (APData.IsCurrentSlotEnabled() && APManager.Current != null)
                     APManager.Current.SetActive(false);
                 return true;
             }
@@ -271,7 +303,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 MethodInfo _mi_set_Difficulty = typeof(Level).GetProperty("Difficulty")?.GetSetMethod(true);
                 MethodInfo _mi_HackDifficulty = typeof(zHack_OnWin).GetMethod("HackDifficulty", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
-                MethodInfo _mi_GetCoinCollected = 
+                MethodInfo _mi_GetCoinCollected =
                     typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoinCollected", BindingFlags.Public | BindingFlags.Instance, null, [typeof(string)], null);
                 MethodInfo _mi_AddCurrency = typeof(PlayerData).GetMethod("AddCurrency", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_get_CurrentLevel = typeof(Level).GetProperty("CurrentLevel", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
@@ -285,40 +317,40 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i = 0; i < codes.Count - 8; i++) {
-                    if ((success&1)==0 && codes[i].opcode==OpCodes.Call && (MethodInfo)codes[i].operand==_mi_get_mode &&
-                        codes[i+1].opcode==OpCodes.Call && (MethodInfo)codes[i+1].operand==_mi_set_Difficulty) {
+                    if ((success & 1) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_mode &&
+                        codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_set_Difficulty) {
                         List<CodeInstruction> ncodes = [
                             new CodeInstruction(OpCodes.Ldarg_0),
                             new CodeInstruction(OpCodes.Call, _mi_get_LevelType),
                             new CodeInstruction(OpCodes.Call, _mi_HackDifficulty)
                         ];
-                        codes.InsertRange(i+1, ncodes);
-                        i+=ncodes.Count;
+                        codes.InsertRange(i + 1, ncodes);
+                        i += ncodes.Count;
                         success |= 1;
                     }
-                    if ((success&2)==0) { //TODO Do Chalice checks
+                    if ((success & 2) == 0) { //TODO Do Chalice checks
                         //List<CodeInstruction> ncodes = [];
                         //codes.InsertRange(i, ncodes);
                         //i+=ncodes.Count;
                         success |= 2;
                     }
-                    if ((success&4)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+3].opcode == OpCodes.Callvirt &&
-                        (MethodInfo)codes[i+3].operand == _mi_AddCurrency && codes[i+4].opcode == OpCodes.Call && (MethodInfo)codes[i+4].operand == _mi_get_Data && codes[i+7].opcode == OpCodes.Callvirt &&
-                        (MethodInfo)codes[i+7].operand == _mi_AddCurrency) {
-                            codes[i+4].labels.Add(l_skipcoin);
-                            List<CodeInstruction> ncodes = [
-                                //new CodeInstruction(OpCodes.Ldarg_0),
-                                //new CodeInstruction(OpCodes.Callvirt, _mi_get_CurrentLevel),
-                                //new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
-                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                    if ((success & 4) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i + 3].opcode == OpCodes.Callvirt &&
+                        (MethodInfo)codes[i + 3].operand == _mi_AddCurrency && codes[i + 4].opcode == OpCodes.Call && (MethodInfo)codes[i + 4].operand == _mi_get_Data && codes[i + 7].opcode == OpCodes.Callvirt &&
+                        (MethodInfo)codes[i + 7].operand == _mi_AddCurrency) {
+                        codes[i + 4].labels.Add(l_skipcoin);
+                        List<CodeInstruction> ncodes = [
+                            //new CodeInstruction(OpCodes.Ldarg_0),
+                            //new CodeInstruction(OpCodes.Callvirt, _mi_get_CurrentLevel),
+                            //new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
+                            CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brtrue, l_skipcoin),
                             ];
-                            codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
-                            success |= 4;
+                        codes.InsertRange(i, ncodes);
+                        i += ncodes.Count;
+                        success |= 4;
                     }
                 }
-                if (success!=7) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed! {success}");
+                if (success != 7) throw new Exception($"{nameof(zHack_OnWin)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
