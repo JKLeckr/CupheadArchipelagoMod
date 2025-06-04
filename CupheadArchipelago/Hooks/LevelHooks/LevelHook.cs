@@ -163,7 +163,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                         bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
                                         int ccheck = 0;
                                         // NOTE: Secrets are counted if playing as Chalice
-                                        if (!IsChalice() || (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.Seperate) == 0 || vsecret) {
+                                        if (!IsChalice() || (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.Separate) == 0 || vsecret) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret ? 3 : 0), false);
                                         }
                                         if (IsChalice()) {
@@ -194,7 +194,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                     if (Level.Difficulty >= Level.Mode.Normal) {
                                         Levels clevel = instance.CurrentLevel;
                                         int ccheck = 0;
-                                        if (!IsChalice() || (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.Seperate) == 0) {
+                                        if (!IsChalice() || (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.Separate) == 0) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
                                         }
                                         if (IsChalice()) {

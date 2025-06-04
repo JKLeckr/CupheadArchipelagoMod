@@ -67,7 +67,7 @@ namespace CupheadArchipelago.AP {
     public enum DlcChaliceCheckModes {
         Disabled = 0,
         Enabled = 1,
-        Seperate = 2,
+        Separate = 2,
         GradeRequired = 4,
         SeperateGradeRequired = 6,
     }
