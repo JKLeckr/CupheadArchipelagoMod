@@ -86,12 +86,6 @@ namespace CupheadArchipelago.AP {
                             APClient.APSessionGSPlayerData.contracts++;
                         } else Logging.Log("Contract is already applied. Skipping.");
                         Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}");
-                        if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
-                            Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
-                            if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
-                                APClient.GoalComplete(Goals.Contracts, true);
-                            }
-                        }
                     }
                     else if (itemId==APItem.plane_ex) {
                         APClient.APSessionGSPlayerData.plane_ex = true;
@@ -122,12 +116,6 @@ namespace CupheadArchipelago.AP {
                             APClient.APSessionGSPlayerData.dlc_ingredients++;
                         } else Logging.Log("Ingredient is already applied. Skipping.");
                         Logging.Log($"Ingredients: {APClient.APSessionGSPlayerData.dlc_ingredients}");
-                        if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
-                            Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
-                            if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
-                                APClient.GoalComplete(Goals.Ingredients, true);
-                            }
-                        }
                     }
                     break;
                 }

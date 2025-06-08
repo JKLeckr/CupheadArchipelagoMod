@@ -583,9 +583,14 @@ namespace CupheadArchipelago.AP {
             return state;
         }
 
-        public static void GoalComplete(Goals goal, bool sendGoal = false) {
-            Logging.Log($"[APClient] Adding Goal Flag {goal}");
-            APSessionGSData.AddGoals(goal);
+        public static void GoalComplete(Goals goal, bool sendGoal = false, bool force = false) {
+            if (!APSessionGSData.IsGoalsCompleted(goal) || force) {
+                Logging.Log($"[APClient] Adding Goal Flag {goal}");
+                APSessionGSData.AddGoals(goal);
+            }
+            else {
+                Logging.Log($"[APClient] Goal Flag exists: {goal}");
+            }
             if (sendGoal) SendGoal();
         }
         public static bool IsAPGoalComplete() {
