@@ -18,13 +18,16 @@ namespace CupheadArchipelago.AP {
     }
 
     public enum GameModes {
-        BeatDevil = 0,
-        CollectContracts = 1,
-        BuyOutShop = 2,
-        DlcBeatSaltbaker = 3,
-        DlcBeatBoth = 4,
-        DlcCollectIngredients = 5,
-        DlcCollectBoth = 6,
+        None = 0,
+        BeatDevil = 1,
+        CollectContracts = 2,
+        BuyOutShop = 3,
+        DlcBeatSaltbaker = 8,
+        DlcBeatBoth = 9,
+        DlcCollectIngredients = 16,
+        DlcCollectBoth = 18,
+        DlcBeatDevilNoIsle4 = 33,
+        DlcBeatSaltbakerIsle4Only = 40,
     }
 
     public enum WeaponModes : byte {
