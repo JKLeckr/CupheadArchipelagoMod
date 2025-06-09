@@ -546,14 +546,14 @@ namespace CupheadArchipelago.AP {
             return state;
         }
         public static void UpdateGoalFlags() {
-            if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
+            if (APSettings.Mode == GameModes.CollectContracts || APSettings.Mode == GameModes.DlcCollectBoth) {
                 Logging.Log($"Contracts: {APSessionGSPlayerData.contracts}");
                 Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
                 if (APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
                     GoalComplete(Goals.Contracts, true);
                 }
             }
-            if ((APSettings.Mode & GameModes.DlcCollectIngradients) > 0) {
+            if (APSettings.Mode == GameModes.DlcCollectIngredients || APSettings.Mode == GameModes.DlcCollectBoth) {
                 Logging.Log($"Ingredients: {APSessionGSPlayerData.dlc_ingredients}");
                 Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
                 if (APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
@@ -615,7 +615,7 @@ namespace CupheadArchipelago.AP {
                 GameModes.CollectContracts => Goals.Contracts,
                 GameModes.DlcBeatSaltbaker => Goals.Saltbaker,
                 GameModes.DlcBeatBoth => Goals.DevilAndSaltbaker,
-                GameModes.DlcCollectIngradients => Goals.Ingredients,
+                GameModes.DlcCollectIngredients => Goals.Ingredients,
                 GameModes.DlcCollectBoth => Goals.ContractsAndIngredients,
                 GameModes.BuyOutShop => Goals.ShopBuyout,
                 _ => Goals.Devil,

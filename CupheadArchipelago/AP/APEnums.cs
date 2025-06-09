@@ -23,7 +23,7 @@ namespace CupheadArchipelago.AP {
         BuyOutShop = 2,
         DlcBeatSaltbaker = 3,
         DlcBeatBoth = 4,
-        DlcCollectIngradients = 5,
+        DlcCollectIngredients = 5,
         DlcCollectBoth = 6,
     }
 
