@@ -260,7 +260,7 @@ namespace CupheadArchipelago.AP {
         public void AddGoals(Goals goals) => goalsCompleted |= goals;
         public void RemoveGoals(Goals goals) => goalsCompleted &= ~goals;
         public void ResetGoals() => goalsCompleted = Goals.None;
-        public bool IsGoalsCompleted(Goals goals) => (goals & goalsCompleted) >= goals;
+        public bool AreGoalsCompleted(Goals goals) => (goals & goalsCompleted) >= goals;
 
         public class PlayerData {
             [Flags]

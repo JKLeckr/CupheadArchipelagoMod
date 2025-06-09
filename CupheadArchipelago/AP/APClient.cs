@@ -610,7 +610,7 @@ namespace CupheadArchipelago.AP {
         }
 
         public static void GoalComplete(Goals goal, bool sendGoal = false, bool force = false) {
-            if (!APSessionGSData.IsGoalsCompleted(goal) || force) {
+            if (!APSessionGSData.AreGoalsCompleted(goal) || force) {
                 Logging.Log($"[APClient] Adding Goal Flag {goal}");
                 APSessionGSData.AddGoals(goal);
             }
@@ -629,7 +629,7 @@ namespace CupheadArchipelago.AP {
                 GameModes.BuyOutShop => Goals.ShopBuyout,
                 _ => Goals.Devil,
             };
-            return APSessionGSData.IsGoalsCompleted(goals);
+            return APSessionGSData.AreGoalsCompleted(goals);
         }
 
         private static void OnMessageReceived(LogMessage message) {
