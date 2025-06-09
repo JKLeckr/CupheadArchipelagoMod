@@ -98,15 +98,15 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
                         Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
-                    }
-                    if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
-                        APClient.GoalComplete(Goals.Contracts, true);
+                        if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
+                            APClient.GoalComplete(Goals.Contracts, true);
+                        }
                     }
                     if ((APSettings.Mode & GameModes.DlcCollectIngradients) > 0) {
                         Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
-                    }
-                    if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
-                        APClient.GoalComplete(Goals.Ingredients, true);
+                        if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
+                            APClient.GoalComplete(Goals.Ingredients, true);
+                        }
                     }
                 }
             }
