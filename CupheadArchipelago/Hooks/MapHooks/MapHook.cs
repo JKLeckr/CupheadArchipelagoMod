@@ -12,7 +12,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
-            Harmony.CreateAndPatchAll(typeof(Start));
         }
 
         internal static readonly Scenes[] mapScenes = [
@@ -35,6 +34,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             static void Postfix(Map __instance, Scenes ___scene, CupheadMapCamera ___cupheadMapCamera) {
                 Logging.Log(Level.Difficulty, LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
+                    APClient.UpdateGoalFlags();
                     APClient.SendChecks(true);
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     Logging.Log($"Current Map Scene: {___scene}");
@@ -89,26 +89,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     }
                     yield return null;
 	            }
-            }
-        }
-
-        [HarmonyPatch(typeof(Map), "Start")]
-        internal static class Start {
-            static void Postfix() {
-                if (APData.IsCurrentSlotEnabled()) {
-                    if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
-                        Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
-                        if (APClient.APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
-                            APClient.GoalComplete(Goals.Contracts, true);
-                        }
-                    }
-                    if ((APSettings.Mode & GameModes.DlcCollectIngradients) > 0) {
-                        Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
-                        if (APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
-                            APClient.GoalComplete(Goals.Ingredients, true);
-                        }
-                    }
-                }
             }
         }
 

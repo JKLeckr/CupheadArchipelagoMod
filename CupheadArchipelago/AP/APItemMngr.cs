@@ -168,6 +168,7 @@ namespace CupheadArchipelago.AP {
                 }
                 default: break;
             }} catch (Exception e) {Logging.LogError(e); return false;}
+            APClient.UpdateGoalFlags();
             return true;
         }
 

@@ -545,6 +545,22 @@ namespace CupheadArchipelago.AP {
             sending = false;
             return state;
         }
+        public static void UpdateGoalFlags() {
+            if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
+                Logging.Log($"Contracts: {APSessionGSPlayerData.contracts}");
+                Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
+                if (APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
+                    GoalComplete(Goals.Contracts, true);
+                }
+            }
+            if ((APSettings.Mode & GameModes.DlcCollectIngradients) > 0) {
+                Logging.Log($"Ingredients: {APSessionGSPlayerData.dlc_ingredients}");
+                Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
+                if (APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
+                    GoalComplete(Goals.Ingredients, true);
+                }
+            }
+        }
         public static void SendGoal() {
             Logging.LogDebug("SendGoal");
             if (IsAPGoalComplete()) {
@@ -557,7 +573,8 @@ namespace CupheadArchipelago.AP {
                     else {
                         Logging.LogWarning("[APClient] Already sending something.");
                     }
-                } else {
+                }
+                else {
                     Logging.Log($"[APClient] Disconnected. Cannot send goal. Will retry after connecting.");
                     ReconnectArchipelagoSession();
                 }
