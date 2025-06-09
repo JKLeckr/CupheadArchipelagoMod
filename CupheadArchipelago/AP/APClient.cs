@@ -555,14 +555,14 @@ namespace CupheadArchipelago.AP {
             return state;
         }
         public static void UpdateGoalFlags() {
-            if (APSettings.Mode == GameModes.CollectContracts || APSettings.Mode == GameModes.DlcCollectBoth) {
+            if ((APSettings.Mode & GameModes.CollectContracts) > 0) {
                 Logging.Log($"Contracts: {APSessionGSPlayerData.contracts}");
                 Logging.Log($"Contracts Goal: {APSettings.ContractsGoal}");
                 if (APSessionGSPlayerData.contracts >= APSettings.ContractsGoal) {
                     GoalComplete(Goals.Contracts, true);
                 }
             }
-            if (APSettings.Mode == GameModes.DlcCollectIngredients || APSettings.Mode == GameModes.DlcCollectBoth) {
+            if ((APSettings.Mode & GameModes.DlcCollectIngredients) > 0) {
                 Logging.Log($"Ingredients: {APSessionGSPlayerData.dlc_ingredients}");
                 Logging.Log($"Ingredients Goal: {APSettings.DLCIngredientsGoal}");
                 if (APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCIngredientsGoal) {
