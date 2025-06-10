@@ -20,6 +20,7 @@
     <RootNamespace>CupheadArchipelago</RootNamespace>
     <OutputPath>$(ProjectDir)bin/$(Configuration)/$(Product)/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
