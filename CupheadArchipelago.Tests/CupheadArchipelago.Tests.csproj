@@ -12,6 +12,7 @@
     <OutputPath>$(ProjectDir)bin/$(Configuration)/Test/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefaultItemExcludes>$(DefaultItemExcludes);TAssembly-CSharp/**</DefaultItemExcludes>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
