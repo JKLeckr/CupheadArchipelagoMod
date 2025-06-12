@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CupheadArchipelago", "Cuphe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CupheadArchipelago.Tests", "CupheadArchipelago.Tests\CupheadArchipelago.Tests.csproj", "{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CupheadArchipelago.Helpers", "CupheadArchipelago.Helpers", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckVersions", "CupheadArchipelago.Helpers\CheckVersions\CheckVersions.csproj", "{498B887C-F251-5EBE-C2F0-9380FDCD8E54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,8 +25,15 @@ Global
 		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Debug|x64.Build.0 = Debug|x64
 		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Release|x64.ActiveCfg = Release|x64
 		{A8B10E3D-15B3-4078-BB09-EE7A74FEAB0E}.Release|x64.Build.0 = Release|x64
+		{498B887C-F251-5EBE-C2F0-9380FDCD8E54}.Debug|x64.ActiveCfg = Debug|x64
+		{498B887C-F251-5EBE-C2F0-9380FDCD8E54}.Debug|x64.Build.0 = Debug|x64
+		{498B887C-F251-5EBE-C2F0-9380FDCD8E54}.Release|x64.ActiveCfg = Release|x64
+		{498B887C-F251-5EBE-C2F0-9380FDCD8E54}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{498B887C-F251-5EBE-C2F0-9380FDCD8E54} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 EndGlobal

@@ -4,6 +4,7 @@ set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
 
 proj_name := 'CupheadArchipelago'
 test_proj_name := 'CupheadArchipelago.Tests'
+helper_dir := 'CupheadArchipelago.Helpers'
 
 default:
     @just --list
@@ -16,6 +17,9 @@ build:
 
 build-tests:
     dotnet build {{ test_proj_name }}
+
+build-helpers:
+    dotnet build "{{ helper_dir }}/CheckVersions"
 
 build-all:
     dotnet build

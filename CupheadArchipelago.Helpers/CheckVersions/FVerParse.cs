@@ -1,0 +1,29 @@
+/// Copyright 2025 JKLeckr
+/// SPDX-License-Identifier: Apache-2.0
+
+using System;
+using FVer;
+
+namespace CheckVersions {
+    internal class FVerParse {
+        // TEMP. This will be changed when entering main branch version.
+        public static string GetFVer(string ver) {
+            string[] versionParts = ver.Split(['.'], 4);
+            if (int.Parse(versionParts[0]) > 0) {
+                throw new Exception("Version parsing system needs to be changed for main version!");
+            }
+            int pre = int.Parse(versionParts[1]);
+            string pres = pre switch {
+                1 => "preview",
+                2 => "alpha",
+                3 => "beta",
+                4 => "rc",
+                _ => "unknown"
+            };
+            int baseline = int.Parse(versionParts[2]) + 1;
+            int rev = int.Parse(versionParts[3]);
+            FVersion fver = new(baseline, rev, 0, pres, null);
+            return fver;
+        }
+    }
+}
