@@ -12,7 +12,11 @@ namespace CheckVersions {
                 return -1;
             }
 
-            FVersion src = new(FVerParse.GetFVer(args[0]));
+            string srcRaw = FVerParse.GetFVer(args[0]);
+
+            Console.WriteLine($"{args[0]} -> {args[1]} == {srcRaw}");
+
+            FVersion src = new(srcRaw);
             FVersion test = new(args[1]);
 
             // Releases and postfixes are ignored in this check during prerelease
