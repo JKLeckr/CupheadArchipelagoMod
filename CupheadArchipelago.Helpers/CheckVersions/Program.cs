@@ -15,6 +15,9 @@ namespace CheckVersions {
             FVersion src = new(FVerParse.GetFVer(args[0]));
             FVersion test = new(args[1]);
 
+            // Releases and postfixes are ignored in this check during prerelease
+            test = new(test.Baseline, test.RevisionNumber, 0, test.Prefix, null);
+
             if (src.Equals(test)) {
                 Console.WriteLine("Match");
                 return 0;
