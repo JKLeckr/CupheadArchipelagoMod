@@ -50,8 +50,8 @@ jobs:
 
       - name: Check version
         run: |
-          export PARSED_VERSION=`grep -oPm1 '(?<=<Version>)[^<]+' CupheadArchipelago/CupheadArchipelago.csproj`
-          dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ ${PARSED_VERSION} ${{ env.RELEASE_VERSION }}
+          export PARSED_VERSION="$(grep -oPm1 '(?<=<Version>)[^<]+' CupheadArchipelago/CupheadArchipelago.csproj)"
+          dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ "${PARSED_VERSION}" "${{ env.RELEASE_VERSION }}"
       
       - name: Build Project
         working-directory: ${{ env.MOD_NAME }}
