@@ -29,7 +29,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 codes[0].labels.Add(vanilla);
-                List<CodeInstruction> ncodes = [
+                CodeInstruction[] ncodes = [
                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                     new(OpCodes.Brfalse, vanilla),
                     new(OpCodes.Ldarg_0),

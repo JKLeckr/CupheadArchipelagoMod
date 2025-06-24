@@ -40,12 +40,12 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                             codes[i+5].labels.Add(iftrue);
                             Label nextif = (Label)codes[i+4].operand;
                             codes[i+4] = new CodeInstruction(OpCodes.Brtrue, iftrue);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APCheck()),
                                 new CodeInstruction(OpCodes.Brfalse, nextif),
                             ];
                             codes.InsertRange(i+5, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success = true;
                     }
                 }

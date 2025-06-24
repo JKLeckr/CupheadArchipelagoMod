@@ -39,7 +39,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             bool countCondition = codes[i+1].opcode == OpCodes.Ldsfld;
                             int dieIndex = ClampReqIndex(req_index);
                             int testCount = index;
-                            List<CodeInstruction> ncodes = countCondition ? [
+                            CodeInstruction[] ncodes = countCondition ? [
                                 new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
                                 new CodeInstruction(OpCodes.Call, _mi_APOpenCondition),
                             ] : [
@@ -48,7 +48,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 new CodeInstruction(OpCodes.Call, _mi_APTallyCondition),
                             ];
                             codes.InsertRange(i+3, ncodes);
-                            i += ncodes.Count;
+                            i += ncodes.Length;
                             if (countCondition) req_index++;
                             else index++;
                             insertCount++;

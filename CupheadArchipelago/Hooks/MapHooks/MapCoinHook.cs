@@ -54,14 +54,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 for (int i=0;i<codes.Count-3;i++) {
                     if ((success&1) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
                         codes[i+2].opcode == OpCodes.Ldc_I4_1 && codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_AddCurrency) {
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Ldfld, _fi_coinID),
                                 new CodeInstruction(OpCodes.Call, _mi_APCheck),
                                 new CodeInstruction(OpCodes.Brtrue, savepoint),
                             ];
                             codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success |= 1;
                     }
                     if ((success&2) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_SaveCurrentFile) {

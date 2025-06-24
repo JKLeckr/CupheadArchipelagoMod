@@ -53,13 +53,13 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     if (!success && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && 
                         codes[i+2].opcode == OpCodes.Callvirt && codes[i+3].opcode == OpCodes.Ldfld && 
                         (FieldInfo)codes[i+3].operand == _fi_MapData_sessionStarted && codes[i+4].opcode == OpCodes.Brtrue) {
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_1),
                                 new CodeInstruction(OpCodes.Call, _mi_IsAPEmpty),
                                 new CodeInstruction(OpCodes.Brtrue, tgt_label),
                             ];
                             codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success = true;
                     }
                     if (!labelPlaced && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 

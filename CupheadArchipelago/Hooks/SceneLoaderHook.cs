@@ -41,12 +41,20 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(SceneLoader), "load_cr", MethodType.Enumerator)]
         internal static class load_cr {
-            private static readonly HashSet<string> titleCardAssets = new() {
-                {"TitleCards_W1"},
-                {"TitleCards_W2"},
-                {"TitleCards_W3"},
-                {"TitleCards_WDLC"},
+            private static readonly HashSet<string> titleCardAssets = [
+                "TitleCards_W1",
+                "TitleCards_W2",
+                "TitleCards_W3",
+                "TitleCards_WDLC",
+            ];
+            private static readonly Dictionary<string, HashSet<string>> sceneAddAtlases = new() {
+                {Scenes.scene_map_world_1.ToString(), titleCardAssets},
+                {Scenes.scene_map_world_2.ToString(), titleCardAssets},
+                {Scenes.scene_map_world_3.ToString(), titleCardAssets},
+                {Scenes.scene_map_world_DLC.ToString(), titleCardAssets},
+                {Scenes.scene_level_dice_gate.ToString(), ["cap_dicehouse"]}
             };
+            private static readonly Dictionary<string, HashSet<string>> sceneAddMusic = new() { };
 
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
@@ -101,13 +109,10 @@ namespace CupheadArchipelago.Hooks {
                 Logging.Log($"Scene name: {sceneName}");
                 bool changed = false;
                 HashSet<string> res = [.. preloadAtlases];
-                if (PlayerData.inGame /*&& APData.IsCurrentSlotEnabled()*/) {
-                    if (IsAnyScene(sceneName, [
-                        Scenes.scene_map_world_1, Scenes.scene_map_world_2, Scenes.scene_map_world_3, Scenes.scene_map_world_DLC
-                    ])) {
-                        res.UnionWith(titleCardAssets);
-                        changed = true;
-                    }
+                // FIXME: Maybe not load ap stuff when in vanilla mode?
+                if (sceneAddAtlases.ContainsKey(sceneName)) {
+                    res.UnionWith(sceneAddAtlases[sceneName]);
+                    changed = true;
                 }
                 Dbg.LogCollectionDiff("Scene Atlases", preloadAtlases, changed ? res : null);
                 return [.. res];
@@ -115,6 +120,11 @@ namespace CupheadArchipelago.Hooks {
             private static string[] GetPreloadMusic(string sceneName, string[] preloadMusic) {
                 bool changed = false;
                 HashSet<string> res = [.. preloadMusic];
+                // FIXME: Maybe not load ap stuff when in vanilla mode?
+                if (sceneAddMusic.ContainsKey(sceneName)) {
+                    res.UnionWith(sceneAddMusic[sceneName]);
+                    changed = true;
+                }
                 Dbg.LogCollectionDiff("Scene Audio", preloadMusic, changed ? res : null);
                 return [.. res];
             }

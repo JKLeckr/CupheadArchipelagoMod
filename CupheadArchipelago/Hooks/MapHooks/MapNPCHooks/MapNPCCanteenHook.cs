@@ -34,14 +34,14 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                List<CodeInstruction> ncodes = [
+                CodeInstruction[] ncodes = [
                     CodeInstruction.Call(() => IsAPChecked()),
                     new CodeInstruction(OpCodes.Brtrue, tgt_label),
                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                     new CodeInstruction(OpCodes.Brtrue, end_label)
                 ];
                 codes.InsertRange(0, ncodes);
-                int start = ncodes.Count;
+                int start = ncodes.Length;
                 for (int i=start;i<codes.Count-3;i++) {
                     if ((labelInsert&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 
                         (FieldInfo)codes[i+1].operand == _fi_dialoguerVariableID && codes[i+2].opcode == OpCodes.Ldc_R4 && 

@@ -8,6 +8,7 @@ namespace CupheadArchipelago.Hooks {
 
             RuntimeSceneAssetDatabaseHook.Hook();
             AssetLoaderHook.Hook();
+            AssetBundleLoaderHook.Hook();
             SceneLoaderHook.Hook();
             CupheadHook.Hook();
             DLCManagerHook.Hook();

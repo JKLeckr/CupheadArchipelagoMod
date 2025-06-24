@@ -130,12 +130,12 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             Label cpass = (Label)codes[i+3].operand;
                             codes[i+4].labels.Add(cblock);
                             codes[i+3] = new CodeInstruction(OpCodes.Brtrue, cblock);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => IsAPCancelPlayerSelection()),
                                 new CodeInstruction(OpCodes.Brfalse, cpass),
                             ];
                             codes.InsertRange(i+4, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success |= 2;
                     }
                 }
@@ -336,7 +336,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     if ((success&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+1].operand == (sbyte)CupheadButton.Accept &&
                         codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_GetButtonDown && codes[i+3].opcode == OpCodes.Brfalse) {
                             codes[i].labels.Add(lacceptif);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Ldfld, _fi_input),
                                 new CodeInstruction(OpCodes.Call, _mi_GetAPButtonDown),
@@ -353,7 +353,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                                 new CodeInstruction(OpCodes.Ret),
                             ];
                             codes.InsertRange(i, ncodes);
-                            i += ncodes.Count;
+                            i += ncodes.Length;
                             success |= 1;
                     }
                     else if ((success&2)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi_slots &&

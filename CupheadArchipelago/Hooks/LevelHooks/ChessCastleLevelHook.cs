@@ -42,7 +42,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
                 List<Label> end_labels = codes[ins_index].labels;
                 codes[ins_index].labels = [];
-                List<CodeInstruction> ncodes = [
+                CodeInstruction[] ncodes = [
                     new CodeInstruction(OpCodes.Ldloc_0),
                     new CodeInstruction(OpCodes.Call, _mi_APCheck),
                 ];

@@ -78,7 +78,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                         (MethodInfo)codes[i + 2].operand == _mi_GetIEnumerator && codes[i + 3].opcode == OpCodes.Stloc_S
                     ) {
                         if (success) throw new Exception($"{nameof(UpdateList)}: Patch condition is true more than once!");
-                        List<CodeInstruction> ncodes = [
+                        CodeInstruction[] ncodes = [
                             new(OpCodes.Ldloc_0),
                             new CodeInstruction(OpCodes.Call, _mi_MapLevelList),
                         ];

@@ -149,7 +149,7 @@ namespace CupheadArchipelago.Hooks {
                         if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i+1].operand == _fi__weapons &&
                             codes[i+2].opcode == OpCodes.Ldc_I4 && codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi__weapons_Add) {
                                 codes[i].labels.Add(vanilla_label);
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     CodeInstruction.Call(() => IsAPMode()), 
                                     new CodeInstruction(OpCodes.Brfalse, vanilla_label),
                                     new CodeInstruction(OpCodes.Ldarg_0),

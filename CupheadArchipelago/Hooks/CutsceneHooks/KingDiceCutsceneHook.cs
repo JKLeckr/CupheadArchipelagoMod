@@ -37,7 +37,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
                             Label lorig_if = il.DefineLabel();
                             Label lorig_false = (Label)codes[i+4].operand;
                             codes[i].labels.Add(lorig_if);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, lorig_if),
                                 CodeInstruction.Call(() => APGotRequireContracts()),
@@ -45,7 +45,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
                                 new CodeInstruction(OpCodes.Br, lallgood)
                             ];
                             codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success |= 1;
                     }
                     if ((success&2)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Call &&
