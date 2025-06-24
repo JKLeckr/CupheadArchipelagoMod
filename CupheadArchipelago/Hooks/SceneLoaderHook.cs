@@ -76,6 +76,7 @@ namespace CupheadArchipelago.Hooks {
                     typeof(AssetLoader<SpriteAtlas>).GetMethod("GetPreloadAssetNames", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_GetPreloadAssetNames_AudioClip =
                     typeof(AssetLoader<AudioClip>).GetMethod("GetPreloadAssetNames", BindingFlags.Public | BindingFlags.Static);
+                MethodInfo _mi_UnloadResourceAssets = typeof(load_cr).GetMethod(nameof(UnloadResourceAssets), BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_GetPreloadAtlases = typeof(load_cr).GetMethod(nameof(GetPreloadAtlases), BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_GetPreloadMusic = typeof(load_cr).GetMethod(nameof(GetPreloadMusic), BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_LoadResourceAssets = typeof(load_cr).GetMethod(nameof(LoadResourceAssets), BindingFlags.NonPublic | BindingFlags.Static);
@@ -90,7 +91,7 @@ namespace CupheadArchipelago.Hooks {
                         codes[i + 5].opcode == OpCodes.Ldc_I4_2 && codes[i + 8].opcode == OpCodes.Constrained && (Type)codes[i + 8].operand == typeof(Scenes) &&
                         codes[i + 10].opcode == OpCodes.Call && codes[i + 11].opcode == OpCodes.Brfalse
                     ) {
-                        codes.Insert(i + 12, CodeInstruction.Call(() => UnloadResourceAssets()));
+                        codes.Insert(i + 12, new CodeInstruction(OpCodes.Call, _mi_UnloadResourceAssets));
                         i += 12;
                         success |= 1;
                     }
