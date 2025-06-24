@@ -67,8 +67,8 @@
   </ItemGroup>
 
   <ItemGroup>
-	<None Remove="Assets/atlas_cap_dicehouse" />
-	<EmbeddedResource Include="Assets/atlas_cap_dicehouse" />
+	<None Remove="Assets/cap_dicehouse" />
+	<EmbeddedResource Include="Assets/cap_dicehouse" />
   </ItemGroup>
 
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">

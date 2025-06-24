@@ -2,10 +2,12 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Resources;
 using CupheadArchipelago.Util;
 using HarmonyLib;
 using UnityEngine;
@@ -52,19 +54,23 @@ namespace CupheadArchipelago.Hooks {
                 {Scenes.scene_map_world_2.ToString(), titleCardAssets},
                 {Scenes.scene_map_world_3.ToString(), titleCardAssets},
                 {Scenes.scene_map_world_DLC.ToString(), titleCardAssets},
-                {Scenes.scene_level_dice_gate.ToString(), ["cap_dicehouse"]}
             };
             private static readonly Dictionary<string, HashSet<string>> sceneAddMusic = new() { };
 
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 int success = 0;
+                int successTgt = 15;
                 bool debug = false;
 
                 MethodInfo crmethod = typeof(SceneLoader).GetMethod("load_cr", BindingFlags.NonPublic | BindingFlags.Instance);
                 Type crtype = Reflection.GetEnumeratorType(crmethod);
-                FieldInfo _fi_preloadAtlases = crtype.GetField("<preloadAtlases>__0", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo _fi_preloadMusic = crtype.GetField("<preloadMusic>__0", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_cr_current = crtype.GetField("$current", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_cr_disposing = crtype.GetField("$disposing", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_cr_PC = crtype.GetField("$PC", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_cr_preloadAtlases = crtype.GetField("<preloadAtlases>__0", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_cr_preloadMusic = crtype.GetField("<preloadMusic>__0", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_previousSceneName = typeof(SceneLoader).GetField("previousSceneName", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_get_SceneName = typeof(SceneLoader).GetProperty("SceneName", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
                 MethodInfo _mi_GetPreloadAssetNames_SpriteAtlas =
                     typeof(AssetLoader<SpriteAtlas>).GetMethod("GetPreloadAssetNames", BindingFlags.Public | BindingFlags.Static);
@@ -72,37 +78,61 @@ namespace CupheadArchipelago.Hooks {
                     typeof(AssetLoader<AudioClip>).GetMethod("GetPreloadAssetNames", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_GetPreloadAtlases = typeof(load_cr).GetMethod(nameof(GetPreloadAtlases), BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_GetPreloadMusic = typeof(load_cr).GetMethod(nameof(GetPreloadMusic), BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_LoadResourceAssets = typeof(load_cr).GetMethod(nameof(LoadResourceAssets), BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                for (int i = 0; i < codes.Count - 3; i++) {
-                    if ((success & 1) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_SceneName &&
+                for (int i = 0; i < codes.Count - 9; i++) {
+                    if ((success & 1) == 0 && i < codes.Count - 11 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_SceneName &&
+                        codes[i + 1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i + 1].operand == _fi_previousSceneName && codes[i + 2].opcode == OpCodes.Call &&
+                        codes[i + 3].opcode == OpCodes.Brfalse && codes[i + 4].opcode == OpCodes.Call && (MethodInfo)codes[i + 4].operand == _mi_get_SceneName &&
+                        codes[i + 5].opcode == OpCodes.Ldc_I4_2 && codes[i + 8].opcode == OpCodes.Constrained && (Type)codes[i + 8].operand == typeof(Scenes) &&
+                        codes[i + 10].opcode == OpCodes.Call && codes[i + 11].opcode == OpCodes.Brfalse
+                    ) {
+                        codes.Insert(i + 12, CodeInstruction.Call(() => UnloadResourceAssets()));
+                        i += 12;
+                        success |= 1;
+                    }
+                    else if ((success & 2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_SceneName &&
                        codes[i + 2].opcode == OpCodes.Call && (MethodInfo)codes[i + 2].operand == _mi_GetPreloadAssetNames_SpriteAtlas &&
-                       codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_preloadAtlases
+                       codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_cr_preloadAtlases
                     ) {
                         codes.Insert(i + 3, new(OpCodes.Call, _mi_GetPreloadAtlases));
                         codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, _mi_get_SceneName));
                         i += 4;
-                        success |= 1;
+                        success |= 2;
                     }
-                    else if ((success & 2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_SceneName &&
+                    else if ((success & 4) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_SceneName &&
                        codes[i + 2].opcode == OpCodes.Call && (MethodInfo)codes[i + 2].operand == _mi_GetPreloadAssetNames_AudioClip &&
-                       codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_preloadMusic
+                       codes[i + 3].opcode == OpCodes.Stfld && codes[i + 3].operand == _fi_cr_preloadMusic
                     ) {
                         codes.Insert(i + 3, new(OpCodes.Call, _mi_GetPreloadMusic));
                         codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, _mi_get_SceneName));
                         i += 4;
-                        success |= 2;
+                        success |= 4;
                     }
-                    if (success >= 3) break;
+                    else if ((success & 8) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldnull && codes[i + 2].opcode == OpCodes.Stfld &&
+                            (FieldInfo)codes[i + 2].operand == _fi_cr_current && codes[i + 3].opcode == OpCodes.Ldarg_0 && codes[i + 4].opcode == OpCodes.Ldfld &&
+                            (FieldInfo)codes[i + 4].operand == _fi_cr_disposing && codes[i + 5].opcode == OpCodes.Brtrue && codes[i + 6].opcode == OpCodes.Ldarg_0 &&
+                            codes[i + 7].opcode == OpCodes.Ldc_I4_5 && codes[i + 8].opcode == OpCodes.Stfld && (FieldInfo)codes[i + 8].operand == _fi_cr_PC &&
+                            codes[i + 9].opcode == OpCodes.Br
+                    ) {
+                        codes[i + 1] = new CodeInstruction(OpCodes.Call, _mi_LoadResourceAssets);
+                        success |= 8;
+                    }
+                    if (success >= successTgt) break;
                 }
-                if (success != 3) throw new Exception($"{nameof(load_cr)}: Patch Failed! {success}");
+                if (success != successTgt) throw new Exception($"{nameof(load_cr)}: Patch Failed! {success}");
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
 
                 return codes;
+            }
+
+            private static void UnloadResourceAssets() {
+                AssetMngr.UnloadAssets();
             }
 
             private static string[] GetPreloadAtlases(string sceneName, string[] preloadAtlases) {
@@ -127,6 +157,10 @@ namespace CupheadArchipelago.Hooks {
                 }
                 Dbg.LogCollectionDiff("Scene Audio", preloadMusic, changed ? res : null);
                 return [.. res];
+            }
+
+            private static IEnumerator LoadResourceAssets() {
+                yield return null;
             }
 
             private static bool IsStringSceneName(string str, Scenes scene) {

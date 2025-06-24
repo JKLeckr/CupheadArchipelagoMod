@@ -13,6 +13,7 @@ using HarmonyLib;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.U2D;
 
 namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenHook {
@@ -31,6 +32,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
+            Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(SetState));
             Harmony.CreateAndPatchAll(typeof(Update));
             Harmony.CreateAndPatchAll(typeof(UpdateOptionsMenu));
@@ -55,6 +57,19 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 CreateAPConStatusText(__instance.transform);
                 CreateAPSetupMenu(__instance, ____slotSelection);
                 CreateAPPrompt(__instance);
+            }
+        }
+
+        [HarmonyPatch(typeof(SlotSelectScreen), "Start")]
+        internal static class Start {
+            static bool Prefix() {
+                try {
+                    Texture2D sprite = AssetLoader<Texture2D>.GetCachedAsset("cap_dicehouse_chalkboard");
+                }
+                catch (Exception e) {
+                    Logging.LogError($"Could not load chalkboard sprite {e}");
+                }
+                return true;
             }
         }
 
