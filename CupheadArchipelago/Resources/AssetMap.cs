@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.Resources {
     internal class AssetMap {
         private static readonly Dictionary<string, HashSet<string>> assetMap = new() {
-            {"cap_dicehouse", ["chalkboard"]}
+            {"cap_dicehouse", ["cap_dicehouse_chalkboard"]}
         };
         private static readonly Dictionary<string, string> assetToBundleMap = [];
 

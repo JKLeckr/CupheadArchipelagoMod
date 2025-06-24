@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class DiceGateLevelHook {
@@ -16,6 +17,15 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(DiceGateLevel), "Start")]
         internal static class Start {
+            static bool Prefix() {
+                try {
+                    Sprite sprite = AssetLoader<Sprite>.GetCachedAsset("cap_dicehouse_chalkboard");
+                }
+                catch (Exception e) {
+                    Logging.LogError($"Could not load chalkboard sprite {e}");
+                }
+                return true;
+            }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
@@ -32,29 +42,29 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                for (int i=0;i<codes.Count-3;i++) {
+                for (int i = 0; i < codes.Count - 3; i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_PlayerData_Data &&
-                        codes[i+2].opcode == OpCodes.Callvirt && ((MethodInfo)codes[i+2].operand == _mi_CheckLevelCompleted || 
-                        (MethodInfo)codes[i+2].operand == _mi_CheckLevelsCompleted) && codes[i+3].opcode == OpCodes.Brfalse) {
-                            bool countCondition = codes[i+1].opcode == OpCodes.Ldsfld;
-                            int dieIndex = ClampReqIndex(req_index);
-                            int testCount = index;
-                            CodeInstruction[] ncodes = countCondition ? [
-                                new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
+                        codes[i + 2].opcode == OpCodes.Callvirt && ((MethodInfo)codes[i + 2].operand == _mi_CheckLevelCompleted ||
+                        (MethodInfo)codes[i + 2].operand == _mi_CheckLevelsCompleted) && codes[i + 3].opcode == OpCodes.Brfalse) {
+                        bool countCondition = codes[i + 1].opcode == OpCodes.Ldsfld;
+                        int dieIndex = ClampReqIndex(req_index);
+                        int testCount = index;
+                        CodeInstruction[] ncodes = countCondition ? [
+                            new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
                                 new CodeInstruction(OpCodes.Call, _mi_APOpenCondition),
                             ] : [
-                                new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
+                            new CodeInstruction(OpCodes.Ldc_I4, dieIndex),
                                 new CodeInstruction(OpCodes.Ldc_I4, testCount),
                                 new CodeInstruction(OpCodes.Call, _mi_APTallyCondition),
                             ];
-                            codes.InsertRange(i+3, ncodes);
-                            i += ncodes.Length;
-                            if (countCondition) req_index++;
-                            else index++;
-                            insertCount++;
+                        codes.InsertRange(i + 3, ncodes);
+                        i += ncodes.Length;
+                        if (countCondition) req_index++;
+                        else index++;
+                        insertCount++;
                     }
                 }
-                if (insertCount!=12) throw new Exception($"{nameof(Start)}: Patch Failed! insertCount: {insertCount}");
+                if (insertCount != 12) throw new Exception($"{nameof(Start)}: Patch Failed! insertCount: {insertCount}");
                 if (debug) {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);

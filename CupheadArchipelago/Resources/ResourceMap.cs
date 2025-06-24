@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.Resources {
     internal class ResourceMap {
         private static readonly Dictionary<string, string> resourceMap = new() {
-            {"atlas_cap_dicehouse", "cap_dicehouse"}
+            {"cap_dicehouse", "cap_dicehouse"}
         };
 
         internal static IEnumerable<string> GetResourceNames() => resourceMap.Keys;
