@@ -57,7 +57,7 @@ namespace CupheadArchipelago.Hooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                List<CodeInstruction> ncodes = [
+                CodeInstruction[] ncodes = [
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldfld, _fi_sceneAssetDatabase),
                     new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte)GetProcessMode()),

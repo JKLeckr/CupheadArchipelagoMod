@@ -155,7 +155,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     else if ((success&4)==0 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i+1].opcode == OpCodes.Stloc_0) {
                         if ((i+2)<codes.Count) {
                             codes[i+2].labels.Add(vanilla_label);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, vanilla_label),
                                 new CodeInstruction(OpCodes.Ldarg_0),
@@ -164,7 +164,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 new CodeInstruction(OpCodes.Br, flag_label),
                             ];
                             codes.InsertRange(i+2, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success|=4;
                         }
                     }

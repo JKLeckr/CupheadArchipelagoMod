@@ -90,7 +90,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
                 if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_ResetPlayers && codes[i+6].opcode == OpCodes.Call && (MethodInfo)codes[i+6].operand == _mi_LoadScene) {
                     codes[i+7].labels.Add(endl);
 
-                    List<CodeInstruction> ncodes = [
+                    CodeInstruction[] ncodes = [
                         CodeInstruction.Call(() => APLoadScene()),
                         new CodeInstruction(OpCodes.Brfalse_S, endl)
                     ];

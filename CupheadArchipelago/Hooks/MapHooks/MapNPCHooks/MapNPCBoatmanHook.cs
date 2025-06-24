@@ -120,13 +120,13 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                             List<Label> orig_labels = codes[i].labels;
                             codes[i].labels = [];
                             codes[i+11].labels.Add(l_aftercookie);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APCookieCondition()),
                                 new CodeInstruction(OpCodes.Brfalse, l_aftercookie),
                             ];
                             codes.InsertRange(i, ncodes);
                             codes[i].labels = orig_labels;
-                            i+=ncodes.Count+10;
+                            i+=ncodes.Length+10;
                             success |= 1;
                     }
                     if ((success&2)==0 && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == (sbyte)Scenes.scene_level_kitchen &&
@@ -134,13 +134,13 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                             List<Label> orig_labels = codes[i].labels;
                             codes[i].labels = [];
                             codes[i+6].labels.Add(l_afterload);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APLoadScene()),
                                 new CodeInstruction(OpCodes.Brtrue, l_afterload),
                             ];
                             codes.InsertRange(i, ncodes);
                             codes[i].labels = orig_labels;
-                            i+=ncodes.Count+5;
+                            i+=ncodes.Length+5;
                             success |= 2;
                     }
                 }

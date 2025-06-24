@@ -55,12 +55,12 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+1].operand == 13 &&
                         codes[i+2].opcode == OpCodes.Call && (MethodInfo)codes[i+2].operand == _mi_GetButtonDown && codes[i+3].opcode == OpCodes.Brfalse) {
                             Label end = (Label)codes[i+3].operand;
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Brfalse, end),
                                 CodeInstruction.Call(() => APCanDoLevel()),
                             ];
                             codes.InsertRange(i+3, ncodes);
-                            i+= ncodes.Count;
+                            i+= ncodes.Length;
                             success = true;
                             break;
                     }

@@ -80,7 +80,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 }
                 codes[0].labels.Add(l_vanilla);
                 codes[codes.Count-1].labels.Add(l_end);
-                List<CodeInstruction> ncodes = [
+                CodeInstruction[] ncodes = [
                     new CodeInstruction(OpCodes.Call, _mi_APCondition),
                     new CodeInstruction(OpCodes.Brtrue, l_vanilla),
                     new CodeInstruction(OpCodes.Ldarg_0),
@@ -125,7 +125,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                         codes[i+8].opcode == OpCodes.Brtrue) {
                             List<Label> orig_labels = codes[i].labels;
                             codes.RemoveRange(i, 8);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Call, _mi_IsInSwitchableState)
                             ];

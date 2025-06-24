@@ -65,7 +65,7 @@ namespace CupheadArchipelago.Hooks {
 
         private static List<CodeInstruction> DigestKeysInstructions(IEnumerable<CodeInstruction> instructions) {
             List<CodeInstruction> codes = new(instructions);
-            List<CodeInstruction> ncodes = [
+            CodeInstruction[] ncodes = [
                 new CodeInstruction(OpCodes.Ldc_I4_3),
                 new CodeInstruction(OpCodes.Newarr, typeof(string)),
                 new CodeInstruction(OpCodes.Dup),

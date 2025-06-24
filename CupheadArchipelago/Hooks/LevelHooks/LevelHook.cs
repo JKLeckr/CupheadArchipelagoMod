@@ -319,26 +319,26 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 for (int i = 0; i < codes.Count - 8; i++) {
                     if ((success & 1) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_mode &&
                         codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_set_Difficulty) {
-                        List<CodeInstruction> ncodes = [
+                        CodeInstruction[] ncodes = [
                             new CodeInstruction(OpCodes.Ldarg_0),
                             new CodeInstruction(OpCodes.Call, _mi_get_LevelType),
                             new CodeInstruction(OpCodes.Call, _mi_HackDifficulty)
                         ];
                         codes.InsertRange(i + 1, ncodes);
-                        i += ncodes.Count;
+                        i += ncodes.Length;
                         success |= 1;
                     }
                     if ((success & 2) == 0) { //TODO Do Chalice checks
-                        //List<CodeInstruction> ncodes = [];
+                        //CodeInstruction[] ncodes = [];
                         //codes.InsertRange(i, ncodes);
-                        //i+=ncodes.Count;
+                        //i+=ncodes.Length;
                         success |= 2;
                     }
                     if ((success & 4) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i + 3].opcode == OpCodes.Callvirt &&
                         (MethodInfo)codes[i + 3].operand == _mi_AddCurrency && codes[i + 4].opcode == OpCodes.Call && (MethodInfo)codes[i + 4].operand == _mi_get_Data && codes[i + 7].opcode == OpCodes.Callvirt &&
                         (MethodInfo)codes[i + 7].operand == _mi_AddCurrency) {
                         codes[i + 4].labels.Add(l_skipcoin);
-                        List<CodeInstruction> ncodes = [
+                        CodeInstruction[] ncodes = [
                             //new CodeInstruction(OpCodes.Ldarg_0),
                             //new CodeInstruction(OpCodes.Callvirt, _mi_get_CurrentLevel),
                             //new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
@@ -346,7 +346,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                 new CodeInstruction(OpCodes.Brtrue, l_skipcoin),
                             ];
                         codes.InsertRange(i, ncodes);
-                        i += ncodes.Count;
+                        i += ncodes.Length;
                         success |= 4;
                     }
                 }

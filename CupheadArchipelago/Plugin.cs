@@ -108,7 +108,9 @@ namespace CupheadArchipelago {
                 try {
                     SaveData.Init(configSaveKeyName.Value);
                     Hooks.Main.HookMain();
-                } catch (Exception e) {
+                    Resources.ResourceLoader.LoadResources();
+                }
+                catch (Exception e) {
                     Fail(e, -1);
                 }
                 State = 1;

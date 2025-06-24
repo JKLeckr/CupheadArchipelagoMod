@@ -66,6 +66,11 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+	<None Remove="Assets/atlas_cap_dicehouse" />
+	<EmbeddedResource Include="Assets/atlas_cap_dicehouse" />
+  </ItemGroup>
+
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">
     <Delete Files="$(OutputPath)websocket-sharp.dll" />
     <Copy SourceFiles="$(ProjectDir)./ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />

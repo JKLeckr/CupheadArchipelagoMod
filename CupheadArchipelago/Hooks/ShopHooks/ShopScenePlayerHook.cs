@@ -92,18 +92,18 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                         codes[i+4].opcode == OpCodes.Ldc_I4_1 && codes[i+5].opcode == OpCodes.Bne_Un) {
                             codes[i+5].operand = cmain;
                             codes[i+2].labels.Add(cifp);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brtrue, cifp),
                             ];
                             codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             successBit|=1;
                     }
                     if ((successBit&2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i].labels.Count>0 && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
                         codes[i+2].opcode == OpCodes.Stfld && (FieldInfo)codes[i+2].operand == _fi_weaponIndex) {
                             Label vanilla_label = codes[i].labels[0];
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, vanilla_label),
                                 new CodeInstruction(OpCodes.Ldarg_0),
@@ -116,7 +116,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             ];
                             ncodes[0].labels.Add(cmain);
                             codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             successBit|=2;
                     }
                     if ((successBit&12) != 12 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data &&
@@ -126,7 +126,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                         codes[i+9].opcode == OpCodes.Callvirt && codes[i+10].opcode == OpCodes.Brtrue) {
                             if ((successBit&4) == 0 && (FieldInfo)codes[i+4].operand == _fi_weaponItemPrefabs && (FieldInfo)codes[i+8].operand == _fi_weapon) {
                                 Label tgt_label = (Label)codes[i+10].operand;
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                     new CodeInstruction(OpCodes.Brfalse, vwwhile),
                                     new CodeInstruction(OpCodes.Ldarg_0),
@@ -142,12 +142,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 codes[i].labels.Add(vwwhile);
                                 codes[i+11].labels.Add(cwwhile);
                                 codes.InsertRange(i, ncodes);
-                                i+=ncodes.Count;
+                                i+=ncodes.Length;
                                 successBit|=4;
                             }
                             else if ((successBit&8) == 0 && (FieldInfo)codes[i+4].operand == _fi_charmItemPrefabs && (FieldInfo)codes[i+8].operand == _fi_charm) {
                                 Label tgt_label = (Label)codes[i+10].operand;
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                     new CodeInstruction(OpCodes.Brfalse, vcwhile),
                                     new CodeInstruction(OpCodes.Ldarg_0),
@@ -163,7 +163,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                 codes[i].labels.Add(vcwhile);
                                 codes[i+11].labels.Add(ccwhile);
                                 codes.InsertRange(i, ncodes);
-                                i+=ncodes.Count;
+                                i+=ncodes.Length;
                                 successBit|=8;
                             }
                             else {
@@ -375,7 +375,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 for (int i = 0; i < codes.Count-4; i++) {
                     if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+3].opcode == OpCodes.Ldc_I4 && 
                         (Charm)codes[i+3].operand == Charm.charm_curse && codes[i+4].opcode == OpCodes.Bne_Un) {
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brtrue, end),
                             ];
@@ -431,7 +431,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                             if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_c && (success&1)==0) {
                                 codes[i].labels.Add(cvanilla);
                                 codes[i+13].labels.Add(cifa);
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                     new CodeInstruction(OpCodes.Brfalse, cvanilla),
                                     new CodeInstruction(OpCodes.Ldarg_0),
@@ -446,13 +446,13 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                     new CodeInstruction(OpCodes.Br, cifa),
                                 ];
                                 codes.InsertRange(i, ncodes);
-                                i+=ncodes.Count;
+                                i+=ncodes.Length;
                                 success|=1;
                             }
                             else if ((MethodInfo)codes[i+11].operand==_mi_IsUnlocked_w && (success&2)==0) {
                                 codes[i].labels.Add(wvanilla);
                                 codes[i+13].labels.Add(wifa);
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                     new CodeInstruction(OpCodes.Brfalse, wvanilla),
                                     new CodeInstruction(OpCodes.Ldarg_0),
@@ -467,7 +467,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                                     new CodeInstruction(OpCodes.Br, wifa),
                                 ];
                                 codes.InsertRange(i, ncodes);
-                                i+=ncodes.Count;
+                                i+=ncodes.Length;
                                 success|=2;
                             }
                             else Logging.LogWarning($"{nameof(addNewItem_cr)}: Cannot find IsUnlocked method!");

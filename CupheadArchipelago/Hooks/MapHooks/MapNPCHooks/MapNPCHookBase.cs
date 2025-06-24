@@ -37,37 +37,37 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         if ((success&1)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldfld &&
                             (FieldInfo)codes[i+1].operand == _fi_coinManager && codes[i+2].opcode == OpCodes.Ldarg_0 && codes[i+3].opcode == OpCodes.Ldfld &&
                             codes[i+4].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+4].operand == _mi_GetCoinCollected && codes[i+5].opcode == OpCodes.Brtrue) {
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     new CodeInstruction(OpCodes.Ldc_I8, loc),
                                     new CodeInstruction(OpCodes.Call, _mi_APCoinCondition),
                                 ];
                                 codes.InsertRange(i+5, ncodes);
-                                i+=ncodes.Count;
+                                i+=ncodes.Length;
                                 success |= 1;
                         }
                         if ((success&2)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+3].opcode == OpCodes.Callvirt &&
                             (MethodInfo)codes[i+3].operand == _mi_AddCurrency && codes[i+4].opcode == OpCodes.Call && (MethodInfo)codes[i+4].operand == _mi_get_Data && codes[i+7].opcode == OpCodes.Callvirt &&
                             (MethodInfo)codes[i+7].operand == _mi_AddCurrency) {
                                 codes[i+8].labels.Add(l_afterac);
-                                List<CodeInstruction> ncodes = [
+                                CodeInstruction[] ncodes = [
                                     new CodeInstruction(OpCodes.Ldc_I8, loc),
                                     new CodeInstruction(OpCodes.Call, _mi_APCoinCheck),
                                     new CodeInstruction(OpCodes.Brtrue, l_afterac),
                                 ];
                                 codes.InsertRange(i, ncodes);
-                                i+=ncodes.Count;
+                                i+=ncodes.Length;
                                 success |= 2;
                         }
                     }
                     if ((success&4)==0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Current && codes[i+2].opcode == OpCodes.Callvirt &&
                         (MethodInfo)codes[i+2].operand == _mi_ShowEvent) {
                             codes[i+3].labels.Add(l_end);
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Call, _mi_IsAPEnabled),
                                 new CodeInstruction(OpCodes.Brtrue, l_end),
                             ];
                             codes.InsertRange(i, ncodes);
-                            i+=ncodes.Count;
+                            i+=ncodes.Length;
                             success |= 4;
                     }
                 }
@@ -117,7 +117,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 for (int i=0;i<codes.Count-2;i++) {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_SaveCurrentFile && codes[i+1].opcode == OpCodes.Call &&
                         (MethodInfo)codes[i+1].operand == _mi_get_Current && codes[i+2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+2].operand == _mi_Refresh) {
-                            List<CodeInstruction> ncodes = [
+                            CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldc_I8, loc),
                                 new CodeInstruction(OpCodes.Call, _mi_APCheck),
                             ];
