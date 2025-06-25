@@ -1,0 +1,45 @@
+/// Copyright 2025 JKLeckr
+/// SPDX-License-Identifier: Apache-2.0
+
+using System.Collections;
+using System.Collections.Generic;
+using CupheadArchipelago.Util;
+using UnityEngine;
+
+namespace CupheadArchipelago.Resources {
+    internal class AssetBundleMngr {
+        private static readonly Dictionary<string, AssetBundle> loadedBundles = [];
+
+        internal static IEnumerator LoadAssetBundleAsync(string bundleName) {
+            if (loadedBundles.ContainsKey(bundleName)) {
+                Logging.LogError($"{bundleName} is already loaded!");
+            }
+            AssetBundleCreateRequest request =
+                AssetBundle.LoadFromMemoryAsync(ResourceLoader.GetLoadedResource(bundleName));
+            yield return request;
+            loadedBundles.Add(bundleName, request.assetBundle);
+            yield break;
+        }
+        internal static void LoadAssetBundle(string bundleName) {
+            if (loadedBundles.ContainsKey(bundleName)) {
+                Logging.LogError($"{bundleName} is already loaded!");
+            }
+            loadedBundles.Add(
+                bundleName, AssetBundle.LoadFromMemory(ResourceLoader.GetLoadedResource(bundleName))
+            );
+        }
+        internal static void UnloadAssetBundles() {
+            foreach (KeyValuePair<string, AssetBundle> bundle in loadedBundles) {
+                bundle.Value.Unload(false);
+                loadedBundles.Remove(bundle.Key);
+            }
+        }
+
+        internal static bool IsAssetBundleLoaded(string bundleName) =>
+            loadedBundles.ContainsKey(bundleName);
+
+        internal static string GetLoadedAssetBundles() {
+            return $"Loaded RBundles: {Aux.CollectionToString(loadedBundles)}";
+        }
+    }
+}

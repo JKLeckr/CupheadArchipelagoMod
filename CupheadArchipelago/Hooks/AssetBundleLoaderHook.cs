@@ -155,6 +155,6 @@ namespace CupheadArchipelago.Hooks {
             }
         }
 
-        private static bool IsResourceAsset(string assetBundle) => ResourceMap.ResourceExists(assetBundle);
+        private static bool IsResourceAsset(string assetBundle) => Resources.ResourceReg.ResourceExists(assetBundle);
     }
 }
