@@ -12,7 +12,7 @@ namespace CupheadArchipelago.Util {
             bool first = true;
             StringBuilder res = new("[");
             foreach (var obj in collection) {
-                string prefix = !first?", ":"";
+                string prefix = !first ? ", " : "";
                 if (first) first = false;
                 res.Append(prefix + obj.ToString());
             }

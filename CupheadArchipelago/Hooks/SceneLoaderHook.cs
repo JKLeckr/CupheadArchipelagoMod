@@ -120,6 +120,7 @@ namespace CupheadArchipelago.Hooks {
                             codes[i + 9].opcode == OpCodes.Br
                     ) {
                         codes[i + 1] = new CodeInstruction(OpCodes.Call, _mi_LoadResourceAssets);
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, _mi_get_SceneName));
                         success |= 8;
                     }
                     if (success >= successTgt) break;
@@ -160,7 +161,8 @@ namespace CupheadArchipelago.Hooks {
                 return [.. res];
             }
 
-            private static IEnumerator LoadResourceAssets() {
+            private static IEnumerator LoadResourceAssets(string sceneName) {
+                yield return AssetMngr.LoadSceneAssetsAsync(sceneName);
                 yield return null;
             }
 
