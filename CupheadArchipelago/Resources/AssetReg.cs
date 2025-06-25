@@ -5,48 +5,43 @@ using System;
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.Resources {
-    internal class AssetReg {
-        private static readonly Dictionary<string, HashSet<RAsset>> assetReg = new() {
-            {
-                "cap_dicehouse", [new("cap_dicehouse_chalkboard", RAssetType.Texture2D)]
-            },
+    public class AssetReg {
+        private static readonly Dictionary<string, HashSet<string>> assetReg = new() {
+            {"cap_dicehouse", ["cap_dicehouse_chalkboard"]},
+        };
+        private static readonly Dictionary<string, RAssetType> assetTypes = new() {
+            {"cap_dicehouse_chalkboard", RAssetType.Texture2D}
         };
         private static readonly HashSet<string> persistentAssets = [
             "cap_dicehouse_chalkboard",
         ];
+
         private static readonly Dictionary<string, string> assetToBundleMap = [];
-        private static readonly HashSet<string> persistentBundles = [];
 
         static AssetReg() {
             foreach (string bundle in assetReg.Keys) {
-                foreach (RAsset asset in assetReg[bundle]) {
-                    assetToBundleMap.Add(asset.assetName, bundle);
-                    if (persistentBundles.Contains(asset.assetName)) {
-                        persistentBundles.Add(bundle);
-                    }
+                foreach (string asset in assetReg[bundle]) {
+                    /*if (assetToBundleMap.ContainsKey(asset)) {
+                        throw new Exception(
+                            $"Duplicate asset name in assetReg {asset}. Each asset name must be unique across bundles."
+                        );
+                    }*/
+                    assetToBundleMap.Add(asset, bundle);
                 }
             }
         }
 
-        private static void RefreshPersistentBundles() {
-            foreach (KeyValuePair<string, string> asset in assetToBundleMap) {
-                if (persistentAssets.Contains(asset.Key)) {
-                    persistentBundles.Add(asset.Value);
-                }
-                else {
-                    persistentBundles.Remove(asset.Value);
-                }
-            }
-        }
+        public static IEnumerable<string> GetAllRegisteredBundleNames() => assetReg.Keys;
 
-        internal static string GetAssetBundle(string assetName) => assetToBundleMap[assetName];
-        internal static bool IsAssetPersistent(string assetName) => persistentAssets.Contains(assetName);
-        internal static bool IsAssetBundlePersistent(string assetBundleName) =>
-            persistentBundles.Contains(assetBundleName);
+        public static IEnumerable<string> GetAllRegisteredAssetNames() => assetToBundleMap.Keys;
 
-        internal class RAsset(string assetName, RAssetType assetType) {
-            internal readonly string assetName = assetName;
-            internal readonly RAssetType assetType = assetType;
-        }
+        public static IEnumerable<string> GetAssetNamesInBundle(string bundleName) => assetReg[bundleName];
+
+        public static RAssetType GetAssetType(string assetName) =>
+            assetTypes.ContainsKey(assetName) ? assetTypes[assetName] : RAssetType.Object;
+
+        public static string GetBundleNamesFromAsset(string assetName) => assetToBundleMap[assetName];
+
+        public static bool IsAssetPersistent(string assetName) => persistentAssets.Contains(assetName);
     }
 }
