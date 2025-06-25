@@ -14,6 +14,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefaultItemExcludes>$(DefaultItemExcludes);TAssembly-CSharp/**</DefaultItemExcludes>
     <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

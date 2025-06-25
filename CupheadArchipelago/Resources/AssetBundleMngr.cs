@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CupheadArchipelago.Util;
@@ -38,7 +39,14 @@ namespace CupheadArchipelago.Resources {
         internal static bool IsAssetBundleLoaded(string bundleName) =>
             loadedBundles.ContainsKey(bundleName);
 
-        internal static string GetLoadedAssetBundles() {
+        internal static AssetBundle GetLoadedBundle(string bundleName) {
+            if (!loadedBundles.ContainsKey(bundleName)) {
+                throw new KeyNotFoundException($"{bundleName} is not loaded!");
+            }
+            return loadedBundles[bundleName];
+        }
+
+        internal static string GetLoadedAssetBundlesAsString() {
             return $"Loaded RBundles: {Aux.CollectionToString(loadedBundles)}";
         }
     }

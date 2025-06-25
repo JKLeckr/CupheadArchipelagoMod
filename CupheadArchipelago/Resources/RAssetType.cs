@@ -2,7 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 namespace CupheadArchipelago.Resources {
-    internal enum RAssetType {
+    public enum RAssetType {
         Object,
         GameObject,
         Texture2D,

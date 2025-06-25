@@ -17,10 +17,30 @@ namespace CupheadArchipelago.Resources {
             // TODO: Load Bundles when needed for asset
             yield break;
         }
-        internal static IEnumerator LoadAssetAsync(string assetName) {
+        internal static IEnumerator LoadPersistentAssetsAsync() {
             yield break;
         }
-        internal static IEnumerator LoadPersistentAssetsAsync() {
+        internal static IEnumerator LoadAllBundleAssetAsync<T>(string bundleName) {
+            if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
+                yield return AssetBundleMngr.LoadAssetBundleAsync(bundleName);
+            }
+            AssetBundle bundle = AssetBundleMngr.GetLoadedBundle(bundleName);
+            AssetBundleRequest request = bundle.LoadAllAssetsAsync<T>();
+            yield return request;
+            
+            yield break;
+        }
+        internal static IEnumerator LoadAssetAsync(string assetName) {
+            string bundleName = AssetReg.GetBundleNamesFromAsset(assetName);
+            if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
+                yield return AssetBundleMngr.LoadAssetBundleAsync(bundleName);
+            }
+            AssetBundle bundle = AssetBundleMngr.GetLoadedBundle(bundleName);
+            AssetBundleRequest request = AssetReg.GetAssetType(assetName) switch {
+                RAssetType.Texture2D => bundle.LoadAssetAsync<Texture2D>(assetName),
+                RAssetType.GameObject => bundle.LoadAssetAsync<GameObject>(assetName),
+                _ => bundle.LoadAssetAsync(assetName)
+            };
             yield break;
         }
         internal static void LoadSceneAssets(Scenes scene) =>
@@ -28,10 +48,10 @@ namespace CupheadArchipelago.Resources {
         internal static void LoadSceneAssets(string sceneName) {
             //
         }
+        internal static void LoadPersistentAssets() { }
         internal static void LoadAsset(string assetName) {
             //
         }
-        internal static void LoadPersistentAssets() { }
         internal static void UnloadAllAssets() => UnloadAllAssets(false);
         internal static void UnloadAllAssets(bool unloadPersistent) {
             foreach (KeyValuePair<string, UnityEngine.Object> loadedAsset in loadedAssets) {
@@ -71,7 +91,7 @@ namespace CupheadArchipelago.Resources {
             }
         }
 
-        internal static string GetLoadedAssets() {
+        internal static string GetLoadedAssetsAsString() {
             LinkedList<string> resList = [];
             foreach (string asset in loadedAssets.Keys) {
                 if (AssetReg.IsAssetPersistent(asset)) {
