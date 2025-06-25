@@ -1,7 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.Resources {
@@ -21,11 +20,6 @@ namespace CupheadArchipelago.Resources {
         static AssetReg() {
             foreach (string bundle in assetReg.Keys) {
                 foreach (string asset in assetReg[bundle]) {
-                    /*if (assetToBundleMap.ContainsKey(asset)) {
-                        throw new Exception(
-                            $"Duplicate asset name in assetReg {asset}. Each asset name must be unique across bundles."
-                        );
-                    }*/
                     assetToBundleMap.Add(asset, bundle);
                 }
             }
