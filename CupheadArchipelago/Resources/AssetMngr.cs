@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Resources {
             {RAssetType.Object, typeof(UnityEngine.Object)},
             {RAssetType.GameObject, typeof(GameObject)},
             {RAssetType.Texture2D, typeof(Texture2D)},
+            {RAssetType.Sprite, typeof(Sprite)},
         };
 
         private static readonly Dictionary<string, UnityEngine.Object> loadedAssets = [];
@@ -124,7 +125,8 @@ namespace CupheadArchipelago.Resources {
         }
         internal static void UnloadAllAssets() => UnloadAllAssets(false);
         internal static void UnloadAllAssets(bool unloadPersistent) {
-            foreach (string loadedAsset in loadedAssets.Keys) {
+            string[] loadedAssetNames = [.. loadedAssets.Keys];
+            foreach (string loadedAsset in loadedAssetNames) {
                 if (!AssetReg.IsAssetPersistent(loadedAsset) || unloadPersistent) {
                     UnloadAsset(loadedAsset);
                 }

@@ -18,9 +18,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(DiceGateLevel), "Start")]
         internal static class Start {
-            static bool Prefix() {
+            static bool Prefix(DiceGateLevel __instance) {
                 try {
-                    Texture2D texture = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard");
+                    CreateChalkOverlay(__instance.transform);
                 }
                 catch (Exception e) {
                     Logging.LogError($"Could not load chalkboard sprite {e}");
@@ -75,8 +75,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static int ClampReqIndex(int i) {
-                if (i<=0) return 0;
-                else if (i>=APSettings.RequiredContracts.Length) return APSettings.RequiredContracts.Length-1;
+                if (i <= 0) return 0;
+                else if (i >= APSettings.RequiredContracts.Length) return APSettings.RequiredContracts.Length - 1;
                 else return i;
             }
             private static bool APTallyCondition(bool vanillaCondition, int testIndex, int testCount) {
@@ -96,6 +96,37 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
                 else return vanillaCondition;
             }
+        }
+
+        private static void CreateChalkOverlay(Transform parent) {
+            Transform _parent = parent.GetChild(3);
+            GameObject obj = GameObject.Instantiate(_parent.GetChild(4).gameObject);
+            obj.transform.SetParent(_parent);
+            SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+            sr.sprite = AssetMngr.GetLoadedAsset<Sprite>("cap_dicehouse_chalkboard_spr");
+            /*GameObject obj = GameObject.Instantiate(AssetMngr.GetLoadedAsset<GameObject>("cap_dicehouse_chalkboard"), _parent);
+            Logging.Log("1");
+            SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+            Logging.Log("1");
+            Material mat_default = new(Shader.Find("Sprites/Default"));
+            Logging.Log("1");
+            sr.material = mat_default;
+            Logging.Log("1");
+            Transform quad = obj.transform.GetChild(0);
+            Logging.Log("1");
+            MeshRenderer qsr = quad.GetComponent<MeshRenderer>();
+            Logging.Log("1");
+            qsr.material = mat_default;
+            qsr.materials = [mat_default];
+            Logging.Log("1");*/
+            /*Texture2D tex = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard_spr");
+            Sprite sprChalk = Sprite.Create(tex, new(0f, 0f, tex.width, tex.height), new(0.5f, 0.5f), 100f);
+            GameObject chalkOverlay = new("die_house_chalkoverlay");
+            chalkOverlay.transform.parent = parent;
+            chalkOverlay.transform.position = new Vector2(0, 0);
+            SpriteRenderer sr = chalkOverlay.AddComponent<SpriteRenderer>();
+            sr.sprite = sprChalk;*/
+
         }
     }
 }
