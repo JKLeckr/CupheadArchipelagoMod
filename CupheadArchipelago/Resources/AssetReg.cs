@@ -11,9 +11,7 @@ namespace CupheadArchipelago.Resources {
         private static readonly Dictionary<string, RAssetType> assetTypes = new() {
             {"cap_dicehouse_chalkboard", RAssetType.Texture2D}
         };
-        private static readonly HashSet<string> persistentAssets = [
-            "cap_dicehouse_chalkboard",
-        ];
+        private static readonly HashSet<string> persistentAssets = [];
 
         private static readonly Dictionary<string, string> assetToBundleMap = [];
 
@@ -31,10 +29,13 @@ namespace CupheadArchipelago.Resources {
 
         public static IEnumerable<string> GetAssetNamesInBundle(string bundleName) => assetReg[bundleName];
 
+        public static IEnumerable<string> GetPersisentAssets() => persistentAssets;
+
         public static RAssetType GetAssetType(string assetName) =>
             assetTypes.ContainsKey(assetName) ? assetTypes[assetName] : RAssetType.Object;
 
-        public static string GetBundleNamesFromAsset(string assetName) => assetToBundleMap[assetName];
+        public static string GetBundleNamesFromAsset(string assetName) =>
+            assetToBundleMap.ContainsKey(assetName) ? assetToBundleMap[assetName] : null;
 
         public static bool IsAssetPersistent(string assetName) => persistentAssets.Contains(assetName);
     }

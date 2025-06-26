@@ -134,6 +134,7 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static void UnloadResourceAssets() {
+                AssetBundleMngr.UnloadAssetBundles();
                 AssetMngr.UnloadAssets();
             }
 
@@ -162,7 +163,10 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator LoadResourceAssets(string sceneName) {
-                yield return AssetMngr.LoadSceneAssetsAsync(sceneName);
+                if (AssetMap.IsSceneRegistered(sceneName)) {
+                    Logging.Log("Loading additional assets...");
+                    yield return AssetMngr.LoadSceneAssetsAsync(sceneName);
+                }
                 yield return null;
             }
 

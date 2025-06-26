@@ -33,7 +33,7 @@ namespace CupheadArchipelago.Tests {
             }
 
             [Test]
-            public void TestReg_Asset_Has_Type() {
+            public void TestReg_Assets_Have_Type() {
                 IEnumerable<string> assets = AssetReg.GetAllRegisteredAssetNames();
                 bool fail = false;
 
@@ -41,6 +41,37 @@ namespace CupheadArchipelago.Tests {
                     if (AssetReg.GetAssetType(asset) == RAssetType.Object) {
                         fail = true;
                         Logging.Log($"Asset {asset} failed.");
+                    }
+                }
+
+                Assert.That(fail, Is.False);
+            }
+
+            [Test]
+            public void TestReg_PersistentAssets_Are_Valid() {
+                bool fail = false;
+
+                foreach (string pAsset in AssetReg.GetPersisentAssets()) {
+                    if (AssetReg.GetBundleNamesFromAsset(pAsset) == null) {
+                        fail = true;
+                        Logging.Log($"Persistent Asset {pAsset} failed.");
+                    }
+                }
+
+                Assert.That(fail, Is.False);
+            }
+
+            [Test]
+            public void TestReg_Scene_Assets_Are_Registered() {
+                HashSet<string> registeredAssets = [.. AssetReg.GetAllRegisteredAssetNames()];
+                bool fail = false;
+
+                foreach (string scene in AssetMap.GetRegisteredScenes()) {
+                    foreach (string asset in AssetMap.GetSceneAssets(scene)) {
+                        if (!registeredAssets.Contains(asset)) {
+                            fail = true;
+                            Logging.Log($"Asset {asset} failed.");
+                        }
                     }
                 }
 

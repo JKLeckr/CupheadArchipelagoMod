@@ -9,11 +9,11 @@ using System.Reflection.Emit;
 using System.Reflection;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Unity;
+using CupheadArchipelago.Resources;
 using HarmonyLib;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.U2D;
 
 namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenHook {
@@ -64,7 +64,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         internal static class Start {
             static bool Prefix() {
                 try {
-                    Texture2D sprite = AssetLoader<Texture2D>.GetCachedAsset("cap_dicehouse_chalkboard");
+                    Texture2D texture = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard");
                 }
                 catch (Exception e) {
                     Logging.LogError($"Could not load chalkboard sprite {e}");
