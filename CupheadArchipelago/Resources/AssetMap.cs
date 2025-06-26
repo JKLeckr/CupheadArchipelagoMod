@@ -9,8 +9,11 @@ namespace CupheadArchipelago.Resources {
             {Scenes.scene_level_dice_gate.ToString(), ["cap_dicehouse_chalkboard"]},
         };
 
-        private static IEnumerable<string> GetSceneAssets(Scenes scene) => GetSceneAssets(scene.ToString());
-        private static IEnumerable<string> GetSceneAssets(string sceneName) {
+        public static bool IsSceneRegistered(Scenes scene) => IsSceneRegistered(scene.ToString());
+        public static bool IsSceneRegistered(string sceneName) => assetMap.ContainsKey(sceneName);
+        public static IEnumerable<string> GetRegisteredScenes() => assetMap.Keys;
+        public static IEnumerable<string> GetSceneAssets(Scenes scene) => GetSceneAssets(scene.ToString());
+        public static IEnumerable<string> GetSceneAssets(string sceneName) {
             if (assetMap.ContainsKey(sceneName))
                 return assetMap[sceneName];
             else

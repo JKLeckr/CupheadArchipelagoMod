@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Resources;
 using HarmonyLib;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class Start {
             static bool Prefix() {
                 try {
-                    Sprite sprite = AssetLoader<Sprite>.GetCachedAsset("cap_dicehouse_chalkboard");
+                    Texture2D texture = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard");
                 }
                 catch (Exception e) {
                     Logging.LogError($"Could not load chalkboard sprite {e}");
