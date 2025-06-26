@@ -23,6 +23,11 @@ namespace CupheadArchipelago.Hooks {
             }
         }
 
+        internal static void LogCollection(string name, IEnumerable<string> collection) {
+            Logging.Log($"{name}:");
+            Logging.Log($"  {Aux.CollectionToString(collection)}");
+        }
+
         internal static void LogCollectionDiff(string name, IEnumerable<string> og, IEnumerable<string> nw) {
             Logging.Log($"{name}:");
             if (nw != null) {

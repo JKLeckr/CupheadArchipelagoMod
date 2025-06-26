@@ -9,7 +9,6 @@ using System.Reflection.Emit;
 using System.Reflection;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Unity;
-using CupheadArchipelago.Resources;
 using HarmonyLib;
 using UnityEngine;
 using TMPro;
@@ -32,7 +31,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
-            Harmony.CreateAndPatchAll(typeof(Start));
+            //Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(SetState));
             Harmony.CreateAndPatchAll(typeof(Update));
             Harmony.CreateAndPatchAll(typeof(UpdateOptionsMenu));
@@ -61,17 +60,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         }
 
         [HarmonyPatch(typeof(SlotSelectScreen), "Start")]
-        internal static class Start {
-            static bool Prefix() {
-                try {
-                    Texture2D texture = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard");
-                }
-                catch (Exception e) {
-                    Logging.LogError($"Could not load chalkboard sprite {e}");
-                }
-                return true;
-            }
-        }
+        internal static class Start { }
 
         [HarmonyPatch(typeof(SlotSelectScreen), "SetState")]
         internal static class SetState {
@@ -205,8 +194,10 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     _instance.StartCoroutine(connect_and_start_cr());
                 }
                 else {
-                    if (!APData.IsSlotEmpty(_slotSelection))
+                    if (!APData.IsSlotEmpty(_slotSelection)) {
                         APData.ResetData(_slotSelection, true, true);
+                        APData.Save(_slotSelection);
+                    }
                     _instance.StartCoroutine(_mi_game_start_cr.Name, 0);
                 }
             }

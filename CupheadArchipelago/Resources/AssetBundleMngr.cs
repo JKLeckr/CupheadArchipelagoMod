@@ -30,10 +30,14 @@ namespace CupheadArchipelago.Resources {
             );
         }
         internal static void UnloadAssetBundles() {
-            foreach (KeyValuePair<string, AssetBundle> bundle in loadedBundles) {
-                bundle.Value.Unload(false);
-                loadedBundles.Remove(bundle.Key);
+            string[] loadedBundleNames = [.. loadedBundles.Keys];
+            foreach (string bundleName in loadedBundleNames) {
+                UnloadAssetBundle(bundleName);
             }
+        }
+        internal static void UnloadAssetBundle(string bundleName) {
+            loadedBundles[bundleName].Unload(false);
+            loadedBundles.Remove(bundleName);
         }
 
         internal static bool IsAssetBundleLoaded(string bundleName) =>

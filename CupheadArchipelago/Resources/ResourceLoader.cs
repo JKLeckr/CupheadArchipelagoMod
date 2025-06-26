@@ -12,6 +12,7 @@ namespace CupheadArchipelago.Resources {
         internal const string RESOURCE_PRE = "CupheadArchipelago.Assets.";
 
         public static void LoadResources() {
+            StaticAssets.Init();
             foreach (string resource in ResourceReg.GetResourceNames()) {
                 Logging.LogDebug($"Loading resource {resource}...");
                 byte[] resoureBytes = GetResourceBytes(RESOURCE_PRE + resource);

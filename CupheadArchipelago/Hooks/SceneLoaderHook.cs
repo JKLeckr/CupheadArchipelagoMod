@@ -134,8 +134,9 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static void UnloadResourceAssets() {
+                Logging.LogDebug("Unloading resource assets...");
                 AssetBundleMngr.UnloadAssetBundles();
-                AssetMngr.UnloadAssets();
+                AssetMngr.UnloadAllAssets();
             }
 
             private static string[] GetPreloadAtlases(string sceneName, string[] preloadAtlases) {
@@ -164,7 +165,8 @@ namespace CupheadArchipelago.Hooks {
 
             private static IEnumerator LoadResourceAssets(string sceneName) {
                 if (AssetMap.IsSceneRegistered(sceneName)) {
-                    Logging.Log("Loading additional assets...");
+                    Logging.LogDebug("Loading resource assets...");
+                    Dbg.LogCollection("Resource Assets", AssetMap.GetSceneAssets(sceneName));
                     yield return AssetMngr.LoadSceneAssetsAsync(sceneName);
                 }
                 yield return null;

@@ -191,10 +191,9 @@ namespace CupheadArchipelago.AP {
         public static void ResetData(int index, bool disable, bool resetSettings) {
             Logging.Log("[APData] Resetting Data...");
             APData old_data = SData[index];
-            SData[index] = new APData() {
+            APData data = new() {
                 index = old_data.index
             };
-            APData data = SData[index];
             if (!disable) data.enabled = old_data.enabled;
             if (!resetSettings) {
                 data.address = old_data.address;
@@ -205,6 +204,7 @@ namespace CupheadArchipelago.AP {
             if (old_data.IsOverridden(16)) {
                 data._override = old_data._override;
             }
+            SData[index] = data;
             Save(index);
         }
         internal long GetFTime() => ftime;

@@ -6,5 +6,6 @@ namespace CupheadArchipelago.Resources {
         Object,
         GameObject,
         Texture2D,
+        Sprite,
     }
 }
