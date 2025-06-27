@@ -108,7 +108,6 @@
           "UnityEngine.Modules": "[2017.4.9, )"
         }
       }
-    },
-    ".NETFramework,Version=v3.5/win-x64": {}
+    }
   }
 }
