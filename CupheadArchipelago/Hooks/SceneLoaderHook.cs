@@ -164,9 +164,9 @@ namespace CupheadArchipelago.Hooks {
             }
 
             private static IEnumerator LoadResourceAssets(string sceneName) {
-                if (AssetMap.IsSceneRegistered(sceneName)) {
+                if (SceneAssetMap.IsSceneRegistered(sceneName)) {
                     Logging.LogDebug("Loading resource assets...");
-                    Dbg.LogCollection("Resource Assets", AssetMap.GetSceneAssets(sceneName));
+                    Dbg.LogCollection("Resource Assets", SceneAssetMap.GetSceneAssets(sceneName));
                     yield return AssetMngr.LoadSceneAssetsAsync(sceneName);
                 }
                 yield return null;

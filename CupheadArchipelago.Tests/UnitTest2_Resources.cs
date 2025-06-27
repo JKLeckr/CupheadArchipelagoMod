@@ -15,13 +15,49 @@ namespace CupheadArchipelago.Tests {
             public void Setup() { }
 
             [Test]
+            public void TestReg_AssetBundles_Have_Resource() {
+                IEnumerable<string> bundles = AssetDefs.GetAllRegisteredBundles();
+                HashSet<string> resources = [.. ResourceDefs.GetRegisteredResources()];
+                bool fail = false;
+
+                foreach (string bundle in bundles) {
+                    if (!resources.Contains(bundle)) {
+                        fail = true;
+                        Logging.Log($"Asset Bundle {bundle} has no registered resource.");
+                    }
+                }
+
+                Assert.That(fail, Is.False);
+            }
+
+            [Test]
+            public void TestReg_Assets_Are_Defined() {
+                HashSet<string> bundleAssets = [];
+                HashSet<string> assets = [.. AssetDefs.GetAllRegisteredAssets()];
+                bool fail = false;
+
+                foreach (string bundle in AssetDefs.GetAllRegisteredBundles()) {
+                    bundleAssets.UnionWith(AssetDefs.GetAssetsInBundle(bundle));
+                }
+
+                foreach (string asset in bundleAssets) {
+                    if (!assets.Contains(asset)) {
+                        fail = true;
+                        Logging.Log($"Asset {asset} is not defined.");
+                    }
+                }
+
+                Assert.That(fail, Is.False);
+            }
+
+            [Test]
             public void TestReg_No_Dups() {
-                IEnumerable<string> bundles = AssetReg.GetAllRegisteredBundleNames();
+                IEnumerable<string> bundles = AssetDefs.GetAllRegisteredBundles();
                 HashSet<string> registered = [];
                 bool fail = false;
 
                 foreach (string bundle in bundles) {
-                    foreach (string asset in AssetReg.GetAssetNamesInBundle(bundle)) {
+                    foreach (string asset in AssetDefs.GetAssetsInBundle(bundle)) {
                         if (registered.Contains(asset)) {
                             fail = true;
                             Logging.Log($"Asset {asset} has a duplicate.");
@@ -34,11 +70,11 @@ namespace CupheadArchipelago.Tests {
 
             [Test]
             public void TestReg_Assets_Have_Type() {
-                IEnumerable<string> assets = AssetReg.GetAllRegisteredAssetNames();
+                IEnumerable<string> assets = AssetDefs.GetAllRegisteredAssets();
                 bool fail = false;
 
                 foreach (string asset in assets) {
-                    if (AssetReg.GetAssetType(asset) == RAssetType.Object) {
+                    if (AssetDefs.GetAssetType(asset) == RAssetType.Object) {
                         fail = true;
                         Logging.Log($"Asset {asset} failed.");
                     }
@@ -51,8 +87,8 @@ namespace CupheadArchipelago.Tests {
             public void TestReg_PersistentAssets_Are_Valid() {
                 bool fail = false;
 
-                foreach (string pAsset in AssetReg.GetPersisentAssets()) {
-                    if (AssetReg.GetBundleNamesFromAsset(pAsset) == null) {
+                foreach (string pAsset in AssetDefs.GetPersisentAssets()) {
+                    if (AssetDefs.GetBundleFromAsset(pAsset) == null) {
                         fail = true;
                         Logging.Log($"Persistent Asset {pAsset} failed.");
                     }
@@ -63,11 +99,11 @@ namespace CupheadArchipelago.Tests {
 
             [Test]
             public void TestReg_Scene_Assets_Are_Registered() {
-                HashSet<string> registeredAssets = [.. AssetReg.GetAllRegisteredAssetNames()];
+                HashSet<string> registeredAssets = [.. AssetDefs.GetAllRegisteredAssets()];
                 bool fail = false;
 
-                foreach (string scene in AssetMap.GetRegisteredScenes()) {
-                    foreach (string asset in AssetMap.GetSceneAssets(scene)) {
+                foreach (string scene in SceneAssetMap.GetRegisteredScenes()) {
+                    foreach (string asset in SceneAssetMap.GetSceneAssets(scene)) {
                         if (!registeredAssets.Contains(asset)) {
                             fail = true;
                             Logging.Log($"Asset {asset} failed.");

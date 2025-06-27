@@ -4,12 +4,13 @@
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.Resources {
-    public class ResourceReg {
+    public class ResourceDefs {
         private static readonly HashSet<string> resources = new() {
-            {"cap_dicehouse"}
+            { "testee" },
+            { "cap_dicehouse" }
         };
 
-        public static IEnumerable<string> GetResourceNames() => resources;
+        public static IEnumerable<string> GetRegisteredResources() => resources;
         public static bool ResourceExists(string resourceName) => resources.Contains(resourceName);
     }
 }
