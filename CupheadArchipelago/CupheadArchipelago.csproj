@@ -68,8 +68,10 @@
   </ItemGroup>
 
   <ItemGroup>
-	<None Remove="Assets/cap_dicehouse" />
-	<EmbeddedResource Include="Assets/cap_dicehouse" />
+    <None Remove="Assets/testee" />
+	  <EmbeddedResource Include="Assets/testee" />
+	  <None Remove="Assets/cap_dicehouse" />
+	  <EmbeddedResource Include="Assets/cap_dicehouse" />
   </ItemGroup>
 
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">

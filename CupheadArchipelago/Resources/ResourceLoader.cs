@@ -13,12 +13,14 @@ namespace CupheadArchipelago.Resources {
 
         public static void LoadResources() {
             StaticAssets.Init();
-            foreach (string resource in ResourceReg.GetResourceNames()) {
+            foreach (string resource in ResourceDefs.GetRegisteredResources()) {
                 Logging.LogDebug($"Loading resource {resource}...");
                 byte[] resoureBytes = GetResourceBytes(RESOURCE_PRE + resource);
                 loadedResources.Add(resource, resoureBytes);
                 Logging.LogDebug($"Loaded resource {resource}.");
             }
+            Logging.LogDebug($"Loading persistent resource assets...");
+            AssetMngr.LoadPersistentAssets();
         }
 
         private static byte[] GetResourceBytes(string resourceName) {

@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Resources {
             {RAssetType.Object, typeof(UnityEngine.Object)},
             {RAssetType.GameObject, typeof(GameObject)},
             {RAssetType.Texture2D, typeof(Texture2D)},
-            {RAssetType.Sprite, typeof(Sprite)},
+            {RAssetType.Sprite, typeof(Texture2D)},
         };
 
         private static readonly Dictionary<string, UnityEngine.Object> loadedAssets = [];
@@ -21,10 +21,10 @@ namespace CupheadArchipelago.Resources {
         internal static IEnumerator LoadSceneAssetsAsync(Scenes scene) =>
             LoadSceneAssetsAsync(scene.ToString());
         internal static IEnumerator LoadSceneAssetsAsync(string sceneName) {
-            if (!AssetMap.IsSceneRegistered(sceneName)) {
+            if (!SceneAssetMap.IsSceneRegistered(sceneName)) {
                 throw new KeyNotFoundException($"{sceneName} is not registered in Resource AssetMap.");
             }
-            foreach (string assetName in AssetMap.GetSceneAssets(sceneName)) {
+            foreach (string assetName in SceneAssetMap.GetSceneAssets(sceneName)) {
                 if (!loadedAssets.ContainsKey(assetName)) {
                     yield return LoadAssetAsync(assetName);
                 }
@@ -35,7 +35,7 @@ namespace CupheadArchipelago.Resources {
             yield break;
         }
         internal static IEnumerator LoadPersistentAssetsAsync() {
-            foreach (string assetName in AssetReg.GetPersisentAssets()) {
+            foreach (string assetName in AssetDefs.GetPersisentAssets()) {
                 if (!loadedAssets.ContainsKey(assetName)) {
                     yield return LoadAssetAsync(assetName);
                 }
@@ -47,7 +47,7 @@ namespace CupheadArchipelago.Resources {
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 yield return AssetBundleMngr.LoadAssetBundleAsync(bundleName);
             }
-            IEnumerable<string> bundleAssets = AssetReg.GetAssetNamesInBundle(bundleName);
+            IEnumerable<string> bundleAssets = AssetDefs.GetAssetsInBundle(bundleName);
             foreach (string asset in bundleAssets) {
                 if (!loadedAssets.ContainsKey(asset)) {
                     yield return LoadAssetAsync(asset);
@@ -62,24 +62,29 @@ namespace CupheadArchipelago.Resources {
             if (loadedAssets.ContainsKey(assetName)) {
                 throw new Exception($"{assetName} is already loaded!");
             }
-            string bundleName = AssetReg.GetBundleNamesFromAsset(assetName);
+            string bundleName = AssetDefs.GetBundleFromAsset(assetName);
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 yield return AssetBundleMngr.LoadAssetBundleAsync(bundleName);
             }
             AssetBundle bundle = AssetBundleMngr.GetLoadedBundle(bundleName);
+            RAssetType assetType = AssetDefs.GetAssetType(assetName);
             AssetBundleRequest request =
-                bundle.LoadAssetAsync(assetName, rAssetTypeMap[AssetReg.GetAssetType(assetName)]);
+                bundle.LoadAssetAsync(
+                    AssetDefs.GetInternalAssetName(assetName),
+                    rAssetTypeMap[assetType]
+                );
             yield return request;
-            loadedAssets.Add(assetName, request.asset);
+            ProcessAsset(request.asset, assetType, out UnityEngine.Object asset);
+            loadedAssets.Add(assetName, asset);
             yield break;
         }
         internal static void LoadSceneAssets(Scenes scene) =>
             LoadSceneAssets(scene.ToString());
         internal static void LoadSceneAssets(string sceneName) {
-            if (!AssetMap.IsSceneRegistered(sceneName)) {
+            if (!SceneAssetMap.IsSceneRegistered(sceneName)) {
                 throw new KeyNotFoundException($"{sceneName} is not registered in Resource AssetMap.");
             }
-            foreach (string assetName in AssetMap.GetSceneAssets(sceneName)) {
+            foreach (string assetName in SceneAssetMap.GetSceneAssets(sceneName)) {
                 if (!loadedAssets.ContainsKey(assetName)) {
                     LoadAsset(assetName);
                 }
@@ -89,7 +94,7 @@ namespace CupheadArchipelago.Resources {
             }
         }
         internal static void LoadPersistentAssets() {
-            foreach (string assetName in AssetReg.GetPersisentAssets()) {
+            foreach (string assetName in AssetDefs.GetPersisentAssets()) {
                 if (!loadedAssets.ContainsKey(assetName)) {
                     LoadAsset(assetName);
                 }
@@ -99,7 +104,7 @@ namespace CupheadArchipelago.Resources {
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 AssetBundleMngr.LoadAssetBundle(bundleName);
             }
-            IEnumerable<string> bundleAssets = AssetReg.GetAssetNamesInBundle(bundleName);
+            IEnumerable<string> bundleAssets = AssetDefs.GetAssetsInBundle(bundleName);
             foreach (string asset in bundleAssets) {
                 if (!loadedAssets.ContainsKey(asset)) {
                     LoadAsset(asset);
@@ -113,21 +118,26 @@ namespace CupheadArchipelago.Resources {
             if (loadedAssets.ContainsKey(assetName)) {
                 throw new Exception($"{assetName} is already loaded!");
             }
-            string bundleName = AssetReg.GetBundleNamesFromAsset(assetName);
+            string bundleName = AssetDefs.GetBundleFromAsset(assetName);
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 AssetBundleMngr.LoadAssetBundle(bundleName);
             }
             AssetBundle bundle = AssetBundleMngr.GetLoadedBundle(bundleName);
-            loadedAssets.Add(
-                assetName,
-                bundle.LoadAsset(assetName, rAssetTypeMap[AssetReg.GetAssetType(assetName)])
+            ProcessAsset(
+                bundle.LoadAsset(
+                    AssetDefs.GetInternalAssetName(assetName),
+                    rAssetTypeMap[AssetDefs.GetAssetType(assetName)]
+                ),
+                AssetDefs.GetAssetType(assetName),
+                out UnityEngine.Object asset
             );
+            loadedAssets.Add(assetName, asset);
         }
         internal static void UnloadAllAssets() => UnloadAllAssets(false);
         internal static void UnloadAllAssets(bool unloadPersistent) {
             string[] loadedAssetNames = [.. loadedAssets.Keys];
             foreach (string loadedAsset in loadedAssetNames) {
-                if (!AssetReg.IsAssetPersistent(loadedAsset) || unloadPersistent) {
+                if (!AssetDefs.IsAssetPersistent(loadedAsset) || unloadPersistent) {
                     UnloadAsset(loadedAsset);
                 }
             }
@@ -165,7 +175,7 @@ namespace CupheadArchipelago.Resources {
         internal static string GetLoadedAssetsAsString() {
             LinkedList<string> resList = [];
             foreach (string asset in loadedAssets.Keys) {
-                if (AssetReg.IsAssetPersistent(asset)) {
+                if (AssetDefs.IsAssetPersistent(asset)) {
                     resList.AddFirst($"*{asset}");
                 }
                 else {
@@ -173,6 +183,18 @@ namespace CupheadArchipelago.Resources {
                 }
             }
             return $"Loaded RAssets: {Aux.CollectionToString(resList)}";
+        }
+
+        private static bool ProcessAsset(UnityEngine.Object asset, RAssetType assetType, out UnityEngine.Object nAsset) {
+            switch (assetType) {
+                case RAssetType.Sprite:
+                    Texture2D tex = (Texture2D)asset;
+                    nAsset = Sprite.Create(tex, new(0f, 0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    return true;
+                default:
+                    nAsset = asset;
+                    return false;
+            }
         }
     }
 }
