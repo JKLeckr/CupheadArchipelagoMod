@@ -5,7 +5,7 @@ using System;
 
 namespace CupheadArchipelago {
     [Flags]
-    public enum LoggingFlags {
+    public enum LoggingFlags : byte {
         None = 0,
         PluginInfo = 1,
         Info = 2,
@@ -14,5 +14,6 @@ namespace CupheadArchipelago {
         Network = 16,
         Debug = 32,
         //Transpiler = 64,
+        //All = byte.MaxValue,
     }
 }

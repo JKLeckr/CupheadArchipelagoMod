@@ -32,6 +32,7 @@ namespace CupheadArchipelago {
         private static readonly string verPath = Path.Combine(Path.Combine(Paths.PluginPath, MOD_NAME), "configver");
         private long configVer;
         private ConfigEntry<bool> configEnabled;
+        private ConfigEntry<byte> configTestMode;
         private ConfigEntry<bool> configModLogs;
         private ConfigEntry<int> configModFileMax;
         private ConfigEntry<LoggingFlags> configLoggingFlags;
@@ -46,6 +47,7 @@ namespace CupheadArchipelago {
         private void Awake() {
             SetupConfigVersion(this);
             configEnabled = Config.Bind("Main", "Enabled", true, "Mod Master Switch");
+            configTestMode = Config.Bind<byte>("Main", "TestMode", 0, "Launches the mod in test mode. Keep it at 0 unless you know what you are doing!");
             configModLogs = Config.Bind("Logging", "ModLogFiles", true, "Writes mod logs to files. They are not overwritten on startup unlike the main BepInEx log (unless configured not to).");
             configModFileMax = Config.Bind("Logging", "ModLogFileMax", 10, "The maxmum amount of mod logs that can be in the mod logs folder at once. Oldest gets deleted when max is reached.");
             configLoggingFlags = Config.Bind("Logging", "LoggingFlags", LoggingFlags.PluginInfo | LoggingFlags.Info | LoggingFlags.Message | LoggingFlags.Warning | LoggingFlags.Network, "Set mod logging verbosity.");
@@ -59,6 +61,7 @@ namespace CupheadArchipelago {
             configAPStatusFunctions = Config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities. (Currently does nothing)");
             //configAPOverrides = Config.Bind("AP", "Overrides", true, "Overrides specific non-functional server-side settings.");
             CupheadArchipelago.Config.Init(
+                configTestMode.Value,
                 configDebugAsInfo.Value,
                 configSkipCutscenes.Value,
                 configSkipCutscenesAPOnly.Value,
@@ -197,7 +200,7 @@ namespace CupheadArchipelago {
 
         private static void Fail(Exception e, int failCode) {
             Logging.LogError("An exception occured while loading.");
-            Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load!");
+            Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
             State = failCode;
             Logging.LogFatal("Throwing Exception...");
             throw e;

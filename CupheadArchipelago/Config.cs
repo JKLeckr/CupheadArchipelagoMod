@@ -32,6 +32,7 @@ namespace CupheadArchipelago {
     public class Config {
         private static Config current;
 
+        private byte configTestMode;
         private bool configDebugAsInfo;
         private Cutscenes configSkipCutscenes;
         private bool configSkipCutscenesAPOnly;
@@ -42,6 +43,7 @@ namespace CupheadArchipelago {
         //public static bool SkipCutscenesAPOnly { get => current.configSkipCutscenesAPOnly; }
 
         internal static void Init(
+            byte configTestMode,
             bool configDebugAsInfo,
             Cutscenes configSkipCutscenes,
             bool configSkipCutscenesAPOnly,
@@ -49,6 +51,7 @@ namespace CupheadArchipelago {
             APStatsFunctions configAPStatusFunctions
         ) {
             current = new() {
+                configTestMode = configTestMode,
                 configDebugAsInfo = configDebugAsInfo,
                 configSkipCutscenes = configSkipCutscenes,
                 configSkipCutscenesAPOnly = configSkipCutscenesAPOnly,
@@ -57,6 +60,8 @@ namespace CupheadArchipelago {
             };
         }
 
+        public static bool IsTesting() => GetTestMode() != 0;
+        public static byte GetTestMode() => current.configTestMode;
         public static bool IsDebugLogsInfo() => current.configDebugAsInfo;
         public static bool IsSkippingCutscene(Cutscenes cutscene) {
             return IsSkippingCutscene(cutscene, APData.IsCurrentSlotEnabled());

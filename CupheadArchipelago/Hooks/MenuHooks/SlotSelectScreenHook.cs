@@ -32,7 +32,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
-            Harmony.CreateAndPatchAll(typeof(Start));
+            //Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(SetState));
             Harmony.CreateAndPatchAll(typeof(Update));
             Harmony.CreateAndPatchAll(typeof(UpdateOptionsMenu));
@@ -63,8 +63,6 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         [HarmonyPatch(typeof(SlotSelectScreen), "Start")]
         internal static class Start {
             static bool Prefix() {
-                GameObject obj = new("testee");
-                obj.AddComponent<SpriteRenderer>().sprite = AssetMngr.GetLoadedAsset<Sprite>("testee");
                 return true;
             }
         }

@@ -103,7 +103,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             GameObject obj = GameObject.Instantiate(_parent.GetChild(4).gameObject);
             obj.transform.SetParent(_parent);
             SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-            sr.sprite = AssetMngr.GetLoadedAsset<Sprite>("cap_dicehouse_chalkboard_spr");
+            sr.sprite = AssetMngr.GetLoadedAsset<Sprite>("cap_dicehouse_chalkboard_tics");
             /*GameObject obj = GameObject.Instantiate(AssetMngr.GetLoadedAsset<GameObject>("cap_dicehouse_chalkboard"), _parent);
             Logging.Log("1");
             SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();

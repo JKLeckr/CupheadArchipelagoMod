@@ -43,7 +43,7 @@ namespace CupheadArchipelago.Resources {
             }
             yield break;
         }
-        internal static IEnumerator LoadAllBundleAssetsAsync<T>(string bundleName) {
+        internal static IEnumerator LoadBundleAssetsAsync<T>(string bundleName) {
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 yield return AssetBundleMngr.LoadAssetBundleAsync(bundleName);
             }
@@ -74,6 +74,9 @@ namespace CupheadArchipelago.Resources {
                     rAssetTypeMap[assetType]
                 );
             yield return request;
+            if (request.asset == null) {
+                throw new Exception($"Asset \"{assetName}\" from Bundle \"{bundle}\" could not be loaded!");
+            }
             ProcessAsset(request.asset, assetType, out UnityEngine.Object asset);
             loadedAssets.Add(assetName, asset);
             yield break;
@@ -123,11 +126,12 @@ namespace CupheadArchipelago.Resources {
                 AssetBundleMngr.LoadAssetBundle(bundleName);
             }
             AssetBundle bundle = AssetBundleMngr.GetLoadedBundle(bundleName);
+            UnityEngine.Object rasset = bundle.LoadAsset(
+                AssetDefs.GetInternalAssetName(assetName),
+                rAssetTypeMap[AssetDefs.GetAssetType(assetName)]
+            ) ?? throw new Exception($"Asset \"{assetName}\" from Bundle \"{bundle}\" could not be loaded!");
             ProcessAsset(
-                bundle.LoadAsset(
-                    AssetDefs.GetInternalAssetName(assetName),
-                    rAssetTypeMap[AssetDefs.GetAssetType(assetName)]
-                ),
+                rasset,
                 AssetDefs.GetAssetType(assetName),
                 out UnityEngine.Object asset
             );

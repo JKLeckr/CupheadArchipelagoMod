@@ -6,13 +6,15 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.Resources {
     public class AssetDefs {
         private static readonly Dictionary<string, HashSet<string>> assetBundleDefs = new() {
-            { "testee", ["testee"] },
-            { "cap_dicehouse", ["cap_dicehouse_chalkboard", "cap_dicehouse_chalkboard_spr"]},
+            { "testee", ["testee", "sqar", "a", "circ"] },
+            { "cap_dicehouse", ["cap_dicehouse_chalkboard_tics"]},
         };
         private static readonly Dictionary<string, RAsset> assetDefs = new() {
             { "testee", new("testee", RAssetType.Sprite) },
-            { "cap_dicehouse_chalkboard", new("cap_dicehouse_chalkboard", RAssetType.GameObject) },
-            { "cap_dicehouse_chalkboard_spr", new("cap_dicehouse_chalkboard_spr", RAssetType.Sprite) },
+            { "sqar", new("sqar", RAssetType.Sprite) },
+            { "a", new("a", RAssetType.Sprite) },
+            { "circ", new("circ", RAssetType.Sprite) },
+            { "cap_dicehouse_chalkboard_tics", new("cap_dicehouse_chalkboard_tics", RAssetType.Sprite) },
         };
         private static readonly HashSet<string> persistentAssets = [];
 

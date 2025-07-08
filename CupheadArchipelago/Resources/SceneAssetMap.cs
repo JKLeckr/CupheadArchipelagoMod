@@ -6,8 +6,7 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.Resources {
     internal class SceneAssetMap {
         private static readonly Dictionary<string, HashSet<string>> sceneAssetMap = new() {
-            { Scenes.scene_slot_select.ToString(), ["testee"] },
-            { Scenes.scene_level_dice_gate.ToString(), ["cap_dicehouse_chalkboard", "cap_dicehouse_chalkboard_spr"]},
+            { Scenes.scene_level_dice_gate.ToString(), ["cap_dicehouse_chalkboard_tics"]},
         };
 
         public static bool IsSceneRegistered(Scenes scene) => IsSceneRegistered(scene.ToString());
