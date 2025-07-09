@@ -20,7 +20,7 @@ namespace CupheadArchipelago.Resources {
             { "a", new("a", RAssetType.Sprite) },
             { "circ", new("circ", RAssetType.Sprite) },
             { "TexOverlay", new("TexOverlay", RAssetType.Shader) },
-            { "cap_dicehouse_chalkboard_tics", new("cap_dicehouse_chalkboard_tics", RAssetType.Sprite) },
+            { "cap_dicehouse_chalkboard_tics", new("cap_dicehouse_chalkboard_tics", RAssetType.Texture2D) },
         };
         private static readonly HashSet<string> persistentAssets = [
             "TexOverlay"

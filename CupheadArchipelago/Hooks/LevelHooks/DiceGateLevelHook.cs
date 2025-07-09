@@ -99,34 +99,20 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         }
 
         private static void CreateChalkOverlay(Transform parent) {
-            Transform _parent = parent.GetChild(3);
-            GameObject obj = GameObject.Instantiate(_parent.GetChild(4).gameObject);
-            obj.transform.SetParent(_parent);
+            Transform obj = parent.GetChild(3).GetChild(3);
             SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-            sr.sprite = AssetMngr.GetLoadedAsset<Sprite>("cap_dicehouse_chalkboard_tics");
-            /*GameObject obj = GameObject.Instantiate(AssetMngr.GetLoadedAsset<GameObject>("cap_dicehouse_chalkboard"), _parent);
-            Logging.Log("1");
-            SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-            Logging.Log("1");
-            Material mat_default = new(Shader.Find("Sprites/Default"));
-            Logging.Log("1");
-            sr.material = mat_default;
-            Logging.Log("1");
-            Transform quad = obj.transform.GetChild(0);
-            Logging.Log("1");
-            MeshRenderer qsr = quad.GetComponent<MeshRenderer>();
-            Logging.Log("1");
-            qsr.material = mat_default;
-            qsr.materials = [mat_default];
-            Logging.Log("1");*/
-            /*Texture2D tex = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard_spr");
-            Sprite sprChalk = Sprite.Create(tex, new(0f, 0f, tex.width, tex.height), new(0.5f, 0.5f), 100f);
-            GameObject chalkOverlay = new("die_house_chalkoverlay");
-            chalkOverlay.transform.parent = parent;
-            chalkOverlay.transform.position = new Vector2(0, 0);
-            SpriteRenderer sr = chalkOverlay.AddComponent<SpriteRenderer>();
-            sr.sprite = sprChalk;*/
 
+            Texture2D oTex = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard_tics");
+            sr.material.shader = StaticAssets.OverlayShader;
+            MaterialPropertyBlock mblock = new();
+            sr.GetPropertyBlock(mblock);
+
+            mblock.SetTexture("_OverlayTex", oTex);
+            //mat.SetVector("_OverlayPos", new(0.561f, 0.341f, 0f, 0f));
+            //mat.SetVector("_OverlaySize", new(0.1458f, 0.1458f, 0f, 0f));
+            mblock.SetFloat("_TrimAlpha", 0.3f);
+
+            sr.SetPropertyBlock(mblock);
         }
     }
 }
