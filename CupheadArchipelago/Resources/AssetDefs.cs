@@ -5,19 +5,28 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.Resources {
     public class AssetDefs {
+        // Register Assets and Bundles here
         private static readonly Dictionary<string, HashSet<string>> assetBundleDefs = new() {
             { "testee", ["testee", "sqar", "a", "circ"] },
+            { "cap_base", ["TexOverlay"] },
             { "cap_dicehouse", ["cap_dicehouse_chalkboard_tics"]},
         };
+        private static readonly HashSet<string> persistentBundles = [
+            "cap_base"
+        ];
         private static readonly Dictionary<string, RAsset> assetDefs = new() {
             { "testee", new("testee", RAssetType.Sprite) },
             { "sqar", new("sqar", RAssetType.Sprite) },
             { "a", new("a", RAssetType.Sprite) },
             { "circ", new("circ", RAssetType.Sprite) },
+            { "TexOverlay", new("TexOverlay", RAssetType.Shader) },
             { "cap_dicehouse_chalkboard_tics", new("cap_dicehouse_chalkboard_tics", RAssetType.Sprite) },
         };
-        private static readonly HashSet<string> persistentAssets = [];
+        private static readonly HashSet<string> persistentAssets = [
+            "TexOverlay"
+        ];
 
+        // Auto generated
         private static readonly Dictionary<string, string> assetToBundleMap = [];
 
         static AssetDefs() {
@@ -34,6 +43,7 @@ namespace CupheadArchipelago.Resources {
 
         public static IEnumerable<string> GetAssetsInBundle(string bundleName) => assetBundleDefs[bundleName];
 
+        public static IEnumerable<string> GetPersisentAssetBundles() => persistentBundles;
         public static IEnumerable<string> GetPersisentAssets() => persistentAssets;
 
         public static string GetInternalAssetName(string assetName) => assetDefs[assetName].name;
@@ -42,6 +52,7 @@ namespace CupheadArchipelago.Resources {
         public static string GetBundleFromAsset(string assetName) =>
             assetToBundleMap.ContainsKey(assetName) ? assetToBundleMap[assetName] : null;
 
+        public static bool IsAssetBundlePersistent(string bundleName) => persistentBundles.Contains(bundleName);
         public static bool IsAssetPersistent(string assetName) => persistentAssets.Contains(assetName);
     }
 }

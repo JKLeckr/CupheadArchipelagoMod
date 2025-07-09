@@ -12,7 +12,6 @@ namespace CupheadArchipelago.Resources {
         internal const string RESOURCE_PRE = "CupheadArchipelago.Assets.";
 
         public static void LoadResources() {
-            StaticAssets.Init();
             foreach (string resource in ResourceDefs.GetRegisteredResources()) {
                 Logging.LogDebug($"Loading resource {resource}...");
                 byte[] resoureBytes = GetResourceBytes(RESOURCE_PRE + resource);
@@ -20,7 +19,9 @@ namespace CupheadArchipelago.Resources {
                 Logging.LogDebug($"Loaded resource {resource}.");
             }
             Logging.LogDebug($"Loading persistent resource assets...");
+            AssetBundleMngr.LoadPersistentAssetBundles();
             AssetMngr.LoadPersistentAssets();
+            StaticAssets.Init();
         }
 
         private static byte[] GetResourceBytes(string resourceName) {

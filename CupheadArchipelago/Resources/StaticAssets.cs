@@ -7,10 +7,12 @@ namespace CupheadArchipelago.Resources {
     internal class StaticAssets {
         internal static bool Initted { get; private set; } = false;
 
-        internal static Shader standardSprite;
+        internal static Shader StandardSpriteShader { get; private set; }
+        internal static Shader OverlayShader { get; private set; }
 
         internal static void Init() {
-            standardSprite = Shader.Find("Sprites/Default");
+            StandardSpriteShader = Shader.Find("Sprites/Default");
+            OverlayShader = AssetMngr.GetLoadedAsset<Shader>("TexOverlay");
             Initted = true;
         }
     }

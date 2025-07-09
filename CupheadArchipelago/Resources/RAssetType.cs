@@ -7,5 +7,6 @@ namespace CupheadArchipelago.Resources {
         GameObject,
         Texture2D,
         Sprite,
+        Shader,
     }
 }

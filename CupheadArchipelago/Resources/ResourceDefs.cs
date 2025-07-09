@@ -5,8 +5,10 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.Resources {
     public class ResourceDefs {
+        // Register Resources here.
         private static readonly HashSet<string> resources = new() {
             { "testee" },
+            { "cap_base" },
             { "cap_dicehouse" }
         };
 

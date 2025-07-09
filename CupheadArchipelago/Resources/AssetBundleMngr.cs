@@ -11,6 +11,15 @@ namespace CupheadArchipelago.Resources {
     internal class AssetBundleMngr {
         private static readonly Dictionary<string, AssetBundle> loadedBundles = [];
 
+        internal static IEnumerator LoadPersistentAssetBundlesAsync() {
+            foreach (string bundleName in AssetDefs.GetPersisentAssetBundles()) {
+                if (!loadedBundles.ContainsKey(bundleName)) {
+                    yield return LoadAssetBundleAsync(bundleName);
+                }
+                yield return null;
+            }
+            yield break;
+        }
         internal static IEnumerator LoadAssetBundleAsync(string bundleName) {
             if (loadedBundles.ContainsKey(bundleName)) {
                 Logging.LogError($"{bundleName} is already loaded!");
@@ -21,6 +30,13 @@ namespace CupheadArchipelago.Resources {
             loadedBundles.Add(bundleName, request.assetBundle);
             yield break;
         }
+        internal static void LoadPersistentAssetBundles() {
+            foreach (string bundleName in AssetDefs.GetPersisentAssetBundles()) {
+                if (!loadedBundles.ContainsKey(bundleName)) {
+                    LoadAssetBundle(bundleName);
+                }
+            }
+        }
         internal static void LoadAssetBundle(string bundleName) {
             if (loadedBundles.ContainsKey(bundleName)) {
                 Logging.LogError($"{bundleName} is already loaded!");
@@ -29,10 +45,12 @@ namespace CupheadArchipelago.Resources {
                 bundleName, AssetBundle.LoadFromMemory(ResourceLoader.GetLoadedResource(bundleName))
             );
         }
-        internal static void UnloadAssetBundles() {
+        internal static void UnloadAssetBundles() => UnloadAssetBundles(false);
+        internal static void UnloadAssetBundles(bool unloadPersistent) {
             string[] loadedBundleNames = [.. loadedBundles.Keys];
             foreach (string bundleName in loadedBundleNames) {
-                UnloadAssetBundle(bundleName);
+                if (!AssetDefs.IsAssetBundlePersistent(bundleName) || unloadPersistent)
+                    UnloadAssetBundle(bundleName);
             }
         }
         internal static void UnloadAssetBundle(string bundleName) {

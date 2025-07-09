@@ -70,6 +70,8 @@
   <ItemGroup>
     <None Remove="Assets/testee" />
 	  <EmbeddedResource Include="Assets/testee" />
+    <None Remove="Assets/cap_base" />
+	  <EmbeddedResource Include="Assets/cap_base" />
 	  <None Remove="Assets/cap_dicehouse" />
 	  <EmbeddedResource Include="Assets/cap_dicehouse" />
   </ItemGroup>

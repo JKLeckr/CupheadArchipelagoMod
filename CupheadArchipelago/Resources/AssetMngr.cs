@@ -14,6 +14,7 @@ namespace CupheadArchipelago.Resources {
             {RAssetType.GameObject, typeof(GameObject)},
             {RAssetType.Texture2D, typeof(Texture2D)},
             {RAssetType.Sprite, typeof(Texture2D)},
+            {RAssetType.Shader, typeof(Shader)},
         };
 
         private static readonly Dictionary<string, UnityEngine.Object> loadedAssets = [];
@@ -75,7 +76,7 @@ namespace CupheadArchipelago.Resources {
                 );
             yield return request;
             if (request.asset == null) {
-                throw new Exception($"Asset \"{assetName}\" from Bundle \"{bundle}\" could not be loaded!");
+                throw new Exception($"Asset \"{assetName}\" from Bundle \"{bundleName}\" could not be loaded!");
             }
             ProcessAsset(request.asset, assetType, out UnityEngine.Object asset);
             loadedAssets.Add(assetName, asset);
@@ -129,7 +130,7 @@ namespace CupheadArchipelago.Resources {
             UnityEngine.Object rasset = bundle.LoadAsset(
                 AssetDefs.GetInternalAssetName(assetName),
                 rAssetTypeMap[AssetDefs.GetAssetType(assetName)]
-            ) ?? throw new Exception($"Asset \"{assetName}\" from Bundle \"{bundle}\" could not be loaded!");
+            ) ?? throw new Exception($"Asset \"{assetName}\" from Bundle \"{bundleName}\" could not be loaded!");
             ProcessAsset(
                 rasset,
                 AssetDefs.GetAssetType(assetName),
