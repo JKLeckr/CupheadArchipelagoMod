@@ -14,7 +14,7 @@ namespace CupheadArchipelago.Unity {
         [SerializeField]
         private bool shaderControls = false;
         [SerializeField]
-        private bool canvasControls = true;
+        private bool canvasControls = false;
 
         private SpriteRenderer bgsr = null;
         private MaterialPropertyBlock bgmblock = null;
@@ -63,9 +63,6 @@ namespace CupheadArchipelago.Unity {
             mblock.SetFloat("_TrimAlpha", bgotrim);
 
             sr.SetPropertyBlock(mblock);
-
-            //bgsr = sr;
-            //bgmblock = mblock;
 
             GameObject slashObj = Instantiate(slashTemplate.gameObject, bgparent);
             slashObj.name = "die_house_chalk_slash";
