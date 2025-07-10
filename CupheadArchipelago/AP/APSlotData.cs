@@ -38,6 +38,7 @@ namespace CupheadArchipelago.AP {
         internal readonly DlcCurseModes dlc_curse_mode;
         internal readonly bool trap_loadout_anyweapon;
         internal readonly MusicGroups music_shuffle;
+        internal readonly bool ducklock_platdrop;
         internal readonly bool deathlink;
 
         internal APSlotData(Dictionary<string, object> slotData) {
@@ -78,6 +79,7 @@ namespace CupheadArchipelago.AP {
             dlc_curse_mode = GetAPSlotDataValue<DlcCurseModes>(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
+            ducklock_platdrop = GetAPSlotDataValue<bool>(slotData, "ducklock_platdrop");
             deathlink = GetAPSlotDataValue<bool>(slotData, "deathlink");
         }
 

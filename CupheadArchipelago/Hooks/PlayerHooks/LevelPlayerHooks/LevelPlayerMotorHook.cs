@@ -3,16 +3,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
     internal class LevelPlayerMotorHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(HandleDash));
             Harmony.CreateAndPatchAll(typeof(HandleLooking));
+            Harmony.CreateAndPatchAll(typeof(HandleJumping));
             Harmony.CreateAndPatchAll(typeof(HandleParry));
             Harmony.CreateAndPatchAll(typeof(ChaliceDashParry));
             Harmony.CreateAndPatchAll(typeof(ChaliceDoubleJump));
@@ -51,6 +54,55 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
 
             private static bool APIsDashUnReady(LevelPlayerMotor.DashManager.State state) {
                 return state != 0 || (APData.IsCurrentSlotEnabled() && !APData.CurrentSData.playerData.dash);
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelPlayerMotor), "HandleJumping")]
+        internal static class HandleJumping {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new(instructions);
+                bool success = false;
+                bool debug = false;
+
+                FieldInfo _fi_canFallThrough = typeof(LevelPlatform).GetField("canFallThrough", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo _mi_GetComponent =
+                    typeof(Component).GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(
+                        m => m.Name.Equals("GetComponent") && m.IsGenericMethod
+                    )?.MakeGenericMethod(typeof(LevelPlatform));
+
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
+                for (int i = 0; i < codes.Count - 7; i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && codes[i + 2].opcode == OpCodes.Callvirt &&
+                        codes[i + 3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 3].operand == _mi_GetComponent &&
+                        codes[i + 4].opcode == OpCodes.Stloc_2 && codes[i + 5].opcode == OpCodes.Ldloc_2 && codes[i + 6].opcode == OpCodes.Ldfld &&
+                        (FieldInfo)codes[i + 6].operand == _fi_canFallThrough && codes[i + 7].opcode == OpCodes.Brfalse
+                    ) {
+                        Label l_skipdrop = (Label)codes[i + 7].operand;
+                        List<CodeInstruction> ncodes = [
+                            CodeInstruction.Call(() => APPlatformDropCondition()),
+                            new(OpCodes.Brfalse, l_skipdrop),
+                        ];
+                        codes.InsertRange(i, ncodes);
+                        success = true;
+                        break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(HandleJumping)}: Patch Failed!");
+                if (debug) {
+                    Logging.Log("---");
+                    Dbg.LogCodeInstructions(codes);
+                }
+
+                return codes;
+            }
+
+            private static bool APPlatformDropCondition() {
+                if (APData.IsCurrentSlotEnabled()) {
+                    return APClient.APSessionGSPlayerData.duck || APSettings.DuckLockPlatDropBug;
+                }
+                return true;
             }
         }
 

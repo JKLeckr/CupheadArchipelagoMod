@@ -240,6 +240,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCRunGunChaliceChecks = SlotData.dlc_rungun_chalice_checks;
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
+                    APSettings.DuckLockPlatDropBug = SlotData.ducklock_platdrop;
                     APSettings.DeathLink = SlotData.deathlink;
 
                     ShopMap.SetShopMap(SlotData.shop_map);

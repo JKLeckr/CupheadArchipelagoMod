@@ -63,7 +63,8 @@ namespace CupheadArchipelago.Resources {
             if (loadedAssets.ContainsKey(assetName)) {
                 throw new Exception($"{assetName} is already loaded!");
             }
-            string bundleName = AssetDefs.GetBundleFromAsset(assetName);
+            string bundleName = AssetDefs.GetBundleFromAsset(assetName) ??
+                throw new NullReferenceException($"{assetName} does not exist in an asset bundle!");
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 yield return AssetBundleMngr.LoadAssetBundleAsync(bundleName);
             }
@@ -122,7 +123,8 @@ namespace CupheadArchipelago.Resources {
             if (loadedAssets.ContainsKey(assetName)) {
                 throw new Exception($"{assetName} is already loaded!");
             }
-            string bundleName = AssetDefs.GetBundleFromAsset(assetName);
+            string bundleName = AssetDefs.GetBundleFromAsset(assetName) ??
+                throw new NullReferenceException($"{assetName} does not exist in an asset bundle!");
             if (!AssetBundleMngr.IsAssetBundleLoaded(bundleName)) {
                 AssetBundleMngr.LoadAssetBundle(bundleName);
             }

@@ -11,5 +11,3 @@ There are bugs that are known. There are less than before, but new alpha release
 - Once in awhile, the client will crash.
 
 - Make sure a specific configuration works before starting a multiworld! There are certain combinations that I have not tested.
-
-- There is a possibility (cannot confirm) that you can drop platforms without duck.

@@ -38,6 +38,7 @@ namespace CupheadArchipelago.AP {
         public static MusicGroups ShuffleMusic { get; internal set; }
         public static bool RandomizeAimAbilities { get; internal set; }
         public static bool ClassicShop { get; internal set; }
+        public static bool DuckLockPlatDropBug { get; internal set; }
 
         static APSettings() => Init();
         public static void Init() {
@@ -76,6 +77,7 @@ namespace CupheadArchipelago.AP {
             ShuffleMusic = MusicGroups.None;
             RandomizeAimAbilities = false;
             ClassicShop = false;
+            DuckLockPlatDropBug = false;
         }
 
         public static bool IsItemGroupChaliceSeparate(ItemGroups group, bool anybit = false) {

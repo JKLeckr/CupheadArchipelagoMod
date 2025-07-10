@@ -6,27 +6,33 @@ using System.Collections.Generic;
 namespace CupheadArchipelago.Resources {
     public class AssetDefs {
         // Register Assets and Bundles here
+        // Bundles {{ bundleName, [ assetNames ] }}
         private static readonly Dictionary<string, HashSet<string>> assetBundleDefs = new() {
             { "testee", ["testee", "sqar", "a", "circ"] },
-            { "cap_base", ["TexOverlay"] },
+            { "cap_base", ["s_Debug", "s_TexOverlay"] },
             { "cap_dicehouse", ["cap_dicehouse_chalkboard_tics"]},
         };
+        // Persistent Bundles [ bundleName ]
         private static readonly HashSet<string> persistentBundles = [
             "cap_base"
         ];
+        // Assets {{ assetName, (internalAssetName, assetType) }}
         private static readonly Dictionary<string, RAsset> assetDefs = new() {
             { "testee", new("testee", RAssetType.Sprite) },
             { "sqar", new("sqar", RAssetType.Sprite) },
             { "a", new("a", RAssetType.Sprite) },
             { "circ", new("circ", RAssetType.Sprite) },
-            { "TexOverlay", new("TexOverlay", RAssetType.Shader) },
+            { "s_Debug", new("Debug", RAssetType.Shader) },
+            { "s_TexOverlay", new("TexOverlay", RAssetType.Shader) },
             { "cap_dicehouse_chalkboard_tics", new("cap_dicehouse_chalkboard_tics", RAssetType.Texture2D) },
         };
+        // Persistent Assets [ assetName ]
         private static readonly HashSet<string> persistentAssets = [
-            "TexOverlay"
+            "s_Debug",
+            "s_TexOverlay"
         ];
 
-        // Auto generated
+        // Auto generated (Do not change)
         private static readonly Dictionary<string, string> assetToBundleMap = [];
 
         static AssetDefs() {
