@@ -27,6 +27,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         APSettings.RequiredContracts[ClampReqIndex(index)]
                     );
                 }
+                //__instance.gameObject.AddComponent<DiceGateLevelChalk>().Init(17, 17);
                 return true;
             }
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
