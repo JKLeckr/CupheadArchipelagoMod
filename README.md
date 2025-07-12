@@ -40,7 +40,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
 
 ## Building
-See BUILDING.md
+See [BUILDING.md](BUILDING.md)
 
 ## Setting up Archipelago
 
