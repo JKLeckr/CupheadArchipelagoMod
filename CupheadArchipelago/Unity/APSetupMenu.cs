@@ -76,6 +76,7 @@ namespace CupheadArchipelago.Unity {
                 return;
             }
             if (promptCooldown) {
+                prompts.gameObject.SetActive(true);
                 promptCooldown = false;
                 return;
             }

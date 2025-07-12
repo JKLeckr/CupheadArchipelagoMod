@@ -13,7 +13,6 @@ using HarmonyLib;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using CupheadArchipelago.Resources;
 
 namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenHook {
@@ -173,7 +172,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     _lockMenu = true;
                     if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
                         Logging.Log("Cleaning APData...");
-                        APData.ResetData(_slotSelection, false, false);
+                        APData.ResetData(_slotSelection, false, false, false);
                     }
                     if (Status!=0) {
                         if (Status==1) {
@@ -200,7 +199,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 }
                 else {
                     if (!APData.IsSlotEmpty(_slotSelection)) {
-                        APData.ResetData(_slotSelection, true, true);
+                        APData.ResetData(_slotSelection, true, true, false);
                         APData.Save(_slotSelection);
                     }
                     _instance.StartCoroutine(_mi_game_start_cr.Name, 0);

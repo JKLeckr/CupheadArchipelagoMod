@@ -24,6 +24,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
             static bool Prefix(LevelPlayerWeaponManager __instance) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
                 uint basicBit = (uint)(__instance.player.stats.isChalice ? WeaponParts.CBasic : WeaponParts.Basic);
+                //Logging.Log($"weapon bit: {basicBit} has: {APClient.APSessionGSPlayerData.WeaponHasBit(__instance.CurrentWeapon.id, basicBit)}");
                 return APClient.APSessionGSPlayerData.WeaponHasBit(__instance.CurrentWeapon.id, basicBit);
             }
         }

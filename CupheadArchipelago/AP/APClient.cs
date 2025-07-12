@@ -178,7 +178,7 @@ namespace CupheadArchipelago.AP {
                 string seed = session.RoomState.Seed;
                 //Logging.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
                 if (APSessionGSData.seed != seed) {
-                    if (APSessionGSData.seed != "" && (!APSessionGSData.IsOverridden(2) || Enabled)) {
+                    if (APSessionGSData.seed != "" && (!APSessionGSData.IsOverridden(Overrides.SeedMismatchOverride) || Enabled)) {
                         Logging.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -5;
@@ -248,6 +248,7 @@ namespace CupheadArchipelago.AP {
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
                     LevelMap.Init(SlotData.level_map);
+                    Weapon startWeapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
                     if (APSettings.WeaponMode == WeaponModes.Normal) {
                         uint upgradeBit = (uint)WeaponParts.All;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetModularWeapons(), upgradeBit);
@@ -255,9 +256,12 @@ namespace CupheadArchipelago.AP {
                         APSessionGSPlayerData.dlc_cplane_ex = true;
                     }
                     else if ((APSettings.WeaponMode & WeaponModes.NoStart) > 0) {
-                        Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
                         uint supgradeBit = (uint)WeaponParts.All;
-                        APSessionGSPlayerData.AddWeaponBit(weapon, supgradeBit);
+                        APSessionGSPlayerData.AddWeaponBit(startWeapon, supgradeBit);
+                    }
+                    else {
+                        uint supgradeBit = (uint)WeaponParts.AllBasic;
+                        APSessionGSPlayerData.AddWeaponBit(startWeapon, supgradeBit);
                     }
                     if (!APSettings.RandomizeAbilities)
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);

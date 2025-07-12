@@ -59,12 +59,10 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         [HarmonyPatch(typeof(PlayerStatsManager), "TakeDamage")]
         internal static class TakeDamage {
             static bool Prefix(PlayerStatsManager __instance) {
-                if (APData.IsCurrentSlotEnabled() && APData.CurrentSData.IsAnyOverridden(192)) {
-                    if (APData.CurrentSData.IsOverridden(64) || __instance.Health == 1) {
-                        Vibrator.Vibrate(1f, 0.2f, __instance.basePlayer.id);
-                        __instance.StartCoroutine("hit_cr");
-                        return false;
-                    }
+                if (APData.CurrentSData.IsOverridden(Overrides.DamageOverride)) {
+                    Vibrator.Vibrate(1f, 0.2f, __instance.basePlayer.id);
+                    __instance.StartCoroutine("hit_cr");
+                    return false;
                 }
                 return true;
             }

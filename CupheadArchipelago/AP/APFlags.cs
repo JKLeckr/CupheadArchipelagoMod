@@ -38,6 +38,16 @@ namespace CupheadArchipelago.AP {
     }
 
     [Flags]
+    public enum Overrides {
+        None = 0,
+        DataVersionOverride = 1,
+        SeedMismatchOverride = 2,
+        OverrideResetOverride = 16,
+        DamageOverride = 64,
+        CleanupReceivedItemsOverride = 512,
+    }
+
+    [Flags]
     public enum ItemGroups {
         None = 0,
         Essential = 1,

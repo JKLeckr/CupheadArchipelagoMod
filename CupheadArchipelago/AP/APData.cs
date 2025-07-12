@@ -107,12 +107,12 @@ namespace CupheadArchipelago.AP {
                     if (data._override != 0) {
                         Logging.LogWarning($"[APData] Slot {index}: There are overrides enabled ({data._override}). I hope you know what you are doing!");
                     } 
-                    if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(1)) {
+                    if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(Overrides.DataVersionOverride)) {
                         Logging.LogWarning($"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
                         data.state = 1;
                     }
-                    if (data.IsOverridden(512)) {
-                        data._override &= ~512;
+                    if (data.IsOverridden(Overrides.CleanupReceivedItemsOverride)) {
+                        data._override &= ~(int)Overrides.CleanupReceivedItemsOverride;
                         Logging.LogWarning($"[APData] Slot {index}: Cleaning up received items...");
                         int counter = 0;
                         for (int j=0;j<data.receivedItems.Count;j++) {
@@ -143,7 +143,7 @@ namespace CupheadArchipelago.AP {
                 return;
             }
             Logging.Log($"[APData] Saving slot {index}");
-            if (version != AP_DATA_VERSION && !IsOverridden(1)) {
+            if (version != AP_DATA_VERSION && !IsOverridden(Overrides.DataVersionOverride)) {
                 Logging.LogError($"[APData] Slot {index} Data version mismatch. {version} != {AP_DATA_VERSION}. Skipping.");
                 return;
             }
@@ -189,6 +189,9 @@ namespace CupheadArchipelago.AP {
             ResetData(index, reset, reset);
         }
         public static void ResetData(int index, bool disable, bool resetSettings) {
+            ResetData(index, disable, resetSettings, !SData[index].IsOverridden(Overrides.OverrideResetOverride));
+        }
+        public static void ResetData(int index, bool disable, bool resetSettings, bool resetOverrides) {
             Logging.Log("[APData] Resetting Data...");
             APData old_data = SData[index];
             APData data = new() {
@@ -201,7 +204,7 @@ namespace CupheadArchipelago.AP {
                 data.player = old_data.player;
                 data.password = old_data.password;
             }
-            if (old_data.IsOverridden(16)) {
+            if (!resetOverrides) {
                 data._override = old_data._override;
             }
             SData[index] = data;
@@ -221,6 +224,8 @@ namespace CupheadArchipelago.AP {
         }
         public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
+        public bool IsOverridden(Overrides o) => IsOverridden((int)o);
+        public bool IsAnyOverridden(Overrides o) => IsAnyOverridden((int)o);
         public bool IsOverridden(int i) {
             return (_override & i) == i;
         }
