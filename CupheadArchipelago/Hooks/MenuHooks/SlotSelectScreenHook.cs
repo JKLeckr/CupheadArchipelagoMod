@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Config;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 using UnityEngine;
@@ -495,7 +496,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             private static void LoadSceneNewSave() {
                 Logging.Log("Loading Scene", LoggingFlags.Debug);
-                if (!Config.IsSkippingCutscene(Cutscenes.Intro, APData.SData[_slotSelection].enabled)) {
+                if (!MConf.IsSkippingCutscene(Cutscenes.Intro, APData.SData[_slotSelection].enabled)) {
                     Cutscene.Load(Scenes.scene_level_house_elder_kettle, Scenes.scene_cutscene_intro, SceneLoader.Transition.Fade, SceneLoader.Transition.Fade);
                 }
                 else {

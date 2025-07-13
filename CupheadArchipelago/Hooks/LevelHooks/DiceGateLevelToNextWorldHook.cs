@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CupheadArchipelago.Config;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
@@ -46,7 +47,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static bool IsSkippingCutscene(bool origCond) {
-                return origCond || Config.IsSkippingCutscene(Cutscenes.DieHouseCutscenes);
+                return origCond || MConf.IsSkippingCutscene(Cutscenes.DieHouseCutscenes);
             }
         }
     }

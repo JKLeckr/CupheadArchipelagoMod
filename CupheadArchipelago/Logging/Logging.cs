@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using CupheadArchipelago.Config;
 using BepInEx.Logging;
 
 namespace CupheadArchipelago {
@@ -66,7 +67,7 @@ namespace CupheadArchipelago {
         }
         public static void LogDebug(object data) => LogDebug(data, LoggingFlags.Debug);
         public static void LogDebug(object data, LoggingFlags requiredFlags) {
-            Log(data, requiredFlags, Config.IsDebugLogsInfo() ? LogLevel.Info : LogLevel.Debug);
+            Log(data, requiredFlags, MConf.IsDebugLogsInfo() ? LogLevel.Info : LogLevel.Debug);
         }
 
         public static bool IsLoggingFlagsEnabled(LoggingFlags flags) {

@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Config;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
@@ -27,7 +28,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
             private static bool APCondition() {
                 return 
-                    Config.IsSkippingCutscene(Cutscenes.DLCSaltbakerIntro) ||
+                    MConf.IsSkippingCutscene(Cutscenes.DLCSaltbakerIntro) ||
                     APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCRequiredIngredients;
             }
         }

@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Config;
 using CupheadArchipelago.Resources;
 using HarmonyLib;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace CupheadArchipelago.Hooks {
                     input = new CupheadInput.AnyPlayerInput(false);
                     return false;
                 }
-                if (Config.IsTesting()) {
+                if (MConf.IsTesting()) {
                     Logging.Log("Running in Test Mode: Running in test environment instead of game.");
                     CreateTestHUD();
                     CreateTestObjects();
@@ -43,7 +44,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(StartScreen), "Start")]
         internal static class Start {
             static bool Prefix() {
-                return Plugin.State >= 0 && !Config.IsTesting();
+                return Plugin.State >= 0 && !MConf.IsTesting();
             }
         }
 
@@ -63,7 +64,7 @@ namespace CupheadArchipelago.Hooks {
                     }
                     return false;
                 }
-                if (Config.IsTesting()) {
+                if (MConf.IsTesting()) {
                     if (input?.GetButton(CupheadButton.Cancel) ?? false) {
                         if (dismissTime < TEST_DISMISS_TIME) {
                             dismissTime += Time.deltaTime;

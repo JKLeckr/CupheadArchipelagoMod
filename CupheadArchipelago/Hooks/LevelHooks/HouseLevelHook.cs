@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CupheadArchipelago.Config;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
@@ -50,7 +51,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static void APSetup(int dialoguerVarId) {
-                if (Config.IsSkippingCutscene(Cutscenes.KettleIntro)) {
+                if (MConf.IsSkippingCutscene(Cutscenes.KettleIntro)) {
                     Dialoguer.SetGlobalFloat(dialoguerVarId, 1f);
                 }
             }

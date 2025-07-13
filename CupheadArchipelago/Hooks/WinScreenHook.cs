@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using CupheadArchipelago.Config;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks {
@@ -50,13 +51,13 @@ namespace CupheadArchipelago.Hooks {
                 bool origCond = Level.PreviousLevel == level;
                 switch (level) {
                     case Levels.Devil:
-                        if (Config.IsSkippingCutscene(Cutscenes.EndCutscene)) {
+                        if (MConf.IsSkippingCutscene(Cutscenes.EndCutscene)) {
                             Cutscene.Load(Scenes.scene_title, Scenes.scene_cutscene_credits, SceneLoader.Transition.Fade, SceneLoader.Transition.Fade, SceneLoader.Icon.None);
                             return false;
                         }
                         return origCond;
                     case Levels.Saltbaker:
-                        if (Config.IsSkippingCutscene(Cutscenes.DLCEndCutscene)) {
+                        if (MConf.IsSkippingCutscene(Cutscenes.DLCEndCutscene)) {
                             SceneLoader.LoadScene(Scenes.scene_cutscene_dlc_credits_comic, SceneLoader.Transition.Iris, SceneLoader.Transition.Iris, SceneLoader.Icon.None, null);
                             return false;
                         }

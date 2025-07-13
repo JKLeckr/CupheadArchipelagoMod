@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CupheadArchipelago.Config;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago.AP {
@@ -181,11 +182,11 @@ namespace CupheadArchipelago.AP {
         public static void SaveCurrent() => Save(global::PlayerData.CurrentSaveFileIndex);
 
         public static void ResetAllData() {
-            bool reset = Config.ResetAPConfigOnFileDelete();
+            bool reset = MConf.ResetAPConfigOnFileDelete();
             for (int i=0;i<SData.Length;i++) ResetData(i, reset, reset);
         }
         public static void ResetData(int index) {
-            bool reset = Config.ResetAPConfigOnFileDelete();
+            bool reset = MConf.ResetAPConfigOnFileDelete();
             ResetData(index, reset, reset);
         }
         public static void ResetData(int index, bool disable, bool resetSettings) {

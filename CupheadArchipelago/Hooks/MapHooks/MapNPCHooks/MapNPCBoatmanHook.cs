@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Config;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     internal class MapNPCBoatmanHook {
@@ -164,7 +164,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return true;
             }
             private static bool APLoadScene() {
-                if (Config.IsSkippingCutscene(Cutscenes.DLCIntro)) {
+                if (MConf.IsSkippingCutscene(Cutscenes.DLCIntro)) {
                     SceneLoader.LoadScene(Scenes.scene_level_kitchen, SceneLoader.Transition.Iris, SceneLoader.Transition.Iris, SceneLoader.Icon.Hourglass);
                     return true;
                 }
