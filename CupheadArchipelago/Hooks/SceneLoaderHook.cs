@@ -43,12 +43,20 @@ namespace CupheadArchipelago.Hooks {
 
         [HarmonyPatch(typeof(SceneLoader), "load_cr", MethodType.Enumerator)]
         internal static class load_cr {
+            // Register assets that require DLC to function.
+            private static readonly HashSet<string> dlcAssets = [
+                "TitleCards_WDLC",
+            ];
+
+            // Asset Defs
             private static readonly HashSet<string> titleCardAssets = [
                 "TitleCards_W1",
                 "TitleCards_W2",
                 "TitleCards_W3",
                 "TitleCards_WDLC",
             ];
+
+            // Scenes that require assets
             private static readonly Dictionary<string, HashSet<string>> sceneAddAtlases = new() {
                 {Scenes.scene_map_world_1.ToString(), titleCardAssets},
                 {Scenes.scene_map_world_2.ToString(), titleCardAssets},
@@ -146,6 +154,7 @@ namespace CupheadArchipelago.Hooks {
                 // FIXME: Maybe not load ap stuff when in vanilla mode?
                 if (sceneAddAtlases.ContainsKey(sceneName)) {
                     res.UnionWith(sceneAddAtlases[sceneName]);
+                    if (!DLCManager.DLCEnabled()) res.ExceptWith(dlcAssets);
                     changed = true;
                 }
                 Dbg.LogCollectionDiff("Scene Atlases", preloadAtlases, changed ? res : null);
