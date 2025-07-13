@@ -7,8 +7,7 @@ namespace CupheadArchipelago.Hooks {
             StartScreenHook.Hook();
 
             RuntimeSceneAssetDatabaseHook.Hook();
-            AssetLoaderHook.Hook();
-            AssetBundleLoaderHook.Hook();
+            AssetHooks.AssetMain.Hook();
             SceneLoaderHook.Hook();
             CupheadHook.Hook();
             DLCManagerHook.Hook();
@@ -16,6 +15,7 @@ namespace CupheadArchipelago.Hooks {
             AbstractPauseGUIHook.Hook();
             WinScreenHook.Hook();
 
+            AudioHooks.AudioMain.Hook();
             MenuHooks.MenuMain.Hook();
             PlayerHooks.PlayerMain.Hook();
             MapHooks.MapMain.Hook();

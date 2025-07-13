@@ -43,7 +43,9 @@ namespace CupheadArchipelago.AP {
         DataVersionOverride = 1,
         SeedMismatchOverride = 2,
         OverrideResetOverride = 16,
-        DamageOverride = 64,
+        DamageOverrideP1 = 64,
+        DamageOverrideP2 = 128,
+        DamageOverride = 192,
         CleanupReceivedItemsOverride = 512,
     }
 

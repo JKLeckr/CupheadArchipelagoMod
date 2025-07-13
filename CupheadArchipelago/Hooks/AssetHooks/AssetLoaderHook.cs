@@ -10,7 +10,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.U2D;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.AssetHooks {
     internal class AssetLoaderHook {
         private static readonly Type[] defaultGTypes = [typeof(SpriteAtlas), typeof(AudioClip)];
         private delegate IEnumerable<CodeInstruction> TranspilerAction(IEnumerable<CodeInstruction> instructions, ILGenerator il);

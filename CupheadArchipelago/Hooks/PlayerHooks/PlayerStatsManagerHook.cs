@@ -47,9 +47,10 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         internal static class OnAwake {
             static bool Prefix(PlayerStatsManager __instance) {
                 Logging.Log("PlayerStatsManager OnAwake");
-                if (__instance.basePlayer.id==PlayerId.PlayerTwo) {
+                if (__instance.basePlayer.id == PlayerId.PlayerTwo) {
                     CurrentStatMngr2 = __instance;
-                } else {
+                }
+                else {
                     CurrentStatMngr1 = __instance;
                 }
                 return true;
@@ -59,7 +60,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         [HarmonyPatch(typeof(PlayerStatsManager), "TakeDamage")]
         internal static class TakeDamage {
             static bool Prefix(PlayerStatsManager __instance) {
-                if (APData.CurrentSData.IsOverridden(Overrides.DamageOverride)) {
+                Overrides obit = (__instance.basePlayer.id == PlayerId.PlayerTwo) ? Overrides.DamageOverrideP2 : Overrides.DamageOverrideP1;
+                if (APData.CurrentSData.IsOverridden(obit)) {
                     Vibrator.Vibrate(1f, 0.2f, __instance.basePlayer.id);
                     __instance.StartCoroutine("hit_cr");
                     return false;
@@ -67,7 +69,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 return true;
             }
         }
-        
+
         [HarmonyPatch(typeof(PlayerStatsManager), "CalculateHealthMax")]
         internal static class CalculateHealthMax {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
@@ -79,6 +81,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 MethodInfo _mi_get_HealthMax = _pi_HealthMax?.GetGetMethod();
                 MethodInfo _mi_set_HealthMax = _pi_HealthMax?.GetSetMethod(true);
                 MethodInfo _mi_get_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
+                MethodInfo _mi_APGetStartMaxHealth = typeof(CalculateHealthMax).GetMethod("APGetStartMaxHealth", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_APCalcMaxHealth = typeof(CalculateHealthMax).GetMethod("APCalcMaxHealth", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label cvanilla = il.DefineLabel();
@@ -86,16 +89,19 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                for (int i=0;i<codes.Count-3;i++) {
-                    if ((success&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && codes[i+2].opcode == OpCodes.Call &&
-                        codes[i+2].operand == _mi_set_HealthMax) {
-                            codes[i+1] = CodeInstruction.Call(() => APGetStartMaxHealth());
-                            success |= 1;
+                for (int i = 0; i < codes.Count - 3; i++) {
+                    if ((success & 1) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldc_I4_3 && codes[i + 2].opcode == OpCodes.Call &&
+                        codes[i + 2].operand == _mi_set_HealthMax
+                    ) {
+                        codes[i + 1] = new(OpCodes.Call, _mi_APGetStartMaxHealth);
+                        codes.Insert(i + 1, new(OpCodes.Ldarg_0));
+                        success |= 1;
                     }
-                    if ((success&2)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && (MethodInfo)codes[i+1].operand == _mi_get_HealthMax &&
-                        codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == 9 && codes[i+3].opcode == OpCodes.Ble) {
-                            CodeInstruction[] ncodes = [
-                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                    if ((success & 2) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Call && (MethodInfo)codes[i + 1].operand == _mi_get_HealthMax &&
+                        codes[i + 2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i + 2].operand == 9 && codes[i + 3].opcode == OpCodes.Ble
+                    ) {
+                        CodeInstruction[] ncodes = [
+                            CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
                                 new CodeInstruction(OpCodes.Brfalse, cvanilla),
                                 new CodeInstruction(OpCodes.Ldarg_0),
                                 new CodeInstruction(OpCodes.Dup),
@@ -105,15 +111,15 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                                 new CodeInstruction(OpCodes.Call, _mi_APCalcMaxHealth),
                                 new CodeInstruction(OpCodes.Call, _mi_set_HealthMax),
                             ];
-                            ncodes[0].labels = codes[i].labels;
-                            codes[i].labels = [cvanilla];
-                            codes.InsertRange(i, ncodes);
-                            i+= ncodes.Length;
-                            success |= 2;
+                        ncodes[0].labels = codes[i].labels;
+                        codes[i].labels = [cvanilla];
+                        codes.InsertRange(i, ncodes);
+                        i += ncodes.Length;
+                        success |= 2;
                     }
-                    if (success==3) break;
+                    if (success == 3) break;
                 }
-                if (success!=3) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed! {success}");
+                if (success != 3) throw new Exception($"{nameof(CalculateHealthMax)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
@@ -122,17 +128,18 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                 return codes;
             }
 
-            private static int APGetStartMaxHealth() {
-                return APData.IsCurrentSlotEnabled() ? APSettings.StartMaxHealth : 3;
+            private static int APGetStartMaxHealth(PlayerStatsManager instance) {
+                int startMaxHealth = instance.basePlayer.id == PlayerId.PlayerTwo ? APSettings.StartMaxHealthP2 : APSettings.StartMaxHealth;
+                return APData.IsCurrentSlotEnabled() ? startMaxHealth : 3;
             }
             private static int APCalcMaxHealth(int health, int healthMax) {
                 int nhealthMax = healthMax;
                 if (APData.IsCurrentSlotEnabled())
                     nhealthMax += APData.CurrentSData.playerData.healthupgrades;
-                return (health>healthMax)?health:nhealthMax;
+                return (health > healthMax) ? health : nhealthMax;
             }
         }
-        
+
         [HarmonyPatch(typeof(PlayerStatsManager), "DebugFillSuper")]
         internal static class DebugFillSuper {
             static bool Prefix(PlayerStatsManager __instance) {

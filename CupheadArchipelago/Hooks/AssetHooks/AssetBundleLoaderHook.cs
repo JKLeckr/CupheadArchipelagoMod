@@ -10,7 +10,7 @@ using CupheadArchipelago.Util;
 using HarmonyLib;
 using UnityEngine;
 
-namespace CupheadArchipelago.Hooks {
+namespace CupheadArchipelago.Hooks.AssetHooks {
     internal class AssetBundleLoaderHook {
         internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(loadAssetBundle));
