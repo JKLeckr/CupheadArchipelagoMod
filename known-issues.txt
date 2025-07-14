@@ -10,4 +10,6 @@ There are bugs that are known. There are less than before, but new alpha release
 
 - Once in awhile, the client will crash.
 
+- Some sounds will not play depending on the level/world. (Notable: item recieve sound, ingredient sound)
+
 - Make sure a specific configuration works before starting a multiworld! There are certain combinations that I have not tested.
