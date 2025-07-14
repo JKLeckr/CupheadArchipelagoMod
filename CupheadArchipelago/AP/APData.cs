@@ -107,7 +107,16 @@ namespace CupheadArchipelago.AP {
                     SData[index] = data;
                     if (data._override != 0) {
                         Logging.LogWarning($"[APData] Slot {index}: There are overrides enabled ({data._override}). I hope you know what you are doing!");
-                    } 
+                    }
+                    if (data.IsOverridden(Overrides.NukeOverride)) {
+                        Logging.LogWarning("[APData] Performing nuke override!");
+                        SData[index] = new APData {
+                            state = state,
+                            index = data.index,
+                        };
+                        SData[index].Save(false);
+                        data = SData[index];
+                    }
                     if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(Overrides.DataVersionOverride)) {
                         Logging.LogWarning($"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
                         data.state = 1;

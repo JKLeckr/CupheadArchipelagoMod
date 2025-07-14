@@ -80,7 +80,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
                         (FieldInfo)codes[i + 6].operand == _fi_canFallThrough && codes[i + 7].opcode == OpCodes.Brfalse
                     ) {
                         Label l_skipdrop = (Label)codes[i + 7].operand;
-                        List<CodeInstruction> ncodes = [
+                        CodeInstruction[] ncodes = [
                             CodeInstruction.Call(() => APPlatformDropCondition()),
                             new(OpCodes.Brfalse, l_skipdrop),
                         ];

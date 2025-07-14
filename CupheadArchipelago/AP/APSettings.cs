@@ -38,7 +38,7 @@ namespace CupheadArchipelago.AP {
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
         public static MusicGroups ShuffleMusic { get; internal set; }
         public static bool RandomizeAimAbilities { get; internal set; }
-        public static bool ClassicShop { get; internal set; }
+        public static ShopModes ShopMode { get; internal set; }
         public static bool DuckLockPlatDropBug { get; internal set; }
 
         static APSettings() => Init();
@@ -78,7 +78,7 @@ namespace CupheadArchipelago.AP {
             ShowUnaccessibleIslesInList = false;
             ShuffleMusic = MusicGroups.None;
             RandomizeAimAbilities = false;
-            ClassicShop = false;
+            ShopMode = ShopModes.Tiers;
             DuckLockPlatDropBug = false;
         }
 

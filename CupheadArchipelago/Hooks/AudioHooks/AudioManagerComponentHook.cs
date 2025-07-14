@@ -34,7 +34,7 @@ namespace CupheadArchipelago.Hooks.AudioHooks {
                         codes[i + 5].labels.Add(l_ctrue);
                         codes[i + 4] = new(OpCodes.Brtrue, l_ctrue);
 
-                        List<CodeInstruction> ncodes = [
+                        CodeInstruction[] ncodes = [
                             new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, _mi_AudioNotFoundResponse),
                             new(OpCodes.Br, endlabel),

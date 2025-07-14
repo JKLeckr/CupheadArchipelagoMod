@@ -441,7 +441,7 @@ namespace CupheadArchipelago.AP {
             }
             return false;
         }
-        public static bool IsLocationsChecked(long[] locs) {
+        public static bool AreLocationsChecked(long[] locs) {
             if (locs.Length<1) return false;
             foreach (long loc in locs) {
                 if (IsLocationChecked(loc))

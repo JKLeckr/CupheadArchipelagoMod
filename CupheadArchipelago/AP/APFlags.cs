@@ -46,6 +46,7 @@ namespace CupheadArchipelago.AP {
         DamageOverrideP1 = 64,
         DamageOverrideP2 = 128,
         DamageOverride = 192,
+        NukeOverride = 256,
         CleanupReceivedItemsOverride = 512,
     }
 

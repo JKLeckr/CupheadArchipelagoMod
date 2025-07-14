@@ -39,6 +39,12 @@ namespace CupheadArchipelago.AP {
         NoStart = 4, // Not functional on its own
     }
 
+    public enum ShopModes : byte {
+        Tiers = 0,
+        //StrictTiers = 1,
+        Independent = 2,
+    }
+
     public enum GradeChecks {
         Disabled = 0,
         AMinusGrade = 1,

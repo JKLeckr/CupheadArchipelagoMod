@@ -27,21 +27,21 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         }
 
         [HarmonyPatch(typeof(ShopSceneItem), "Init")]
-        internal static class Init {}
+        internal static class Init { }
 
         [HarmonyPatch(typeof(ShopSceneItem), "Description", MethodType.Getter)]
         internal static class Description {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
                 long loc = ShopMap.GetAPLocation(__instance);
-                if (loc<0) {
+                if (loc < 0) {
                     __result = $"{__instance.itemType}";
                     return false;
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
                     string res = check.ItemName ?? $"#{check.ItemId}";
-                    if (res.Length>64)
+                    if (res.Length > 64)
                         res = $"{res.Substring(0, 64)}...";
                     __result = res;
                 }
@@ -56,20 +56,20 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
                 long loc = ShopMap.GetAPLocation(__instance);
-                if (loc<0) {
+                if (loc < 0) {
                     __result = "INVALID";
                     return false;
                 }
                 ScoutedItemInfo check = APClient.GetCheck(loc);
                 if (check != null) {
                     string sres = "";
-                    if ((check.Flags&ItemFlags.Advancement)>0)
+                    if ((check.Flags & ItemFlags.Advancement) > 0)
                         sres = "P";
-                    else if ((check.Flags&ItemFlags.NeverExclude)>0)
+                    else if ((check.Flags & ItemFlags.NeverExclude) > 0)
                         sres = "U";
-                    if ((check.Flags&ItemFlags.Trap)>0)
+                    if ((check.Flags & ItemFlags.Trap) > 0)
                         sres = $"{sres}T";
-                    if (sres.Length==0)
+                    if (sres.Length == 0)
                         sres = "F";
                     string name = $"AP ITEM ({sres})";
                     __result = name ?? $"APItem {check.ItemId}";
@@ -85,7 +85,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             static bool Prefix(ShopSceneItem __instance, ref string __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
                 long loc = ShopMap.GetAPLocation(__instance);
-                if (loc<0) {
+                if (loc < 0) {
                     __result = "Unknown type";
                     return false;
                 }
@@ -103,7 +103,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         internal static class Value {
             static bool Prefix(ItemType ___itemType, ref int __result) {
                 if (!APData.IsCurrentSlotEnabled()) return true;
-                
+
                 // Static until pricing is randomizable
                 if (___itemType == ItemType.Charm) __result = 3;
                 else __result = 4;
@@ -125,51 +125,49 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
         [HarmonyPatch(typeof(ShopSceneItem), "Purchase")]
         internal static class Purchase {
-            //FIXME: Better quality
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 byte success = 0;
-                
+
                 FieldInfo _fi_itemType = typeof(ShopSceneItem).GetField("itemType", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_APCheck = typeof(Purchase).GetMethod("APCheck", BindingFlags.NonPublic | BindingFlags.Static);
 
-                Label vanilla_label = il.DefineLabel();
-                Label flag_label = il.DefineLabel();
-                Label end_label = new();
+                Label l_vanilla = il.DefineLabel();
+                Label l_flag = il.DefineLabel();
 
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                for (int i=codes.Count-2;i>=0;i--) {
-                    if (success==0 && codes[i+1].opcode == OpCodes.Ret && codes[i].labels.Count>0) {
-                        end_label = codes[i].labels[0];
-                        success|=1;
+                for (int i = codes.Count - 5; i >= 0; i--) {
+                    if ((success & 1) == 0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldfld &&
+                        (FieldInfo)codes[i + 1].operand == _fi_itemType && codes[i + 2].opcode == OpCodes.Stloc_1 &&
+                        codes[i + 3].opcode == OpCodes.Ldloc_1 && codes[i + 4].opcode == OpCodes.Switch
+                    ) {
+                        codes[i].labels.Add(l_vanilla);
+                        CodeInstruction[] ncodes = [
+                            CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
+                            new(OpCodes.Brfalse, l_vanilla),
+                            new(OpCodes.Ldarg_0),
+                            new(OpCodes.Call, _mi_APCheck),
+                            new(OpCodes.Stloc_0),
+                            new(OpCodes.Br, l_flag),
+                        ];
+                        codes.InsertRange(i, ncodes);
+                        i += ncodes.Length;
+                        success |= 1;
                     }
-                    else if ((success&2)==0 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Brfalse && (Label)codes[i+1].operand == end_label) {
-                        codes[i].labels.Add(flag_label);
-                        success|=2;
+                    if ((success & 2) == 0 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 1].opcode == OpCodes.Brfalse &&
+                        codes[i + 2].opcode == OpCodes.Ldarg_0
+                    ) {
+                        codes[i].labels.Add(l_flag);
+                        success |= 2;
                     }
-                    else if ((success&4)==0 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i+1].opcode == OpCodes.Stloc_0) {
-                        if ((i+2)<codes.Count) {
-                            codes[i+2].labels.Add(vanilla_label);
-                            CodeInstruction[] ncodes = [
-                                CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
-                                new CodeInstruction(OpCodes.Brfalse, vanilla_label),
-                                new CodeInstruction(OpCodes.Ldarg_0),
-                                new CodeInstruction(OpCodes.Call, _mi_APCheck),
-                                new CodeInstruction(OpCodes.Stloc_0),
-                                new CodeInstruction(OpCodes.Br, flag_label),
-                            ];
-                            codes.InsertRange(i+2, ncodes);
-                            i+=ncodes.Length;
-                            success|=4;
-                        }
-                    }
+                    if (success == 3) break;
                 }
-                if (success!=7) throw new Exception($"{nameof(Purchase)}: Patch Failed! {success}");
+                if (success != 3) throw new Exception($"{nameof(Purchase)}: Patch Failed! {success}");
                 if (debug) {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
@@ -177,13 +175,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
                 return codes;
             }
-            // TODO: Eventually use transpipler which is more elegant.
             static void Postfix(ShopSceneItem __instance) {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (PlayerData.Data.shouldShowShopkeepTooltip) {
                         PlayerData.Data.shouldShowShopkeepTooltip = false;
                     }
-                    if (ShopScene.Current.HasBoughtEverythingForAchievement(__instance.player)) {
+                    if (APBoughtAll()) {
                         APClient.GoalComplete(Goals.ShopBuyout, true);
                     }
                     APClient.SendChecks(true);
@@ -193,12 +190,19 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             private static bool APCheck(ShopSceneItem item) {
                 bool res = false;
                 long loc = ShopMap.GetAPLocation(item);
-                if (!APClient.IsLocationChecked(loc) && PlayerData.Data.GetCurrency(0) >= item.Value) {
+                if (APClient.IsLocationChecked(loc)) {
+                    res = true;
+                }
+                else if (PlayerData.Data.GetCurrency(0) >= item.Value) {
                     PlayerData.Data.AddCurrency(0, -item.Value);
                     APClient.Check(loc, false);
                     res = true;
                 }
                 return res;
+            }
+            private static bool APBoughtAll() {
+                // TODO: Finish
+                return false;
             }
         }
     }
