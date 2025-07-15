@@ -3,6 +3,7 @@
 
 using System.IO;
 using System.Reflection;
+using CupheadArchipelago.Config;
 
 namespace CupheadArchipelago.Tests.Core {
     internal class TestData {
