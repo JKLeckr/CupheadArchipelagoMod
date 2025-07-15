@@ -180,9 +180,6 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     if (PlayerData.Data.shouldShowShopkeepTooltip) {
                         PlayerData.Data.shouldShowShopkeepTooltip = false;
                     }
-                    if (APBoughtAll()) {
-                        APClient.GoalComplete(Goals.ShopBuyout, true);
-                    }
                     APClient.SendChecks(true);
                 }
             }
@@ -199,10 +196,6 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     res = true;
                 }
                 return res;
-            }
-            private static bool APBoughtAll() {
-                // TODO: Finish
-                return false;
             }
         }
     }

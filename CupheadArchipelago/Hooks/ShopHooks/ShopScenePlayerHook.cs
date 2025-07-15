@@ -17,39 +17,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             Harmony.CreateAndPatchAll(typeof(Awake));
             Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(UpdateSelection));
+            Harmony.CreateAndPatchAll(typeof(Purchase));
             Harmony.CreateAndPatchAll(typeof(addNewItem_cr));
-        }
-
-        private static readonly Weapon[] weapons = [
-            Weapon.level_weapon_homing,
-            Weapon.level_weapon_spreadshot,
-            Weapon.level_weapon_boomerang,
-            Weapon.level_weapon_bouncer,
-            Weapon.level_weapon_charge,
-            Weapon.level_weapon_wide_shot,
-            Weapon.level_weapon_crackshot,
-            Weapon.level_weapon_upshot,
-        ];
-        private static readonly Charm[] charms = [
-            Charm.charm_health_up_1,
-            Charm.charm_smoke_dash,
-            Charm.charm_parry_plus,
-            Charm.charm_super_builder,
-            Charm.charm_parry_attack,
-            Charm.charm_health_up_2,
-            Charm.charm_healer,
-            Charm.charm_curse,
-        ];
-        private static readonly Dictionary<Weapon, int> weaponOrder = [];
-        private static readonly Dictionary<Charm, int> charmOrder = [];
-
-        static ShopScenePlayerHook() {
-            for (int i = 0; i < weapons.Length; i++) {
-                weaponOrder.Add(weapons[i], i);
-            }
-            for (int i = 0; i < charms.Length; i++) {
-                charmOrder.Add(charms[i], i);
-            }
         }
 
         [HarmonyPatch(typeof(ShopScenePlayer), "Awake")]
@@ -75,8 +44,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 MethodInfo _mi_item_IsAvailable = typeof(ShopSceneItem).GetProperty("IsAvailable", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
                 MethodInfo _mi_APMPCondition = typeof(Awake).GetMethod("APMPCondition", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_SetupItems = typeof(Awake).GetMethod("SetupItems", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_IsAPWeaponChecked = typeof(ShopScenePlayerHook).GetMethod(nameof(IsAPWeaponChecked), BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_IsAPCharmChecked = typeof(ShopScenePlayerHook).GetMethod(nameof(IsAPCharmChecked), BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPWeaponChecked = typeof(ShopHookBase).GetMethod("IsAPWeaponChecked", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPCharmChecked = typeof(ShopHookBase).GetMethod("IsAPCharmChecked", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label l_vanilla = il.DefineLabel();
                 Label l_vwwhile = il.DefineLabel();
@@ -198,11 +167,11 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 // Setting order of prefabs for all shops
                 for (int i = 0; i < wlen; i++) {
                     ShopSceneItem item = weaponItemPrefabs[i];
-                    wtmp[weaponOrder[item.weapon]] = item;
+                    wtmp[ShopHookBase.GetWeaponOrderIndex(item.weapon)] = item;
                 }
                 for (int i = 0; i < clen; i++) {
                     ShopSceneItem item = charmItemPrefabs[i];
-                    ctmp[charmOrder[item.charm]] = item;
+                    ctmp[ShopHookBase.GetCharmOrderIndex(item.charm)] = item;
                 }
                 int wnullc = Aux.ArrayNullCount(wtmp);
                 int cnullc = Aux.ArrayNullCount(ctmp);
@@ -410,6 +379,15 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             }
         }
 
+        [HarmonyPatch(typeof(ShopScenePlayer), "Purchase")]
+        internal static class Purchase {
+            static void Postfix() {
+                if (ShopHookBase.APIsAllItemsBought()) {
+                    APClient.GoalComplete(Goals.ShopBuyout, true);
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(ShopScenePlayer), "addNewItem_cr", MethodType.Enumerator)]
         internal static class addNewItem_cr {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
@@ -430,8 +408,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 FieldInfo _fi_weaponItemPrefabs = typeof(ShopScenePlayer).GetField("weaponItemPrefabs", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_charm = typeof(ShopSceneItem).GetField("charm", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_weapon = typeof(ShopSceneItem).GetField("weapon", BindingFlags.Public | BindingFlags.Instance);
-                MethodInfo _mi_IsAPCharmChecked = typeof(ShopScenePlayerHook).GetMethod("IsAPCharmChecked", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo _mi_IsAPWeaponChecked = typeof(ShopScenePlayerHook).GetMethod("IsAPWeaponChecked", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPCharmChecked = typeof(ShopHookBase).GetMethod("IsAPCharmChecked", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_IsAPWeaponChecked = typeof(ShopHookBase).GetMethod("IsAPWeaponChecked", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label l_cvanilla = il.DefineLabel();
                 Label l_wvanilla = il.DefineLabel();
@@ -503,19 +481,5 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             return typeof(PlayerData).GetMethod("IsUnlocked", BindingFlags.Public | BindingFlags.Instance,
                 null, [typeof(PlayerId), type], null);
         }
-        private static bool IsAPCharmChecked(Charm charm) {
-            long loc = ShopMap.GetAPCharmLocation(charm);
-            bool res = APClient.IsLocationChecked(loc);
-            Logging.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
-            return res;
-        }
-        private static bool IsAPWeaponChecked(Weapon weapon) {
-            long loc = ShopMap.GetAPWeaponLocation(weapon);
-            bool res = APClient.IsLocationChecked(loc);
-            Logging.Log($"{APClient.GetCheck(loc).LocationName}: {loc}");
-            return res;
-        }
-        private static bool IsAPLocationChecked(ShopSceneItem item) =>
-            ShopSceneItemHook.IsAPLocationChecked(item);
     }
 }

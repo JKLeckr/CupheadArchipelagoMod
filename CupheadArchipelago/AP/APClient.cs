@@ -441,7 +441,7 @@ namespace CupheadArchipelago.AP {
             }
             return false;
         }
-        public static bool AreLocationsChecked(long[] locs) {
+        public static bool IsAllLocationsChecked(long[] locs) {
             if (locs.Length<1) return false;
             foreach (long loc in locs) {
                 if (IsLocationChecked(loc))
@@ -625,6 +625,8 @@ namespace CupheadArchipelago.AP {
             }
             if (sendGoal) SendGoal();
         }
+        public static bool AreGoalsCompleted(Goals goals) =>
+            APSessionGSData.AreGoalsCompleted(goals);
         public static bool IsAPGoalComplete() {
             Goals goals = APSettings.Mode switch {
                 GameModes.CollectContracts => Goals.Contracts,
