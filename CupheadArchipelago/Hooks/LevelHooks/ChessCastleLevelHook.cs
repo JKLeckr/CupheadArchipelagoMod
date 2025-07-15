@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -22,8 +23,17 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(ChessCastleLevel), "Awake")]
         internal static class Awake {
-            static void Postfix() {
-                if (APData.IsCurrentSlotEnabled() && Level.Won) APClient.SendChecks(true);
+            static void Postfix(ChessCastleLevel __instance) {
+                if (APData.IsCurrentSlotEnabled() && Level.Won) {
+                    __instance.StartCoroutine(SendChecks_cr());
+                }
+            }
+
+            private static IEnumerator SendChecks_cr() {
+                while (SceneLoader.CurrentlyLoading) {
+                    yield return null;
+                }
+                APClient.SendChecks(true);
             }
         }
 

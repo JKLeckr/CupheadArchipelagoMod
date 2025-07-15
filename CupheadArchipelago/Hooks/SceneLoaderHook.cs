@@ -34,7 +34,7 @@ namespace CupheadArchipelago.Hooks {
         internal static class LoadScene {
             static bool Prefix(Scenes scene) {
                 if (scene == Scenes.scene_title) {
-                    APClient.CloseArchipelagoSession();
+                    APClient.CloseArchipelagoSession(false);
                     DLCManagerHook.Reset();
                 }
                 return true;

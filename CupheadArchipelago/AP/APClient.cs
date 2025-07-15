@@ -552,9 +552,11 @@ namespace CupheadArchipelago.AP {
                     state = SendGoalThread();
                 }
                 Logging.Log($"[APClient] Successfully sent checks.");
-            } catch (ArchipelagoSocketClosedException e) {
+            }
+            catch (ArchipelagoSocketClosedException e) {
                 Logging.LogWarning($"[APClient] Failed to send checks! {e.Message}");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 Logging.LogError($"[APClient] Failed to send checks! Exception: {e}");
             }
             sending = false;

@@ -2,10 +2,12 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using UnityEngine;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.CutsceneHooks {
@@ -18,9 +20,16 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
 
         [HarmonyPatch(typeof(CreditsScreen), "Start")]
         internal static class Start {
-            static bool Prefix() {
-                APClient.SendChecks(true);
+            static bool Prefix(CreditsScreen __instance) {
+                __instance.StartCoroutine(SendChecks_cr());
                 return true;
+            }
+
+            private static IEnumerator SendChecks_cr() {
+                while (SceneLoader.CurrentlyLoading) {
+                    yield return null;
+                }
+                APClient.SendChecks(true);
             }
         }
 

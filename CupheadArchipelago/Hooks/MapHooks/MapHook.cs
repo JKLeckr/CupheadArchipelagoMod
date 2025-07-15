@@ -35,15 +35,22 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             static void Postfix(Map __instance, Scenes ___scene, CupheadMapCamera ___cupheadMapCamera) {
                 Logging.Log(Level.Difficulty, LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
-                    APClient.UpdateGoalFlags();
-                    APClient.SendChecks(true);
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     Logging.Log($"Current Map Scene: {___scene}");
                     LogMapsVisited();
                     apmngr.Init(APManager.MngrType.Normal);
                     apmngr.SetActive(true);
                     __instance.StartCoroutine(UpdateCoins_cr());
+                    __instance.StartCoroutine(SendChecks_cr());
                 }
+            }
+
+            private static IEnumerator SendChecks_cr() {
+                while (SceneLoader.CurrentlyLoading) {
+                    yield return null;
+                }
+                APClient.UpdateGoalFlags();
+                APClient.SendChecks(true);
             }
 
             private static bool MapSessionStarted(Scenes mapScene) {

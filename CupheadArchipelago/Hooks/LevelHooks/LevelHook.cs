@@ -2,8 +2,8 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
@@ -78,10 +78,17 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             static void Postfix(Level __instance) {
                 Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
-                    APClient.SendChecks(true);
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(GetLevelType(__instance), IsValidDeathLinkLevel(__instance));
+                    __instance.StartCoroutine(SendChecks_cr());
                 }
+            }
+
+            private static IEnumerator SendChecks_cr() {
+                while (SceneLoader.CurrentlyLoading) {
+                    yield return null;
+                }
+                APClient.SendChecks(true);
             }
         }
 
