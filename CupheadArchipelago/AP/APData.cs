@@ -16,6 +16,8 @@ namespace CupheadArchipelago.AP {
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
         public static APData SessionSData { get => APClient.APSessionGSData; }
 
+        private const int cheaterBits = (int)(Overrides.DamageOverrideP1 | Overrides.DamageOverrideP2);
+
         [JsonIgnore]
         public int index {get; private set;} = 0;
         [JsonIgnore]
@@ -125,13 +127,17 @@ namespace CupheadArchipelago.AP {
                         data._override &= ~(int)Overrides.CleanupReceivedItemsOverride;
                         Logging.LogWarning($"[APData] Slot {index}: Cleaning up received items...");
                         int counter = 0;
-                        for (int j=0;j<data.receivedItems.Count;j++) {
+                        for (int j = 0; j < data.receivedItems.Count; j++) {
                             if ((data.receivedItems[index]?.id ?? -1) == -1) {
                                 data.receivedItems.RemoveAt(index);
                                 counter++;
                             }
                         }
                         Logging.LogWarning($"[APData] Slot {index}: Removed {counter} items.");
+                    }
+                    if (data.IsCheater()) {
+                        Overrides enabledCheats = (Overrides)(data.GetOverrides() & GetCheaterOverrides());
+                        Logging.LogWarning($"[APData] Slot {index} has cheats enabled: [{enabledCheats}].");
                     }
                 }
             }
@@ -234,14 +240,19 @@ namespace CupheadArchipelago.AP {
         }
         public static bool IsCurrentSlotLocked() => IsSlotLocked(global::PlayerData.CurrentSaveFileIndex);
 
-        public bool IsOverridden(Overrides o) => IsOverridden((int)o);
-        public bool IsAnyOverridden(Overrides o) => IsAnyOverridden((int)o);
+        internal static int GetCheaterOverrides() => cheaterBits;
+
+        internal bool IsOverridden(Overrides o) => IsOverridden((int)o);
+        internal bool IsAnyOverridden(Overrides o) => IsAnyOverridden((int)o);
         public bool IsOverridden(int i) {
             return (_override & i) == i;
         }
         public bool IsAnyOverridden(int i) {
             return (_override & i) != 0;
         }
+        public int GetOverrides() => _override;
+
+        public bool IsCheater() => IsAnyOverridden(cheaterBits);
 
         public bool IsEmpty() => IsEmpty(SaveDataType.Auto);
         public bool IsEmpty(SaveDataType saveDataType) {

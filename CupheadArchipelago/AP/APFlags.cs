@@ -38,19 +38,6 @@ namespace CupheadArchipelago.AP {
     }
 
     [Flags]
-    public enum Overrides {
-        None = 0,
-        DataVersionOverride = 1,
-        SeedMismatchOverride = 2,
-        OverrideResetOverride = 16,
-        DamageOverrideP1 = 64,
-        DamageOverrideP2 = 128,
-        DamageOverride = 192,
-        NukeOverride = 256,
-        CleanupReceivedItemsOverride = 512,
-    }
-
-    [Flags]
     public enum ItemGroups {
         None = 0,
         Essential = 1,
@@ -90,5 +77,17 @@ namespace CupheadArchipelago.AP {
         DownLeft = 16384,
         DownRight = 32768,
         All = Left | Right | Up | Down | UpLeft | UpRight | DownLeft | DownRight
+    }
+
+    [Flags]
+    internal enum Overrides {
+        None = 0,
+        DataVersionOverride = 1,
+        SeedMismatchOverride = 2,
+        OverrideResetOverride = 16,
+        DamageOverrideP1 = 64,
+        DamageOverrideP2 = 128,
+        NukeOverride = 256,
+        CleanupReceivedItemsOverride = 512,
     }
 }

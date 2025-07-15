@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace CupheadArchipelago {
+namespace CupheadArchipelago.Config {
     public class SaveData {
         private static bool initted = false;
 

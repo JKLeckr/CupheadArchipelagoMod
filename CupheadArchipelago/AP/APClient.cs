@@ -866,11 +866,6 @@ namespace CupheadArchipelago.AP {
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
             Logging.Log($"Packet got: {packet.PacketType}");
             switch (packet.PacketType) {
-                /*case ArchipelagoPacketType.DataPackage: {
-                    DataPackagePacket datapackagepkt = (DataPackagePacket)packet;
-                    dataPackage = datapackagepkt.DataPackage;
-                    break;
-                }*/
                 case ArchipelagoPacketType.Connected: {
                     RunScout();
                     break;
