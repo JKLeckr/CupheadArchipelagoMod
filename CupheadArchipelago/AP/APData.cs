@@ -3,13 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using CupheadArchipelago.Config;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago.AP {
     public class APData {
-        internal const int AP_DATA_VERSION = 2;
+        internal const int AP_DATA_VERSION = 3;
 
         public static bool Loaded { get; private set; } = false;
         public static APData[] SData { get; private set; }
@@ -119,9 +120,16 @@ namespace CupheadArchipelago.AP {
                         SData[index].Save(false);
                         data = SData[index];
                     }
-                    if (data.version != AP_DATA_VERSION && !data.IsEmpty() && data.IsOverridden(Overrides.DataVersionOverride)) {
-                        Logging.LogWarning($"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!");
-                        data.state = 1;
+                    if (data.version != AP_DATA_VERSION && !data.IsEmpty()) {
+                        bool _override = data.IsOverridden(Overrides.DataVersionOverride);
+                        string message =
+                            $"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!";
+                        if (_override) {
+                            Logging.Log($"{message} But ignoring as requested.");
+                        } else {
+                            Logging.LogWarning(message);
+                            data.state = 1;
+                        }
                     }
                     if (data.IsOverridden(Overrides.CleanupReceivedItemsOverride)) {
                         data._override &= ~(int)Overrides.CleanupReceivedItemsOverride;

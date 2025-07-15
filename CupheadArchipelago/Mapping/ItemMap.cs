@@ -121,6 +121,12 @@ namespace CupheadArchipelago.Mapping {
         }
         public static APItemType GetItemType(this APItem item) => GetItemType(item.id);
 
+        public static bool IsItemFiller(long item) {
+            APItemType type = GetItemType(item);
+            return type == APItemType.None || type == APItemType.Level;
+        }
+        public static bool IsItemFiller(this APItem item) => IsItemFiller(item.id);
+
         private static readonly Dictionary<long, Weapon> idToWeapon = new() {
             {APItem.weapon_peashooter, Weapon.level_weapon_peashot},
             {APItem.weapon_spread, Weapon.level_weapon_spreadshot},
