@@ -8,7 +8,7 @@ A mod for Cuphead!
 
 This mod is designed to work with Archipelago, but it also adds extra features to the game as well. Parts can be enabled or disabled in the config.
 
-This mod is currently in the development phase and it is still incomplete, so do not expect a polished paradise while immersing yourself in the mod. Caveat Emptor!
+This mod is currently in the alpha phase which means it is still missing things. So, do not expect a dreamy vacation on Inkwell Isle while immersing yourself in the mod. Caveat Emptor!
 
 ### Links
 
