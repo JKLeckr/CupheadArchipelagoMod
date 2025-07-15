@@ -43,7 +43,8 @@ namespace CupheadArchipelago.AP {
         private static HashSet<long> doneChecksUnique;
         private static HashSet<APItemData> receivedItemsUnique;
         private static Dictionary<long, int> receivedItemCounts = new();
-        private static bool receivedItemsQueueLock = false;
+        private static bool receivedItemsQueueLockA = false;
+        private static bool receivedItemsQueueLockB = false;
         private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
         private static Queue<int> itemApplyLevelQueue = new();
@@ -414,7 +415,8 @@ namespace CupheadArchipelago.AP {
             locMap.Clear();
             itemMap.Clear();
             deathLinkService = null;
-            receivedItemsQueueLock = false;
+            receivedItemsQueueLockA = false;
+            receivedItemsQueueLockB = false;
             receivedItemsQueue = new();
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
@@ -669,13 +671,22 @@ namespace CupheadArchipelago.AP {
                     //Logging.Log($"[APClient] Receiving {itemName} from {item.Player}...");
                     Logging.Log($"[APClient] Receiving {itemName} from {item.Player} ({item.LocationDisplayName})...");
                     APItemData nitem = new APItemData(item);
-                    if (!receivedItemsQueueLock) {
-                        receivedItemsQueueLock = true;
-                        receivedItemsQueue.Enqueue(nitem);
-                        receivedItemsQueueLock = false;
-                    } else {
-                        Logging.Log("[APClient] Item Queue is locked. Will try again next time.");
+                    receivedItemsQueueLockA = true;
+                    if (receivedItemsQueueLockB) {
+                        Logging.Log("[APClient] Waiting for queue lock...");
+                        int timeout = 0;
+                        while (receivedItemsQueueLockB) {
+                            if (timeout > 500) {
+                                Logging.LogError("[APClient] Queue Lock Timeout!");
+                                receivedItemsQueueLockA = false;
+                                return;
+                            }
+                            Thread.Sleep(20);
+                            timeout++;
+                        }
                     }
+                    receivedItemsQueue.Enqueue(nitem);
+                    receivedItemsQueueLockA = false;
                 } else {
                     Logging.Log($"Skipping {itemName}");
                 }
@@ -686,15 +697,19 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static void ItemUpdate() {
-            if (!receivedItemsQueueLock && !APSessionGSData.dlock) {
-                if (receivedItemsQueue.Count>0) {
-                    receivedItemsQueueLock = true;
+            if (!receivedItemsQueueLockA && !APSessionGSData.dlock) {
+                if (receivedItemsQueue.Count > 0) {
+                    receivedItemsQueueLockB = true;
+                    if (!receivedItemsQueueLockA) {
+                        receivedItemsQueueLockB = false;
+                        return;
+                    }
+                    APItemData item = receivedItemsQueue.Dequeue();
+                    receivedItemsQueueLockB = false;
+                    if (!APSessionGSData.dlock) return;
                     APSessionGSData.dlock = true;
-                    APItemData item = receivedItemsQueue.Peek();
                     ReceiveItem(item);
-                    receivedItemsQueue.Dequeue();
                     APSessionGSData.dlock = false;
-                    receivedItemsQueueLock = false;
                 }
             }
         }

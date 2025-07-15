@@ -192,6 +192,8 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 }
                 else if (PlayerData.Data.GetCurrency(0) >= item.Value) {
                     PlayerData.Data.AddCurrency(0, -item.Value);
+                    Logging.Log($"Current coins: {PlayerData.Data.GetCurrency(PlayerId.PlayerOne)}");
+                    Logging.Log($"Total coins: {APClient.APSessionGSPlayerData.coins_collected}");
                     APClient.Check(loc, false);
                     res = true;
                 }
