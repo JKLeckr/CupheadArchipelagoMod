@@ -168,7 +168,7 @@ namespace CupheadArchipelago.AP {
                 Logging.LogWarning($"[APData] Slot {index} is locked, cannot save at this time.");
                 return;
             }
-            string filename = Path.Combine(SaveData.APSavePath, SaveData.AP_SAVE_FILE_KEYS[index]+".sav");
+            string filename = Path.Combine(SaveData.APSavePath, SaveData.AP_SAVE_FILE_KEYS[index] + ".sav");
             if (writeTime) {
                 long diff = DateTime.UtcNow.Ticks - ltime;
                 if (diff > 0) ftime += diff;
@@ -182,6 +182,10 @@ namespace CupheadArchipelago.AP {
             catch (Exception e) {
                 Logging.LogError($"[APData] Error while saving AP Save Data for {index}: {e}");
                 return;
+            }
+            if (writeTime) {
+                TimeSpan ts = new(ftime);
+                Logging.Log($"[APData] Save slot time: {ts.Hours}:{ts.Minutes}:{ts.Seconds}");
             }
         }
         public static void SaveAll() => SaveAll(global::PlayerData.inGame);
