@@ -127,8 +127,9 @@ namespace CupheadArchipelago.AP {
                         string message =
                             $"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!";
                         if (_override) {
-                            Logging.Log($"{message} But ignoring as requested.");
-                        } else {
+                            Logging.LogWarning($"{message} But ignoring as requested.");
+                        }
+                        else {
                             Logging.LogWarning(message);
                             data.state = 1;
                         }
