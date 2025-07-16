@@ -42,7 +42,7 @@ namespace CupheadArchipelago.AP {
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
         private static HashSet<APItemData> receivedItemsUnique;
-        private static Dictionary<long, int> receivedItemCounts = new();
+        private static Dictionary<long, int> receivedItemCounts = [];
         private static bool receivedItemsQueueLockA = false;
         private static bool receivedItemsQueueLockB = false;
         private static Queue<APItemData> receivedItemsQueue = new();
@@ -719,8 +719,6 @@ namespace CupheadArchipelago.AP {
                         return;
                     }
                     shownMessage &= ~1;
-                    APItemData item = receivedItemsQueue.Dequeue();
-                    receivedItemsQueueLockB = false;
                     if (APSessionGSData.dlock) {
                         if ((shownMessage & 2) == 0) {
                             Logging.Log("[APClient] APData is locked. Trying when it unlocks.");
@@ -729,6 +727,8 @@ namespace CupheadArchipelago.AP {
                         return;
                     }
                     APSessionGSData.dlock = true;
+                    APItemData item = receivedItemsQueue.Dequeue();
+                    receivedItemsQueueLockB = false;
                     shownMessage &= ~2;
                     ReceiveItem(item);
                     APSessionGSData.dlock = false;
