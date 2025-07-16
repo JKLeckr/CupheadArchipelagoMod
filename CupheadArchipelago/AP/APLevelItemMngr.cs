@@ -7,6 +7,10 @@ using CupheadArchipelago.Unity;
 namespace CupheadArchipelago.AP {
     internal class APLevelItemMngr {
         internal static void ApplyLevelItem(long itemId) {
+            if (APClient.GetAppliedItemCount(itemId) >= APClient.GetReceivedItemCount(itemId)) {
+                Logging.Log($"[APLevelItemMngr] Item is already applied. Skipping applying item.");
+            }
+
             PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
             PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
             PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
@@ -48,6 +52,11 @@ namespace CupheadArchipelago.AP {
                 //AudioManager.Play("level_menu_select");
                 Stub("Loadout Trap");
             }
+            else {
+                Logging.LogError($"[APLevelItemMngr] Cannot apply item {itemId}! Unregistered Level Item.");
+                return;
+            }
+            APClient.AddAppliedItem(itemId, 1);
         }
 
         private static void Stub(string itemName) => Logging.LogWarning($"Item handling unimplemented: {itemName}");

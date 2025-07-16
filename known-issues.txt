@@ -12,4 +12,6 @@ There are bugs that are known. There are less than before, but new alpha release
 
 - Some sounds will not play depending on the level/world. (Notable: item recieve sound, ingredient sound)
 
+- There have been instances where items are not recieved correctly. Work is made to add recovering from issues like these. Current workaround is to clear receivedItems from APData. The mod is designed to properly recover the items without adding duplicates.
+
 - Make sure a specific configuration works before starting a multiworld! There are certain combinations that I have not tested.
