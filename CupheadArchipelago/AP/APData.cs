@@ -47,6 +47,8 @@ namespace CupheadArchipelago.AP {
         public List<long> doneChecks = [];
         [JsonProperty("receivedItems")]
         public List<APItemData> receivedItems = [];
+        [JsonProperty("appliedItems")]
+        public Dictionary<long, int> appliedItems = [];
         [JsonProperty("goalsCompleted")]
         private Goals goalsCompleted = Goals.None;
         [JsonProperty("ftime")]
@@ -300,6 +302,9 @@ namespace CupheadArchipelago.AP {
         public void ResetGoals() => goalsCompleted = Goals.None;
         public bool AreGoalsCompleted(Goals goals) => (goals & goalsCompleted) >= goals;
 
+        internal void RegisterAppliedItem(long itemId) => RegisterAppliedItem(itemId, 1);
+        internal void RegisterAppliedItem(long itemId, int count) {} // TODO: Finish!
+
         public class PlayerData {
             [Flags]
             public enum SetTarget {
@@ -318,7 +323,7 @@ namespace CupheadArchipelago.AP {
                 AllAim = Aim | ChaliceAim,
                 All = int.MaxValue,
             }
-            
+
             [JsonProperty("contracts")]
             public int contracts = 0;
             [JsonProperty("plane_ex")]
@@ -353,7 +358,7 @@ namespace CupheadArchipelago.AP {
             public bool dlc_cplane_parry = false;
             [JsonProperty("dlc_cplane_shrink")]
             public bool dlc_cplane_shrink = false;
-            
+
             [JsonProperty("healthupgrades")]
             public int healthupgrades = 0;
             [JsonProperty("dlc_boat")]
@@ -366,24 +371,24 @@ namespace CupheadArchipelago.AP {
             private Dictionary<Weapon, uint> weapons = [];
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
-                if ((setTarget&SetTarget.Abilities)>0) dash = value;
-                if ((setTarget&SetTarget.Abilities)>0) duck = value;
-                if ((setTarget&SetTarget.Abilities)>0) parry = value;
-                if ((setTarget&SetTarget.Abilities)>0) plane_parry = value;
-                if ((setTarget&SetTarget.Abilities)>0) plane_shrink = value;
-                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cdash = value;
-                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cduck = value;
-                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cparry = value;
-                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cdoublejump = value;
-                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cplane_parry = value;
-                if ((setTarget&SetTarget.ChaliceAbilities)>0) dlc_cplane_shrink = value;
-                if ((setTarget&SetTarget.Super)>0) plane_super = value;
-                if ((setTarget&SetTarget.ChaliceSuper)>0) dlc_cplane_super = value;
-                if ((setTarget&SetTarget.Essential)>0) dlc_boat = value;
+                if ((setTarget & SetTarget.Abilities) > 0) dash = value;
+                if ((setTarget & SetTarget.Abilities) > 0) duck = value;
+                if ((setTarget & SetTarget.Abilities) > 0) parry = value;
+                if ((setTarget & SetTarget.Abilities) > 0) plane_parry = value;
+                if ((setTarget & SetTarget.Abilities) > 0) plane_shrink = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cdash = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cduck = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cparry = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cdoublejump = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cplane_parry = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cplane_shrink = value;
+                if ((setTarget & SetTarget.Super) > 0) plane_super = value;
+                if ((setTarget & SetTarget.ChaliceSuper) > 0) dlc_cplane_super = value;
+                if ((setTarget & SetTarget.Essential) > 0) dlc_boat = value;
             }
             public void SetIntValues(int value, SetTarget setTarget) {
-                if ((setTarget&SetTarget.Essential)>0) contracts = value;
-                if ((setTarget&SetTarget.Essential)>0) dlc_ingredients = value;
+                if ((setTarget & SetTarget.Essential) > 0) contracts = value;
+                if ((setTarget & SetTarget.Essential) > 0) dlc_ingredients = value;
             }
 
             internal void ClearWeaponUpgrades() {
@@ -394,7 +399,7 @@ namespace CupheadArchipelago.AP {
                     Logging.Log($"Adding {weapon}");
                     weapons.Add(weapon, 0);
                 }
-                if ((weapons[weapon] & bit)==0) Logging.Log($"Adding {weapon} bit {bit}");
+                if ((weapons[weapon] & bit) == 0) Logging.Log($"Adding {weapon} bit {bit}");
                 weapons[weapon] |= bit;
             }
             public void AddWeaponsBit(IEnumerable<Weapon> weapons, uint bit) {
