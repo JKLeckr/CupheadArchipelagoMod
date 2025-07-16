@@ -13,8 +13,6 @@ namespace CupheadArchipelago.AP {
             return ApplyItem(item.id, PlayerDataItfc.Default);
         }
         internal static bool ApplyItem(long itemId, IPlayerDataItfc pdMngr) {
-            ItemMap.GetItemType(itemId);
-
             try {
                 switch (ItemMap.GetItemType(itemId)) {
                     case APItemType.Weapon: {
