@@ -44,8 +44,8 @@ namespace CupheadArchipelago.AP {
         public PlayerData playerData = new();
         [JsonProperty("doneChecks")]
         public List<long> doneChecks = [];
-        [JsonProperty("receivedItems")]
-        public List<APItemData> receivedItems = [];
+        //[JsonProperty("receivedItems")]
+        //public List<APItemData> receivedItems = [];
         // TODO: Use appliedItems for more than just filler items
         [JsonProperty("appliedItems")]
         private Dictionary<long, int> appliedItems = [];
@@ -134,13 +134,13 @@ namespace CupheadArchipelago.AP {
                             data.state = 1;
                         }
                     }
-                    if (data.IsOverridden(Overrides.ClearReceivedItemsOverride)) {
+                    /*if (data.IsOverridden(Overrides.ClearReceivedItemsOverride)) {
                         data._override &= ~(int)Overrides.ClearReceivedItemsOverride;
                         Logging.LogWarning($"[APData] Slot {index}: Clearing received items...");
                         int counter = data.receivedItems.Count;
                         data.receivedItems.Clear();
                         Logging.LogWarning($"[APData] Slot {index}: Removed {counter} items.");
-                    }
+                    }*/
                     if (data.IsCheater()) {
                         Overrides enabledCheats = (Overrides)(data.GetOverrides() & GetCheaterOverrides());
                         Logging.LogWarning($"[APData] Slot {index} has cheats enabled: [{enabledCheats}].");

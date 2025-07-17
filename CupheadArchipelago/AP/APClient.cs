@@ -37,7 +37,8 @@ namespace CupheadArchipelago.AP {
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
-        private static List<APItemData> ReceivedItems { get => APSessionGSData.receivedItems; }
+        private static List<APItemData> receivedItems = [];
+        private static List<APItemData> ReceivedItems { get => receivedItems; }
         private static long ReceivedItemsCount { get => ReceivedItems.Count; }
         private static List<long> DoneChecks { get => APSessionGSData.doneChecks; }
         private static HashSet<long> doneChecksUnique;
@@ -259,7 +260,7 @@ namespace CupheadArchipelago.AP {
                         APSessionGSPlayerData.plane_ex = true;
                         APSessionGSPlayerData.dlc_cplane_ex = true;
                     }
-                    else if ((APSettings.WeaponMode & WeaponModes.NoStart) > 0) {
+                    else if ((APSettings.WeaponMode & WeaponModes.ExceptStart) > 0) {
                         uint supgradeBit = (uint)WeaponParts.All;
                         APSessionGSPlayerData.AddWeaponBit(startWeapon, supgradeBit);
                     }
@@ -278,7 +279,7 @@ namespace CupheadArchipelago.AP {
                         deathLinkService.EnableDeathLink();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
                     }
-                    if (receivedItemCounts == null) {
+                    /*if (receivedItemCounts == null) {
                         Logging.Log($"[APClient] Setting up items...");
                         receivedItemCounts = new();
                         if (APSessionGSData.dlock) {
@@ -305,7 +306,7 @@ namespace CupheadArchipelago.AP {
                             if (item.location>=0) receivedItemsUnique.Add(item);
                         }
                         APSessionGSData.dlock = false;
-                    }
+                    }*/
 
                     Logging.Log($"[APClient] Catching up...");
                     if (!Enabled) {
@@ -414,7 +415,8 @@ namespace CupheadArchipelago.AP {
             receivedItemIndex = 0;
             itemApplyIndex = 0;
             receivedItemsUnique = null;
-            receivedItemCounts = null;
+            receivedItemCounts.Clear();
+            receivedItems.Clear();
             scoutMapStatus = 0;
             shownMessage = 0;
             locMap.Clear();
@@ -434,7 +436,6 @@ namespace CupheadArchipelago.AP {
         internal static void SetupOffline() {
             offline = true;
             APSessionGSDataSlot = 0;
-            receivedItemCounts = new();
         }
         internal static void ResetOffline() {
             if (offline) Reset();

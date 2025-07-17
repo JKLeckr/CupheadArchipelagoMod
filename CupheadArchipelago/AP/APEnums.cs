@@ -33,10 +33,10 @@ namespace CupheadArchipelago.AP {
     public enum WeaponModes : byte {
         Normal = 0,
         Progressive = 1,
-        ProgressiveNoStart = 5,
+        ProgressiveExceptStart = 5,
         ExSeparate = 2,
-        ExSeparateNoStart = 6,
-        NoStart = 4, // Not functional on its own
+        ExSeparateExceptStart = 6,
+        ExceptStart = 4, // Not functional on its own
     }
 
     public enum ShopModes : byte {
