@@ -46,8 +46,12 @@ namespace CupheadArchipelago {
             if (configEnabled.Value) {
                 config = new(Config);
                 SetupLogging();
+                Logging.Log("----------------------------------------");
                 Logging.Log($"CupheadArchipelago {FullVersion}");
                 Logging.Log("Created by JKLeckr");
+                Logging.Log("----------------------------------------");
+
+                Logging.Log($"Game Build Version {UnityEngine.Application.version}");
 
                 /*Logging.Log("[Log] Info", LoggingFlags.Debug);
                 Logging.LogWarning("[Log] Warning", LoggingFlags.Debug);
