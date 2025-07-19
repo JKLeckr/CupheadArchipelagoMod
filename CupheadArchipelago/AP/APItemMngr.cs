@@ -196,10 +196,8 @@ namespace CupheadArchipelago.AP {
                 bool basebit = ItemMap.IsChaliceItem(itemId);
                 bool chalicebit = ItemMap.IsChaliceItem(itemId) || !IsChaliceSeparate(ItemGroups.WeaponBasic, true);
                 weaponbits |= (basebit ? (uint)WeaponParts.Basic : 0) | (chalicebit ? (uint)WeaponParts.CBasic : 0);
-                // TODO: Adopt this style of multiline if statements
-                if ((ItemMap.IsItemProgressiveWeapon(itemId) &&
-                    (APClient.GetReceivedItemCount(itemId) > 1 || APSettings.StartWeapon.id == itemId)) ||
-                    APSettings.WeaponMode == WeaponModes.Normal
+                if ((ItemMap.IsItemProgressiveWeapon(itemId) && (APClient.GetReceivedItemCount(itemId) > 1 ||
+                    APSettings.StartWeapon.id == itemId)) || APSettings.WeaponMode == WeaponModes.Normal
                 ) {
                     weaponbits |= (basebit ? (uint)WeaponParts.Ex : 0) | (chalicebit ? (uint)WeaponParts.CEx : 0);
                 }
