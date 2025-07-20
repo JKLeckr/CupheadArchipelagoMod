@@ -191,7 +191,7 @@ namespace CupheadArchipelago.AP {
                     APSessionGSData.seed = seed;
                 }
 
-                Logging.Log($"Seed: {seed}");
+                //Logging.Log($"Seed: {seed}");
 
                 SessionStatus = 6;
 
