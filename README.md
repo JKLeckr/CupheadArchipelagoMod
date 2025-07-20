@@ -26,9 +26,10 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 ### Prerequisites
 - A copy of Cuphead
 - [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x
-- [CupheadArchipelago](https://github.com/JKLeckr/CupheadArchipelagoMod/releases)
 
 ### Instructions
+1. Download the CupheadArchipelago mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).
+
 1. Extract BepInEx 5.x x64 for your OS into the Cuphead installation folder.
 
 2. Place the contents of the extracted CupheadArchipelago folder into the `BepInEx/plugins` folder.
@@ -36,6 +37,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 3. Launch game.
 
 ### Extra Notes
+- Make sure you are installing the binary build of the mod and not the source code. Don't be one of those fellas!
 - If `BepInEx/plugins` does not exist, you can launch the game with BepInEx once, or create the folder yourself.
 - If you are on the Steam version, and the mod does not load, launch the game directly from Steam.
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
