@@ -12,7 +12,7 @@ using BepInEx.Logging;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
-    [BepInPlugin(MOD_GUID, MOD_NAME, MOD_VERSION)]
+    [BepInPlugin(MOD_GUID, MOD_NAME, MOD_BASE_VERSION)]
     [BepInDependency(DEP_SAVECONFIG_MOD_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("Cuphead.exe")]
     public class Plugin : BaseUnityPlugin {
