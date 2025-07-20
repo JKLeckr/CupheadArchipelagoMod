@@ -41,6 +41,7 @@ namespace CupheadArchipelago.AP {
         internal readonly MusicGroups music_shuffle;
         internal readonly bool ducklock_platdrop;
         internal readonly bool deathlink;
+        internal readonly int deathlink_grace_count;
 
         internal APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataValue<long>(slotData, "version");
@@ -83,6 +84,7 @@ namespace CupheadArchipelago.AP {
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
             ducklock_platdrop = GetOptionalAPSlotDataValue(slotData, "ducklock_platdrop", false);
             deathlink = GetAPSlotDataValue<bool>(slotData, "deathlink");
+            deathlink_grace_count = GetOptionalAPSlotDataValue(slotData, "deathlink_grace_count", 0);
         }
 
         internal static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataValue<long>(slotData, "version");

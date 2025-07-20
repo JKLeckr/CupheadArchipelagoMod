@@ -57,6 +57,7 @@ namespace CupheadArchipelago.AP {
         private static bool reconnecting = false;
         private static int shownMessage = 0;
         private static DeathLinkService deathLinkService = null;
+        private static int deathCount = 0;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new(0,6,0,0);
         internal const long AP_ID_VERSION = 0;
@@ -246,7 +247,8 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DuckLockPlatDropBug = SlotData.ducklock_platdrop;
-                    APSettings.DeathLink = SlotData.deathlink;
+                    APSettings.DeathLink = SlotData.deathlink ? DeathLinkMode.Normal : DeathLinkMode.Disabled;
+                    APSettings.DeathLinkGraceCount = SlotData.deathlink_grace_count;
 
                     ShopMap.SetShopMap(SlotData.shop_map);
                     
@@ -272,8 +274,9 @@ namespace CupheadArchipelago.AP {
                         APSessionGSPlayerData.SetBoolValues(true, APData.PlayerData.SetTarget.AllAbilities);
                     if (!APSettings.RandomizeAimAbilities)
                         APSessionGSPlayerData.aim_directions = AimDirections.All;
-                    if (APSettings.DeathLink) {
+                    if (APSettings.DeathLink > 0) {
                         Logging.Log($"[APClient] Setting up DeathLink...");
+                        deathCount = 0;
                         deathLinkService?.DisableDeathLink();
                         deathLinkService = session.CreateDeathLinkService();
                         deathLinkService.EnableDeathLink();
@@ -422,6 +425,7 @@ namespace CupheadArchipelago.AP {
             locMap.Clear();
             itemMap.Clear();
             deathLinkService = null;
+            deathCount = 0;
             receivedItemsQueueLockA = false;
             receivedItemsQueueLockB = false;
             receivedItemsQueue = new();
@@ -861,14 +865,25 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static bool IsDeathLinkActive() => deathLinkService != null;
-        public static void SendDeathLink(string cause=null, DeathLinkCauseType causeType=DeathLinkCauseType.Normal) {
+        public static int GetDeathCount() {
+            if (!IsDeathLinkActive())
+                Logging.LogWarning("[APClient] Death Link is disabled. Death counter is inactive.");
+            return deathCount;
+        }
+        public static void SendDeathLink(string cause = null, DeathLinkCauseType causeType = DeathLinkCauseType.Normal) {
             if (!IsDeathLinkActive()) return;
+            if (deathCount < APSettings.DeathLinkGraceCount) {
+                deathCount++;
+                int remainingGrace = APSettings.DeathLinkGraceCount - deathCount;
+                Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}...");
+                return;
+            }
+            deathCount = 0;
             Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
             string deathTxt = "walloped";
             string chessDeathTxt = "beaten";
-            string causeMessage = causeType switch
-            {
+            string causeMessage = causeType switch {
                 DeathLinkCauseType.Boss => player + " got " + deathTxt + (cause != null ? " by " + cause : "" + "!"),
                 DeathLinkCauseType.Mausoleum => player + " failed to protect the Chalice" + (cause != null ? " at " + cause : "" + "!"),
                 DeathLinkCauseType.Tutorial => player + " died in a tutorial level!",
@@ -877,7 +892,7 @@ namespace CupheadArchipelago.AP {
                 _ => player + " was " + deathTxt + (cause != null ? " at " + cause : "" + "!"),
             };
             Logging.Log($"[APClient] Your message: \"{causeMessage}\"");
-            DeathLink death = new DeathLink(APSessionPlayerName, causeMessage);
+            DeathLink death = new(APSessionPlayerName, causeMessage);
             ThreadPool.QueueUserWorkItem(_ => SendDeathLinkThread(death));
         }
 

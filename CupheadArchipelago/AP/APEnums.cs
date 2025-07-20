@@ -8,6 +8,12 @@ namespace CupheadArchipelago.AP {
         AP = 2,
     }
 
+    public enum DeathLinkMode {
+        Disabled = 0,
+        Normal = 1,
+        PerPlayer = 2,
+    }
+
     public enum DeathLinkCauseType {
         Normal = 0,
         Boss = 1,
