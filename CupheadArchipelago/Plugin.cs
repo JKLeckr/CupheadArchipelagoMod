@@ -22,7 +22,7 @@ namespace CupheadArchipelago {
         protected const string MOD_GUID = "com.JKLeckr.CupheadArchipelago";
         protected const string MOD_BASE_VERSION = PluginInfo.PLUGIN_VERSION;
         protected const string MOD_VERSION_POSTFIX = "";
-        protected const string MOD_VERSION = $"{MOD_BASE_VERSION}-{MOD_VERSION_POSTFIX}";
+        protected const string MOD_VERSION = $"{MOD_BASE_VERSION}{MOD_VERSION_POSTFIX}";
         protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION);
 
         private const long CONFIG_VERSION = 1;
