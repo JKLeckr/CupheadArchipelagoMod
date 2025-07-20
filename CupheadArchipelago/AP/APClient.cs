@@ -282,6 +282,7 @@ namespace CupheadArchipelago.AP {
                         deathLinkService.EnableDeathLink();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
                     }
+                    receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
                     /*if (receivedItemCounts == null) {
                         Logging.Log($"[APClient] Setting up items...");
                         receivedItemCounts = new();
@@ -296,7 +297,6 @@ namespace CupheadArchipelago.AP {
                             }
                         }
                         APSessionGSData.dlock = true;
-                        receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
                         for (int i=0; i<ReceivedItems.Count;i++) {
                             APItemData item = ReceivedItems[i];
                             AddReceivedItemCount(item.id);
