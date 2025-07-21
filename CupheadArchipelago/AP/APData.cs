@@ -46,6 +46,8 @@ namespace CupheadArchipelago.AP {
         public List<long> doneChecks = [];
         //[JsonProperty("receivedItems")]
         //public List<APItemData> receivedItems = [];
+        [JsonProperty("deathCount")]
+        public long deathCount;
         // TODO: Use appliedItems for more than just filler items
         [JsonProperty("appliedItems")]
         private Dictionary<long, int> appliedItems = [];
@@ -262,7 +264,7 @@ namespace CupheadArchipelago.AP {
         }
         public int GetOverrides() => _override;
 
-        public bool IsCheater() => IsAnyOverridden(cheaterBits);
+        public bool IsCheater() => IsAnyOverridden(cheaterBits); // TODO: Add Death link override
 
         public bool IsEmpty() => IsEmpty(SaveDataType.Auto);
         public bool IsEmpty(SaveDataType saveDataType) {

@@ -57,7 +57,6 @@ namespace CupheadArchipelago.AP {
         private static bool reconnecting = false;
         private static int shownMessage = 0;
         private static DeathLinkService deathLinkService = null;
-        private static int deathCount = 0;
         private static readonly byte debug = 0;
         private static readonly Version AP_VERSION = new(0,6,0,0);
         internal const long AP_ID_VERSION = 0;
@@ -247,7 +246,9 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DuckLockPlatDropBug = SlotData.ducklock_platdrop;
-                    APSettings.DeathLink = SlotData.deathlink ? DeathLinkMode.Normal : DeathLinkMode.Disabled;
+                    APSettings.DeathLink = 
+                        (APSessionGSData.IsOverridden(Overrides.OverrideEnableDeathLink) ? !SlotData.deathlink : SlotData.deathlink) ?
+                        DeathLinkMode.Normal : DeathLinkMode.Disabled;
                     APSettings.DeathLinkGraceCount = SlotData.deathlink_grace_count;
 
                     ShopMap.SetShopMap(SlotData.shop_map);
@@ -276,7 +277,6 @@ namespace CupheadArchipelago.AP {
                         APSessionGSPlayerData.aim_directions = AimDirections.All;
                     if (APSettings.DeathLink > 0) {
                         Logging.Log($"[APClient] Setting up DeathLink...");
-                        deathCount = 0;
                         deathLinkService?.DisableDeathLink();
                         deathLinkService = session.CreateDeathLinkService();
                         deathLinkService.EnableDeathLink();
@@ -425,7 +425,6 @@ namespace CupheadArchipelago.AP {
             locMap.Clear();
             itemMap.Clear();
             deathLinkService = null;
-            deathCount = 0;
             receivedItemsQueueLockA = false;
             receivedItemsQueueLockB = false;
             receivedItemsQueue = new();
@@ -833,16 +832,30 @@ namespace CupheadArchipelago.AP {
         public static int ItemApplyQueueCount() => itemApplyQueue.Count;
         public static int ItemApplyLevelQueueCount() => itemApplyLevelQueue.Count;
         public static int ItemApplySpecialLevelQueueCount() => itemApplySpecialLevelQueue.Count;
-        public static APItemData PopItemApplyQueue() => PopItemQueue(itemApplyQueue);
-        public static APItemData PopItemApplyLevelQueue() => PopItemQueue(itemApplyLevelQueue);
-        public static APItemData PopItemApplySpecialLevelQueue() => PopItemQueue(itemApplySpecialLevelQueue);
-        private static APItemData PopItemQueue(Queue<int> itemQueue) {
+        public static APItemData PeekItemApplyQueue() => PeekItemQueue(itemApplyQueue);
+        public static APItemData PeekItemApplyLevelQueue() => PeekItemQueue(itemApplyLevelQueue);
+        public static APItemData PeekItemApplySpecialLevelQueue() => PeekItemQueue(itemApplySpecialLevelQueue);
+        private static APItemData PeekItemQueue(Queue<int> itemQueue) {
             int index = itemQueue.Peek();
             if (index >= 0 && index < ReceivedItems.Count) { 
                 APItemData item = ReceivedItems[index];
-                bool success = APItemMngr.ApplyItem(item);
-                if (!success) return item;
-                item.State = ++itemApplyIndex;
+                return item;
+            } else {
+                throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
+            }
+        }
+        public static APItemData PopItemApplyQueue(bool applyItem = true) => PopItemQueue(itemApplyQueue, applyItem);
+        public static APItemData PopItemApplyLevelQueue(bool applyItem = true) => PopItemQueue(itemApplyLevelQueue, applyItem);
+        public static APItemData PopItemApplySpecialLevelQueue(bool applyItem = true) => PopItemQueue(itemApplySpecialLevelQueue, applyItem);
+        private static APItemData PopItemQueue(Queue<int> itemQueue, bool applyItem) {
+            int index = itemQueue.Peek();
+            if (index >= 0 && index < ReceivedItems.Count) { 
+                APItemData item = ReceivedItems[index];
+                if (applyItem) {
+                    bool success = APItemMngr.ApplyItem(item);
+                    if (!success) return item;
+                    item.State = ++itemApplyIndex;
+                }
                 Logging.Log("[APClient] Queue Pop");
                 itemQueue.Dequeue();
                 Logging.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}");
@@ -857,7 +870,8 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"[APClient] Death received from {deathLink.Source}");
             if (APManager.Current!=null) {
                 Logging.Log($"[APClient] Commencing...");
-                APManager.Current.TriggerDeath(deathLink.Cause);
+                string message = $"{deathLink.Source} plugged you!{(deathLink.Cause == "" ? "" : $" Cause: \"{deathLink.Cause}\"")}";
+                APManager.Current.TriggerDeath(message);
                 Logging.Log($"[APClient] Enjoy your death!");
             }
             else {
@@ -865,20 +879,20 @@ namespace CupheadArchipelago.AP {
             }
         }
         public static bool IsDeathLinkActive() => deathLinkService != null;
-        public static int GetDeathCount() {
+        public static long GetDeathCount() {
             if (!IsDeathLinkActive())
                 Logging.LogWarning("[APClient] Death Link is disabled. Death counter is inactive.");
-            return deathCount;
+            return APSessionGSData.deathCount;
         }
-        public static void SendDeathLink(string cause = null, DeathLinkCauseType causeType = DeathLinkCauseType.Normal) {
+        public static void SendDeath(string cause = null, DeathLinkCauseType causeType = DeathLinkCauseType.Normal) {
+            APSessionGSData.deathCount++;
+            Logging.Log($"{APSessionGSData.deathCount} deaths");
             if (!IsDeathLinkActive()) return;
-            if (deathCount < APSettings.DeathLinkGraceCount) {
-                deathCount++;
-                int remainingGrace = APSettings.DeathLinkGraceCount - deathCount;
+            int remainingGrace = APSettings.DeathLinkGraceCount - (int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1));
+            if (remainingGrace != 0) {
                 Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}...");
                 return;
             }
-            deathCount = 0;
             Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
             string deathTxt = "walloped";
@@ -902,7 +916,8 @@ namespace CupheadArchipelago.AP {
                 deathLinkService.SendDeathLink(death);
                 Logging.Log("[APClient] Shared. They are enjoying your death probably...");
                 state = true;
-            } catch (ArchipelagoSocketClosedException e) {
+            }
+            catch (ArchipelagoSocketClosedException e) {
                 Logging.LogWarning($"[APClient] Failed to share your death! {e.Message}");
             }
             return state;

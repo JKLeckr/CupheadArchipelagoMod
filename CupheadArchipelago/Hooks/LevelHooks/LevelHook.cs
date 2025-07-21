@@ -170,20 +170,29 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                         bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
                                         int ccheck = 0;
                                         // NOTE: Secrets are counted if playing as Chalice
-                                        if (!IsChalice() || (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.Separate) == 0 || vsecret) {
+                                        bool chaliceNotSeparate =
+                                            APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
+                                            (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
+                                        if (chaliceNotSeparate) Logging.Log($"[LevelHook] Chalice not separate");
+                                        if (!IsChalice() || chaliceNotSeparate || vsecret) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret ? 3 : 0), false);
                                         }
                                         if (IsChalice()) {
-                                            if (APSettings.DLCBossChaliceChecks == DlcChaliceCheckModes.Enabled)
+                                            if (APSettings.DLCBossChaliceChecks > 0 &&
+                                                (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.GradeRequired) == 0
+                                            )
                                                 ccheck |= 2;
                                             ccheck |= 1;
                                         }
                                         if (APSettings.BossGradeChecks > 0) {
-                                            if (Level.Grade >= (LevelScoringData.Grade.AMinus + (((int)APSettings.BossGradeChecks) - 1))) {
-                                                if (!IsChalice() || APSettings.DLCBossChaliceChecks != DlcChaliceCheckModes.GradeRequired)
+                                            LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.BossGradeChecks) - 1);
+                                            Logging.Log($"[LevelHook] Grade Test: {Level.Grade}>={tgtGrade}");
+                                            if (Level.Grade >= tgtGrade) {
+                                                if (!IsChalice() || chaliceNotSeparate)
                                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
-                                                if (IsChalice() && APSettings.DLCBossChaliceChecks != DlcChaliceCheckModes.Disabled)
+                                                else if (IsChalice() && (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.GradeRequired) > 0) {
                                                     ccheck |= 2;
+                                                }
                                             }
                                         }
                                         if (ccheck >= 3) {
@@ -201,19 +210,27 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                     if (Level.Difficulty >= Level.Mode.Normal) {
                                         Levels clevel = instance.CurrentLevel;
                                         int ccheck = 0;
-                                        if (!IsChalice() || (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.Separate) == 0) {
+                                        bool chaliceNotSeparate =
+                                            APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
+                                            (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
+                                        if (chaliceNotSeparate) Logging.Log($"[LevelHook] Chalice not separate");
+                                        if (!IsChalice() || chaliceNotSeparate) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
                                         }
                                         if (IsChalice()) {
-                                            if ((APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) == 0)
+                                            if (APSettings.DLCRunGunChaliceChecks > 0 &&
+                                                (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) == 0
+                                            )
                                                 ccheck |= 2;
                                             ccheck |= 1;
                                         }
                                         if (APSettings.RungunGradeChecks > 0) {
-                                            if (Level.Grade >= (LevelScoringData.Grade.AMinus + (((int)APSettings.RungunGradeChecks) - 1))) {
-                                                if (!IsChalice() || (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) == 0)
+                                            LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.RungunGradeChecks) - 1);
+                                            Logging.Log($"[LevelHook] Grade Test: {Level.Grade}>={tgtGrade}");
+                                            if (Level.Grade >= tgtGrade) {
+                                                if (!IsChalice() || chaliceNotSeparate)
                                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, ((int)APSettings.RungunGradeChecks > 3) ? 2 : 1), false);
-                                                if (IsChalice() && APSettings.DLCRunGunChaliceChecks != DlcChaliceCheckModes.Disabled)
+                                                if (IsChalice() && (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) > 0)
                                                     ccheck |= 2;
                                             }
                                         }
@@ -266,23 +283,23 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     Logging.Log("DeathLink");
                     if (APManager.Current != null && !APManager.Current.IsDeathTriggered()) {
                         if (__instance.LevelType == Level.Type.Platforming) {
-                            APClient.SendDeathLink(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Normal);
+                            APClient.SendDeath(platformLevelNames[__instance.CurrentLevel], DeathLinkCauseType.Normal);
                         }
                         else if (__instance.LevelType == Level.Type.Tutorial) {
-                            APClient.SendDeathLink(__instance.CurrentLevel.ToString(), DeathLinkCauseType.Tutorial);
+                            APClient.SendDeath(__instance.CurrentLevel.ToString(), DeathLinkCauseType.Tutorial);
                         }
                         else {
                             if (__instance.CurrentLevel == Levels.Mausoleum) {
-                                APClient.SendDeathLink("Mausoleum", DeathLinkCauseType.Mausoleum);
+                                APClient.SendDeath("Mausoleum", DeathLinkCauseType.Mausoleum);
                             }
                             else if (Array.Exists(Level.kingOfGamesLevels, (Levels level) => __instance.CurrentLevel == level)) {
-                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseType.ChessCastle);
+                                APClient.SendDeath(bossNames[__instance.CurrentLevel], DeathLinkCauseType.ChessCastle);
                             }
                             else if (__instance.CurrentLevel == Levels.Graveyard) {
-                                APClient.SendDeathLink(bossNames[Levels.Graveyard], DeathLinkCauseType.Graveyard);
+                                APClient.SendDeath(bossNames[Levels.Graveyard], DeathLinkCauseType.Graveyard);
                             }
                             else {
-                                APClient.SendDeathLink(bossNames[__instance.CurrentLevel], DeathLinkCauseType.Boss);
+                                APClient.SendDeath(bossNames[__instance.CurrentLevel], DeathLinkCauseType.Boss);
                             }
                         }
                     }

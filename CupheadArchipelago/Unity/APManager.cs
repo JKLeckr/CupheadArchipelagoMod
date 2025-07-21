@@ -20,7 +20,7 @@ namespace CupheadArchipelago.Unity {
         [SerializeField]
         private float levelApplyInterval = 1f;
         [SerializeField]
-        private float mapApplyInterval = 0.25f;
+        private float mapApplyInterval = 0.025f;
         private bool init = false;
         private bool active = false;
         private MngrType type = MngrType.Normal;
@@ -30,7 +30,7 @@ namespace CupheadArchipelago.Unity {
         [SerializeField]
         private bool death = false;
         [SerializeField]
-        private string deathCause = "";
+        private string deathMessage = "";
         private bool deathExecuted = false;
         [SerializeField]
         private float fastFire = 0f;
@@ -55,14 +55,14 @@ namespace CupheadArchipelago.Unity {
         public void SetActive(bool active) => this.active = active;
         
         public bool IsDeathTriggered() => death;
-        public void TriggerDeath(string deathCause = null) {
+        public void TriggerDeath(string message = "Self") {
             if (type != MngrType.Level) return;
             if (IsDeathTriggered()) {
                 Logging.LogWarning("[APManager] Death already triggered!");
                 return;
             }
             death = true;
-            this.deathCause = deathCause ?? "";
+            this.deathMessage = message ?? "Unknown";
         }
 
         public bool IsFastFired() => fastFire > 0;
@@ -90,8 +90,9 @@ namespace CupheadArchipelago.Unity {
                 else if (active && PauseManager.state != PauseManager.State.Paused) {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
                     if (type == MngrType.Level && deathLink && death && !deathExecuted) {
-                        Logging.Log($"[APManager] Killing Players. Cause: \"{deathCause}\"");
+                        Logging.Log($"[APManager] Killing Players.");
                         PlayerStatsManagerHook.KillPlayer(PlayerId.Any);
+                        Logging.Log($"[APManager] {deathMessage}");
                         deathExecuted = true;
                         active = false;
                         return;
@@ -117,9 +118,13 @@ namespace CupheadArchipelago.Unity {
                         if (debug) Logging.Log($"ItemSpecialLevelQueue {APClient.ItemApplySpecialLevelQueueCount()}");
                         if (!APClient.ItemApplySpecialLevelQueueIsEmpty()) {
                             if (debug) Logging.Log($"ItemSpecialLevelQueue has item");
-                            if (timer>=applyInterval) {
+                            long itemId = APClient.PeekItemApplySpecialLevelQueue().id;
+                            if (APClient.GetAppliedItemCount(itemId) >= APClient.GetReceivedItemCount(itemId)) {
+                                APClient.PopItemApplySpecialLevelQueue(false);
+                            }
+                            else if (timer >= applyInterval) {
                                 if (debug) Logging.Log($"ItemSpecialLevelQueue is applying");
-                                APClient.PopItemApplyLevelQueue();
+                                APClient.PopItemApplySpecialLevelQueue();
                                 AudioManager.Play("level_coin_pickup"); //TEMP
                                 timer = 0f;
                             }
@@ -129,7 +134,11 @@ namespace CupheadArchipelago.Unity {
                         if (debug) Logging.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
                         if (!APClient.ItemApplyLevelQueueIsEmpty()) {
                             if (debug) Logging.Log($"ItemLevelQueue has item");
-                            if (timer>=applyInterval) {
+                            long itemId = APClient.PeekItemApplyLevelQueue().id;
+                            if (APClient.GetAppliedItemCount(itemId) >= APClient.GetReceivedItemCount(itemId)) {
+                                APClient.PopItemApplyLevelQueue(false);
+                            }
+                            else if (timer >= applyInterval) {
                                 if (debug) Logging.Log($"ItemLevelQueue is applying");
                                 APClient.PopItemApplyLevelQueue();
                                 AudioManager.Play("level_coin_pickup"); //TEMP
@@ -140,7 +149,11 @@ namespace CupheadArchipelago.Unity {
                     if (debug) Logging.Log($"ItemQueue {APClient.ItemApplyQueueCount()}");
                     if (!APClient.ItemApplyQueueIsEmpty()) {
                         if (debug) Logging.Log($"ItemQueue has item");
-                        if (timer>=applyInterval) {
+                        long itemId = APClient.PeekItemApplyQueue().id;
+                        if (APClient.GetAppliedItemCount(itemId) >= APClient.GetReceivedItemCount(itemId)) {
+                            APClient.PopItemApplyQueue(false);
+                        }
+                        else if (timer >= applyInterval) {
                             if (debug) Logging.Log($"ItemQueue is applying");
                             APClient.PopItemApplyQueue();
                             AudioManager.Play("level_coin_pickup"); //TEMP

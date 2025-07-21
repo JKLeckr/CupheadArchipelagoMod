@@ -85,6 +85,7 @@ namespace CupheadArchipelago.AP {
         DataVersionOverride = 1,
         SeedMismatchOverride = 2,
         OverrideResetOverride = 16,
+        OverrideEnableDeathLink = 32,
         DamageOverrideP1 = 64,
         DamageOverrideP2 = 128,
         NukeOverride = 256,

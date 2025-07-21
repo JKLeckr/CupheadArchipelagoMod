@@ -9,6 +9,7 @@ namespace CupheadArchipelago.AP {
         internal static void ApplyLevelItem(long itemId) {
             if (APClient.GetAppliedItemCount(itemId) >= APClient.GetReceivedItemCount(itemId)) {
                 Logging.Log($"[APLevelItemMngr] Item is already applied. Skipping applying item.");
+                return;
             }
 
             PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;

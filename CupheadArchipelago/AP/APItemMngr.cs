@@ -188,7 +188,7 @@ namespace CupheadArchipelago.AP {
                     weaponbits |= (uint)WeaponParts.CEx;
                 else {
                     weaponbits |= (uint)WeaponParts.Ex;
-                    if (IsChaliceSeparate(ItemGroups.WeaponEx))
+                    if (!IsChaliceSeparate(ItemGroups.WeaponEx))
                         weaponbits |= (uint)WeaponParts.CEx;
                 }
             }
