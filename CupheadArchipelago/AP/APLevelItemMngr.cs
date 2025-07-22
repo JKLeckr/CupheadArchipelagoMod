@@ -1,6 +1,7 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
 using CupheadArchipelago.Hooks.PlayerHooks;
 using CupheadArchipelago.Unity;
 
@@ -22,15 +23,22 @@ namespace CupheadArchipelago.AP {
                     bstats1.BonusHP++;
                     if (bstats2 != null) bstats2.BonusHP++;
                 }
+                Logging.Log("Increasing Player 1 Health");
                 stats1.SetHealth(stats1.Health + 1);
-                stats2?.SetHealth(stats2.Health + 1);
+                if (stats2 != null) {
+                    Logging.Log("Increasing Player 2 Health");
+                    stats2?.SetHealth(stats2.Health + 1);
+                }
             }
             else if (itemId == APItem.level_supercharge) {
                 if (stats1.CanGainSuperMeter) {
-                    Logging.Log("Can gain super");
+                    Logging.Log("Setting Player 1 Super");
                     PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
                 }
-                if (stats2 != null && stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                if (stats2 != null && stats2.CanGainSuperMeter) {
+                    Logging.Log("Setting Player 2 Super");
+                    PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                }
             }
             else if (itemId == APItem.level_fastfire) {
                 //AudioManager.Play("pop_up");
