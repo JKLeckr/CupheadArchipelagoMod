@@ -193,7 +193,7 @@ namespace CupheadArchipelago.AP {
                 }
             }
             else {
-                bool basebit = ItemMap.IsChaliceItem(itemId);
+                bool basebit = !ItemMap.IsChaliceItem(itemId);
                 bool chalicebit = ItemMap.IsChaliceItem(itemId) || !IsChaliceSeparate(ItemGroups.WeaponBasic, true);
                 weaponbits |= (basebit ? (uint)WeaponParts.Basic : 0) | (chalicebit ? (uint)WeaponParts.CBasic : 0);
                 if ((ItemMap.IsItemProgressiveWeapon(itemId) && (APClient.GetReceivedItemCount(itemId) > 1 ||
