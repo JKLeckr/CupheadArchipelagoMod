@@ -3,8 +3,9 @@
 
 using System;
 using FVer;
+using CupheadArchipelago.Helpers.FVerParser;
 
-namespace CheckVersions {
+namespace CupheadArchipelago.Helpers.CheckVersions {
     internal class Program {
         private static int Main(string[] args) {
             if (args.Length != 2) {
@@ -12,12 +13,12 @@ namespace CheckVersions {
                 return -1;
             }
 
-            string srcRaw = FVerParse.GetFVer(args[0]);
+            RawFVer rawFVer = FVerParse.GetRawFVer(args[0]);
 
-            Console.WriteLine($"{args[0]} -> {args[1]} == {srcRaw}");
-
-            FVersion src = new(srcRaw);
+            string src = new FVersion(rawFVer.baseline, rawFVer.revision, rawFVer.release, rawFVer.prefix, rawFVer.postfix);
             FVersion test = new(args[1]);
+
+            Console.WriteLine($"{args[0]} -> {test} == {src}");
 
             // Releases and postfixes are ignored in this check during prerelease
             test = new(test.Baseline, test.RevisionNumber, 0, test.Prefix, null);

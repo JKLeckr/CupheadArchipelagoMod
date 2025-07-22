@@ -58,6 +58,10 @@ jobs:
         run: |
           mkdir ../build
           dotnet build --no-restore -o ../build/${{ env.MOD_NAME }}
+      
+      - name: Generate Manifest
+        run: |
+          dotnet run --no-restore --project ${{ env.MOD_NAME }}.Helpers/GenManifest ${{ env.MOD_NAME }} build/${{ env.MOD_NAME }}/manifest.json
 
       - name: Build ZIP package
         working-directory: build

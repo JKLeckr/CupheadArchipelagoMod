@@ -90,6 +90,9 @@
         "dependencies": {
           "Mono.Cecil": "0.10.4"
         }
+      },
+      "fverparser": {
+        "type": "Project"
       }
     }
   }

@@ -101,4 +101,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../CupheadArchipelago.Helpers/FVerParser/FVerParser.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -20,6 +20,7 @@ build-tests:
 
 build-helpers:
     dotnet build "{{ helper_dir }}/CheckVersions"
+    dotnet build "{{ helper_dir }}/GenManifest"
 
 build-all:
     dotnet build

@@ -12,7 +12,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <OutputPath>$(ProjectDir)bin/$(Configuration)/Test/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <DefaultItemExcludes>$(DefaultItemExcludes);TAssembly-CSharp/**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes)</DefaultItemExcludes>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../CupheadArchipelago/CupheadArchipelago.csproj" />
-    <ProjectReference Include="./TAssembly-CSharp/TAssembly-CSharp.csproj" />
+    <ProjectReference Include="../CupheadArchipelago.Helpers/Assembly-CSharp.Stub/Assembly-CSharp.Stub.csproj" />
   </ItemGroup>
 
 </Project>

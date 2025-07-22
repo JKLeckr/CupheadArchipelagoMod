@@ -8,6 +8,12 @@
         "resolved": "0.1.0-draft01e",
         "contentHash": "M9rUx3nzHMRaPecR8yBxYoD6ffXna2UcrjVe9F0LmbzucfVLuA//TFJWSLrNIsrt4fyADpy18TTaXF9qDyh+Kw=="
       },
+      "Newtonsoft.Json": {
+        "type": "Direct",
+        "requested": "[13.0.*, )",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
       "fverparser": {
         "type": "Project"
       }

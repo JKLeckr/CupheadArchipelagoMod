@@ -104,7 +104,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             private static void MapLevelList(List<Levels> levelList) {
                 if (APData.IsCurrentSlotEnabled()) {
                     for (int i = 0; i < levelList.Count; i++) {
-                        levelList[i] = LevelMap.GetMappedLevel(levelList[i], true);
+                        levelList[i] = LevelMap.GetMappedLevel(levelList[i]);
                         Logging.LogDebug($"list: {i}: {levelList[i]}"); // FIXME: List does not map!
                     }
                 }

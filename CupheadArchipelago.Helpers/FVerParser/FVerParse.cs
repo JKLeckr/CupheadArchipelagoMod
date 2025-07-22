@@ -2,12 +2,11 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using System;
-using FVer;
 
-namespace CheckVersions {
-    internal class FVerParse {
+namespace CupheadArchipelago.Helpers.FVerParser {
+    public class FVerParse {
         // TEMP. This will be changed when entering main branch version.
-        public static string GetFVer(string ver) {
+        public static RawFVer GetRawFVer(string ver) {
             string[] versionParts = ver.Split(['.'], 4);
             if (int.Parse(versionParts[0]) > 0) {
                 throw new Exception("Version parsing system needs to be changed for main version!");
@@ -22,8 +21,9 @@ namespace CheckVersions {
             };
             int baseline = int.Parse(versionParts[2]) + 1;
             int rev = int.Parse(versionParts[3]);
-            FVersion fver = new(baseline, rev, 0, pres, null);
+            RawFVer fver = new(baseline, rev, 0, pres, "");
             return fver;
         }
     }
 }
+

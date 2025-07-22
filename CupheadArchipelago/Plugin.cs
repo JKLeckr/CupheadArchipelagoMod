@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using CupheadArchipelago.Config;
+using CupheadArchipelago.Helpers.FVerParser;
 using FVer;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -126,21 +127,8 @@ namespace CupheadArchipelago {
 
         // TEMP. This will be changed when entering main branch version.
         private static string GetFVer(string ver) {
-            string[] versionParts = ver.Split(['.'], 4);
-            if (int.Parse(versionParts[0]) > 0) {
-                throw new Exception("Version parsing system needs to be changed for main version!");
-            }
-            int pre = int.Parse(versionParts[1]);
-            string pres = pre switch {
-                1 => "preview",
-                2 => "alpha",
-                3 => "beta",
-                4 => "rc",
-                _ => "unknown"
-            };
-            int baseline = int.Parse(versionParts[2]) + 1;
-            int rev = int.Parse(versionParts[3]);
-            FVersion fver = new(baseline, rev, 0, pres, null);
+            RawFVer rawFVer = FVerParse.GetRawFVer(ver);
+            FVersion fver = new(rawFVer.baseline, rawFVer.revision, rawFVer.release, rawFVer.prefix, rawFVer.postfix);
             return fver;
         }
 
