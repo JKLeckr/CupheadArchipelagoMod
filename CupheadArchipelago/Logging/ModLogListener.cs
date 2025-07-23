@@ -19,7 +19,13 @@ namespace CupheadArchipelago {
 
         public bool WriteFromUnityLog { get; set; }
 
-        public ModLogListener(string logFile, string logPath, string logSourceName, LogLevel displayedLogLevel = LogLevel.All, bool includeUnityLog = true) {
+        public ModLogListener(
+            string logFile,
+            string logPath,
+            string logSourceName,
+            LogLevel displayedLogLevel = LogLevel.All,
+            bool includeUnityLog = true
+        ) {
             LogSourceName = logSourceName;
             WriteFromUnityLog = includeUnityLog;
             DisplayedLogLevel = displayedLogLevel;
@@ -38,7 +44,10 @@ namespace CupheadArchipelago {
         }
 
         public void LogEvent(object sender, LogEventArgs eventArgs) {
-            if (((WriteFromUnityLog && eventArgs.Source is UnityLogSource) || eventArgs.Source.SourceName == LogSourceName) && (eventArgs.Level & DisplayedLogLevel) != 0) {
+            if (((WriteFromUnityLog && eventArgs.Source is UnityLogSource) ||
+                eventArgs.Source.SourceName == LogSourceName) &&
+                (eventArgs.Level & DisplayedLogLevel) != 0
+            ) {
                 LogWriter.WriteLine(eventArgs.ToString());
             }
         }

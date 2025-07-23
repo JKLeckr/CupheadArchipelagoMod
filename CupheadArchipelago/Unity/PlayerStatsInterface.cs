@@ -75,7 +75,8 @@ namespace CupheadArchipelago.Unity {
             }
             if (!IsDead())
                 stats.SetHealth(set);
-            // TODO: Add a way to revive players without issues.
+            /*else if (APSettings.HPPlusRelocatesGhost)
+                PlayerDeathEffectHook.Relocate(stats.basePlayer.id);*/
         }
 
         public void KillPlayer() {
