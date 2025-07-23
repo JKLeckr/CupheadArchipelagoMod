@@ -2,7 +2,6 @@
 /// SPDX-License-Identifier: Apache-2.0
 
 using CupheadArchipelago.AP;
-using CupheadArchipelago.Hooks.PlayerHooks;
 using UnityEngine;
 
 namespace CupheadArchipelago.Unity {
@@ -91,7 +90,7 @@ namespace CupheadArchipelago.Unity {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
                     if (type == MngrType.Level && deathLink && death && !deathExecuted) {
                         Logging.Log($"[APManager] Killing Players.");
-                        PlayerStatsManagerHook.KillPlayer(PlayerId.Any);
+                        PlayerStatsManagerInterface.KillPlayer(PlayerId.Any);
                         Logging.Log($"[APManager] {deathMessage}");
                         deathExecuted = true;
                         active = false;
@@ -168,7 +167,7 @@ namespace CupheadArchipelago.Unity {
         void OnDestroy() {
             Logging.Log("[APManager] Destroyed");
             init = false;
-            if (Current == this) Current = null;
+            if (ReferenceEquals(Current, this)) Current = null;
         }
     }
 }

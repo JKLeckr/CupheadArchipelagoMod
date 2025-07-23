@@ -1,8 +1,6 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
-using System;
-using CupheadArchipelago.Hooks.PlayerHooks;
 using CupheadArchipelago.Unity;
 
 namespace CupheadArchipelago.AP {
@@ -13,31 +11,18 @@ namespace CupheadArchipelago.AP {
                 return;
             }
 
-            PlayerStatsManager stats1 = PlayerStatsManagerHook.CurrentStatMngr1;
-            PlayerStatsManager stats2 = PlayerStatsManagerHook.CurrentStatMngr2;
-            PlayersStatsBossesHub bstats1 = Level.GetPlayerStats(stats1.basePlayer.id);
-            PlayersStatsBossesHub bstats2 = (stats2 != null) ? Level.GetPlayerStats(stats2.basePlayer.id) : null;
-
             if (itemId == APItem.level_extrahealth) {
-                if (Level.IsInBossesHub) {
-                    bstats1.BonusHP++;
-                    if (bstats2 != null) bstats2.BonusHP++;
-                }
-                Logging.Log("Increasing Player 1 Health");
-                stats1.SetHealth(stats1.Health + 1);
-                if (stats2 != null) {
-                    Logging.Log("Increasing Player 2 Health");
-                    stats2?.SetHealth(stats2.Health + 1);
+                PlayerStatsManagerInterface.AddHealth(PlayerId.PlayerOne, 1);
+                if (PlayerManager.Multiplayer) {
+                    PlayerStatsManagerInterface.AddHealth(PlayerId.PlayerTwo, 1);
                 }
             }
             else if (itemId == APItem.level_supercharge) {
-                if (stats1.CanGainSuperMeter) {
-                    Logging.Log("Setting Player 1 Super");
-                    PlayerStatsManagerHook.SetSuper(stats1, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
-                }
-                if (stats2 != null && stats2.CanGainSuperMeter) {
+                Logging.Log("Setting Player 1 Super");
+                PlayerStatsManagerInterface.FillSuper(PlayerId.PlayerOne);
+                if (PlayerManager.Multiplayer) {
                     Logging.Log("Setting Player 2 Super");
-                    PlayerStatsManagerHook.SetSuper(stats2, PlayerStatsManagerHook.DEFAULT_SUPER_FILL_AMOUNT);
+                    PlayerStatsManagerInterface.FillSuper(PlayerId.PlayerTwo);
                 }
             }
             else if (itemId == APItem.level_fastfire) {
@@ -54,8 +39,10 @@ namespace CupheadArchipelago.AP {
             }
             else if (itemId == APItem.level_trap_superdrain) {
                 //AudioManager.Play("level_menu_select");
-                if (stats1.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats1, 0);
-                if (stats2 != null && stats2.CanGainSuperMeter) PlayerStatsManagerHook.SetSuper(stats2, 0);
+                PlayerStatsManagerInterface.SetSuper(PlayerId.PlayerOne, 0);
+                if (PlayerManager.Multiplayer) {
+                    PlayerStatsManagerInterface.SetSuper(PlayerId.PlayerTwo, 0);
+                }
             }
             else if (itemId == APItem.level_trap_loadout) {
                 //AudioManager.Play("level_menu_select");

@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.Unity;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.PlayerHooks {
     internal class PlayerStatsManagerHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(OnAwake));
+            Harmony.CreateAndPatchAll(typeof(LevelInit));
             Harmony.CreateAndPatchAll(typeof(CalculateHealthMax));
             Harmony.CreateAndPatchAll(typeof(TakeDamage));
             Harmony.CreateAndPatchAll(typeof(DebugAddSuper));
@@ -23,13 +24,10 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         public const bool DEFAULT_PLAY_SUPER_CHANGED_EFFECT = true;
         public const float REVERSE_CONTROLS_TIME = 10f;
 
-        public static PlayerStatsManager CurrentStatMngr1 { get; private set; } = null;
-        public static PlayerStatsManager CurrentStatMngr2 { get; private set; } = null;
-
         private static float superFillAmount = DEFAULT_SUPER_FILL_AMOUNT;
         private static bool playSuperChangedEffect = DEFAULT_PLAY_SUPER_CHANGED_EFFECT;
         private static StatsCommands statCommand = StatsCommands.Orig;
-        private static object[] statCommandArgs = [];
+        private static object[] statCommandArgs = null;
 
         private static MethodInfo _mi_set_Health = typeof(PlayerStatsManager).GetProperty("Health", BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
         private static MethodInfo _mi_set_ReverseTime = typeof(PlayerStatsManager).GetProperty("ReverseTime", BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
@@ -37,22 +35,16 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         private static MethodInfo _mi_OnSuperChanged = typeof(PlayerStatsManager).GetMethod("OnSuperChanged", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo _mi_OnStatsDeath = typeof(PlayerStatsManager).GetMethod("OnStatsDeath", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private enum StatsCommands {
+        internal enum StatsCommands {
             Orig,
             Death,
             ReverseControls,
         }
 
-        [HarmonyPatch(typeof(PlayerStatsManager), "OnAwake")]
-        internal static class OnAwake {
+        [HarmonyPatch(typeof(PlayerStatsManager), "LevelInit")]
+        internal static class LevelInit {
             static bool Prefix(PlayerStatsManager __instance) {
-                Logging.Log("PlayerStatsManager OnAwake");
-                if (__instance.basePlayer.id == PlayerId.PlayerTwo) {
-                    CurrentStatMngr2 = __instance;
-                }
-                else {
-                    CurrentStatMngr1 = __instance;
-                }
+                __instance.gameObject.AddComponent<PlayerStatsManagerInterface>().Init(__instance);
                 return true;
             }
         }
@@ -169,31 +161,23 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             }
         }
 
-        public static float GetSuperFillAmount() => superFillAmount;
-        public static void SetSuperFillAmount(float set) => superFillAmount = set;
-
-        public static void AddEx(PlayerStatsManager instance, float add) {
-            SetSuper(instance, instance.SuperMeter + add);
+        internal static void IssueStatsCommand(
+            PlayerStatsManager instance,
+            StatsCommands command,
+            params object[] args
+        ) {
+            statCommand = command;
+            statCommandArgs = args;
+            instance.DebugAddSuper();
+            statCommandArgs = null;
+            statCommand = StatsCommands.Orig;
         }
-        public static void SetSuper(PlayerStatsManager instance, float set) {
+
+        internal static void SetSuper(PlayerStatsManager instance, float set) {
             float orig = superFillAmount;
             superFillAmount = set;
             instance.DebugFillSuper();
             superFillAmount = orig;
-        }
-        public static void KillPlayer(PlayerId playerId) {
-            statCommand = StatsCommands.Death;
-            if (playerId == PlayerId.PlayerOne || playerId == PlayerId.Any)
-                CurrentStatMngr1.DebugAddSuper();
-            if (playerId == PlayerId.PlayerTwo || playerId == PlayerId.Any)
-                CurrentStatMngr2?.DebugAddSuper();
-            statCommand = StatsCommands.Orig;
-        }
-        public static void ReverseControls() {
-            statCommand = StatsCommands.ReverseControls;
-            CurrentStatMngr1.DebugAddSuper();
-            CurrentStatMngr2?.DebugAddSuper();
-            statCommand = StatsCommands.Orig;
         }
     }
 }
