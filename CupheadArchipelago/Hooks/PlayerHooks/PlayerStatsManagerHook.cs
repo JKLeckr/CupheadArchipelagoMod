@@ -44,7 +44,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
         [HarmonyPatch(typeof(PlayerStatsManager), "LevelInit")]
         internal static class LevelInit {
             static bool Prefix(PlayerStatsManager __instance) {
-                __instance.gameObject.AddComponent<PlayerStatsManagerInterface>().Init(__instance);
+                __instance.gameObject.AddComponent<PlayerStatsInterface>().Init(__instance);
                 return true;
             }
         }

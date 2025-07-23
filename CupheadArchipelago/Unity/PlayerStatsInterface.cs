@@ -6,9 +6,9 @@ using UnityEngine;
 using static CupheadArchipelago.Hooks.PlayerHooks.PlayerStatsManagerHook;
 
 namespace CupheadArchipelago.Unity {
-    internal class PlayerStatsManagerInterface : MonoBehaviour {
-        private static PlayerStatsManagerInterface current1 = null;
-        private static PlayerStatsManagerInterface current2 = null;
+    internal class PlayerStatsInterface : MonoBehaviour {
+        private static PlayerStatsInterface current1 = null;
+        private static PlayerStatsInterface current2 = null;
 
         private bool initted = false;
 
@@ -44,7 +44,7 @@ namespace CupheadArchipelago.Unity {
 
         public bool IsInitted() => initted;
 
-        internal static PlayerStatsManagerInterface GetInstance(PlayerId playerId) {
+        internal static PlayerStatsInterface GetInstance(PlayerId playerId) {
             return playerId == PlayerId.PlayerTwo ? current2 : current1;
         }
 
@@ -88,7 +88,7 @@ namespace CupheadArchipelago.Unity {
 
         public static void AddEx(PlayerId playerId, float add) {
             Logging.Log($"Adding Ex for {playerId}");
-            PlayerStatsManagerInterface instance = GetInstance(playerId);
+            PlayerStatsInterface instance = GetInstance(playerId);
             instance?.SetSuper(instance.stats.SuperMeter + add);
         }
         public static void FillSuper(PlayerId playerId) {

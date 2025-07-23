@@ -90,7 +90,7 @@ namespace CupheadArchipelago.Unity {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
                     if (type == MngrType.Level && deathLink && death && !deathExecuted) {
                         Logging.Log($"[APManager] Killing Players.");
-                        PlayerStatsManagerInterface.KillPlayer(PlayerId.Any);
+                        PlayerStatsInterface.KillPlayer(PlayerId.Any);
                         Logging.Log($"[APManager] {deathMessage}");
                         deathExecuted = true;
                         active = false;

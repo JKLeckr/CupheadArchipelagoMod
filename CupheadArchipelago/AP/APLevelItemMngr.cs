@@ -14,15 +14,15 @@ namespace CupheadArchipelago.AP {
             // TODO: Add a way to handle if filler items did not apply at all (bools)
 
             if (itemId == APItem.level_extrahealth) {
-                PlayerStatsManagerInterface.AddHealth(PlayerId.PlayerOne, 1);
+                PlayerStatsInterface.AddHealth(PlayerId.PlayerOne, 1);
                 if (PlayerManager.Multiplayer) {
-                    PlayerStatsManagerInterface.AddHealth(PlayerId.PlayerTwo, 1);
+                    PlayerStatsInterface.AddHealth(PlayerId.PlayerTwo, 1);
                 }
             }
             else if (itemId == APItem.level_supercharge) {
-                PlayerStatsManagerInterface.FillSuper(PlayerId.PlayerOne);
+                PlayerStatsInterface.FillSuper(PlayerId.PlayerOne);
                 if (PlayerManager.Multiplayer) {
-                    PlayerStatsManagerInterface.FillSuper(PlayerId.PlayerTwo);
+                    PlayerStatsInterface.FillSuper(PlayerId.PlayerTwo);
                 }
             }
             else if (itemId == APItem.level_fastfire) {
@@ -39,9 +39,9 @@ namespace CupheadArchipelago.AP {
             }
             else if (itemId == APItem.level_trap_superdrain) {
                 //AudioManager.Play("level_menu_select");
-                PlayerStatsManagerInterface.SetSuper(PlayerId.PlayerOne, 0);
+                PlayerStatsInterface.SetSuper(PlayerId.PlayerOne, 0);
                 if (PlayerManager.Multiplayer) {
-                    PlayerStatsManagerInterface.SetSuper(PlayerId.PlayerTwo, 0);
+                    PlayerStatsInterface.SetSuper(PlayerId.PlayerTwo, 0);
                 }
             }
             else if (itemId == APItem.level_trap_loadout) {
