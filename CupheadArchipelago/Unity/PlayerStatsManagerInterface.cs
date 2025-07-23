@@ -78,6 +78,14 @@ namespace CupheadArchipelago.Unity {
             // TODO: Add a way to revive players without issues.
         }
 
+        public void KillPlayer() {
+            IssueStatsCommand(stats, StatsCommands.Death);
+        }
+
+        internal void ReverseControls() {
+            IssueStatsCommand(stats, StatsCommands.ReverseControls);
+        }
+
         public static void AddEx(PlayerId playerId, float add) {
             Logging.Log($"Adding Ex for {playerId}");
             PlayerStatsManagerInterface instance = GetInstance(playerId);
@@ -104,9 +112,6 @@ namespace CupheadArchipelago.Unity {
             GetInstance(playerId)?.SetHealth(set);
         }
 
-        public void KillPlayer() {
-            IssueStatsCommand(stats, StatsCommands.Death);
-        }
         public static void KillPlayer(PlayerId playerId) {
             if (playerId == PlayerId.PlayerOne || playerId == PlayerId.Any)
                 GetInstance(PlayerId.PlayerOne)?.KillPlayer();
@@ -114,9 +119,6 @@ namespace CupheadArchipelago.Unity {
                 GetInstance(PlayerId.PlayerTwo)?.KillPlayer();
         }
 
-        internal void ReverseControls() {
-            IssueStatsCommand(stats, StatsCommands.ReverseControls);
-        }
         internal static void ReverseControls(PlayerId playerId) {
             GetInstance(playerId)?.ReverseControls();
         }

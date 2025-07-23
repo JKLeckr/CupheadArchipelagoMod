@@ -11,6 +11,8 @@ namespace CupheadArchipelago.AP {
                 return;
             }
 
+            // TODO: Add a way to handle if filler items did not apply at all (bools)
+
             if (itemId == APItem.level_extrahealth) {
                 PlayerStatsManagerInterface.AddHealth(PlayerId.PlayerOne, 1);
                 if (PlayerManager.Multiplayer) {
@@ -18,10 +20,8 @@ namespace CupheadArchipelago.AP {
                 }
             }
             else if (itemId == APItem.level_supercharge) {
-                Logging.Log("Setting Player 1 Super");
                 PlayerStatsManagerInterface.FillSuper(PlayerId.PlayerOne);
                 if (PlayerManager.Multiplayer) {
-                    Logging.Log("Setting Player 2 Super");
                     PlayerStatsManagerInterface.FillSuper(PlayerId.PlayerTwo);
                 }
             }
