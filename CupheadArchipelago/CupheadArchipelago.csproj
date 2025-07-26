@@ -9,11 +9,6 @@
     <Copyright>Copyright 2025 JKLeckr</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json;
-    </RestoreAdditionalProjectSources>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefaultItemExcludes>$(DefaultItemExcludes);ref/**;Excluded/**;Exclude/**;Restricted/**;excluded/**;exclude/**;restricted/**;Templates/**</DefaultItemExcludes>
@@ -27,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.Unity" Version="6.0.0-*" IncludeAssets="compile" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="FVer" Version="0.1.0-*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -25,7 +25,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 
 ### Prerequisites
 - A copy of Cuphead
-- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x
+- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 6.0.0 prereleases
 
 ### Instructions
 1. Download the CupheadArchipelago mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).

@@ -6,12 +6,13 @@ using System.IO;
 using System.Threading;
 using BepInEx;
 using BepInEx.Logging;
+using BepInEx.Unity.Logging;
 
 namespace CupheadArchipelago {
     public class ModLogListener : ILogListener, IDisposable {
         public string LogSourceName { get; protected set;}
 
-        public LogLevel DisplayedLogLevel { get; set; }
+        public LogLevel LogLevelFilter { get; private set; }
 
         public TextWriter LogWriter { get; protected set; }
 
@@ -22,7 +23,7 @@ namespace CupheadArchipelago {
         public ModLogListener(string logFile, string logPath, string logSourceName, LogLevel displayedLogLevel = LogLevel.All, bool includeUnityLog = true) {
             LogSourceName = logSourceName;
             WriteFromUnityLog = includeUnityLog;
-            DisplayedLogLevel = displayedLogLevel;
+            LogLevelFilter = displayedLogLevel;
 
             if (!Utility.TryOpenFileStream(Path.Combine(logPath, logFile), FileMode.Create, out FileStream fileStream, FileAccess.Write)) {
                 Logging.LogError($"Could not open \"{logFile}\" for writing. Not logging.");
@@ -38,7 +39,7 @@ namespace CupheadArchipelago {
         }
 
         public void LogEvent(object sender, LogEventArgs eventArgs) {
-            if (((WriteFromUnityLog && eventArgs.Source is UnityLogSource) || eventArgs.Source.SourceName == LogSourceName) && (eventArgs.Level & DisplayedLogLevel) != 0) {
+            if (((WriteFromUnityLog && eventArgs.Source is UnityLogSource) || eventArgs.Source.SourceName == LogSourceName) && (eventArgs.Level & LogLevelFilter) != 0) {
                 LogWriter.WriteLine(eventArgs.ToString());
             }
         }

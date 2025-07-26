@@ -7,10 +7,10 @@ using CupheadArchipelago.Config;
 using CupheadArchipelago.Helpers.FVerParser;
 using FVer;
 using BepInEx;
-using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using Newtonsoft.Json;
+using BepInEx.Unity.Bootstrap;
 
 namespace CupheadArchipelago {
     [BepInPlugin(MOD_GUID, MOD_NAME, MOD_BASE_VERSION)]
@@ -114,7 +114,7 @@ namespace CupheadArchipelago {
         private int FindPlugin(string plugin) {
             int index = 0;
 
-            foreach (var p in Chainloader.PluginInfos) {
+            foreach (var p in UnityChainloader.Instance.Plugins) {
                 BepInPlugin metadata = p.Value.Metadata;
                 if (metadata.GUID.Equals(plugin)) {
                     return index;
