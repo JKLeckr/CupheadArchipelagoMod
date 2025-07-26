@@ -14,4 +14,6 @@ There are bugs that are known. There are less than before, but new alpha release
 
 - There have been instances where items are not recieved correctly. Current workaround is to clear receivedItems from APData. The mod is designed to properly recover the items without adding duplicates.
 
+- Game will behave weird when vsync is on when using it on monitors that have higher refresh rates. This is an issue with BepInEx and will be solved later. Turn off vsync if you have this issue!
+
 - Make sure a specific configuration works before starting a multiworld! There are certain combinations that I have not tested.
