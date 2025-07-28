@@ -3,7 +3,6 @@
 
 using System;
 using CupheadArchipelago.Config;
-using BepInEx.Logging;
 
 namespace CupheadArchipelago {
     public class Logging {

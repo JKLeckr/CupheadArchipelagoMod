@@ -6,22 +6,13 @@ using System.IO;
 using CupheadArchipelago.Config;
 using CupheadArchipelago.Helpers.FVerParser;
 using FVer;
-using BepInEx;
-using BepInEx.Bootstrap;
-using BepInEx.Configuration;
-using BepInEx.Logging;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
-    [BepInPlugin(MOD_GUID, MOD_NAME, MOD_BASE_VERSION)]
-    [BepInDependency(DEP_SAVECONFIG_MOD_GUID, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInProcess("Cuphead.exe")]
-    public class Plugin : BaseUnityPlugin {
-        internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
-
-        protected const string MOD_NAME = "CupheadArchipelago"; //PluginInfo.PLUGIN_NAME
-        protected const string MOD_GUID = "com.JKLeckr.CupheadArchipelago";
-        protected const string MOD_BASE_VERSION = PluginInfo.PLUGIN_VERSION;
+    public class Mod {
+        protected const string MOD_NAME = ModInfoProps.MOD_NAME;
+        protected const string MOD_GUID = ModInfoProps.MOD_GUID;
+        protected const string MOD_BASE_VERSION = ModInfoProps.MOD_SEM_VERSION;
         protected const string MOD_VERSION_POSTFIX = "";
         protected const string MOD_VERSION = $"{MOD_BASE_VERSION}{MOD_VERSION_POSTFIX}";
         protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION);
@@ -33,7 +24,7 @@ namespace CupheadArchipelago {
         public static string FullVersion => $"{MOD_FRIENDLY_VERSION} ({MOD_VERSION})";
         public static int State { get; private set; } = 0;
 
-        internal static Plugin Current { get; private set; } = null;
+        private static Mod current = null;
 
         private static readonly string verPath = Path.Combine(Path.Combine(Paths.PluginPath, MOD_NAME), "configver");
         private long configVer;
@@ -42,8 +33,8 @@ namespace CupheadArchipelago {
         private MConf config;
 
         private void Awake() {
-            if (Current != null) throw new Exception("Plugin is already loaded!");
-            Current = this;
+            if (current != null) throw new Exception("Mod is already loaded!");
+            current = this;
             SetupConfigVersion();
             configEnabled = Config.Bind("Main", "Enabled", true, "Mod Master Switch");
             if (configEnabled.Value) {
@@ -51,7 +42,7 @@ namespace CupheadArchipelago {
                 SetupLogging();
                 Logging.Log("----------------------------------------");
                 Logging.Log($"CupheadArchipelago {FullVersion}");
-                Logging.Log("Created by JKLeckr");
+                Logging.Log("Mod created by JKLeckr");
                 Logging.Log("----------------------------------------");
 
                 Logging.Log($"Game Build Version {UnityEngine.Application.version}");

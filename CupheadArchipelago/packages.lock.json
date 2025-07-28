@@ -8,33 +8,20 @@
         "resolved": "6.6.1",
         "contentHash": "CvojDLce6/ZkDTa/JNeCX4fM7X0gDdVAI5oIOKOtZjsOk4xJ9kTBix6ajnV2tIABEgpKzmMQm21Oz93Bu0m7IA=="
       },
-      "BepInEx.Analyzers": {
-        "type": "Direct",
-        "requested": "[1.*, )",
-        "resolved": "1.0.8",
-        "contentHash": "xrfNmunsPhBx+vStTxLonq/aHkRrDH77c9tG/x3m5eejrKe5B0nf7cJPRRt6x330sGI0bLaPTtygdeHUgvI3wQ=="
-      },
-      "BepInEx.Core": {
-        "type": "Direct",
-        "requested": "[5.*, )",
-        "resolved": "5.4.21",
-        "contentHash": "NMUPlbHTTfJ+qIQCI90uIvjuUQ4wnwt4cpRsK3ItBh1DhsWFzAHXNiZjBxZkPysljEKQ2iu89sxMTga4bxBXVQ==",
-        "dependencies": {
-          "BepInEx.BaseLib": "5.4.20",
-          "HarmonyX": "2.7.0"
-        }
-      },
-      "BepInEx.PluginInfoProps": {
-        "type": "Direct",
-        "requested": "[1.*, )",
-        "resolved": "1.1.0",
-        "contentHash": "RqM3aaGs8Hc2m0D+8aSt9mv09rCMYNIF35NB3D6KA2zSpcXJh/9ZVWrPlIUJfA8KYzodSWcCMUexEW24fjwR3w=="
-      },
       "FVer": {
         "type": "Direct",
         "requested": "[0.1.0-*, )",
         "resolved": "0.1.0-draft01e",
         "contentHash": "M9rUx3nzHMRaPecR8yBxYoD6ffXna2UcrjVe9F0LmbzucfVLuA//TFJWSLrNIsrt4fyADpy18TTaXF9qDyh+Kw=="
+      },
+      "HarmonyX": {
+        "type": "Direct",
+        "requested": "[2.14.*, )",
+        "resolved": "2.14.0",
+        "contentHash": "ZxfuszLYwbSEEUuy/ifXUrL+kwvt7CNahzUFS12zABeBMwdWG5vdthk1XRMdZlg2aRjhRSAwuKlDMD3Bmao/Ew==",
+        "dependencies": {
+          "MonoMod.RuntimeDetour": "25.2.2"
+        }
       },
       "Microsoft.NETFramework.ReferenceAssemblies": {
         "type": "Direct",
@@ -51,19 +38,6 @@
         "resolved": "2017.4.9",
         "contentHash": "XvyZDo6FKond0+Iwx6OSKevG86B68vFCZSR1MQ3LteuFBkTeEtjeANZpQpEibkA2ViS4Sne2R3tYQNYKkINSkg=="
       },
-      "BepInEx.BaseLib": {
-        "type": "Transitive",
-        "resolved": "5.4.20",
-        "contentHash": "0bXgYxbCEN2Ixp3kiFEhyw+RASeFQeg/ww+lbMt7if6XMeVS60eg6epNsMA8Jbx57dmNOzNevkKKw8mP8SUMqw=="
-      },
-      "HarmonyX": {
-        "type": "Transitive",
-        "resolved": "2.7.0",
-        "contentHash": "lec/SkduQspMa3Pi/nM/NSvA84Za8HCCWA8ybdToKiTqnBZa+JC5g6rxoFQCg/1vNuYcvjy77edePZzIEsRmvw==",
-        "dependencies": {
-          "MonoMod.RuntimeDetour": "21.12.13.1"
-        }
-      },
       "Microsoft.NETFramework.ReferenceAssemblies.net35": {
         "type": "Transitive",
         "resolved": "1.0.3",
@@ -74,21 +48,50 @@
         "resolved": "0.10.4",
         "contentHash": "BHukPf7zfXu+akTcFEAWvU4x3hVMMIDC+ihGAl/+8OozrY0f/ajrpuaSUf2Q3Xvgsge5NryvOkjtyhV5TNXoSg=="
       },
-      "MonoMod.RuntimeDetour": {
+      "MonoMod.Backports": {
         "type": "Transitive",
-        "resolved": "21.12.13.1",
-        "contentHash": "65mB+bHjT6UCGCgO+/pYhpuGPf96rQ1Whwkut/x7cqVIW0DTndDFyWc/3bngzhnY/Y6IYtBMlXsU2ATq+CxpHg==",
+        "resolved": "1.1.2",
+        "contentHash": "baYlNy8n8kmaNhNvqmZ/dIPOeO1r9//dG1i2WbunMWtWZ2EKtIgmXaS+ZzphzTsikkGnoD4Jwr5g0TVdpDjgpw==",
+        "dependencies": {
+          "MonoMod.ILHelpers": "1.1.0"
+        }
+      },
+      "MonoMod.Core": {
+        "type": "Transitive",
+        "resolved": "1.2.2",
+        "contentHash": "3R9mQ7TxeQQBFLtGTR2VIDSBGx/I7d8RYpxvW1Mot0/PB6+UOnHr+lkw7dj8cus8YSnLdCFT+CG4JW89daEvjg==",
         "dependencies": {
           "Mono.Cecil": "0.10.4",
-          "MonoMod.Utils": "21.12.13.1"
+          "MonoMod.Backports": "1.1.2",
+          "MonoMod.ILHelpers": "1.1.0",
+          "MonoMod.Utils": "25.0.8"
+        }
+      },
+      "MonoMod.ILHelpers": {
+        "type": "Transitive",
+        "resolved": "1.1.0",
+        "contentHash": "L2FWjhTrv7tcIxshfZ+M3OcaNr4cNw0IwiVZEgwqRnZ5QAN3+RrNJ8ZwCzwXUWyPDqooJxMcjjg8PsSYUiNBjQ=="
+      },
+      "MonoMod.RuntimeDetour": {
+        "type": "Transitive",
+        "resolved": "25.2.2",
+        "contentHash": "uqkdEZkvGv3nxEGolyateQXze/GFTuYYuMA9iW6Yjyt1Njqvx2SGYCEgdDgHh+kfhSZ6MymGU/20t99dU4DaVQ==",
+        "dependencies": {
+          "Mono.Cecil": "0.10.4",
+          "MonoMod.Backports": "1.1.2",
+          "MonoMod.Core": "1.2.2",
+          "MonoMod.ILHelpers": "1.1.0",
+          "MonoMod.Utils": "25.0.8"
         }
       },
       "MonoMod.Utils": {
         "type": "Transitive",
-        "resolved": "21.12.13.1",
-        "contentHash": "/H+0RMWqx/D1/fSuY5jhY6GFvqhdYdlnI7J3IfL8P6y4nJkoZDxqts6+RxWWOz4pbnJdWnxSjS8XG+Lq6rUi7w==",
+        "resolved": "25.0.8",
+        "contentHash": "8wfyawgvGqUvfchAj7/gPazAjXO8CWNyXH+C0az+hgJH/80zVL5LxDhQMz0NQTyoCEJWU6gNBGc7CL+G7vCbaQ==",
         "dependencies": {
-          "Mono.Cecil": "0.10.4"
+          "Mono.Cecil": "0.10.4",
+          "MonoMod.Backports": "1.1.2",
+          "MonoMod.ILHelpers": "1.1.0"
         }
       },
       "fverparser": {

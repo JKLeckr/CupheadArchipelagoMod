@@ -2,18 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-    <AssemblyName>CupheadArchipelago</AssemblyName>
+    <AssemblyName>com.JKLeckr.CupheadArchipelago</AssemblyName>
     <Product>CupheadArchipelago</Product>
     <Description>The Cuphead Archipelago Mod</Description>
     <Version>0.2.1.0</Version>
     <Copyright>Copyright 2025 JKLeckr</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json;
-    </RestoreAdditionalProjectSources>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefaultItemExcludes>$(DefaultItemExcludes);ref/**;Excluded/**;Exclude/**;Restricted/**;excluded/**;exclude/**;restricted/**;Templates/**</DefaultItemExcludes>
@@ -26,13 +21,11 @@
 
   <ItemGroup>
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.*" />
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="FVer" Version="0.1.0-*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="HarmonyX" Version="2.14.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2017.4.9" IncludeAssets="compile" />
   </ItemGroup>
   
@@ -84,6 +77,31 @@
 
   <Target Name="CleanupExtraFiles" AfterTargets="Clean">
     <Delete Files="$(OutputPath)c-wspp.dll" />
+  </Target>
+
+  <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
+    <PropertyGroup>
+      <ModGuid Condition="'$(ModGuid)' == ''">$(AssemblyName)</ModGuid>
+      <ModName Condition="'$(ModName)' == ''">$(Product)</ModName>
+      <ModVersion Condition="'$(ModVersion)' == ''">$(Version)</ModVersion>
+      <GeneratedText><![CDATA[
+namespace $(RootNamespace)
+{
+    internal static class ModInfoProps
+    {
+        public const string MOD_GUID = "$(ModGuid)"%3B
+        public const string MOD_NAME = "$(ModName)"%3B
+        public const string MOD_SEM_VERSION = "$(ModVersion)"%3B
+    }
+}
+      ]]></GeneratedText>
+      <GeneratedFilePath>$(IntermediateOutputPath)ModInfo.cs</GeneratedFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="$(GeneratedFilePath)" />
+      <FileWrites Include="$(GeneratedFilePath)" />
+    </ItemGroup>
+    <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
   </Target>
 
   <ItemGroup>

@@ -3,7 +3,6 @@
 
 using CupheadArchipelago.AP;
 using HarmonyLib;
-using BepInEx.Logging;
 
 namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapLevelDependentObstacleHook {
@@ -24,7 +23,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     return false;
                 }
                 else {
-                    if (!APData.Loaded) {Logging.Log("[MapLevelDependentObstacleHook] APData is not Initialized!", LogLevel.Warning);}
+                    if (!APData.Loaded) {Logging.LogWarning("[MapLevelDependentObstacleHook] APData is not Initialized!");}
                     return true;
                 }
             }
