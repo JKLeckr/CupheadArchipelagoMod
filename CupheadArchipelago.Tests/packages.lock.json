@@ -112,7 +112,6 @@
       "fverparser": {
         "type": "Project"
       }
-    },
-    ".NETFramework,Version=v3.5/win-x64": {}
+    }
   }
 }
