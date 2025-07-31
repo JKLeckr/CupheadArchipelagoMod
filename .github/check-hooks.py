@@ -15,6 +15,12 @@ IGNORED_FILES: set[str] = {
     # Add more paths here as needed, using forward slashes
 }
 
+# Directories (relative to the repo root) to ignore entirely
+IGNORED_DIRS: set[str] = {
+    'Mitigations',
+    # Add more paths here as needed, using forward slashes
+}
+
 # Specific (HookClassName, TargetClassName) pairs to ignore
 IGNORED_PATCHES: set[tuple[str, str]] = {
     ('LevelWeaponHook', 'AbstractLevelWeapon'),
@@ -30,19 +36,20 @@ harmony_patch_re = re.compile(r'\[HarmonyPatch\s*\(\s*typeof\s*\(\s*([\w\.]+)\s*
 class_re = re.compile(r'\bclass\s+(\w+)')
 
 
-def is_ignored_file(root, path):
+def get_relative_path(root, path) -> str:
+    """Get Relative Path."""
+    return os.path.relpath(path, root).replace(os.sep, '/')
+
+def is_ignored_file(relpath) -> bool:
     """Check if a file should be skipped based on its relative path."""
-    rel = os.path.relpath(path, root).replace(os.sep, '/')
-    return rel in IGNORED_FILES
+    return relpath in IGNORED_FILES
 
+def is_ignored_dir(relpath) -> bool:
+    """Check if a directory should be skipped based on its relative path."""
+    return relpath in IGNORED_DIRS
 
-def check_file(path, root):
+def check_file(path) -> list[str]:
     issues = []
-    if is_ignored_file(root, path):
-        if VERBOSE:
-            print(f"{path}: Ignored")
-        return issues
-
     depth = 0
     classes = []
 
@@ -97,9 +104,17 @@ def main():
     all_issues = []
 
     for dirpath, _, files in os.walk(root):
-        for fn in files:
-            if fn.endswith('.cs'):
-                all_issues += check_file(os.path.join(dirpath, fn), root)
+        if is_ignored_dir(get_relative_path(root, dirpath)):
+            if VERBOSE:
+                print(f"{dirpath}: Ignored")
+        else:
+            for fn in files:
+                filepath = os.path.join(dirpath, fn)
+                if is_ignored_file(get_relative_path(root, filepath)):
+                    if VERBOSE:
+                        print(f"{filepath}: Ignored")
+                elif fn.endswith('.cs'):
+                    all_issues += check_file(filepath)
 
     for issue in all_issues:
         print(issue)

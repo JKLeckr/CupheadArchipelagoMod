@@ -6,6 +6,8 @@ namespace CupheadArchipelago.Hooks {
         public static void HookMain() {
             StartScreenHook.Hook();
 
+            Mitigations.MitigationMain.Hook();
+
             RuntimeSceneAssetDatabaseHook.Hook();
             AssetHooks.AssetMain.Hook();
             SceneLoaderHook.Hook();
