@@ -48,6 +48,9 @@ bld/
 .vscode/
 *.code-workspace
 
+# Zed
+.zed/
+
 # Cursor
 .cursor/
 .cursorrules
