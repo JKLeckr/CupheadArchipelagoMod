@@ -76,8 +76,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          prerelease: true
-          name: CupheadArchipelago Mod ${{ env.RELEASE_VERSION }}
+          prerelease: false
+          name: AP Mod ${{ env.RELEASE_VERSION }}
           token: ${{ secrets.AP_TOKEN }}
           files: |
             ${{ env.FILE_NAME }}
