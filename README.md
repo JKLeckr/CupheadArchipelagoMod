@@ -41,6 +41,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 - If `BepInEx/plugins` does not exist, you can launch the game with BepInEx once, or create the folder yourself.
 - If you are on the Steam version, and the mod does not load, launch the game directly from Steam.
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
+- If you are using Steam on Linux or SteamOS, make sure to put `WINEDLLOVERRIDES="winhttp=n,b" %command%` in the launch arguments.
 - There are no binary builds of CupheadArchipelago for macOS. You can build from source, but you are on your own. 
 
 ## Building
