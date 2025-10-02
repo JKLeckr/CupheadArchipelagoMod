@@ -13,11 +13,11 @@ namespace CupheadArchipelago.Unity {
         private bool active = false;
         private int menuSelection = 0;
         private Text[] menuText;
-        private Text headerText; 
+        private Text headerText;
         private bool menuLocked;
 
         private bool promptCooldown = false;
-        
+
         private Transform fader;
         private Transform prompts;
         private APTypingPrompt typingPrompt;
@@ -204,14 +204,14 @@ namespace CupheadArchipelago.Unity {
             htxt.fontSize = 24;
             htxt.text = "Seed: 000000000000000";
             instance.headerText = htxt;
-            
+
             GameObject menu = new GameObject("APMenu");
             RectTransform menu_rect = menu.AddComponent<RectTransform>();
             menu.AddComponent<HorizontalLayoutGroup>();
             menu_rect.sizeDelta = new Vector2(514f, 299f);
             menu.transform.SetParent(card.transform);
 
-            //FIXME: Fix slight alignment issue with Labels and text
+            //FIXME: Make alignment perfect
             GameObject settingsLabels = new GameObject("SettingsLabels");
             RectTransform sl_rect = settingsLabels.AddComponent<RectTransform>();
             sl_rect.sizeDelta = new Vector2(514f, 259f);
@@ -222,13 +222,21 @@ namespace CupheadArchipelago.Unity {
             instance.menuText = new Text[6];
             instance.menuLocked = false;
 
+            GameObject settingsTextC = new GameObject("SettingsTextContainer");
+            RectTransform stc_rect = settingsTextC.AddComponent<RectTransform>();
+            stc_rect.sizeDelta = new Vector2(514f, 259f);
+            VerticalLayoutGroup stc_vlg = settingsTextC.AddComponent<VerticalLayoutGroup>();
+            stc_vlg.padding.top += 2;
+            settingsTextC.transform.SetParent(menu.transform);
+
             GameObject settingsText = new GameObject("SettingsText");
             RectTransform st_rect = settingsText.AddComponent<RectTransform>();
             st_rect.sizeDelta = new Vector2(514f, 259f);
-            settingsText.AddComponent<VerticalLayoutGroup>();
-            settingsText.transform.SetParent(menu.transform);
+            VerticalLayoutGroup st_vlg = settingsText.AddComponent<VerticalLayoutGroup>();
+            st_vlg.spacing += 8f;
+            settingsText.transform.SetParent(settingsTextC.transform);
             instance.SetupSettingsText(settingsText.transform);
-            
+
             GameObject bignoise = Instantiate(orig_bignoise.gameObject, card.transform);
             bignoise.name = orig_bignoise.name;
             bignoise.SetActive(true);
@@ -274,10 +282,10 @@ namespace CupheadArchipelago.Unity {
         private void SetupSettingsText(Transform parent) {
             GameObject nobj = new GameObject("Enabled");
             RectTransform rect = nobj.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(600f, 40f);
+            rect.sizeDelta = new Vector2(600f, 36f);
             nobj.transform.SetParent(parent.transform);
             nobj.AddComponent<CanvasRenderer>();
-            Text txt = CreateSettingsTextComponent(nobj);
+            Text txt = CreateSettingsTextComponent(nobj, false, TextAnchor.UpperLeft);
             txt.text = "ON";
             menuText[0] = txt;
 
@@ -286,7 +294,7 @@ namespace CupheadArchipelago.Unity {
             rect2.sizeDelta = new Vector2(600f, 40f);
             nobj2.transform.SetParent(parent.transform);
             nobj2.AddComponent<CanvasRenderer>();
-            Text txt2 = CreateSettingsTextComponent(nobj2);
+            Text txt2 = CreateSettingsTextComponent(nobj2, false, TextAnchor.UpperLeft);
             txt2.text = "[ARCHIPELAGOGGG]";
             menuText[1] = txt2;
 
@@ -295,7 +303,7 @@ namespace CupheadArchipelago.Unity {
             rect3.sizeDelta = new Vector2(600f, 40f);
             nobj3.transform.SetParent(parent.transform);
             nobj3.AddComponent<CanvasRenderer>();
-            Text txt3 = CreateSettingsTextComponent(nobj3);
+            Text txt3 = CreateSettingsTextComponent(nobj3, false, TextAnchor.UpperLeft);
             txt3.text = "[38281]";
             menuText[2] = txt3;
 
@@ -304,7 +312,7 @@ namespace CupheadArchipelago.Unity {
             rect4.sizeDelta = new Vector2(600f, 40f);
             nobj4.transform.SetParent(parent.transform);
             nobj4.AddComponent<CanvasRenderer>();
-            Text txt4 = CreateSettingsTextComponent(nobj4);
+            Text txt4 = CreateSettingsTextComponent(nobj4, false, TextAnchor.UpperLeft);
             txt4.text = "[Player]";
             menuText[3] = txt4;
 
@@ -313,7 +321,7 @@ namespace CupheadArchipelago.Unity {
             rect5.sizeDelta = new Vector2(600f, 40f);
             nobj5.transform.SetParent(parent.transform);
             nobj5.AddComponent<CanvasRenderer>();
-            Text txt5 = CreateSettingsTextComponent(nobj5);
+            Text txt5 = CreateSettingsTextComponent(nobj5, false, TextAnchor.UpperLeft);
             txt5.text = "[*****]";
             menuText[4] = txt5;
 

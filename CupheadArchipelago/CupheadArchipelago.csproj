@@ -5,7 +5,7 @@
     <AssemblyName>CupheadArchipelago</AssemblyName>
     <Product>CupheadArchipelago</Product>
     <Description>The Cuphead Archipelago Mod</Description>
-    <Version>0.2.1.0</Version>
+    <Version>0.2.1.1</Version>
     <Copyright>Copyright 2025 JKLeckr</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
@@ -35,7 +35,7 @@
     </PackageReference>
     <PackageReference Include="UnityEngine.Modules" Version="2017.4.9" IncludeAssets="compile" />
   </ItemGroup>
-  
+
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
