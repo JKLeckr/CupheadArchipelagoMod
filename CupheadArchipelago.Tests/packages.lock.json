@@ -34,8 +34,8 @@
       },
       "Archipelago.MultiClient.Net": {
         "type": "Transitive",
-        "resolved": "6.6.1",
-        "contentHash": "CvojDLce6/ZkDTa/JNeCX4fM7X0gDdVAI5oIOKOtZjsOk4xJ9kTBix6ajnV2tIABEgpKzmMQm21Oz93Bu0m7IA=="
+        "resolved": "6.7.0",
+        "contentHash": "fsK7kx3dC4EwvEA7kMTUwbP+kYeanYVWHyTXOjYKxl6zj4elHMj42YCjvOYqHee+V2NrRm0f0pljhWEY+BI72g=="
       },
       "BepInEx.BaseLib": {
         "type": "Transitive",
@@ -102,7 +102,7 @@
       "cupheadarchipelago": {
         "type": "Project",
         "dependencies": {
-          "Archipelago.MultiClient.Net": "[6.6.*, )",
+          "Archipelago.MultiClient.Net": "[6.7.*, )",
           "BepInEx.Core": "[5.*, )",
           "BepInEx.PluginInfoProps": "[1.*, )",
           "FVerParser": "[1.0.0, )",
@@ -112,6 +112,7 @@
       "fverparser": {
         "type": "Project"
       }
-    }
+    },
+    ".NETFramework,Version=v3.5/win-x64": {}
   }
 }

@@ -5,7 +5,7 @@
     <AssemblyName>CupheadArchipelago</AssemblyName>
     <Product>CupheadArchipelago</Product>
     <Description>The Cuphead Archipelago Mod</Description>
-    <Version>0.2.1.1</Version>
+    <Version>0.2.1.2</Version>
     <Copyright>Copyright 2025 JKLeckr</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.6.*" />
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
