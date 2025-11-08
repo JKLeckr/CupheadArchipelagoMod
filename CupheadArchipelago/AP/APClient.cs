@@ -209,7 +209,8 @@ namespace CupheadArchipelago.AP {
 
                 try {
                     Logging.Log($"[APClient] Checking settings...");
-                    if (SlotData.use_dlc && !DLCManager.DLCEnabled()) {
+                    Logging.Log($"DLC is {(DLCManager.DLCEnabled() ? "Enabled" : "Disabled")}");
+                    if (SlotData.use_dlc && !DLCManager.DLCEnabled() && !APSessionGSData.IsOverridden(Overrides.DlcOverride)) {
                         Logging.LogError($"[APClient] Content Mismatch! Server requires DLC, but running on a non-DLC client!");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -7;

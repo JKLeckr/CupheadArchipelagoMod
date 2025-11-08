@@ -55,6 +55,7 @@ namespace CupheadArchipelago {
                 Logging.Log("----------------------------------------");
 
                 Logging.Log($"Game Build Version {UnityEngine.Application.version}");
+                Logging.Log($"DLC is {(DLCManager.DLCEnabled() ? "Enabled" : "Disabled")}");
 
                 /*Logging.Log("[Log] Info", LoggingFlags.Debug);
                 Logging.LogWarning("[Log] Warning", LoggingFlags.Debug);
