@@ -30,14 +30,15 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 ### Instructions
 1. Download the CupheadArchipelago mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).
 
-1. Extract BepInEx 5.x x64 for your OS into the Cuphead installation folder.
+2. Place the extracted contents of BepInEx 5.x x64 for your OS into the Cuphead installation folder (the folder with `cuphead.exe` in it).
 
-2. Place the contents of the extracted CupheadArchipelago folder into the `BepInEx/plugins` folder.
+3. Place the contents of the extracted CupheadArchipelago folder into the `BepInEx/plugins` folder.
 
-3. Launch game.
+4. Launch game.
 
 ### Extra Notes
 - Make sure you are installing the binary build of the mod and not the source code. Don't be one of those fellas!
+- After doing step 2, there should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. If this isn't the case, make sure you are placing all of the contents of the extracted BepInEx zip in the Cuphead installation folder.
 - If `BepInEx/plugins` does not exist, you can launch the game with BepInEx once, or create the folder yourself.
 - If you are on the Steam version, and the mod does not load, launch the game directly from Steam.
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
