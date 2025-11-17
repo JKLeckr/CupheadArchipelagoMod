@@ -336,6 +336,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation dlc_quest_cactusgirl = new(12909338, true);
         public static readonly APLocation dlc_cookie = new(12909339, true);
         public static readonly APLocation dlc_curse_complete = new(12909340, true);
+        public static readonly APLocation level_dlc_boss_airplane_secret = new(12909341, true);
 
         public static void Register(APLocation loc) => id_map.Add(loc.id, loc);
         public static APLocation FromId(long id) => id_map[id];

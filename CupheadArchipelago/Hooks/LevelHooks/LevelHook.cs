@@ -111,6 +111,13 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(Level), "_OnPreWin")]
         internal static class _OnPreWin {
+            private static HashSet<Levels> secretLevels = [
+                Levels.Veggies,
+                Levels.FlyingGenie,
+                Levels.SallyStagePlay,
+                Levels.Airplane
+            ];
+
             static void Postfix(Level __instance, bool ___secretTriggered) {
                 Logging.Log("_OnPreWin", LoggingFlags.Debug);
                 APCheck(__instance, ___secretTriggered);
@@ -273,6 +280,11 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
             private static bool IsChalice() {
                 return PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).charm == Charm.charm_chalice;
+            }
+            private static bool CanLevelSecret(Levels level) {
+                if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
+                    return false;
+                return secretLevels.Contains(level);
             }
         }
 

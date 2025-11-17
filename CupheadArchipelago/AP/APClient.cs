@@ -32,6 +32,7 @@ namespace CupheadArchipelago.AP {
         public static ConnectedPacket ConnectionInfo { get; private set; }
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
+        public static int CompatBits { get; private set; } = 0;
         internal static APSlotData SlotData { get; private set; } = null;
         private static bool offline = false;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
@@ -253,7 +254,13 @@ namespace CupheadArchipelago.AP {
                     APSettings.DeathLinkGraceCount = SlotData.deathlink_grace_count;
 
                     ShopMap.SetShopMap(SlotData.shop_map);
-                    
+
+                    Logging.Log($"[APClient] Checking for needed workarounds...");
+                    if (DLCManager.DLCEnabled() && !LocationExists(APLocation.level_dlc_boss_airplane_secret)) {
+                        Logging.LogWarning($"[APClient] Airplane secret location missing, applying workaround...");
+                        CompatBits |= 1;
+                    }
+
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
                     LevelMap.Init(SlotData.level_map);
@@ -414,6 +421,7 @@ namespace CupheadArchipelago.AP {
             APSessionGSDataSlot = -1;
             ConnectionInfo = null;
             APSessionPlayerInfo = null;
+            CompatBits = 0;
             SlotData = null;
             doneChecksUnique = null;
             receivedItemIndex = 0;
