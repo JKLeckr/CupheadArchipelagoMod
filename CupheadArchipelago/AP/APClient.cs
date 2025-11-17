@@ -250,11 +250,11 @@ namespace CupheadArchipelago.AP {
 
                     ShopMap.SetShopMap(SlotData.shop_map);
 
-                    Logging.Log($"[APClient] Checking for needed workarounds...");
+                    /*Logging.Log($"[APClient] Checking for needed workarounds...");
                     if (DLCManager.DLCEnabled() && !LocationExists(APLocation.level_dlc_boss_airplane_secret)) {
                         Logging.LogWarning($"[APClient] Airplane secret location missing, applying workaround...");
                         CompatBits |= 1;
-                    }
+                    }*/
 
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);

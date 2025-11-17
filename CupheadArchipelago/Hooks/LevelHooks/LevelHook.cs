@@ -285,8 +285,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 );
             }
             private static bool CanLevelSecret(Levels level) {
-                if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
-                    return false;
+                /*if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
+                    return false;*/
                 return secretLevels.Contains(level);
             }
         }
