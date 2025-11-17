@@ -17,6 +17,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             Harmony.CreateAndPatchAll(typeof(StartEx));
             Harmony.CreateAndPatchAll(typeof(StartSuper));
             Harmony.CreateAndPatchAll(typeof(HandleWeaponSwitch));
+            Harmony.CreateAndPatchAll(typeof(SwitchWeapon));
+            Harmony.CreateAndPatchAll(typeof(SwitchToWeapon));
         }
 
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "Start")]
@@ -155,12 +157,68 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             }
         }
 
+        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "SwitchWeapon")]
+        internal static class SwitchWeapon {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) =>
+                SwitchWeaponCommonTranspiler(typeof(SwitchWeapon), instructions, il);
+        }
+
+        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "SwitchToWeapon")]
+        internal static class SwitchToWeapon {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) =>
+                SwitchWeaponCommonTranspiler(typeof(SwitchToWeapon), instructions, il);
+        }
+
         private static bool IsAnyWeaponAvailable(PlanePlayerWeaponManager instance) {
             if (instance.player.stats.isChalice) {
                 return PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_chalice_weapon_3way) || PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_chalice_weapon_bomb);
             } else {
                 return PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_weapon_peashot) || PlayerData.Data.IsUnlocked(instance.player.id, Weapon.plane_weapon_bomb);
             }
+        }
+
+        private static bool IsWeaponAvailable(PlanePlayerWeaponManager instance, Weapon weapon) {
+            return PlayerData.Data.IsUnlocked(instance.player.id, weapon);
+        }
+
+        private static IEnumerable<CodeInstruction> SwitchWeaponCommonTranspiler(Type baseClass, IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+            List<CodeInstruction> codes = new(instructions);
+            bool success = false;
+            bool debug = false;
+
+            MethodInfo _mi_get_input = typeof(AbstractPlayerController).GetProperty("input", BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();;
+            MethodInfo _mi_IsWeaponAvailable = typeof(PlanePlayerWeaponManagerHook).GetMethod(
+                "IsWeaponAvailable", BindingFlags.NonPublic | BindingFlags.Static
+            );
+        
+            Label l_end = il.DefineLabel();
+
+            codes[codes.Count-1].labels.Add(l_end);
+            if (debug) {
+                Dbg.LogCodeInstructions(codes);
+            }
+            for (int i=0;i<codes.Count-6;i++) {
+                if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Call && codes[i+2].opcode == OpCodes.Callvirt &&
+                    (MethodInfo)codes[i+2].operand == _mi_get_input && codes[i+3].opcode == OpCodes.Callvirt &&
+                    codes[i+4].opcode == OpCodes.Ldc_I4_3 && codes[i+5].opcode == OpCodes.Callvirt && codes[i+6].opcode == OpCodes.Brfalse) {
+                        List<CodeInstruction> ncodes = [
+                            new CodeInstruction(OpCodes.Ldarg_0),
+                            new CodeInstruction(OpCodes.Ldarg_1),
+                            new CodeInstruction(OpCodes.Call, _mi_IsWeaponAvailable),
+                            new CodeInstruction(OpCodes.Brfalse, l_end),
+                        ];
+                        codes.InsertRange(i, ncodes);
+                        success = true;
+                        break;
+                }
+            }
+            if (!success) throw new Exception($"{nameof(baseClass)}: Patch Failed!");
+            if (debug) {
+                Logging.Log("---");
+                Dbg.LogCodeInstructions(codes);
+            }
+        
+            return codes;
         }
     }
 }
