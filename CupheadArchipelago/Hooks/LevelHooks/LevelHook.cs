@@ -283,8 +283,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 return PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).charm == Charm.charm_chalice;
             }
             private static bool CanLevelSecret(Levels level) {
-                if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
-                    return false;
+                /*if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
+                    return false;*/
                 return secretLevels.Contains(level);
             }
         }
