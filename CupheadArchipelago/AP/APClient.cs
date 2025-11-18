@@ -191,29 +191,38 @@ namespace CupheadArchipelago.AP {
 
                 SessionStatus = 6;
 
+                Logging.Log($"[APClient] Checking client compatibility...");
+                //Check feature bits here
+
+                SessionStatus = 7;
+
                 if (scoutMapStatus==0) Logging.Log($"[APClient] Waiting for location scout...");
                 while (scoutMapStatus==0) {
                     Thread.Sleep(100);
                 }
                 if (scoutMapStatus<0) {
                     Logging.LogError($"[APClient] Scout failed!");
-                    SessionStatus = -6;
+                    SessionStatus = -7;
                     return false;
                 }
 
-                SessionStatus = 7;
+                SessionStatus = 8;
 
                 try {
                     Logging.Log($"[APClient] Checking settings...");
                     Logging.Log($"DLC is {(DLCManager.DLCEnabled() ? "Enabled" : "Disabled")}");
-                    if (SlotData.use_dlc && !DLCManager.DLCEnabled() && !APSessionGSData.IsOverridden(Overrides.DlcOverride)) {
-                        Logging.LogError($"[APClient] Content Mismatch! Server requires DLC, but running on a non-DLC client!");
-                        CloseArchipelagoSession(resetOnFail);
-                        SessionStatus = -7;
-                        return false;
+                    if (SlotData.use_dlc && !DLCManager.DLCEnabled()) {
+                        if (!APSessionGSData.IsOverridden(Overrides.DlcOverride)) {
+                            Logging.LogError($"[APClient] Content Mismatch! Server requires DLC, but running on a non-DLC client!");
+                            CloseArchipelagoSession(resetOnFail);
+                            SessionStatus = -8;
+                            return false;
+                        } else {
+                            Logging.LogWarning($"[APClient] Content Mismatch! Server requires DLC, but running on a non-DLC client! Override enabled, continuing...");
+                        }
                     }
 
-                    SessionStatus = 8;
+                    SessionStatus = 9;
 
                     Logging.Log($"[APClient] Applying settings...");
                     if (!Enabled) APSettings.Init();
@@ -286,33 +295,6 @@ namespace CupheadArchipelago.AP {
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
                     }
                     receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
-                    /*if (receivedItemCounts == null) {
-                        Logging.Log($"[APClient] Setting up items...");
-                        receivedItemCounts = new();
-                        if (APSessionGSData.dlock) {
-                            Logging.Log($"[APClient] Waiting for AP save data unlock...");
-                            while (APSessionGSData.dlock) {
-                                if (SessionStatus<=0) {
-                                    Logging.Log($"[APClient] Cancelled.");
-                                    return false;
-                                }
-                                Thread.Sleep(100);
-                            }
-                        }
-                        APSessionGSData.dlock = true;
-                        for (int i=0; i<ReceivedItems.Count;i++) {
-                            APItemData item = ReceivedItems[i];
-                            AddReceivedItemCount(item.id);
-                            if (item.State==0) {
-                                QueueItem(item, i);
-                            }
-                            else if (itemApplyIndex < item.State) {
-                                itemApplyIndex = item.State;
-                            }
-                            if (item.location>=0) receivedItemsUnique.Add(item);
-                        }
-                        APSessionGSData.dlock = false;
-                    }*/
 
                     Logging.Log($"[APClient] Catching up...");
                     if (!Enabled) {
@@ -323,11 +305,11 @@ namespace CupheadArchipelago.AP {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.LogError(e.ToString(), LoggingFlags.Debug);
                     CloseArchipelagoSession(resetOnFail);
-                    SessionStatus = -8;
+                    SessionStatus = -9;
                     return false;
                 }
 
-                SessionStatus = 9;
+                SessionStatus = 10;
 
                 LogQueueItemCounts();
 
