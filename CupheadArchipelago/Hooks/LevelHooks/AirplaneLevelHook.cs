@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.Util;
-using CupheadArchipelago.AP;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
@@ -26,11 +25,8 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     typeof(AirplaneLevel).GetMethod("handle_secret_intro_cr", BindingFlags.NonPublic | BindingFlags.Instance)
                 );
                 FieldInfo _fi_PC = crtype.GetField("$PC", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo _fi_this = crtype.GetField("$this", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_secretTriggered = typeof(Level).GetField("secretTriggered", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                MethodInfo _mi_APDebug = typeof(handle_secret_intro_cr).GetMethod("APDebug", BindingFlags.NonPublic | BindingFlags.Static);
-
-                Logging.LogDebug(_mi_APDebug);
 
                 Label l_0 = il.DefineLabel();
 
@@ -43,11 +39,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     codes[7].opcode == OpCodes.Switch && codes[8].opcode == OpCodes.Br) {
                         List<CodeInstruction> ncodes = [
                             new CodeInstruction(OpCodes.Ldarg_0),
+                            new CodeInstruction(OpCodes.Ldfld, _fi_this),
                             new CodeInstruction(OpCodes.Ldc_I4_1),
                             new CodeInstruction(OpCodes.Stfld, _fi_secretTriggered),
-                            new CodeInstruction(OpCodes.Ldarg_0),
-                            new CodeInstruction(OpCodes.Ldfld, _fi_secretTriggered),
-                            new CodeInstruction(OpCodes.Call, _mi_APDebug)
                         ];
                         ncodes[0].labels.Add(l_0);
                         ((Label[])codes[7].operand)[0] = l_0;
@@ -61,10 +55,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
             
                 return codes;
-            }
-
-            private static void APDebug(object msg) {
-                Logging.Log(msg);
             }
         }
     }

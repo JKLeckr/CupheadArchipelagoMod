@@ -46,6 +46,9 @@ namespace CupheadArchipelago.Hooks {
             static bool Prefix() {
                 return Plugin.State >= 0 && !MConf.IsTesting();
             }
+            static void Postfix() {
+                Logging.Log($"DLC: {(DLCManager.DLCEnabled() ? "Enabled" : "Disabled")}");
+            }
         }
 
         [HarmonyPatch(typeof(StartScreen), "Update")]
