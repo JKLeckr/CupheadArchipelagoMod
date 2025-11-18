@@ -174,7 +174,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                     Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
                                     if (Level.Difficulty >= battleNormalMode) {
                                         Levels clevel = instance.CurrentLevel;
-                                        bool vsecret = secret && APSettings.BossSecretChecks && (clevel == Levels.Veggies || clevel == Levels.FlyingGenie || clevel == Levels.SallyStagePlay);
+                                        bool vsecret = secret && APSettings.BossSecretChecks && CanLevelSecret(clevel);
                                         int ccheck = 0;
                                         // NOTE: Secrets are counted if playing as Chalice
                                         bool chaliceNotSeparate =
@@ -290,7 +290,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(Level), "_OnLose")]
         internal static class _OnLose {
-            static bool Prefix(Level __instance) {
+            static bool Prefix(Level __instance, bool ___secretTriggered) {
+                if (___secretTriggered)
+                    Logging.LogDebug("_OnLose: Secret Triggered");
                 if (APData.IsCurrentSlotEnabled() && APClient.IsDeathLinkActive()) {
                     Logging.Log("DeathLink");
                     if (APManager.Current != null && !APManager.Current.IsDeathTriggered()) {

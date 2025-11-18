@@ -235,7 +235,8 @@ namespace CupheadArchipelago.Mapping {
                 {Levels.Airplane, new APLocation[] {
                     APLocation.level_dlc_boss_airplane,
                     APLocation.level_dlc_boss_airplane_topgrade,
-                    APLocation.level_dlc_boss_airplane_dlc_chaliced
+                    APLocation.level_dlc_boss_airplane_dlc_chaliced,
+                    APLocation.level_dlc_boss_airplane_secret
                 }},
                 {Levels.FlyingCowboy, new APLocation[] {
                     APLocation.level_dlc_boss_plane_cowboy,

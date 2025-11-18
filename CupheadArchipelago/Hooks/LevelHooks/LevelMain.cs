@@ -16,6 +16,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             KitchenLevelHook.Hook();
             KitchenSaltbakerCounterHook.Hook();
             ChessCastleLevelHook.Hook();
+            AirplaneLevelHook.Hook();
         }
     }
 }
