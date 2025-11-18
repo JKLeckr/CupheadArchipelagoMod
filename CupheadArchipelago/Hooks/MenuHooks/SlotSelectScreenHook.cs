@@ -218,17 +218,21 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                         SetAPConStatusText("Connected!\nChecking...");
                         displayState = 3;
                     }
-                    else if (Status>=4 && Status<6 && displayState!=4) {
+                    else if (Status>=4 && Status<7 && displayState!=4) {
                         SetAPConStatusText("Connected!\nChecking...\nGettings Data...");
                         displayState = 4;
                     }
-                    else if (Status>=6 && Status<7 && displayState!=6) {
+                    else if (Status>=7 && Status<8 && displayState!=6) {
                         SetAPConStatusText("Connected!\nGetting Data...");
                         displayState = 6;
                     }
-                    else if (Status>=7 && displayState!=7) {
-                        SetAPConStatusText("Connected!\nSetting Up...");
+                    else if (Status==8 && displayState!=7) {
+                        SetAPConStatusText("Connected!\nChecking Settings...");
                         displayState = 7;
+                    }
+                    else if (Status>=9 && displayState!=8) {
+                        SetAPConStatusText("Connected!\nSetting Up...");
+                        displayState = 8;
                     }
                     yield return null;
                 }
@@ -275,10 +279,18 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             break;
                         }
                         case -6: {
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nIncompatible with MultiWorld!\nCheck Log!");
+                            break;
+                        }
+                        case -7: {
                             SetAPConStatusText($"Disconnected!\nGet Failed!\nCheck Log!");
                             break;
                         }
                         case -8: {
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nDLC Needed!");
+                            break;
+                        }
+                        case -9: {
                             SetAPConStatusText($"Disconnected!\nSetup failed!\nCheck Log!");
                             break;
                         }

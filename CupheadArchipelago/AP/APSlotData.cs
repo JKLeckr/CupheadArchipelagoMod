@@ -15,6 +15,7 @@ namespace CupheadArchipelago.AP {
 
         internal readonly long version;
         internal readonly FVersion world_version;
+        internal readonly long feature_bit_reqs;
         internal readonly LevelMap level_map;
         internal readonly ShopSet[] shop_map;
         internal readonly bool use_dlc;
@@ -46,6 +47,7 @@ namespace CupheadArchipelago.AP {
         internal APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataValue<long>(slotData, "version");
             world_version = GetAPSlotDataVersion(slotData, "world_version");
+            feature_bit_reqs = GetOptionalAPSlotDataValue<long>(slotData, "feature_bit_reqs", 0);
             level_map = new LevelMap(GetAPSlotDataDeserializedValue<Dictionary<long, long>>(slotData, "level_map"));
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
@@ -84,7 +86,7 @@ namespace CupheadArchipelago.AP {
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
             ducklock_platdrop = GetOptionalAPSlotDataValue(slotData, "ducklock_platdrop", false);
             deathlink = GetAPSlotDataValue<bool>(slotData, "deathlink");
-            deathlink_grace_count = GetOptionalAPSlotDataValue(slotData, "deathlink_grace_count", 0);
+            deathlink_grace_count = GetAPSlotDataValue<int>(slotData, "deathlink_grace_count");
         }
 
         internal static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataValue<long>(slotData, "version");
