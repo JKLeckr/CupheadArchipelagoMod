@@ -182,7 +182,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
                                             (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
                                         if (chaliceNotSeparate) Logging.Log($"[LevelHook] Chalice not separate");
-                                        if (!IsChalice() || chaliceNotSeparate || vsecret) {
+                                        if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer || vsecret) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, vsecret ? 3 : 0), false);
                                         }
                                         if (IsChalice()) {
@@ -196,7 +196,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.BossGradeChecks) - 1);
                                             Logging.Log($"[LevelHook] Grade Test: {Level.Grade}>={tgtGrade}");
                                             if (Level.Grade >= tgtGrade) {
-                                                if (!IsChalice() || chaliceNotSeparate)
+                                                if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer)
                                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
                                                 else if (IsChalice() && (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.GradeRequired) > 0) {
                                                     ccheck |= 2;
@@ -222,7 +222,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
                                             (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
                                         if (chaliceNotSeparate) Logging.Log($"[LevelHook] Chalice not separate");
-                                        if (!IsChalice() || chaliceNotSeparate) {
+                                        if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer) {
                                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
                                         }
                                         if (IsChalice()) {
@@ -236,7 +236,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.RungunGradeChecks) - 1);
                                             Logging.Log($"[LevelHook] Grade Test: {Level.Grade}>={tgtGrade}");
                                             if (Level.Grade >= tgtGrade) {
-                                                if (!IsChalice() || chaliceNotSeparate)
+                                                if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer)
                                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, ((int)APSettings.RungunGradeChecks > 3) ? 2 : 1), false);
                                                 if (IsChalice() && (APSettings.DLCRunGunChaliceChecks & DlcChaliceCheckModes.GradeRequired) > 0)
                                                     ccheck |= 2;
@@ -280,7 +280,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
             }
             private static bool IsChalice() {
-                return PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).charm == Charm.charm_chalice;
+                return PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).charm == Charm.charm_chalice || (
+                    PlayerManager.Multiplayer && PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).charm == Charm.charm_chalice
+                );
             }
             private static bool CanLevelSecret(Levels level) {
                 if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
