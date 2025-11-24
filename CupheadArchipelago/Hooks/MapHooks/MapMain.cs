@@ -12,7 +12,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             MapLevelLoaderHook.Hook();
             MapDifficultySelectStartUIHook.Hook();
             MapEquipUIChecklistHook.Hook();
-            MapEquipUIChecklistItemHook.Hook();
             MapLevelMausoleumEntityHook.Hook();
             MapUICoinsHook.Hook();
             MapShmupTutorialBridgeActivatorHook.Hook();

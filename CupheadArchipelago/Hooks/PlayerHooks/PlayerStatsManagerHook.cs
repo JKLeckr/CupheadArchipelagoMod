@@ -64,6 +64,8 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
 
         [HarmonyPatch(typeof(PlayerStatsManager), "CalculateHealthMax")]
         internal static class CalculateHealthMax {
+            private const int DEFAULT_HEALTH_MAX = 3;
+
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new(instructions);
                 int success = 0;
@@ -94,15 +96,15 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
                     ) {
                         CodeInstruction[] ncodes = [
                             CodeInstruction.Call(() => APData.IsCurrentSlotEnabled()),
-                                new CodeInstruction(OpCodes.Brfalse, cvanilla),
-                                new CodeInstruction(OpCodes.Ldarg_0),
-                                new CodeInstruction(OpCodes.Dup),
-                                new CodeInstruction(OpCodes.Call, _mi_get_Health),
-                                new CodeInstruction(OpCodes.Ldarg_0),
-                                new CodeInstruction(OpCodes.Call, _mi_get_HealthMax),
-                                new CodeInstruction(OpCodes.Call, _mi_APCalcMaxHealth),
-                                new CodeInstruction(OpCodes.Call, _mi_set_HealthMax),
-                            ];
+                            new CodeInstruction(OpCodes.Brfalse, cvanilla),
+                            new CodeInstruction(OpCodes.Ldarg_0),
+                            new CodeInstruction(OpCodes.Dup),
+                            new CodeInstruction(OpCodes.Call, _mi_get_Health),
+                            new CodeInstruction(OpCodes.Ldarg_0),
+                            new CodeInstruction(OpCodes.Call, _mi_get_HealthMax),
+                            new CodeInstruction(OpCodes.Call, _mi_APCalcMaxHealth),
+                            new CodeInstruction(OpCodes.Call, _mi_set_HealthMax),
+                        ];
                         ncodes[0].labels = codes[i].labels;
                         codes[i].labels = [cvanilla];
                         codes.InsertRange(i, ncodes);
@@ -121,13 +123,15 @@ namespace CupheadArchipelago.Hooks.PlayerHooks {
             }
 
             private static int APGetStartMaxHealth(PlayerStatsManager instance) {
-                int startMaxHealth = instance.basePlayer.id == PlayerId.PlayerTwo ? APSettings.StartMaxHealthP2 : APSettings.StartMaxHealth;
-                return APData.IsCurrentSlotEnabled() ? startMaxHealth : 3;
+                if (APData.IsCurrentSlotEnabled()) {
+                    int healthMax = instance.basePlayer.id == PlayerId.PlayerTwo ? APSettings.StartMaxHealthP2 : APSettings.StartMaxHealth;
+                    Logging.LogDebug($"Start Health {instance.basePlayer.id}: {healthMax}");
+                    return healthMax > 0 ? healthMax : DEFAULT_HEALTH_MAX;
+                }
+                return DEFAULT_HEALTH_MAX;
             }
             private static int APCalcMaxHealth(int health, int healthMax) {
-                int nhealthMax = healthMax;
-                if (APData.IsCurrentSlotEnabled())
-                    nhealthMax += APData.CurrentSData.playerData.healthupgrades;
+                int nhealthMax = healthMax + APData.CurrentSData.playerData.healthupgrades;
                 return (health > healthMax) ? health : nhealthMax;
             }
         }
