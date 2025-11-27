@@ -79,10 +79,11 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     ) {
                         if (success) throw new Exception($"{nameof(UpdateList)}: Patch condition is true more than once!");
                         CodeInstruction[] ncodes = [
-                            new(OpCodes.Ldloc_0),
                             new CodeInstruction(OpCodes.Call, _mi_MapLevelList),
+                            new(OpCodes.Stloc_0),
+                            new(OpCodes.Ldloc_0),
                         ];
-                        codes.InsertRange(i + 1, ncodes);
+                        codes.InsertRange(i + 2, ncodes);
                         success = true;
                     }
                 }
@@ -101,13 +102,16 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 }
                 return false;
             }
-            private static void MapLevelList(List<Levels> levelList) {
+            private static List<Levels> MapLevelList(List<Levels> levelList) {
                 if (APData.IsCurrentSlotEnabled()) {
+                    List<Levels> nlevelList = [];
                     for (int i = 0; i < levelList.Count; i++) {
-                        levelList[i] = LevelMap.GetMappedLevel(levelList[i]);
-                        Logging.LogDebug($"list: {i}: {levelList[i]}"); // FIXME: List does not map!
+                        nlevelList.Add(LevelMap.GetMappedLevel(levelList[i]));
+                        Logging.LogDebug($"list: {i}: {levelList[i]}: {nlevelList[i]}");
                     }
+                    return nlevelList;
                 }
+                return levelList;
             }
         }
     }
