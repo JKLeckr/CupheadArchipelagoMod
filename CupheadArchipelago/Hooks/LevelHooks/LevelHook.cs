@@ -198,7 +198,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             if (Level.Grade >= tgtGrade) {
                                                 if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer)
                                                     APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
-                                                else if (IsChalice() && (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.GradeRequired) > 0) {
+                                                if (IsChalice() && (APSettings.DLCBossChaliceChecks & DlcChaliceCheckModes.GradeRequired) > 0) {
                                                     ccheck |= 2;
                                                 }
                                             }
