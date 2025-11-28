@@ -5,6 +5,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
     public class MapNPCMain {
         public static void Hook() {
             MapNPCAppletravellerHook.Hook();
+            MapNPCAxemanHook.Hook();
             MapNPCBarbershopHook.Hook();
             MapNPCBarbershopSongHook.Hook();
             MapNPCCanteenHook.Hook();

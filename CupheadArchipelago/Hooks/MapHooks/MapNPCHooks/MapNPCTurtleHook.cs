@@ -31,7 +31,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-5;i++) {
-                    if (!success && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && 
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && 
                         codes[i+1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i+1].operand == _fi_platformingLevels && 
                         codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == (int)LevelScoringData.Grade.P && 
                         codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_CheckLevelsHaveMinGrade && 
@@ -47,6 +47,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                             codes.InsertRange(i+5, ncodes);
                             i+=ncodes.Length;
                             success = true;
+                            break;
                     }
                 }
                 if (debug) {
