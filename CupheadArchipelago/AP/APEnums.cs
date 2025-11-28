@@ -27,7 +27,7 @@ namespace CupheadArchipelago.AP {
         None = 0,
         BeatDevil = 1,
         CollectContracts = 2,
-        BuyOutShop = 3,
+        BuyOutShop = 4,
         DlcBeatSaltbaker = 8,
         DlcBeatBoth = 9,
         DlcCollectIngredients = 16,

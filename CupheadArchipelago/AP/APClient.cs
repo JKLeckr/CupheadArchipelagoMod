@@ -659,6 +659,7 @@ namespace CupheadArchipelago.AP {
                 GameModes.BuyOutShop => Goals.ShopBuyout,
                 _ => Goals.Devil,
             };
+            Logging.LogDebug($"Goals to check: {goals}");
             return APSessionGSData.AreGoalsCompleted(goals);
         }
 
