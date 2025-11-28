@@ -1,6 +1,8 @@
 /// Copyright 2025 JKLeckr
 /// SPDX-License-Identifier: Apache-2.0
 
+using System;
+using System.Diagnostics.Eventing.Reader;
 using CupheadArchipelago.Hooks.PlayerHooks;
 using UnityEngine;
 using static CupheadArchipelago.Hooks.PlayerHooks.PlayerStatsManagerHook;
@@ -11,14 +13,13 @@ namespace CupheadArchipelago.Unity {
         private static PlayerStatsInterface current2 = null;
 
         private bool initted = false;
+        private PlayerId playerId = PlayerId.None;
 
         private PlayerStatsManager stats;
-        private PlayersStatsBossesHub bstats;
 
         internal void Init(PlayerStatsManager instance) {
             stats = instance;
-            PlayerId playerId = stats.basePlayer.id;
-            bstats = Level.GetPlayerStats(playerId);
+            playerId = stats.basePlayer.id;
             if (playerId == PlayerId.PlayerTwo) {
                 if (current2 != null) {
                     Logging.LogError("StatsManagerInterface Current2 Exists");
@@ -70,11 +71,33 @@ namespace CupheadArchipelago.Unity {
             SetHealth(stats.Health + add);
         }
         internal void SetHealth(int set) {
-            if (Level.IsInBossesHub) {
-                bstats.BonusHP++;
-            }
-            if (!IsDead())
+            if (!IsDead()) {
+                if (Level.IsInBossesHub) {
+                    PlayersStatsBossesHub bstats = Level.GetPlayerStats(playerId);
+                    if (bstats != null) {
+                        int diff = set.CompareTo(stats.HealerHP);
+                        if (diff > 0) {
+                            bstats.BonusHP += set;
+                        }
+                        else if (diff < 0) {
+                            int toremove = -set;
+                            if (bstats.BonusHP > 0) {
+				                if (bstats.BonusHP <= toremove) {
+                                    toremove -= bstats.BonusHP;
+                                    bstats.BonusHP = 0;
+                                } else {
+                                    bstats.BonusHP -= toremove;
+                                    toremove = 0;
+                                }
+			                }
+			                if (bstats.healerHP > 0 && toremove > 0) {
+				                bstats.healerHP = Math.Max(0, bstats.healerHP - toremove);
+			                }
+                        }
+                    }
+                }
                 stats.SetHealth(set);
+            }
             // TODO: Add a way to revive players without issues.
         }
 
