@@ -73,7 +73,11 @@ namespace CupheadArchipelago.Unity {
         internal void SetHealth(int set) {
             if (!IsDead()) {
                 if (Level.IsInBossesHub) {
-                    PlayersStatsBossesHub bstats = Level.GetPlayerStats(playerId);
+                    PlayersStatsBossesHub bstats = null;
+                    if (Level.IsDicePalace || Level.IsDicePalaceMain) {
+                        bstats =
+                            playerId == PlayerId.PlayerTwo ? DicePalaceMainLevelGameInfo.PLAYER_TWO_STATS : DicePalaceMainLevelGameInfo.PLAYER_ONE_STATS;
+                    }
                     if (bstats != null) {
                         int diff = set.CompareTo(stats.HealerHP);
                         if (diff > 0) {
@@ -94,6 +98,8 @@ namespace CupheadArchipelago.Unity {
 				                bstats.healerHP = Math.Max(0, bstats.healerHP - toremove);
 			                }
                         }
+                    } else {
+                        Logging.LogError($"[PlayerStatsInterface] Could not find BossesHub PlayerStats {playerId}!");
                     }
                 }
                 stats.SetHealth(set);
