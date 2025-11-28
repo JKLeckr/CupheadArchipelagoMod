@@ -22,13 +22,13 @@ namespace CupheadArchipelago.Unity {
             playerId = stats.basePlayer.id;
             if (playerId == PlayerId.PlayerTwo) {
                 if (current2 != null) {
-                    Logging.LogError("StatsManagerInterface Current2 Exists");
+                    Logging.LogWarning("StatsManagerInterface Current2 Exists");
                 }
                 current2 = this;
             }
             else {
                 if (current1 != null) {
-                    Logging.LogError("StatsManagerInterface Current1 Exists");
+                    Logging.LogWarning("StatsManagerInterface Current1 Exists");
                 }
                 current1 = this;
             }
@@ -73,10 +73,18 @@ namespace CupheadArchipelago.Unity {
         internal void SetHealth(int set) {
             if (!IsDead()) {
                 if (Level.IsInBossesHub) {
-                    PlayersStatsBossesHub bstats = null;
+                    PlayersStatsBossesHub bstats;
                     if (Level.IsDicePalace || Level.IsDicePalaceMain) {
-                        bstats =
-                            playerId == PlayerId.PlayerTwo ? DicePalaceMainLevelGameInfo.PLAYER_TWO_STATS : DicePalaceMainLevelGameInfo.PLAYER_ONE_STATS;
+                        Logging.LogDebug("[PlayerStatsInterface] Dice Palace");
+                        if (playerId == PlayerId.PlayerTwo) {
+                            DicePalaceMainLevelGameInfo.PLAYER_TWO_STATS ??= new PlayersStatsBossesHub();
+                            bstats = DicePalaceMainLevelGameInfo.PLAYER_TWO_STATS;
+                        } else {
+                            DicePalaceMainLevelGameInfo.PLAYER_ONE_STATS ??= new PlayersStatsBossesHub();
+                            bstats = DicePalaceMainLevelGameInfo.PLAYER_ONE_STATS;
+                        }
+                    } else {
+                        bstats = Level.GetPlayerStats(playerId);
                     }
                     if (bstats != null) {
                         int diff = set.CompareTo(stats.HealerHP);
