@@ -256,7 +256,8 @@ namespace CupheadArchipelago.Unity {
         }
 
         private void RefreshSettingsText() {
-            if (headerText != null) headerText.text = menuLocked ? $"Seed: {GetAPSeed()}" : "";
+            if (headerText != null) headerText.text =
+                menuLocked ? (apData.enabled ? $"Seed: {GetAPSeed()}" : "Vanilla Save\nDelete slot to enable Archipelago.") : "";
             if (menuText[0] != null) menuText[0].text = $"{(apData.enabled ? "YES" : "NO")} {(menuLocked ? "(Locked)" : "")}";
             if (menuText[1] != null) menuText[1].text = $"[{GetMenuString(apData.address)}]" ?? "[]";
             if (menuText[2] != null) menuText[2].text = $"[{apData.port}]";
