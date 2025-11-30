@@ -107,7 +107,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     List<Levels> nlevelList = [];
                     for (int i = 0; i < levelList.Count; i++) {
                         nlevelList.Add(LevelMap.GetMappedLevel(levelList[i]));
-                        Logging.LogDebug($"list: {i}: {levelList[i]}: {nlevelList[i]}");
+                        //Logging.LogDebug($"list: {i}: {levelList[i]}: {nlevelList[i]}");
                     }
                     return nlevelList;
                 }
