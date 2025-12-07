@@ -140,7 +140,7 @@ namespace CupheadArchipelago.AP {
                     string worldVersion = APSlotData.GetAPWorldVersionString(loginData.SlotData);
                     Logging.Log($"[APClient] APWorld version {worldVersion}");
                     if (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION || slotDataVersion < APSlotData.AP_SLOTDATA_MIN_VERSION) {
-                        Logging.LogError($"[APClient] Incompatible SlotData version: C:{APSlotData.AP_SLOTDATA_VERSION}, S:{slotDataVersion}! Incompatible client!");
+                        Logging.LogError($"[APClient] Incompatible SlotData version: Client:{APSlotData.AP_SLOTDATA_VERSION}, Server:{slotDataVersion}! Incompatible client!");
                         CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -3;
                         return false;
