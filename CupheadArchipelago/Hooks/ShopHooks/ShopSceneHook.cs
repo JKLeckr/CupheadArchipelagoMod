@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         [HarmonyPatch(typeof(ShopScene), "OnExit")]
         internal static class OnExit {
             static void Postfix() {
-                if (ShopHookBase.APIsAllItemsBought() && !APClient.AreGoalsCompleted(Goals.ShopBuyout)) {
+                if (APData.IsCurrentSlotEnabled() && ShopHookBase.APIsAllItemsBought() && !APClient.AreGoalsCompleted(Goals.ShopBuyout)) {
                     APClient.GoalComplete(Goals.ShopBuyout, true);   
                 }
             }
