@@ -59,8 +59,7 @@ namespace CupheadArchipelago.AP {
         private static int shownMessage = 0;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
-        private static readonly Version AP_VERSION = new(0,6,0,0);
-        internal const long AP_ID_VERSION = 0;
+        private static readonly Version AP_CLIENT_VERSION = new(0,6,5,0);
         protected const int STATUS_READY = 1;
         protected const string GAME_NAME = "Cuphead";
         private const int RECONNECT_MAX_RETRIES = 3;
@@ -122,7 +121,7 @@ namespace CupheadArchipelago.AP {
             LoginResult result;
             try {
                 string passwd = data.password.Length>0?data.password:null;
-                result = session.TryConnectAndLogin("Cuphead", data.player, ItemsHandlingFlags.AllItems, AP_VERSION, null, null, passwd); //FIXME: Use better Item Handling Later
+                result = session.TryConnectAndLogin("Cuphead", data.player, ItemsHandlingFlags.AllItems, AP_CLIENT_VERSION, null, null, passwd); //FIXME: Use better Item Handling Later
             } catch (Exception e) {
                 result = new LoginFailure(e.GetBaseException().Message);
             }
