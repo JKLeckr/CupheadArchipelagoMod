@@ -22,6 +22,8 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         private static readonly long locationID = APLocation.dlc_cookie;
         private const sbyte DIALOGUER_VAR_ID = 22;
 
+        private const float BOAT_OFF_OPACITY = 0.35f;
+
         private static bool boatEnabled = true;
 
         [HarmonyPatch(typeof(MapNPCBoatman), "Start")]
@@ -172,8 +174,17 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         private static void SetBoatActive(MapNPCBoatman instance, bool set) {
             MapDialogueInteraction mdi = instance.GetComponent<MapDialogueInteraction>();
             mdi.enabled = set;
-            Transform boat = instance.transform.GetChild(1);
-            boat.gameObject.SetActive(set);
+            Transform[] boatmanChildren = instance.transform.GetChildTransforms();
+            int boatIndex = boatmanChildren.Length-1;
+            Transform boat = boatmanChildren[boatIndex];
+            if (boat.name.ToLower() != "boat") {
+                Logging.LogWarning("[MapNPCBoatman] Cannot find the boat!");
+                boat = null;
+            }
+            SpriteRenderer bsr = boat?.GetComponent<SpriteRenderer>();
+            bsr?.color = new Color(1, 1, 1, set ? 1 : BOAT_OFF_OPACITY);
+            Transform ripples = boat?.transform.GetChild(0);
+            ripples?.gameObject.SetActive(set);
         }
     }
 }
