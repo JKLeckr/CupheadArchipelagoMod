@@ -3,6 +3,8 @@
 
 namespace CupheadArchipelago.Hooks.Mitigations {
     internal class MitigationMain {
-        internal static void Hook() {}
+        internal static void Hook() {
+            VSyncMitigationHook.Hook();
+        }
     }
 }

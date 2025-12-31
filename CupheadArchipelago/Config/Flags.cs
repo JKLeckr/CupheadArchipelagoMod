@@ -27,4 +27,10 @@ namespace CupheadArchipelago.Config {
         None = 0,
         ConnectionIndicator = 1,
     }
+
+    [Flags]
+    public enum Fixes {
+        None = 0,
+        VSyncFix = 1,
+    }
 }

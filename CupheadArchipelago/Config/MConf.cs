@@ -17,6 +17,7 @@ namespace CupheadArchipelago.Config {
         private ConfigEntry<bool> configSkipCutscenesAPOnly = config.Bind("Game", "SkipCutscenesAPOnly", true, "Skip cutscenes only if playing an Archipelago game.");
         private ConfigEntry<bool> configFileDeleteResetsAPData = config.Bind("AP", "FileDeleteResetsAPData", true, "When the save file is deleted, the Archipelago settings gets reset.");
         private ConfigEntry<APStatsFunctions> configAPStatusFunctions = config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities. (Currently does nothing)");
+        private ConfigEntry<bool> configVSyncFix = config.Bind("Fixes", "VSyncFix", true, "Enable the VSync fixes that prevent issues when playing the game on a monitor that does not have a 60hz refresh rate. The fixes will allow for faster monitors to use VSync correctly. The vsync setting will be ignored if the refresh rate is not divisible by 60. For those cases, go to your GPU driver settings to turn on vsync for Cuphead.exe.");
         private ConfigEntry<bool> configDebugAsInfo = config.Bind("Debug", "DebugAsInfo", true, "Logs mod debug messages to loglevel info instead of debug.");
 
         internal byte TestMode { get => configTestMode.Value; }
@@ -29,6 +30,7 @@ namespace CupheadArchipelago.Config {
         internal bool SkipCutscenesAPOnly { get => configSkipCutscenesAPOnly.Value; }
         internal bool FileDeleteResetsAPData { get => configFileDeleteResetsAPData.Value; }
         internal APStatsFunctions APStatusFunctions { get => configAPStatusFunctions.Value; }
+        internal bool VSyncFix { get => configVSyncFix.Value; }
         internal bool DebugAsInfo { get => configDebugAsInfo.Value; }
 
         private static MConf Config { get => Plugin.Current.GetConfig(); }
@@ -36,6 +38,7 @@ namespace CupheadArchipelago.Config {
         public static bool IsTesting() => GetTestMode() != 0;
         public static byte GetTestMode() => Config.TestMode;
         public static bool IsDebugLogsInfo() => Config.DebugAsInfo;
+        public static bool IsVSyncFixEnabled() => Config.VSyncFix;
         public static bool IsSkippingCutscene(Cutscenes cutscene) {
             return IsSkippingCutscene(cutscene, APData.IsCurrentSlotEnabled());
         }
