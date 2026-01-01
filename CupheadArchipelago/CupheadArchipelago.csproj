@@ -5,8 +5,8 @@
     <AssemblyName>CupheadArchipelago</AssemblyName>
     <Product>CupheadArchipelago</Product>
     <Description>The Cuphead Archipelago Mod</Description>
-    <Version>0.2.1.7</Version>
-    <Copyright>Copyright 2025 JKLeckr</Copyright>
+    <Version>0.2.1.8</Version>
+    <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
