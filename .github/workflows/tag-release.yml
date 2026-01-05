@@ -7,9 +7,23 @@ on:
       - '!*norel*'
 
 jobs:
+  prep-release:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: false
+          name: AP Mod ${{ env.RELEASE_VERSION }}
+          token: ${{ secrets.AP_TOKEN }}
+
   build-release:
     name: Build and Upload Release
     runs-on: ubuntu-latest
+    needs: prep-release
 
     steps:
       - name: Set Env
@@ -68,10 +82,6 @@ jobs:
         run: |
           zip -r ../${{ env.FILE_NAME }} ${{ env.MOD_NAME }}
 
-      - name: Calculate SHA256 checksum
-        run: |
-          sha256sum ${{ env.FILE_NAME }} > ${{ env.FILE_NAME }}.sha256
-
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -81,4 +91,3 @@ jobs:
           token: ${{ secrets.AP_TOKEN }}
           files: |
             ${{ env.FILE_NAME }}
-            ${{ env.FILE_NAME }}.sha256
