@@ -2,3 +2,6 @@ root = true
 
 [*.cs]
 csharp_new_line_before_open_brace = none
+
+[*.{cs,vb}]
+dotnet_diagnostic.IDE0051.severity = none

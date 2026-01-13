@@ -121,7 +121,7 @@ namespace CupheadArchipelago {
                     return index;
                 }
                 index++;
-            }       
+            }
 
             return -1;
         }
