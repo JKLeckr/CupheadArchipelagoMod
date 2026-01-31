@@ -46,7 +46,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             private static MethodInfo _mi_EndBasic = typeof(PlanePlayerWeaponManager).GetMethod("EndBasic", BindingFlags.NonPublic | BindingFlags.Instance);
 
             static bool Prefix(PlanePlayerWeaponManager __instance) {
-                if (APData.IsCurrentSlotEnabled()) return true;
+                if (!APData.IsCurrentSlotEnabled()) return true;
                 if (__instance.player.stats.StoneTime > 0) {
                     _mi_EndBasic.Invoke(__instance, null);
                 }
