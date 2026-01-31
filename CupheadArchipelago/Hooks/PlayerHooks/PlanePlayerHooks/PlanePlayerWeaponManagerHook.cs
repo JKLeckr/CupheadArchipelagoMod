@@ -182,8 +182,10 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
         private static bool IsWeaponAvailable(PlanePlayerWeaponManager instance, Weapon weapon) {
             return PlayerData.Data.IsUnlocked(instance.player.id, weapon);
         }
-
         private static IEnumerable<CodeInstruction> SwitchWeaponCommonTranspiler(Type baseClass, IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+            if (!APData.IsCurrentSlotEnabled())
+                return instructions;
+            
             List<CodeInstruction> codes = new(instructions);
             bool success = false;
             bool debug = false;
