@@ -24,6 +24,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "Start")]
         internal static class Start {
             static void Postfix(PlanePlayerWeaponManager __instance, ref Weapon ___currentWeapon) {
+                if (APData.IsCurrentSlotEnabled()) return;
                 if (__instance.player.stats.isChalice && !PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_bomb)) {
                     ___currentWeapon = Weapon.plane_chalice_weapon_bomb;
                 }
@@ -36,7 +37,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "CheckBasic")]
         internal static class CheckBasic {
             static bool Prefix(PlanePlayerWeaponManager __instance) {
-                return IsAnyWeaponAvailable(__instance);
+                return !APData.IsCurrentSlotEnabled() || IsAnyWeaponAvailable(__instance);
             }
         }
 
@@ -45,6 +46,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             private static MethodInfo _mi_EndBasic = typeof(PlanePlayerWeaponManager).GetMethod("EndBasic", BindingFlags.NonPublic | BindingFlags.Instance);
 
             static bool Prefix(PlanePlayerWeaponManager __instance) {
+                if (APData.IsCurrentSlotEnabled()) return true;
                 if (__instance.player.stats.StoneTime > 0) {
                     _mi_EndBasic.Invoke(__instance, null);
                 }
@@ -66,7 +68,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
         }
 
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "StartSuper")]
-        internal static class StartSuper {                
+        internal static class StartSuper {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
@@ -150,7 +152,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
 
             private static bool IsInSwitchableState(PlanePlayerWeaponManager instance) {
                 PlayerId player = instance.player.id;
-                return 
+                return
                     (PlayerData.Data.IsUnlocked(player, Weapon.plane_weapon_peashot) &&
                     PlayerData.Data.IsUnlocked(player, Weapon.plane_weapon_bomb)) ||
                     (!APData.IsCurrentSlotEnabled() && Level.IsTowerOfPower);
@@ -190,7 +192,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
             MethodInfo _mi_IsWeaponAvailable = typeof(PlanePlayerWeaponManagerHook).GetMethod(
                 "IsWeaponAvailable", BindingFlags.NonPublic | BindingFlags.Static
             );
-        
+
             Label l_end = il.DefineLabel();
 
             codes[codes.Count-1].labels.Add(l_end);
@@ -217,7 +219,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
                 Logging.Log("---");
                 Dbg.LogCodeInstructions(codes);
             }
-        
+
             return codes;
         }
     }

@@ -17,7 +17,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
 
                 FieldInfo _fi_coinManager = typeof(PlayerData).GetField("coinManager", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
-                MethodInfo _mi_GetCoinCollected = 
+                MethodInfo _mi_GetCoinCollected =
                     typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoinCollected", BindingFlags.Public | BindingFlags.Instance, null, [typeof(string)], null);
                 MethodInfo _mi_AddCurrency = typeof(PlayerData).GetMethod("AddCurrency", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_get_Current  = typeof(MapEventNotification).GetProperty("Current", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
@@ -97,8 +97,10 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             }
             private static bool IsAPEnabled() => APData.IsCurrentSlotEnabled();
             private static void APCheck(long loc) {
-                if (!APClient.IsLocationChecked(loc))
-                    APClient.Check(loc);
+                if (APData.IsCurrentSlotEnabled()) {
+                    if (!APClient.IsLocationChecked(loc))
+                        APClient.Check(loc);
+                }
             }
         }
         internal static class MapNPCQuestHookBase {
