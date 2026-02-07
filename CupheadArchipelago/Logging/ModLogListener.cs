@@ -38,7 +38,7 @@ namespace CupheadArchipelago {
         }
 
         public void LogEvent(object sender, LogEventArgs eventArgs) {
-            if (((WriteFromUnityLog && eventArgs.Source is UnityLogSource) || eventArgs.Source.SourceName == LogSourceName) && (eventArgs.Level & DisplayedLogLevel) != 0) {
+            if ((WriteFromUnityLog && eventArgs.Source is UnityLogSource) || (eventArgs.Source.SourceName == LogSourceName && (eventArgs.Level & DisplayedLogLevel) != 0)) {
                 LogWriter.WriteLine(eventArgs.ToString());
             }
         }
