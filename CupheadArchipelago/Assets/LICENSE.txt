@@ -1,0 +1,3 @@
+The assetbundles built in this folder contain assets with their own licenses:
+
+CupheadArchipelago Assets (c) 2025-2026 by JKLeckr is licensed under CC BY-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/

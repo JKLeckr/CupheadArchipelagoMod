@@ -1,5 +1,5 @@
 /// Copyright 2025-2026 JKLeckr
-/// SPDX-License-Identifier: Apache-2.0
+/// SPDX-License-Identifier: GPL-3.0-or-later
 
 namespace CupheadArchipelago.Helpers.FVerParser {
     public class RawFVer(int baseline, int revision, int release, string prefix, string postfix) {

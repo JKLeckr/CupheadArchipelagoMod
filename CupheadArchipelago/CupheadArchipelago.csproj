@@ -7,6 +7,7 @@
     <Description>The Cuphead Archipelago Mod</Description>
     <Version>0.2.1.8</Version>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -49,8 +50,8 @@
       <Link>LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="../NOTICE.txt">
-      <Link>NOTICE.txt</Link>
+    <None Include="../COPYING.txt">
+      <Link>COPYING.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="../CREDITS.txt">
@@ -59,6 +60,10 @@
     </None>
     <None Include="../LICENSE.3rd-party.txt">
       <Link>LICENSE.3rd-party.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="../LICENSE.assets.txt">
+      <Link>LICENSE.assets.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="../known-issues.txt">
