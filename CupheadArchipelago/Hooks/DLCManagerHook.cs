@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Hooks {
             disableDLC = true;
         }
         internal static bool DLCDisabled() => disableDLC;
-    
+
         [HarmonyPatch(typeof(DLCManager), "DLCEnabled")]
         internal static class DLCEnabled {
             static void Postfix(ref bool __result) {

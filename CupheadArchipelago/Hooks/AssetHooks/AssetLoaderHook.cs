@@ -16,7 +16,7 @@ namespace CupheadArchipelago.Hooks.AssetHooks {
         private delegate IEnumerable<CodeInstruction> TranspilerAction(IEnumerable<CodeInstruction> instructions, ILGenerator il);
 
         /* TODO: Make this work correctly to be able to manage persistent assets and audio.
-           Currently this only works for Sprite Assets. Patching AudioClips causes a NullReferenceException. 
+           Currently this only works for Sprite Assets. Patching AudioClips causes a NullReferenceException.
         */
 
         internal static void Hook() {
@@ -140,7 +140,7 @@ namespace CupheadArchipelago.Hooks.AssetHooks {
                 return pAssets;
             }
         }
-        
+
         private static void HookGeneric(
             string methodName,
             BindingFlags bindingFlags,

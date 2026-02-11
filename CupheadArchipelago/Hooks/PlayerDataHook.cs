@@ -137,7 +137,7 @@ namespace CupheadArchipelago.Hooks {
                     List<CodeInstruction> codes = new(instructions);
                     bool debug = false;
                     bool success = false;
-                    
+
                     FieldInfo _fi__weapons = typeof(PlayerInventory).GetField("_weapons", BindingFlags.Public | BindingFlags.Instance);
                     MethodInfo _mi__weapons_Add = typeof(PlayerInventory).GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
 
@@ -151,7 +151,7 @@ namespace CupheadArchipelago.Hooks {
                             codes[i+2].opcode == OpCodes.Ldc_I4 && codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi__weapons_Add) {
                                 codes[i].labels.Add(vanilla_label);
                                 CodeInstruction[] ncodes = [
-                                    CodeInstruction.Call(() => IsAPMode()), 
+                                    CodeInstruction.Call(() => IsAPMode()),
                                     new CodeInstruction(OpCodes.Brfalse, vanilla_label),
                                     new CodeInstruction(OpCodes.Ldarg_0),
                                     new CodeInstruction(OpCodes.Ldfld, _fi__weapons),

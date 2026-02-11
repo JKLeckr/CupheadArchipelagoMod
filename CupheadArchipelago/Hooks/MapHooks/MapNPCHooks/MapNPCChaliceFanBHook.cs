@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
         }
 
         private static readonly long locationId = APLocation.dlc_quest_cactusgirl;
-            
+
 
         [HarmonyPatch(typeof(MapNPCChaliceFanB), "OnDialogueEnded")]
         internal static class OnDialogueEnded {

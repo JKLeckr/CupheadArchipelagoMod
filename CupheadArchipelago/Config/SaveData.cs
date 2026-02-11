@@ -9,7 +9,7 @@ namespace CupheadArchipelago.Config {
         private static bool initted = false;
 
         private const string AP_SAVE_FILE_KEY_SUFFIX = "_apdata";
-        
+
         internal static readonly string DEFAULT_SAVE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
         internal static readonly string[] AP_SAVE_FILE_KEYS = new string[3];
 

@@ -24,7 +24,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Logging.Log("Coin: "+pos.x+", "+pos.y+" : "+__instance.GlobalID);
                 return true;
             }*/
-            
+
             static void Postfix(LevelCoin __instance, ref bool ____collected) {
                 if (APData.IsCurrentSlotEnabled()) {
                     if (APClient.IsLocationChecked(CoinIdMap.GetAPLocation(__instance.GlobalID))) {
@@ -54,7 +54,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 bool success = false;
-                
+
                 FieldInfo _fi__collected = typeof(LevelCoin).GetField("_collected", BindingFlags.Instance | BindingFlags.NonPublic);
                 MethodInfo _mi_APCheck = typeof(Collect).GetMethod("APCheck", BindingFlags.Static | BindingFlags.NonPublic);
 

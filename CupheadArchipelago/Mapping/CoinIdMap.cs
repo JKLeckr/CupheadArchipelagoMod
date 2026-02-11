@@ -15,13 +15,13 @@ namespace CupheadArchipelago.Mapping {
             {"scene_level_platforming_1_1F::Level_Coin :: 245037a6-1fa2-4167-a631-0723abff8138", APLocation.level_rungun_forest_coin3},
             {"scene_level_platforming_1_1F::Level_Coin :: eaefb009-c117-4b9a-96c1-7abc5558d213", APLocation.level_rungun_forest_coin4},
             {"scene_level_platforming_1_1F::Level_Coin :: 5526f7bc-a902-4c13-9e7a-1632a5abe378", APLocation.level_rungun_forest_coin5},
-            
+
             {"scene_level_platforming_1_2F::Level_Coin :: 323989de-349e-4740-a764-dbc12217a27c", APLocation.level_rungun_tree_coin1},
             {"scene_level_platforming_1_2F::Level_Coin :: 55a46261-b14c-4065-9ada-18524eaed9f3", APLocation.level_rungun_tree_coin2},
             {"scene_level_platforming_1_2F::Level_Coin :: da0983f6-62d4-4ace-81f2-cad7181d5fe9", APLocation.level_rungun_tree_coin3},
             {"scene_level_platforming_1_2F::Level_Coin :: 7088ec51-4792-49c0-ab2c-c45ec9deb9f0", APLocation.level_rungun_tree_coin4},
             {"scene_level_platforming_1_2F::Level_Coin :: e02954c1-ff76-4ba4-849f-90aae53a7787", APLocation.level_rungun_tree_coin5},
-            
+
             {"1782e7b4-2edf-45c0-b312-3083397307bf", APLocation.coin_isle2_secret},
             {"scene_level_platforming_2_1F::Level_Coin :: 24ef654a-a65b-4a1c-b5e5-c3c64e250646", APLocation.level_rungun_circus_coin1},
             {"scene_level_platforming_2_1F::Level_Coin :: b8d96f03-d264-4a61-9ab9-07de34f660aa", APLocation.level_rungun_circus_coin2},
@@ -47,7 +47,7 @@ namespace CupheadArchipelago.Mapping {
             {"scene_level_platforming_3_2F::Level_Coin :: cf0a7cae-d8d9-4be0-9502-8b8544606e04", APLocation.level_rungun_mountain_coin3},
             {"scene_level_platforming_3_2F::Level_Coin :: e671db16-cf6e-421c-937c-2b6f5c7ad0e7", APLocation.level_rungun_mountain_coin4},
             {"scene_level_platforming_3_2F::Level_Coin :: 084a7b75-e752-452f-8710-687db1e165fe", APLocation.level_rungun_mountain_coin5},
-            
+
             {"43dfad5b-65dc-42f1-9ab3-25e0174f4ee8", APLocation.coin_isleh_secret},
 
             {"619e92f1-e0fd-4f6e-9c2d-5ce5dbaf393f", APLocation.dlc_coin_isle4_secret},

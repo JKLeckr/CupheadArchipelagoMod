@@ -28,7 +28,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 FieldInfo _fi_coinManager = typeof(PlayerData).GetField("coinManager", BindingFlags.Public | BindingFlags.Instance);
                 FieldInfo _fi_coinID1 = typeof(MapNPCNewsieCat).GetField("coinID1", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
-                MethodInfo _mi_GetCoinCollected = 
+                MethodInfo _mi_GetCoinCollected =
                     typeof(PlayerData.PlayerCoinManager).GetMethod("GetCoinCollected", BindingFlags.Public | BindingFlags.Instance, null, [typeof(string)], null);
                 MethodInfo _mi_ProcessLevels = typeof(Start).GetMethod("ProcessLevels", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo _mi_APCondition = typeof(Start).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
@@ -67,7 +67,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 return codes;
             }
             private static bool IsArraySetup(List<CodeInstruction> codes, int i) {
-                return 
+                return
                     codes[i+1].opcode == OpCodes.Newarr &&
                     (Type)codes[i+1].operand == typeof(Levels) &&
                     codes[i+2].opcode == OpCodes.Dup &&
@@ -99,7 +99,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             }
         }
 
-        private static void LogDialoguerGlobalFloat(int floatId) => 
+        private static void LogDialoguerGlobalFloat(int floatId) =>
             Logging.Log($"{nameof(MapNPCAppletraveller)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

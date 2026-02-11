@@ -15,7 +15,7 @@ namespace CupheadArchipelago.Unity {
             Text16,
             SixDigit
         }
-        
+
         private bool typing = false;
         private TextTypes type;
         private string text = "";
@@ -93,13 +93,13 @@ namespace CupheadArchipelago.Unity {
             switch (type) {
                 case TextTypes.Text16:
                     return text.Substring(0, Mathf.Min(text.Length, 16));
-                case TextTypes.SixDigit: 
+                case TextTypes.SixDigit:
                     string res = text.Substring(0, Mathf.Min(text.Length, 6));
                     if (int.TryParse(res, out int _))
                         return res;
                     else return "0";
                 default:
-                    return text.Substring(0, Mathf.Min(text.Length, TEXT_MAX_LENGTH)); 
+                    return text.Substring(0, Mathf.Min(text.Length, TEXT_MAX_LENGTH));
             }
         }
 
@@ -131,12 +131,12 @@ namespace CupheadArchipelago.Unity {
 
             Init(prompt, orig_options);
 
-            return prompt;            
+            return prompt;
         }
 
         protected static void Init(APTypingPrompt instance, Transform orig_options) {
             GameObject obj = instance.gameObject;
-            
+
             Transform orig_card = orig_options.GetChild(1);
             Transform orig_bigcard = orig_card.GetChild(2);
             Transform orig_bignoise = orig_card.GetChild(6);

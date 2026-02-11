@@ -44,19 +44,19 @@ jobs:
       - name: Clean project directory
         run: |
           rm -rf ref/
-      
+
       - name: Checkout Private Reference Assemblies
         uses: actions/checkout@v4
         with:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
           path: CupheadArchipelago/ref
-      
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
-      
+
       - name: Setup Project
         run: |
           dotnet restore
@@ -66,13 +66,13 @@ jobs:
         run: |
           export PARSED_VERSION="$(grep -oPm1 '(?<=<Version>)[^<]+' CupheadArchipelago/CupheadArchipelago.csproj)"
           dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ "${PARSED_VERSION}" "${{ env.RELEASE_VERSION }}"
-      
+
       - name: Build Project
         working-directory: ${{ env.MOD_NAME }}
         run: |
           mkdir ../build
           dotnet build --no-restore -o ../build/${{ env.MOD_NAME }}
-      
+
       - name: Generate Manifest
         run: |
           dotnet run --no-restore --project ${{ env.MOD_NAME }}.Helpers/GenManifest ${{ env.MOD_NAME }} build/${{ env.MOD_NAME }}/manifest.json

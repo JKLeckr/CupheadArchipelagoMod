@@ -23,7 +23,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 int labelInsert = 0;
-                
+
                 FieldInfo _fi_dialoguerVariableID = typeof(MapNPCCanteen).GetField("dialoguerVariableID", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo _mi_Dialoguer_SetGlobalFloat = typeof(Dialoguer).GetMethod("SetGlobalFloat", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_AddDialoguerEvents = typeof(MapNPCCanteen).GetMethod("AddDialoguerEvents", BindingFlags.Public | BindingFlags.Instance);
@@ -43,9 +43,9 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 codes.InsertRange(0, ncodes);
                 int start = ncodes.Length;
                 for (int i=start;i<codes.Count-3;i++) {
-                    if ((labelInsert&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 
-                        (FieldInfo)codes[i+1].operand == _fi_dialoguerVariableID && codes[i+2].opcode == OpCodes.Ldc_R4 && 
-                        (float)codes[i+2].operand == 1f && codes[i+3].opcode == OpCodes.Call && 
+                    if ((labelInsert&1)==0 && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld &&
+                        (FieldInfo)codes[i+1].operand == _fi_dialoguerVariableID && codes[i+2].opcode == OpCodes.Ldc_R4 &&
+                        (float)codes[i+2].operand == 1f && codes[i+3].opcode == OpCodes.Call &&
                         (MethodInfo)codes[i+3].operand == _mi_Dialoguer_SetGlobalFloat) {
                             codes[i].labels.Add(tgt_label);
                             labelInsert |= 1;
@@ -91,7 +91,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             }
         }
 
-        private static void LogDialoguerGlobalFloat(int floatId) => 
+        private static void LogDialoguerGlobalFloat(int floatId) =>
             Logging.Log($"{nameof(MapNPCCanteen)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

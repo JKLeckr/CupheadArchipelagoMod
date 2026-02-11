@@ -415,7 +415,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                 Label l_wvanilla = il.DefineLabel();
                 Label l_cifa = il.DefineLabel();
                 Label l_wifa = il.DefineLabel();
-            
+
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
@@ -472,7 +472,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
         }

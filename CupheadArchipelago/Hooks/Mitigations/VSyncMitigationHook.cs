@@ -71,7 +71,7 @@ namespace CupheadArchipelago.Hooks.Mitigations {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
 

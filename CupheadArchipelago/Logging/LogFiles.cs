@@ -32,7 +32,7 @@ namespace CupheadArchipelago {
 
         private static void SetupLogName(string logName, string logDir, int fileMax) {
             Logging.Log(logDir);
-            var logFiles = 
+            var logFiles =
                 Directory.GetFiles(logDir, $"{logName}.*{LOG_FILE_EXTENSION}")
                             .Select(Path.GetFileName)
                             .Select(name => new {

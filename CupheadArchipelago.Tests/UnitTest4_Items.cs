@@ -112,7 +112,7 @@ namespace CupheadArchipelago.Tests {
 
         public sealed class Items_ItemMngr {
             private static readonly HashSet<long> skipItems = [];
-            
+
             private static readonly TPlayerDataItfc playerDataMngr = new();
 
             [SetUp]

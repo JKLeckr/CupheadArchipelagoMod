@@ -14,7 +14,7 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
         internal static class OnExit {
             static void Postfix() {
                 if (APData.IsCurrentSlotEnabled() && ShopHookBase.APIsAllItemsBought() && !APClient.AreGoalsCompleted(Goals.ShopBuyout)) {
-                    APClient.GoalComplete(Goals.ShopBuyout, true);   
+                    APClient.GoalComplete(Goals.ShopBuyout, true);
                 }
             }
         }

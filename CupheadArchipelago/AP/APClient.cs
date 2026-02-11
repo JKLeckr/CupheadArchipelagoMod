@@ -99,7 +99,7 @@ namespace CupheadArchipelago.AP {
 
         public static bool CreateAndStartArchipelagoSession(int index, ArchipelagoSessionCreate sessionCreate) {
             if (!ArchipelagoSessionPre()) return false;
-            
+
             bool res = false;
 
             APData data = APData.SData[index];
@@ -173,7 +173,7 @@ namespace CupheadArchipelago.AP {
                 }
 
                 SessionStatus = 5;
-                
+
                 Logging.Log($"[APClient] Checking seed...");
                 string seed = session.RoomState.Seed;
                 //Logging.Log($"File {APSessionGSDataSlot} seed: {APSessionGSData.seed}");
@@ -243,7 +243,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DuckLockPlatDropBug = SlotData.ducklock_platdrop;
-                    APSettings.DeathLink = 
+                    APSettings.DeathLink =
                         (APSessionGSData.IsOverridden(Overrides.OverrideEnableDeathLink) ? !SlotData.deathlink : SlotData.deathlink) ?
                         DeathLinkMode.Normal : DeathLinkMode.Disabled;
                     APSettings.DeathLinkGraceCount = SlotData.deathlink_grace_count;
@@ -522,7 +522,7 @@ namespace CupheadArchipelago.AP {
         }
         public static string GetItemName(long item) => GetItemInfo(item)?.Name ?? $"APItem {item}";
         public static APItemData GetItemFromLocation(long loc) {
-            if (!Enabled) { 
+            if (!Enabled) {
                 Logging.LogWarning("[APClient] Client must be enabled for GetLocalItem to function.");
                 return null;
             }
@@ -789,7 +789,7 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"[APClient] Current ItemQueue Counts: {itemApplyQueue.Count}, {itemApplyLevelQueue.Count}"); //, LoggingFlags.Debug
         }
         public static APItemData GetReceivedItem(int index) {
-            if (index >= 0 && index < ReceivedItems.Count) { 
+            if (index >= 0 && index < ReceivedItems.Count) {
                 return ReceivedItems[index];
             } else {
                 throw new IndexOutOfRangeException($"[APClient] Index Out of Range! i:{index} C:{ReceivedItems.Count}");
@@ -798,7 +798,7 @@ namespace CupheadArchipelago.AP {
         private static void AddReceivedItemCount(long itemId, int count = 1) {
             if (!receivedItemCounts.ContainsKey(itemId))
                 receivedItemCounts[itemId] = 1;
-            else 
+            else
                 receivedItemCounts[itemId] += count;
         }
         public static int GetReceivedItemCount(long itemId) {
@@ -842,7 +842,7 @@ namespace CupheadArchipelago.AP {
         public static APItemData PeekItemApplySpecialLevelQueue() => PeekItemQueue(itemApplySpecialLevelQueue);
         private static APItemData PeekItemQueue(Queue<int> itemQueue) {
             int index = itemQueue.Peek();
-            if (index >= 0 && index < ReceivedItems.Count) { 
+            if (index >= 0 && index < ReceivedItems.Count) {
                 APItemData item = ReceivedItems[index];
                 return item;
             } else {
@@ -854,7 +854,7 @@ namespace CupheadArchipelago.AP {
         public static APItemData PopItemApplySpecialLevelQueue(bool applyItem = true) => PopItemQueue(itemApplySpecialLevelQueue, applyItem);
         private static APItemData PopItemQueue(Queue<int> itemQueue, bool applyItem) {
             int index = itemQueue.Peek();
-            if (index >= 0 && index < ReceivedItems.Count) { 
+            if (index >= 0 && index < ReceivedItems.Count) {
                 APItemData item = ReceivedItems[index];
                 if (applyItem) {
                     bool success = APItemMngr.ApplyItem(item);
@@ -961,7 +961,7 @@ namespace CupheadArchipelago.AP {
                                 err = true;
                                 Logging.LogError($" [APClient] Setup: Unknown Location: {locName??"MISSINGNAME"}:{loc}");
                             }
-                                
+
                             //Logging.Log($"Adding: {loc} {item.ItemId}", LoggingFlags.Debug);
                             locMap.Add(loc, item);
 

@@ -30,19 +30,19 @@ jobs:
       - name: Clean project directory
         run: |
           rm -Recurse -Force CupheadArchipelago\ref
-      
+
       - name: Checkout Private Reference Assemblies
         uses: actions/checkout@v4
         with:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
           path: CupheadArchipelago\ref
-      
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
-      
+
       - name: Setup Solution
         run: |
           dotnet restore

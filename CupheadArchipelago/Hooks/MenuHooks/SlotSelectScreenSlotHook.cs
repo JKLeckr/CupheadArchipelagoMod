@@ -50,8 +50,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-4;i++) {
-                    if (!success && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 && 
-                        codes[i+2].opcode == OpCodes.Callvirt && codes[i+3].opcode == OpCodes.Ldfld && 
+                    if (!success && codes[i].opcode == OpCodes.Ldloc_0 && codes[i+1].opcode == OpCodes.Ldc_I4_3 &&
+                        codes[i+2].opcode == OpCodes.Callvirt && codes[i+3].opcode == OpCodes.Ldfld &&
                         (FieldInfo)codes[i+3].operand == _fi_MapData_sessionStarted && codes[i+4].opcode == OpCodes.Brtrue) {
                             CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_1),
@@ -62,9 +62,9 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             i+=ncodes.Length;
                             success = true;
                     }
-                    if (!labelPlaced && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld && 
-                        (FieldInfo)codes[i+1].operand == _fi_emptyChild && codes[i+2].opcode == OpCodes.Callvirt && 
-                        codes[i+3].opcode == OpCodes.Ldc_I4_1 && codes[i+4].opcode == OpCodes.Callvirt && 
+                    if (!labelPlaced && codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldfld &&
+                        (FieldInfo)codes[i+1].operand == _fi_emptyChild && codes[i+2].opcode == OpCodes.Callvirt &&
+                        codes[i+3].opcode == OpCodes.Ldc_I4_1 && codes[i+4].opcode == OpCodes.Callvirt &&
                         (MethodInfo)codes[i+4].operand == _mi_gameObject_SetActive) {
                             codes[i].labels.Add(tgt_label);
                             labelPlaced = true;
@@ -125,13 +125,13 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                         txt.color = selected?ehColor:ebColor;
                         txt.text = "E" + APData.SData[slot].state;
                         slotAPText_inst.gameObject.SetActive(true);
-                        states[slot] = 2;                            
+                        states[slot] = 2;
                     }
                     else if (APData.SData[slot].state>0) {
                         txt.color = selected?ehColor:ebColor;
                         txt.text = "!" + APData.SData[slot].state;
                         slotAPText_inst.gameObject.SetActive(true);
-                        states[slot] = 3;                            
+                        states[slot] = 3;
                     }
                     else {
                         slotAPText_inst.gameObject.SetActive(false);
@@ -173,7 +173,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Debug.LogError("[CreateSlotAPText] Parent is null!");
             }
 
-            slotAPText[index] = obj;    
+            slotAPText[index] = obj;
         }
     }
 }

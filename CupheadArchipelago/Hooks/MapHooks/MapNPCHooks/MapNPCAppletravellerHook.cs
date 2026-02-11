@@ -23,7 +23,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                         Dialoguer.SetGlobalFloat(___dialoguerVariableID, 1f);
                     }
                     LogDialoguerGlobalFloat(___dialoguerVariableID);
-                } 
+                }
                 return true;
             }
         }
@@ -43,7 +43,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             }
         }
 
-        private static void LogDialoguerGlobalFloat(int floatId) => 
+        private static void LogDialoguerGlobalFloat(int floatId) =>
             Logging.Log($"{nameof(MapNPCAppletraveller)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

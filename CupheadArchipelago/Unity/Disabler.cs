@@ -8,7 +8,7 @@ namespace CupheadArchipelago.Unity {
     public class Disabler : MonoBehaviour {
         bool initted = false;
         MonoBehaviour toDisable;
-        
+
         public void Init(MonoBehaviour toDisable) {
             this.toDisable = toDisable;
             initted = true;

@@ -12,7 +12,7 @@ namespace CupheadArchipelago {
         private static Action<LogLevel, object> logAction;
         private static LoggingFlags loggingFlags;
         private static LoggingFlags permLoggingFlags;
-        
+
         internal static void Init(ManualLogSource logSource, LoggingFlags loggingFlags) {
             if (init) Console.WriteLine("Reinitializing Logging...");
             Logging.logSource = logSource ?? throw new ArgumentNullException("logSource cannot be null.");

@@ -43,7 +43,7 @@ namespace CupheadArchipelago.Hooks.AssetHooks {
                 Label l_rjump = il.DefineLabel();
                 Label l_vanillarq = il.DefineLabel();
                 Label l_rq_stloc = il.DefineLabel();
-            
+
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
@@ -87,7 +87,7 @@ namespace CupheadArchipelago.Hooks.AssetHooks {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
 

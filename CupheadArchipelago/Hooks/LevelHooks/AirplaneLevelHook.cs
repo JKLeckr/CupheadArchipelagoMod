@@ -53,7 +53,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
         }

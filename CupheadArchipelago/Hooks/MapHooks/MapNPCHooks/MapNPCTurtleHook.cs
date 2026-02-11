@@ -31,10 +31,10 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-5;i++) {
-                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && 
-                        codes[i+1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i+1].operand == _fi_platformingLevels && 
-                        codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == (int)LevelScoringData.Grade.P && 
-                        codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_CheckLevelsHaveMinGrade && 
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data &&
+                        codes[i+1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i+1].operand == _fi_platformingLevels &&
+                        codes[i+2].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i+2].operand == (int)LevelScoringData.Grade.P &&
+                        codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_CheckLevelsHaveMinGrade &&
                         codes[i+4].opcode == OpCodes.Brfalse) {
                             Label iftrue = il.DefineLabel();
                             codes[i+5].labels.Add(iftrue);
@@ -79,7 +79,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                 }
             }
         }
-        private static void LogDialoguerGlobalFloat(int floatId) => 
+        private static void LogDialoguerGlobalFloat(int floatId) =>
             Logging.Log($"{nameof(MapNPCTurtle)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

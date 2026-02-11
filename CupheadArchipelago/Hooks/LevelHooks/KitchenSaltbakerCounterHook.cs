@@ -27,7 +27,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static bool APCondition() {
-                return 
+                return
                     MConf.IsSkippingCutscene(Cutscenes.DLCSaltbakerIntro) ||
                     APClient.APSessionGSPlayerData.dlc_ingredients >= APSettings.DLCRequiredIngredients;
             }

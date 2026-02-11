@@ -89,7 +89,7 @@ namespace CupheadArchipelago.AP {
 
         internal static long GetSlotDataVersion(Dictionary<string, object> slotData) => GetAPSlotDataValue<long>(slotData, "version");
         internal static string GetAPWorldVersionString(Dictionary<string, object> slotData) => GetAPSlotDataValue<string>(slotData, "world_version");
-        
+
         private static T GetAPSlotDataDeserializedValue<T>(Dictionary<string, object> slotData, string key) {
             try {
                 string raw = GetAPSlotDataValue<string>(slotData, key);

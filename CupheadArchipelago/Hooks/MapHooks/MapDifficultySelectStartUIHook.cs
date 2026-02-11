@@ -87,7 +87,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         [HarmonyPatch(typeof(MapDifficultySelectStartUI), "SetDifficultyAvailability")]
         internal static class SetDifficultyAvailability {
             //FIXME: Eventually do better with this code.
-            static bool Prefix(ref int ___index, MapDifficultySelectStartUI __instance, ref Level.Mode[] ___options, 
+            static bool Prefix(ref int ___index, MapDifficultySelectStartUI __instance, ref Level.Mode[] ___options,
             RectTransform ___easy, RectTransform ___normalSeparator, RectTransform ___normal, RectTransform ___hardSeparator, RectTransform ___hard) {
                 if (!APData.IsSlotEnabled(PlayerData.CurrentSaveFileIndex)) return true;
                 bool hardonly = false;

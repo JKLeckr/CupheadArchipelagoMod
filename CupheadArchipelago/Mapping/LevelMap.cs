@@ -103,7 +103,7 @@ namespace CupheadArchipelago.Mapping {
 
         public static bool CheckMappedLevelCompleted(Levels level) =>
             PlayerData.Data.CheckLevelCompleted(GetMappedLevel(level, true));
-        
+
         public static bool CheckMappedLevelsCompleted(Levels[] levels) {
             foreach (Levels level in levels) {
                 if (!CheckMappedLevelCompleted(level)) {

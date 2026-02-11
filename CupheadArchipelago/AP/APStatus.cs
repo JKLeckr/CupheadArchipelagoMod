@@ -56,7 +56,7 @@ namespace CupheadArchipelago.AP {
             txt.fontWeight = 900;
             txt.fontSize = 32;
             txt.text = "TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST";
-            
+
             tobj.layer = 5;
 
             _instance = p;

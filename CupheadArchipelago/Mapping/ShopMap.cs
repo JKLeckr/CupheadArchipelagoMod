@@ -50,7 +50,7 @@ namespace CupheadArchipelago.Mapping {
                 case ItemType.Weapon:
                     loc = GetAPWeaponLocation(item.weapon);
                     break;
-                case ItemType.Charm: 
+                case ItemType.Charm:
                     loc = GetAPCharmLocation(item.charm);
                     break;
                 default:

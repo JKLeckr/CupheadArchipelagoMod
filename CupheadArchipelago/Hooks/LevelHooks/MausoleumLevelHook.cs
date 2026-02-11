@@ -39,9 +39,9 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i = 0; i < codes.Count - 3; i++) {
-                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_PlayerData_Data && 
-                        codes[i+1].opcode == OpCodes.Ldc_I4 && (int)codes[i+1].operand == (int)PlayerId.Any && 
-                        codes[i+2].opcode == OpCodes.Ldc_I4 && (int)codes[i+2].operand == (int)Super.level_super_beam && 
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_PlayerData_Data &&
+                        codes[i+1].opcode == OpCodes.Ldc_I4 && (int)codes[i+1].operand == (int)PlayerId.Any &&
+                        codes[i+2].opcode == OpCodes.Ldc_I4 && (int)codes[i+2].operand == (int)Super.level_super_beam &&
                         codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_IsUnlocked) {
                             codes[i].labels.Add(vanilla_label);
                             codes.Insert(i, new CodeInstruction(OpCodes.Call, _mi_IsCurrentSlotEnabled));
@@ -54,7 +54,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                             i+=7;
                             insertCount++;
                     }
-                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_1 && 
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldc_I4_1 &&
                         codes[i+2].opcode == OpCodes.Stfld && (FieldInfo)codes[i+2].operand == _fi_noChalice) {
                             codes[i].labels.Add(tgt_label);
                             insertCount++;

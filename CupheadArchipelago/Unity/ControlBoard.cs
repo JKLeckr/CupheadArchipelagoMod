@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CupheadArchipelago.Unity {
     public class ControlBoard : MonoBehaviour {
         public static ControlBoard Current { get; private set; } = null;
-        
+
         public bool invincible = false;
 
         void Awake() {

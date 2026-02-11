@@ -46,7 +46,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
             }
         }
 
-        private static void LogDialoguerGlobalFloat(int floatId) => 
+        private static void LogDialoguerGlobalFloat(int floatId) =>
             Logging.Log($"{nameof(MapNPCCircusgirl)}: {Dialoguer.GetGlobalFloat(floatId)}");
     }
 }

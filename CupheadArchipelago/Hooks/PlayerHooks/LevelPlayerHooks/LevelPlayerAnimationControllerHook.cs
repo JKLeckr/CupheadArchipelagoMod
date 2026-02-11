@@ -45,7 +45,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
             private static bool APCondition(bool orig) {

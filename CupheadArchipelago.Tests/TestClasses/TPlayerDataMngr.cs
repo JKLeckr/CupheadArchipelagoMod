@@ -22,7 +22,7 @@ namespace CupheadArchipelago.Tests.TestClasses {
     internal class TPlayerDataItfc : IPlayerDataItfc {
         public bool IsUnlocked(Weapon weapon) =>
             TPlayerData.Data.weapons.Contains((int)weapon);
-            
+
         public bool IsUnlocked(Charm charm) =>
             TPlayerData.Data.charms.Contains((int)charm);
         public bool IsUnlocked(Super super) =>

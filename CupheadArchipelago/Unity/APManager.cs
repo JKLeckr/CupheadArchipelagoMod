@@ -37,7 +37,7 @@ namespace CupheadArchipelago.Unity {
         private float fingerJam = 0f;
         [SerializeField]
         private float slowFire = 0f;
-        
+
         public void Init(MngrType type) => Init(type, type == MngrType.Level);
         public void Init(MngrType type, bool deathLink) {
             if (init) return;
@@ -52,7 +52,7 @@ namespace CupheadArchipelago.Unity {
         }
         public bool IsActive() => active;
         public void SetActive(bool active) => this.active = active;
-        
+
         public bool IsDeathTriggered() => death;
         public void TriggerDeath(string message = "Self") {
             if (type != MngrType.Level) return;

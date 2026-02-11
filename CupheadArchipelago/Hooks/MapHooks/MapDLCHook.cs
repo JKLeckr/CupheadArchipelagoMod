@@ -21,7 +21,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 bool success = false;
                 bool debug = false;
 
-                MethodInfo _mi_CheckLevelsHaveMinDifficulty = 
+                MethodInfo _mi_CheckLevelsHaveMinDifficulty =
                     typeof(PlayerData).GetMethod("CheckLevelsHaveMinDifficulty", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_APCondition = typeof(CheckIfBossesCompleted).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -39,7 +39,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
 

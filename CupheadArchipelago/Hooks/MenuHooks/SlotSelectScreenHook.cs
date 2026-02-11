@@ -282,7 +282,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             SetAPConStatusText($"Disconnected!\nSetup failed!\nCheck Log!");
                             break;
                         }
-                        default: { 
+                        default: {
                             SetAPConStatusText("Disconnected!\nError!\nCheck Log!");
                             break;
                         }
@@ -313,7 +313,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
             static bool Prefix(CupheadInput.AnyPlayerInput ___input, RectTransform ___deletePrompt, RectTransform ___deleteGlyph, RectTransform ___deleteSpacer) {
                 if (apSetupMenuState) {
-                    if ((___input.GetButtonDown(CupheadButton.Cancel) && !apSetupMenu.IsTyping()) || 
+                    if ((___input.GetButtonDown(CupheadButton.Cancel) && !apSetupMenu.IsTyping()) ||
                         (apSetupMenu.IsBackSelected() && ___input.GetButtonDown(CupheadButton.Accept))) {
                             DeactivateAPSetupMenu(___deletePrompt, ___deleteGlyph, ___deleteSpacer);
                     }
@@ -325,7 +325,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 int success = 0;
-                
+
                 FieldInfo _fi_slots = typeof(SlotSelectScreen).GetField("slots", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi__slotSelection = typeof(SlotSelectScreen).GetField("_slotSelection", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo _fi_input = typeof(SlotSelectScreen).GetField("input", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -339,7 +339,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 MethodInfo _mi_IsAPEmpty = typeof(UpdateSlotSelect).GetMethod("IsAPEmpty", BindingFlags.NonPublic | BindingFlags.Static);
 
                 Label lacceptif = il.DefineLabel();
-                
+
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
@@ -465,7 +465,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 List<CodeInstruction> codes = new(instructions);
                 bool success = false;
                 bool debug = false;
-                
+
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
@@ -513,7 +513,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         private static void CreateAPSetupMenu(SlotSelectScreen instance, int slotSelection) {
             Transform parent = instance.transform.GetChild(1);
             Transform prompts = parent.GetChild(8);
-            
+
             GameObject obj = new GameObject("APSetupMenu");
             obj.SetActive(false);
             RectTransform rect = obj.AddComponent<RectTransform>();
@@ -610,15 +610,15 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             GameObject obj = new GameObject("APInfoText");
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();
-            
+
             rect.anchorMin = new Vector2(1,1);
             rect.anchorMax = new Vector2(1,1);
             rect.pivot = new Vector2(1,1);
-            
+
             rect.anchoredPosition = new Vector2(-25,-20);
 
             rect.sizeDelta = new Vector2(256f, 256f);
-            
+
             TextMeshProUGUI txt = obj.AddComponent<TextMeshProUGUI>();
             txt.alignment = TextAlignmentOptions.TopRight;
             txt.OverflowMode = TextOverflowModes.Overflow;
@@ -626,7 +626,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             txt.font = FontLoader.GetTMPFont(FontLoader.TMPFontType.CupheadVogue_Bold_merged__SDF);
             txt.fontSize = 16;
             txt.text = $"CupheadArchipelago\n{Plugin.FullVersion}";
-            
+
             obj.layer = 5;
 
             if (parent!=null) {
@@ -640,11 +640,11 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             GameObject obj = new GameObject("APStatusText");
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();
-            
+
             rect.anchorMin = new Vector2(0,1);
             rect.anchorMax = new Vector2(0,1);
             rect.pivot = new Vector2(0,1);
-            
+
             rect.anchoredPosition = new Vector2(25,-20);
 
             rect.sizeDelta = new Vector2(256f, 512f);
@@ -657,7 +657,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             txt.fontWeight = 600;
             txt.fontSize = 22;
             txt.text = "";
-            
+
             obj.layer = 5;
 
             if (parent!=null) {

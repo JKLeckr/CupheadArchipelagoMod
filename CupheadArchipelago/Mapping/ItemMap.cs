@@ -163,7 +163,7 @@ namespace CupheadArchipelago.Mapping {
 
             {APItem.dlc_cplane_gun, Weapon.plane_chalice_weapon_3way},
             {APItem.dlc_cplane_bombs, Weapon.plane_chalice_weapon_bomb},
-            
+
             /* More unimplemented ones to check out */
         };
         private static readonly HashSet<Weapon> modularWeapons = [
@@ -255,20 +255,20 @@ namespace CupheadArchipelago.Mapping {
         private static readonly HashSet<long> chaliceItems = [
             APItem.dlc_cplane_super,
             APItem.dlc_cplane_ex,
-            
+
             APItem.dlc_cplane_gun,
 
             APItem.dlc_cplane_bombs,
             APItem.super_dlc_c_i,
             APItem.super_dlc_c_ii,
             APItem.super_dlc_c_iii,
-            
+
             APItem.ability_dlc_p_cdash,
             APItem.ability_dlc_cduck,
             APItem.ability_dlc_cdoublejump,
             APItem.ability_dlc_cplane_parry,
             APItem.ability_dlc_cplane_shrink,
-            
+
             APItem.ability_dlc_c_aim_left,
             APItem.ability_dlc_c_aim_right,
             APItem.ability_dlc_c_aim_up,

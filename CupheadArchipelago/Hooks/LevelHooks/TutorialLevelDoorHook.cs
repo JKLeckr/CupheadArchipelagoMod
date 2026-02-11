@@ -21,7 +21,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 bool success = false;
-                
+
                 FieldInfo _fi_isChaliceTutorial = typeof(TutorialLevelDoor).GetField("isChaliceTutorial", BindingFlags.Instance | BindingFlags.NonPublic);
                 MethodInfo _mi_base_Activate = typeof(AbstractLevelInteractiveEntity).GetMethod(
                     "Activate", BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] {}, null);

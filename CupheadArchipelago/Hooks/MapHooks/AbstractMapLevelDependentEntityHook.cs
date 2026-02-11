@@ -45,7 +45,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
                 return codes;
             }
-            
+
             private static Levels[] MapLevels(Levels[] levels) {
                 Levels[] res = new Levels[levels.Length];
                 for (int i = 0; i < res.Length; i++) {

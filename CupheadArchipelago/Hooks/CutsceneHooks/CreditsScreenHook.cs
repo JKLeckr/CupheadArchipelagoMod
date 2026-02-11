@@ -60,7 +60,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
                 List<CodeInstruction> codes = new(instructions);
                 int success = 0;
                 bool debug = false;
-                
+
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
@@ -77,7 +77,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
 
         private static int APCommonPatch(ref List<CodeInstruction> codes, ILGenerator il) {
             int success = 0;
-            
+
             MethodInfo _mi_ResetPlayers = typeof(PlayerManager).GetMethod("ResetPlayers", BindingFlags.Public | BindingFlags.Static);
             MethodInfo _mi_LoadScene = typeof(SceneLoader).GetMethod(
                 "LoadScene",
@@ -104,7 +104,7 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
                         new CodeInstruction(OpCodes.Brfalse_S, endl)
                     ];
                     codes.InsertRange(i, ncodes);
-                    
+
                     success++;
                     i += 7;
                 }

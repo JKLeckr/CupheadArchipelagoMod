@@ -34,9 +34,9 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0; i<codes.Count-3; i++) {
-                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && 
-                        codes[i+1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i+1].operand == _fi_world1BossLevels && 
-                        codes[i+2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+2].operand == _mi_CheckLevelsCompleted && 
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data &&
+                        codes[i+1].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i+1].operand == _fi_world1BossLevels &&
+                        codes[i+2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+2].operand == _mi_CheckLevelsCompleted &&
                         codes[i+3].opcode == OpCodes.Brfalse) {
                             codes[i].labels.Add(l_vanilla);
                             codes[i+3].labels.Add(l_brf);
@@ -57,7 +57,7 @@ namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {
                     Logging.Log("---");
                     Dbg.LogCodeInstructions(codes);
                 }
-            
+
                 return codes;
             }
         }

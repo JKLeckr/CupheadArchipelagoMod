@@ -39,7 +39,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
                 int success = 0;
-                
+
                 FieldInfo _fi_coinID = typeof(MapCoin).GetField("coinID", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo _mi_SaveCurrentFile = typeof(PlayerData).GetMethod("SaveCurrentFile", BindingFlags.Public | BindingFlags.Static);
                 MethodInfo _mi_get_Data = typeof(PlayerData).GetProperty("Data", BindingFlags.Public | BindingFlags.Static)?.GetGetMethod();
@@ -52,7 +52,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     Dbg.LogCodeInstructions(codes);
                 }
                 for (int i=0;i<codes.Count-3;i++) {
-                    if ((success&1) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldc_I4_0 && 
+                    if ((success&1) == 0 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_get_Data && codes[i+1].opcode == OpCodes.Ldc_I4_0 &&
                         codes[i+2].opcode == OpCodes.Ldc_I4_1 && codes[i+3].opcode == OpCodes.Callvirt && (MethodInfo)codes[i+3].operand == _mi_AddCurrency) {
                             CodeInstruction[] ncodes = [
                                 new CodeInstruction(OpCodes.Ldarg_0),
