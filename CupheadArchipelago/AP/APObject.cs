@@ -20,6 +20,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem level_extrahealth = new(2000, true);
         public static readonly APItem level_supercharge = new(2001, true);
         public static readonly APItem level_fastfire = new(2002, true);
+        public static readonly APItem level_4 = new(2003, true);
         public static readonly APItem coin = new(4000, true);
         public static readonly APItem coin2 = new(4001, true);
         public static readonly APItem coin3 = new(4002, true);
@@ -61,6 +62,22 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem ability_parry = new(16002, true);
         public static readonly APItem ability_plane_parry = new(16003, true);
         public static readonly APItem ability_plane_shrink = new(16004, true);
+        public static readonly APItem ability_aim_left = new(18000, true);
+        public static readonly APItem ability_aim_right = new(18001, true);
+        public static readonly APItem ability_aim_up = new(18002, true);
+        public static readonly APItem ability_aim_down = new(18003, true);
+        public static readonly APItem ability_aim_upleft = new(18004, true);
+        public static readonly APItem ability_aim_upright = new(18005, true);
+        public static readonly APItem ability_aim_downleft = new(18006, true);
+        public static readonly APItem ability_aim_downright = new(18007, true);
+        public static readonly APItem ability_dlc_c_aim_left = new(20000, true);
+        public static readonly APItem ability_dlc_c_aim_right = new(20001, true);
+        public static readonly APItem ability_dlc_c_aim_up = new(20002, true);
+        public static readonly APItem ability_dlc_c_aim_down = new(20003, true);
+        public static readonly APItem ability_dlc_c_aim_upleft = new(20004, true);
+        public static readonly APItem ability_dlc_c_aim_upright = new(20005, true);
+        public static readonly APItem ability_dlc_c_aim_downleft = new(20006, true);
+        public static readonly APItem ability_dlc_c_aim_downright = new(20007, true);
         public static readonly APItem level_trap_fingerjam = new(22000, true);
         public static readonly APItem level_trap_slowfire = new(22001, true);
         public static readonly APItem level_trap_superdrain = new(22002, true);
@@ -114,6 +131,7 @@ namespace CupheadArchipelago.AP {
 
         public static readonly APLocation level_tutorial = new(1000, true);
         public static readonly APLocation level_tutorial_coin = new(1001, true);
+        public static readonly APLocation level_plane_tutorial = new(1002, true);
         public static readonly APLocation level_boss_veggies = new(2000, true);
         public static readonly APLocation level_boss_slime = new(2001, true);
         public static readonly APLocation level_boss_frogs = new(2002, true);
@@ -424,6 +442,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation level_dlc_chesscastle_run_phase4 = new(10030032, true);
         public static readonly APLocation level_dlc_chesscastle_run_phase5 = new(10030034, true);
         public static readonly APLocation level_dlc_chesscastle_run_phase6 = new(10030036, true);
+        public static readonly APLocation level_dlc_graveyard = new(10032000, true);
         public static readonly APLocation shop_dlc_weapon6 = new(10034000, true);
         public static readonly APLocation shop_dlc_weapon7 = new(10034001, true);
         public static readonly APLocation shop_dlc_weapon8 = new(10034002, true);
@@ -434,6 +453,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APLocation dlc_coin_isle4_secret = new(10038001, true);
         public static readonly APLocation dlc_quest_cactusgirl = new(10040000, true);
         public static readonly APLocation dlc_cookie = new(10042000, true);
+        public static readonly APLocation dlc_curse_complete = new(10042001, true);
 
         public static void Register(APLocation loc) => id_map.Add(loc.id, loc);
         public static APLocation FromId(long id) => id_map[id];
