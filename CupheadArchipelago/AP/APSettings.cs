@@ -10,6 +10,7 @@ namespace CupheadArchipelago.AP {
         public static WeaponModes WeaponMode { get; internal set; }
         public static bool FreemoveIsles { get; internal set; }
         public static bool RandomizeAbilities { get; internal set; }
+        public static BossPhaseCheckMode BossPhaseChecks { get; internal set; }
         public static bool BossSecretChecks { get; internal set; }
         public static GradeChecks BossGradeChecks { get; internal set; }
         public static GradeChecks RungunGradeChecks { get; internal set; }
