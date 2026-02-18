@@ -30,6 +30,7 @@ namespace CupheadArchipelago.AP {
         internal readonly bool freemove_isles;
         internal readonly bool randomize_abilities;
         internal readonly bool randomize_abilities_aim;
+        internal readonly BossPhaseCheckMode boss_phase_checks;
         internal readonly GradeChecks boss_grade_checks;
         internal readonly GradeChecks rungun_grade_checks;
         internal readonly int start_maxhealth;
@@ -74,6 +75,7 @@ namespace CupheadArchipelago.AP {
             freemove_isles = GetAPSlotDataValue<bool>(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataValue<bool>(slotData, "randomize_abilities");
             randomize_abilities_aim = false; //GetAPSlotDataValue<bool>(slotData, "randomize_abilities_aim");
+            boss_phase_checks = GetAPSlotDataValue<BossPhaseCheckMode>(slotData, "boss_phase_checks");
             boss_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "boss_grade_checks");
             rungun_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "rungun_grade_checks");
             start_maxhealth = GetAPSlotDataValue<int>(slotData, "start_maxhealth");

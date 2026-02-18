@@ -8,6 +8,12 @@ namespace CupheadArchipelago.AP {
         AP = 2,
     }
 
+    public enum BossPhaseCheckMode {
+        Disabled = 0,
+        Enabled = 1,
+        SecretSeperate = 2,
+    }
+
     public enum DeathLinkMode {
         Disabled = 0,
         Normal = 1,

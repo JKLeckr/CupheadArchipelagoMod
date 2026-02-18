@@ -232,6 +232,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.WeaponMode = SlotData.weapon_mode;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
+                    APSettings.BossPhaseChecks = SlotData.boss_phase_checks;
                     APSettings.BossSecretChecks = LocationExists(APLocation.level_boss_veggies_secret);
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.DicePalaceBossSanity = LocationExists(APLocation.level_dicepalace_boss_booze);
