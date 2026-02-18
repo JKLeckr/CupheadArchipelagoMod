@@ -59,7 +59,7 @@ namespace CupheadArchipelago.AP {
         private static int shownMessage = 0;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
-        private static readonly Version AP_CLIENT_VERSION = new(0,6,5,0);
+        private static readonly Version AP_CLIENT_VERSION = new(0,6,7,0);
         protected const int STATUS_READY = 1;
         protected const string GAME_NAME = "Cuphead";
         private const int RECONNECT_MAX_RETRIES = 3;
