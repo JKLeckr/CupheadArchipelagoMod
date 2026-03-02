@@ -39,7 +39,11 @@ namespace CupheadArchipelago.AP {
         DlcCollectIngredients = 16,
         DlcCollectBoth = 18,
         DlcBeatDevilNoIsle4 = 33,
-        DlcBeatSaltbakerIsle4Only = 40,
+        DlcCollectContractsNoIsle4 = 34,
+        DlcBuyOutShopNoIsle4 = 36,
+        DlcCollectIngredientsNoIsle4 = 48,
+        DlcBeatSaltbakerIsle4Only = 72,
+        DlcCollectIngredientsIsle4Only = 80,
     }
 
     public enum WeaponModes : byte {
