@@ -17,6 +17,11 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             Weapon.level_weapon_crackshot,
             Weapon.level_weapon_upshot,
         ];
+        private static readonly HashSet<Weapon> dlc_weapons = [
+            Weapon.level_weapon_wide_shot,
+            Weapon.level_weapon_crackshot,
+            Weapon.level_weapon_upshot,
+        ];
         internal static readonly Charm[] charms = [
             Charm.charm_health_up_1,
             Charm.charm_smoke_dash,
@@ -24,6 +29,10 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
             Charm.charm_super_builder,
             Charm.charm_parry_attack,
             Charm.charm_health_up_2,
+            Charm.charm_healer,
+            Charm.charm_curse,
+        ];
+        internal static readonly HashSet<Charm> dlc_charms = [
             Charm.charm_healer,
             Charm.charm_curse,
         ];
@@ -59,10 +68,12 @@ namespace CupheadArchipelago.Hooks.ShopHooks {
 
         internal static bool APIsAllItemsBought() {
             foreach (Weapon weapon in weapons) {
-                if (!IsAPWeaponChecked(weapon)) return false;
+                if ((APSettings.UseDLC || !dlc_weapons.Contains(weapon)) && !IsAPWeaponChecked(weapon))
+                    return false;
             }
             foreach (Charm charm in charms) {
-                if (!IsAPCharmChecked(charm)) return false;
+                if ((APSettings.UseDLC || !dlc_charms.Contains(charm)) && !IsAPCharmChecked(charm))
+                    return false;
             }
             return true;
         }
