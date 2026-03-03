@@ -36,6 +36,7 @@ jobs:
         with:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
+          ref: main-legacy
           path: CupheadArchipelago\ref
 
       - name: Setup dotnet
