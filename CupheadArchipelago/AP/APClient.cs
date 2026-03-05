@@ -253,8 +253,8 @@ namespace CupheadArchipelago.AP {
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DuckLockPlatDropBug = SlotData.ducklock_platdrop;
                     APSettings.DeathLink =
-                        (APSessionGSData.IsOverridden(Overrides.OverrideEnableDeathLink) ? !SlotData.deathlink : SlotData.deathlink) ?
-                        DeathLinkMode.Normal : DeathLinkMode.Disabled;
+                        ((SlotData.deathlink > 0) != APSessionGSData.IsOverridden(Overrides.OverrideEnableDeathLink)) ?
+                            DeathLinkMode.Normal : DeathLinkMode.Disabled; // TODO: Handle modes later
                     APSettings.DeathLinkGraceCount = SlotData.deathlink_grace_count;
 
                     ShopMap.SetShopMap(SlotData.shop_map);
