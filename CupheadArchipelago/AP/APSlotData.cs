@@ -42,7 +42,7 @@ namespace CupheadArchipelago.AP {
         internal readonly bool trap_loadout_anyweapon;
         internal readonly MusicGroups music_shuffle;
         internal readonly bool ducklock_platdrop;
-        internal readonly bool deathlink;
+        internal readonly DeathLinkMode deathlink;
         internal readonly int deathlink_grace_count;
 
         internal APSlotData(Dictionary<string, object> slotData) {
@@ -87,7 +87,7 @@ namespace CupheadArchipelago.AP {
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
             ducklock_platdrop = GetOptionalAPSlotDataValue(slotData, "ducklock_platdrop", false);
-            deathlink = GetAPSlotDataValue<bool>(slotData, "deathlink");
+            deathlink = GetAPSlotDataValue<DeathLinkMode>(slotData, "deathlink");
             deathlink_grace_count = GetAPSlotDataValue<int>(slotData, "deathlink_grace_count");
         }
 
