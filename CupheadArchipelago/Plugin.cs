@@ -169,6 +169,7 @@ namespace CupheadArchipelago {
                 ModLogListener listener = new(LogFiles.LogFile, LogFiles.LogDirPath, Logger.SourceName);
                 BepInEx.Logging.Logger.Listeners.Add(listener);
                 Logging.Log("Mod logging started");
+                Logging.Log($"This mod log is {LogFiles.LogFile} in {LogFiles.LogDirPath}");
             }
         }
 

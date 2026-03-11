@@ -11,6 +11,7 @@ namespace CupheadArchipelago {
         public static string LogDirPath { get; private set; }
         public static string LogName { get; private set; }
         public static string LogFile { get; private set; }
+        public static string LogFullPath { get; private set; }
         public static int LogFileMax { get; private set; }
 
         private const string LOG_FILE_EXTENSION = ".log";
@@ -31,7 +32,7 @@ namespace CupheadArchipelago {
         }
 
         private static void SetupLogName(string logName, string logDir, int fileMax) {
-            Logging.Log(logDir);
+            Logging.LogDebug(logDir);
             var logFiles =
                 Directory.GetFiles(logDir, $"{logName}.*{LOG_FILE_EXTENSION}")
                             .Select(Path.GetFileName)
@@ -60,6 +61,7 @@ namespace CupheadArchipelago {
                 next = 0;
             }
             LogFile = $"{logName}.{next}{LOG_FILE_EXTENSION}";
+            LogFullPath = Path.Combine(LogDirPath, LogFile);
         }
 
         private static uint? GetLogFileNumber(string fileName, string logName) {
