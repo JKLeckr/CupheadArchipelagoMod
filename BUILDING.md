@@ -3,10 +3,9 @@
 
 ### Prerequisites
 - A copy of Cuphead
-- [.NET SDK](https://dotnet.microsoft.com/en-us/download) 8 or greater. You need the `dotnet` program in your path.
+- [.NET SDK](https://dotnet.microsoft.com/en-us/download) 10 or greater. You need the `dotnet` program in your path.
 - [just](https://github.com/casey/just?tab=readme-ov-file#installation). You need the `just` program in your path.
-- [c-wspp websocket-sharp](https://github.com/black-sliver/c-wspp-websocket-sharp). Note that it must be the windows version (even on Wine/Proton). If you are running the macOS version, you have to build this yourself.
-- [c-wszig](https://github.com/black-sliver/c-wszig). This is a newer and better drop-in replacement for c-wspp.
+- [c-ws-websocket-sharp](https://github.com/JKLeckr/c-ws-websocket-sharp). Note that it must be the windows version (even on Wine/Proton). The macOS version of the game requires the macOS version.
 
 ### Notes
 
@@ -29,11 +28,7 @@ Note the `ref` folder in the project directory (`CupheadArchipelago`) you just c
     - `UnityEngine.dll`
     - `UnityEngine.UI.dll`
 
-2. Copy the dll files from the extracted `c-wspp-websocket-sharp_windows-clang64` to the `ref` folder. Exclude `c-wspp.dll`.
-
-3. Copy the `c-wspp-win64.dll` to the `ref` folder.
-
-4. Delete the existing `c-wspp.dll` (if it exists) and rename `c-wspp-win64.dll` to `c-wspp.dll`.
+2. Copy the dll files from the extracted `c-ws-websocket-sharp` zip to the `ref` folder.
 
 #### 4. Prepare Project:
 In the directory, on the terminal:
@@ -63,7 +58,7 @@ In the game directory:
     - `Archipelago.MultiClient.Net.dll`
     - `CupheadArchipelago.dll`
     - `websocket-sharp.dll`
-    - `c-wspp.dll` (or `c-wspp.dylib` if on macOS)
+    - `c-ws.dll` (or `c-ws.dylib` if on macOS)
 
 #### 8. Run Game:
 Enjoy!
