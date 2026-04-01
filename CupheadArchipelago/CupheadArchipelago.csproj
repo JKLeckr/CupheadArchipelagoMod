@@ -85,11 +85,13 @@
     <Delete Files="$(OutputPath)websocket-sharp.dll" />
     <Copy SourceFiles="$(ProjectDir)./ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="$(ProjectDir)./ref/websocket-sharp.pdb" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="$(ProjectDir)./ref/c-ws-win64.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)./ref/nativews-win64.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)./ref/nativews-win64.pdb" DestinationFolder="$(OutputPath)" />
   </Target>
 
   <Target Name="CleanupExtraFiles" AfterTargets="Clean">
-    <Delete Files="$(OutputPath)c-ws-win64.dll" />
+    <Delete Files="$(OutputPath)nativews-win64.dll" />
+    <Delete Files="$(OutputPath)nativews-win64.pdb" />
     <Delete Files="$(OutputPath)websocket-sharp.pdb" />
   </Target>
 

@@ -23,7 +23,7 @@ namespace CupheadArchipelago.AP {
         [JsonIgnore]
         public sbyte state {get; private set;} = 0;
         [JsonIgnore]
-        internal bool dlock = false;
+        internal volatile bool dlock = false;
         [JsonIgnore]
         private long ltime = 0;
         [JsonProperty("version")]

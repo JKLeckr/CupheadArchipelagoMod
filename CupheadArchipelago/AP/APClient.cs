@@ -34,11 +34,11 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         public static int CompatBits { get; private set; } = 0;
         public static string SessionConnectCloseReason { get; private set; } = "";
+        public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
         internal static APSlotData SlotData { get; private set; } = null;
         private static bool offline = false;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
         private static Dictionary<long, APItemInfo> itemMap = new();
-        public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
         private static List<APItemData> receivedItems = [];
         private static List<APItemData> ReceivedItems { get => receivedItems; }
         private static long ReceivedItemsCount { get => ReceivedItems.Count; }
@@ -46,8 +46,6 @@ namespace CupheadArchipelago.AP {
         private static HashSet<long> doneChecksUnique;
         private static HashSet<APItemData> receivedItemsUnique;
         private static Dictionary<long, int> receivedItemCounts = [];
-        private static bool receivedItemsQueueLockA = false;
-        private static bool receivedItemsQueueLockB = false;
         private static Queue<APItemData> receivedItemsQueue = new();
         private static Queue<int> itemApplyQueue = new();
         private static Queue<int> itemApplyLevelQueue = new();
@@ -60,7 +58,8 @@ namespace CupheadArchipelago.AP {
         private static int shownMessage = 0;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
-        private static readonly Version AP_CLIENT_VERSION = new(0,6,7,0);
+        private static readonly Version AP_CLIENT_VERSION = new(0, 6, 7, 0);
+        private static readonly object receivedItemsQueueLock = new();
         protected const int STATUS_READY = 1;
         protected const string GAME_NAME = "Cuphead";
         private const int RECONNECT_MAX_RETRIES = 3;
@@ -419,8 +418,6 @@ namespace CupheadArchipelago.AP {
             locMap.Clear();
             itemMap.Clear();
             deathLinkService = null;
-            receivedItemsQueueLockA = false;
-            receivedItemsQueueLockB = false;
             receivedItemsQueue = new();
             itemApplyQueue = new();
             itemApplyLevelQueue = new();
@@ -676,23 +673,10 @@ namespace CupheadArchipelago.AP {
                     //Logging.Log($"[APClient] Receiving {itemName} from {item.Player}...");
                     Logging.Log($"[APClient] Receiving {itemName} from {item.Player} ({item.LocationDisplayName})...");
                     APItemData nitem = new(item);
-                    receivedItemsQueueLockA = true;
-                    if (receivedItemsQueueLockB) {
-                        Logging.Log("[APClient] Waiting for queue lock...");
-                        int timeout = 0;
-                        while (receivedItemsQueueLockB) {
-                            if (timeout > 500) {
-                                Logging.LogError("[APClient] Queue Lock Timeout!");
-                                receivedItemsQueueLockA = false;
-                                return;
-                            }
-                            Thread.Sleep(20);
-                            timeout++;
-                        }
+                    lock (receivedItemsQueueLock) {
+                        receivedItemsQueue.Enqueue(nitem);
+                        receivedItemIndex++;
                     }
-                    receivedItemsQueue.Enqueue(nitem);
-                    receivedItemIndex++;
-                    receivedItemsQueueLockA = false;
                 }
                 else {
                     Logging.Log($"Skipping {itemName}");
@@ -706,18 +690,24 @@ namespace CupheadArchipelago.AP {
         }
 
         public static void ItemUpdate() {
-            if (!receivedItemsQueueLockA && !APSessionGSData.dlock) {
-                if (receivedItemsQueue.Count > 0) {
-                    receivedItemsQueueLockB = true;
-                    if (receivedItemsQueueLockA) {
-                        receivedItemsQueueLockB = false;
-                        if ((shownMessage & 1) == 0) {
-                            Logging.Log("[APClient] Item Queue is locked. Trying when it unlocks.");
-                            shownMessage |= 1;
-                        }
-                        return;
+            if (APSessionGSData.dlock) return;
+
+            bool taken = false;
+            bool ownsDLock = false;
+            APItemData item = null;
+            bool gotItem = false;
+
+            try {
+                taken = Monitor.TryEnter(receivedItemsQueueLock, 0);
+                if (!taken) {
+                    if ((shownMessage & 1) == 0) {
+                        Logging.Log("[APClient] Item Queue is locked. Trying when it unlocks.");
+                        shownMessage |= 1;
                     }
-                    shownMessage &= ~1;
+                    return;
+                }
+                shownMessage &= ~1;
+                if (receivedItemsQueue.Count > 0) {
                     if (APSessionGSData.dlock) {
                         if ((shownMessage & 2) == 0) {
                             Logging.Log("[APClient] APData is locked. Trying when it unlocks.");
@@ -726,12 +716,26 @@ namespace CupheadArchipelago.AP {
                         return;
                     }
                     APSessionGSData.dlock = true;
-                    APItemData item = receivedItemsQueue.Dequeue();
-                    receivedItemsQueueLockB = false;
+                    ownsDLock = true;
                     shownMessage &= ~2;
-                    ReceiveItem(item);
-                    APSessionGSData.dlock = false;
+
+                    item = receivedItemsQueue.Dequeue();
+                    gotItem = true;
                 }
+            } finally {
+                if (taken) {
+                    Monitor.Exit(receivedItemsQueueLock);
+                }
+            }
+            if (!gotItem || item == null) {
+                if (ownsDLock) APSessionGSData.dlock = false;
+                return;
+            }
+
+            try {
+                ReceiveItem(item);
+            } finally {
+                if (ownsDLock) APSessionGSData.dlock = false;
             }
         }
 
