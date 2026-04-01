@@ -33,6 +33,7 @@ namespace CupheadArchipelago.AP {
         public static bool IsTryingSessionConnect { get => SessionStatus > 1; }
         public static int SessionStatus { get; private set; } = 0;
         public static int CompatBits { get; private set; } = 0;
+        public static string SessionConnectCloseReason { get; private set; } = "";
         internal static APSlotData SlotData { get; private set; } = null;
         private static bool offline = false;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
@@ -324,18 +325,22 @@ namespace CupheadArchipelago.AP {
             else {
                 LoginFailure failure = (LoginFailure)result;
                 string errorMessage = $"[APClient] Failed to Connect to {data.address}:{data.port} as {data.player}:";
+                string closeReasonMessage = "";
                 foreach (string error in failure.Errors)
                 {
                     errorMessage += $"\n    {error}";
+                    closeReasonMessage = $"\n{error}";
                 }
                 foreach (ConnectionRefusedError error in failure.ErrorCodes)
                 {
                     errorMessage += $"\n    {error}";
+                    closeReasonMessage = $"\n{error}";
                 }
 
                 Logging.LogError(errorMessage);
 
                 if (resetOnFail) Reset();
+                SessionConnectCloseReason = closeReasonMessage;
                 SessionStatus = -1;
                 return false;
             }
@@ -391,7 +396,10 @@ namespace CupheadArchipelago.AP {
         }
         private static void Reset(bool resetSessionStatus=true) {
             session = null;
-            if (resetSessionStatus && SessionStatus>0) SessionStatus = 0;
+            if (resetSessionStatus && SessionStatus > 0) {
+                SessionStatus = 0;
+                SessionConnectCloseReason = "";
+            }
             APSessionPlayerName = "";
             APSessionPlayerSlot = -1;
             APSessionPlayerTeam = -1;

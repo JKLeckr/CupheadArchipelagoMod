@@ -217,7 +217,7 @@ namespace CupheadArchipelago.AP {
                 if (!IsChaliceSeparate(ItemGroups.WeaponBasic)) {
                     giftW(Weapon.plane_chalice_weapon_bomb);
                     if (APSettings.WeaponMode == WeaponModes.Normal)
-                        APClient.APSessionGSPlayerData.dlc_cplane_ex = true;
+                        APClient.APSessionGSPlayerData.dlc_cplane_ex = true; // FIXME: Incorrect weapon apply
                 }
             }
         }

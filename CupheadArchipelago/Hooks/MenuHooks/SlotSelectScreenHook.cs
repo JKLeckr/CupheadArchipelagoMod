@@ -104,6 +104,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static int _slotSelection;
             private static MethodInfo _mi_game_start_cr;
             private static int Status => APClient.SessionStatus;
+            private static string ConnectCloseReason => APClient.SessionConnectCloseReason;
 
             static UpdatePlayerSelect() {
                 _mi_game_start_cr = typeof(SlotSelectScreen).GetMethod("game_start_cr", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -263,7 +264,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 if (displayError) {
                     switch (Status) {
                         case -1: {
-                            SetAPConStatusText("Connection failed!\nCheck Log!");
+                            string msg = ConnectCloseReason.Length > 0 ? $"\nReason:{ConnectCloseReason}" : "";
+                            SetAPConStatusText($"Connection failed!{msg}\nCheck Log!");
                             break;
                         }
                         case -2: {
@@ -271,27 +273,27 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             break;
                         }
                         case -3: {
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nWrong Slot Data Version!\nCheck Log!");
+                            SetAPConStatusText("Disconnected!\nCheck failed!\nWrong Slot Data Version!\nCheck Log!");
                             break;
                         }
                         case -5: {
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nSeed Mismatch!");
+                            SetAPConStatusText("Disconnected!\nCheck failed!\nSeed Mismatch!");
                             break;
                         }
                         case -6: {
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nIncompatible with MultiWorld!\nCheck Log!");
+                            SetAPConStatusText("Disconnected!\nCheck failed!\nIncompatible with MultiWorld!\nCheck Log!");
                             break;
                         }
                         case -7: {
-                            SetAPConStatusText($"Disconnected!\nGet Failed!\nCheck Log!");
+                            SetAPConStatusText("Disconnected!\nGet Failed!\nCheck Log!");
                             break;
                         }
                         case -8: {
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nDLC Needed!");
+                            SetAPConStatusText("Disconnected!\nCheck failed!\nDLC Needed!");
                             break;
                         }
                         case -9: {
-                            SetAPConStatusText($"Disconnected!\nSetup failed!\nCheck Log!");
+                            SetAPConStatusText("Disconnected!\nSetup failed!\nCheck Log!");
                             break;
                         }
                         default: {
