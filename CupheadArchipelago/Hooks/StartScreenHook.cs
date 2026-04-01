@@ -3,7 +3,7 @@
 
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Config;
-using CupheadArchipelago.Resources;
+using CupheadArchipelago.TestEnv;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,8 +29,7 @@ namespace CupheadArchipelago.Hooks {
                 }
                 if (MConf.IsTesting()) {
                     Logging.Log("Running in Test Mode: Running in test environment instead of game.");
-                    CreateTestHUD();
-                    CreateTestObjects();
+                    TestMngr.Init();
                     input = new CupheadInput.AnyPlayerInput(false);
                     return false;
                 }
@@ -112,77 +111,6 @@ namespace CupheadArchipelago.Hooks {
             txt.text = "CupheadArchipelago\nERROR\nCheck Log";
 
             obj.layer = 5;
-        }
-
-        private static void CreateTestHUD() {
-            GameObject canvas = new GameObject("TestCanvas");
-            canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.AddComponent<CanvasScaler>();
-            canvas.AddComponent<GraphicRaycaster>();
-            GameObject nobj = CreateHUDText(
-                "TestInfoText",
-                canvas.transform,
-                new(0, 0),
-                new(15f, 15f),
-                new(200, 100),
-                "Test Mode\nHold Cancel (ESC) to Quit",
-                TextAnchor.LowerLeft,
-                16,
-                UnityEngine.Color.white
-            );
-        }
-        private static GameObject CreateHUDText(
-            string name,
-            Transform parent,
-            Vector2 anchor,
-            Vector2 anchoredPosition,
-            Vector2 sizeDelta,
-            string text,
-            TextAnchor textAlignment,
-            int fontSize,
-            UnityEngine.Color color
-        ) {
-            GameObject obj = new GameObject(name);
-            obj.transform.SetParent(parent, false);
-            obj.SetActive(true);
-            RectTransform rect = obj.AddComponent<RectTransform>();
-            rect.anchorMin = new(anchor.x, anchor.y);
-            rect.anchorMax = new(anchor.x, anchor.y);
-            rect.pivot = new(anchor.x, anchor.y);
-            rect.anchoredPosition = new(anchoredPosition.x, anchoredPosition.y);
-            rect.sizeDelta = new(sizeDelta.x, sizeDelta.y);
-
-            Text txt = obj.AddComponent<Text>();
-            txt.alignment = textAlignment;
-            txt.font = FontLoader.GetFont(FontLoader.FontType.CupheadVogue_Bold_merged);
-            txt.color = color;
-            txt.fontSize = fontSize;
-            txt.text = text;
-
-            obj.layer = 5;
-
-            return obj;
-        }
-        private static void CreateTestObjects() {
-            AssetMngr.LoadBundleAssets("testee");
-            GameObject mainObj = new("mainObj");
-
-            GameObject objA = new("objA");
-            objA.transform.SetParent(mainObj.transform);
-            SpriteRenderer srA = objA.AddComponent<SpriteRenderer>();
-            srA.sprite = AssetMngr.GetLoadedAsset<Sprite>("sqar");
-
-            GameObject objB = new("objB");
-            objB.transform.SetParent(mainObj.transform);
-            SpriteRenderer srB = objB.AddComponent<SpriteRenderer>();
-            srB.sprite = AssetMngr.GetLoadedAsset<Sprite>("a");
-
-            GameObject objC = new("objC");
-            objC.transform.SetParent(mainObj.transform);
-            SpriteRenderer srC = objC.AddComponent<SpriteRenderer>();
-            srC.sprite = AssetMngr.GetLoadedAsset<Sprite>("circ");
-
-            objC.layer = 5;
         }
     }
 }
