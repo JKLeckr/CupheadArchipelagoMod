@@ -81,6 +81,7 @@ jobs:
       - name: Build ZIP package
         working-directory: build
         run: |
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/
           zip -r ../${{ env.FILE_NAME }} ${{ env.MOD_NAME }}
 
       - name: Upload Release Assets
