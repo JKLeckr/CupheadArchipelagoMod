@@ -3,6 +3,8 @@
 
 namespace CupheadArchipelago.AP {
     public class APSettings {
+        private static int[] requiredContracts;
+
         public static bool UseDLC { get; internal set; }
         public static GameModes Mode { get; internal set; }
         public static bool Hard { get; internal set; }
@@ -23,7 +25,9 @@ namespace CupheadArchipelago.AP {
         public static int StartMaxHealth { get; internal set; }
         public static int StartMaxHealthP2 { get; internal set; }
         public static bool TrapLoadoutAnyWeapon { get; internal set; }
-        public static int[] RequiredContracts { get; internal set; }
+        public static int RequiredTotalContracts => requiredContracts[0];
+        public static int RequiredContractsIsle2 => requiredContracts[1];
+        public static int RequiredContractsIsle3 => requiredContracts[2];
         public static int DLCRequiredIngredients { get; internal set; }
         public static int ContractsGoal { get; internal set; }
         public static int DLCIngredientsGoal { get; internal set; }
@@ -42,6 +46,12 @@ namespace CupheadArchipelago.AP {
         public static bool RandomizeAimAbilities { get; internal set; }
         public static ShopModes ShopMode { get; internal set; }
         public static bool DuckLockPlatDropBug { get; internal set; }
+
+        internal static void SetContractRequirements(params int[] req) {
+            if (req.Length != 3)
+                throw new System.ArgumentException($"Contract Requirements must be a length of 3. Got {req.Length}");
+            requiredContracts = req;
+        }
 
         static APSettings() => Init();
         public static void Init() {
@@ -64,9 +74,9 @@ namespace CupheadArchipelago.AP {
             StartMaxHealth = 3;
             StartMaxHealthP2 = StartMaxHealth;
             TrapLoadoutAnyWeapon = false;
-            RequiredContracts = [5, 10, 17];
+            requiredContracts = [17, 5, 10];
             DLCRequiredIngredients = 5;
-            ContractsGoal = RequiredContracts[2];
+            ContractsGoal = requiredContracts[0];
             DLCIngredientsGoal = DLCRequiredIngredients;
             DLCRandomizeBoat = true;
             DLCRequiresMausoleum = true;

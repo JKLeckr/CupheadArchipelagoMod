@@ -242,7 +242,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.QuestJuggler = LocationExists(APLocation.quest_buster);
                     APSettings.StartMaxHealth = SlotData.start_maxhealth;
                     APSettings.StartMaxHealthP2 = SlotData.start_maxhealth_p2;
-                    APSettings.RequiredContracts = SlotData.contract_requirements;
+                    APSettings.SetContractRequirements(SlotData.contract_requirements);
                     APSettings.DLCRequiredIngredients = SlotData.dlc_ingredient_requirements;
                     APSettings.ContractsGoal = SlotData.contract_goal_requirements;
                     APSettings.DLCIngredientsGoal = SlotData.dlc_ingredient_goal_requirements;

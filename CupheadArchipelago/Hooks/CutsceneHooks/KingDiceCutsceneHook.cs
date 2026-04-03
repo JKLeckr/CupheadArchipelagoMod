@@ -66,9 +66,8 @@ namespace CupheadArchipelago.Hooks.CutsceneHooks {
             }
 
             private static bool APGotRequireContracts() {
-                int cindex = APSettings.RequiredContracts.Length-1; // Should be 2.
-                Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}>={APSettings.RequiredContracts[cindex]}");
-                return APClient.APSessionGSPlayerData.contracts >= APSettings.RequiredContracts[cindex];
+                Logging.Log($"Contracts: {APClient.APSessionGSPlayerData.contracts}>={APSettings.RequiredTotalContracts}");
+                return APClient.APSessionGSPlayerData.contracts >= APSettings.RequiredTotalContracts;
             }
         }
     }

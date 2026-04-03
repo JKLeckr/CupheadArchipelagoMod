@@ -1,8 +1,6 @@
 /// Copyright 2025-2026 JKLeckr
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
-using System;
-using CupheadArchipelago.AP;
 using CupheadArchipelago.Resources;
 using UnityEngine;
 using UnityEngine.UI;
@@ -114,12 +112,6 @@ namespace CupheadArchipelago.Unity {
             chalk2Txt = txt2Obj.GetComponent<Text>();
             chalk2Txt.alignment = TextAnchor.UpperLeft;
             chalk2Txt.text = "0";
-        }
-
-        private static int ClampReqIndex(int i) {
-            if (i <= 0) return 0;
-            else if (i >= APSettings.RequiredContracts.Length) return APSettings.RequiredContracts.Length - 1;
-            else return i;
         }
 
         private void ControlUpdate() {

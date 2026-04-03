@@ -52,11 +52,17 @@ namespace CupheadArchipelago.Hooks.MapHooks {
 
             private static bool APCheckLevelsCompleted(int index, Levels[] levels) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    Logging.LogDebug($"{index}: {APData.CurrentSData.playerData.contracts}>={APSettings.RequiredContracts[index]}");
-                    return APSettings.ShowUnaccessibleIslesInList || APData.CurrentSData.playerData.contracts >= APSettings.RequiredContracts[index];
+                    Logging.LogDebug($"{index}: {APData.CurrentSData.playerData.contracts}>={GetRequiredContracts(index)}");
+                    return APSettings.ShowUnaccessibleIslesInList || APData.CurrentSData.playerData.contracts >= GetRequiredContracts(index);
                 }
                 return PlayerData.Data.CheckLevelsCompleted(levels);
             }
+
+            private static int GetRequiredContracts(int index) => index switch {
+                0 => APSettings.RequiredContractsIsle2,
+                1 => APSettings.RequiredContractsIsle3,
+                _ => APSettings.RequiredTotalContracts,
+            };
         }
 
         [HarmonyPatch(typeof(MapEquipUIChecklist), "UpdateList")]

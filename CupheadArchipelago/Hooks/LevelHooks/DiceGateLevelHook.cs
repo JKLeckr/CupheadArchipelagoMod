@@ -19,12 +19,14 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         internal static class Start {
             static bool Prefix(DiceGateLevel __instance) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    int index = PlayerData.Data.CurrentMap == Scenes.scene_map_world_1 ? 0 :
-                            PlayerData.Data.CurrentMap == Scenes.scene_map_world_2 ? 1 :
-                            2;
+                    int reqs = PlayerData.Data.CurrentMap switch {
+                        Scenes.scene_map_world_1 => APSettings.RequiredContractsIsle2,
+                        Scenes.scene_map_world_2 => APSettings.RequiredContractsIsle3,
+                        _ => APSettings.RequiredTotalContracts,
+                    };
                     __instance.gameObject.AddComponent<DiceGateLevelChalk>().Init(
                         APClient.APSessionGSPlayerData.contracts,
-                        APSettings.RequiredContracts[ClampReqIndex(index)]
+                        reqs
                     );
                 }
                 //__instance.gameObject.AddComponent<DiceGateLevelChalk>().Init(17, 17);
@@ -33,7 +35,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
                 List<CodeInstruction> codes = new(instructions);
                 bool debug = false;
-                int index = 1;
                 int req_index = 0;
                 int insertCount = 0;
 
@@ -61,7 +62,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         codes.InsertRange(i + 3, ncodes);
                         i += ncodes.Length;
                         if (countCondition) req_index++;
-                        else index++;
                         insertCount++;
                     }
                 }
@@ -76,15 +76,22 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
             private static int ClampReqIndex(int i) {
                 if (i <= 0) return 0;
-                else if (i >= APSettings.RequiredContracts.Length) return APSettings.RequiredContracts.Length - 1;
+                else if (i > 1) {
+                    Logging.LogWarning($"DiceGateLevel req index is {i} which is out of range!");
+                    return 1;
+                }
                 else return i;
             }
             private static bool APTallyCondition(bool vanillaCondition) {
                 return !APData.IsCurrentSlotEnabled() && vanillaCondition;
             }
-            private static bool APOpenCondition(bool vanillaCondition, int testIndex) {
+            private static bool APOpenCondition(bool vanillaCondition, int dieIndex) {
                 if (APData.IsCurrentSlotEnabled()) {
-                    int testCount = APSettings.RequiredContracts[testIndex];
+                    int testCount = dieIndex switch {
+                        0 => APSettings.RequiredContractsIsle2,
+                        1 => APSettings.RequiredContractsIsle3,
+                        _ => APSettings.RequiredTotalContracts,
+                    };
                     Logging.Log($"ReqContracts: {APClient.APSessionGSPlayerData.contracts}>={testCount}");
                     return APClient.APSessionGSPlayerData.contracts >= testCount;
                 }
