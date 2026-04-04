@@ -39,10 +39,10 @@ namespace CupheadArchipelago.Hooks {
                     PlayerData data = ____saveFiles[slot];
                     PlayerInventories inventories = (PlayerInventories)_fi_inventories.GetValue(data);
                     Logging.Log($"Start Weapon: {APSettings.StartWeapon}");
-                    Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon);
-                    inventories.playerOne._weapons = [weapon];
+                    Weapon weapon = APSettings.StartWeapon;
+                    if (weapon != Weapon.None) inventories.playerOne._weapons = [weapon];
                     data.Loadouts.playerOne.primaryWeapon = weapon;
-                    inventories.playerTwo._weapons = [weapon];
+                    if (weapon != Weapon.None) inventories.playerTwo._weapons = [weapon];
                     data.Loadouts.playerTwo.primaryWeapon = weapon;
                     if (APSettings.UseDLC && APSettings.DLCChaliceMode == DlcChaliceModes.Start) {
                         inventories.playerOne._charms = [Charm.charm_chalice];
@@ -174,9 +174,9 @@ namespace CupheadArchipelago.Hooks {
                 }
 
                 private static bool IsAPMode() => _APMode;
-                private static Weapon GetAPStartWeapon() => ItemMap.GetWeapon(APSettings.StartWeapon);
+                private static Weapon GetAPStartWeapon() => APSettings.StartWeapon;
                 private static void AddAPWeapon(List<Weapon> weapons) {
-                    Weapon weapon = ItemMap.GetWeapon(APSettings.StartWeapon);
+                    Weapon weapon = APSettings.StartWeapon;
                     weapons.Add(weapon);
                 }
             }

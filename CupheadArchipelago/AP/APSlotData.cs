@@ -21,7 +21,7 @@ namespace CupheadArchipelago.AP {
         internal readonly bool use_dlc;
         internal readonly GameModes mode;
         internal readonly bool expert_mode;
-        internal readonly APItem start_weapon;
+        internal readonly Weapon start_weapon;
         internal readonly WeaponModes weapon_mode;
         internal readonly int[] contract_requirements;
         internal readonly int dlc_ingredient_requirements;
@@ -56,17 +56,18 @@ namespace CupheadArchipelago.AP {
             mode = GetAPSlotDataValue<GameModes>(slotData, "mode");
             expert_mode = GetAPSlotDataValue<bool>(slotData, "expert_mode");
             start_weapon = GetAPSlotDataValue<sbyte>(slotData, "start_weapon") switch {
-                1 => APItem.weapon_spread,
-                2 => APItem.weapon_chaser,
-                3 => APItem.weapon_lobber,
-                4 => APItem.weapon_charge,
-                5 => APItem.weapon_roundabout,
-                6 => APItem.weapon_dlc_crackshot,
-                7 => APItem.weapon_dlc_converge,
-                8 => APItem.weapon_dlc_twistup,
-                _ => APItem.weapon_peashooter,
+                1 => Weapon.level_weapon_spreadshot,
+                2 => Weapon.level_weapon_homing,
+                3 => Weapon.level_weapon_bouncer,
+                4 => Weapon.level_weapon_charge,
+                5 => Weapon.level_weapon_boomerang,
+                6 => Weapon.level_weapon_crackshot,
+                7 => Weapon.level_weapon_wide_shot,
+                8 => Weapon.level_weapon_upshot,
+                127 => Weapon.None,
+                _ => Weapon.level_weapon_peashot,
             };
-            Logging.Log($"start_weapon: {start_weapon.id}");
+            Logging.Log($"start_weapon: {start_weapon}");
             weapon_mode = GetAPSlotDataValue<WeaponModes>(slotData, "weapon_mode");
             contract_requirements = GetAPSlotDataDeserializedValue<List<int>>(slotData, "contract_requirements").ToArray();
             dlc_ingredient_requirements = GetAPSlotDataValue<int>(slotData, "dlc_ingredient_requirements");

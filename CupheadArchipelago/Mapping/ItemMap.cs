@@ -166,6 +166,7 @@ namespace CupheadArchipelago.Mapping {
 
             /* More unimplemented ones to check out */
         };
+        private static readonly Dictionary<Weapon, long> weaponToId = [];
         private static readonly HashSet<Weapon> modularWeapons = [
             Weapon.level_weapon_peashot,
             Weapon.level_weapon_spreadshot,
@@ -200,6 +201,7 @@ namespace CupheadArchipelago.Mapping {
             APItem.p_weapon_dlc_twistup,
         ];
         public static Weapon GetWeapon(long item) => idToWeapon[item];
+        public static long? GetWeaponItemId(Weapon weapon) => weaponToId.ContainsKey(weapon) ? weaponToId[weapon] : null;
         public static IEnumerable<Weapon> GetModularWeapons() {
             return modularWeapons;
         }
@@ -280,5 +282,11 @@ namespace CupheadArchipelago.Mapping {
         ];
         public static bool IsChaliceItem(long item) => chaliceItems.Contains(item);
         public static bool IsChaliceItem(this APItem item) => chaliceItems.Contains(item);
+
+        static ItemMap() {
+            foreach (KeyValuePair<long, Weapon> kv in idToWeapon) {
+                weaponToId[kv.Value] = kv.Key;
+            }
+        }
     }
 }

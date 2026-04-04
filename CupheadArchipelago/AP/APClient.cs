@@ -268,18 +268,18 @@ namespace CupheadArchipelago.AP {
                     Logging.Log($"[APClient] Setting up game...");
                     doneChecksUnique = new(DoneChecks);
                     LevelMap.Init(SlotData.level_map);
-                    Weapon startWeapon = ItemMap.GetWeapon(APSettings.StartWeapon.id);
+                    Weapon startWeapon = APSettings.StartWeapon;
                     if (APSettings.WeaponMode == WeaponModes.Normal) {
                         uint upgradeBit = (uint)WeaponParts.All;
                         APSessionGSPlayerData.AddWeaponsBit(ItemMap.GetModularWeapons(), upgradeBit);
                         APSessionGSPlayerData.plane_ex = true;
                         APSessionGSPlayerData.dlc_cplane_ex = true;
                     }
-                    else if ((APSettings.WeaponMode & WeaponModes.ExceptStart) > 0) {
+                    else if (startWeapon != Weapon.None && (APSettings.WeaponMode & WeaponModes.ExceptStart) > 0) {
                         uint supgradeBit = (uint)WeaponParts.All;
                         APSessionGSPlayerData.AddWeaponBit(startWeapon, supgradeBit);
                     }
-                    else {
+                    else if (startWeapon != Weapon.None) {
                         uint supgradeBit = (uint)WeaponParts.AllBasic;
                         APSessionGSPlayerData.AddWeaponBit(startWeapon, supgradeBit);
                     }

@@ -8,7 +8,7 @@ namespace CupheadArchipelago.AP {
         public static bool UseDLC { get; internal set; }
         public static GameModes Mode { get; internal set; }
         public static bool Hard { get; internal set; }
-        public static APItem StartWeapon { get; internal set; }
+        public static Weapon StartWeapon { get; internal set; }
         public static WeaponModes WeaponMode { get; internal set; }
         public static bool FreemoveIsles { get; internal set; }
         public static bool RandomizeAbilities { get; internal set; }
@@ -58,7 +58,7 @@ namespace CupheadArchipelago.AP {
             UseDLC = false;
             Mode = GameModes.BeatDevil;
             Hard = false;
-            StartWeapon = APItem.weapon_peashooter;
+            StartWeapon = Weapon.level_weapon_peashot;
             WeaponMode = 0;
             FreemoveIsles = false;
             RandomizeAbilities = false;
