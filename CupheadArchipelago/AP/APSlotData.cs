@@ -10,8 +10,8 @@ using FVer;
 
 namespace CupheadArchipelago.AP {
     internal class APSlotData {
-        internal const long AP_SLOTDATA_VERSION = 5;
-        internal const long AP_SLOTDATA_MIN_VERSION = 5;
+        internal const long AP_SLOTDATA_VERSION = 6;
+        internal const long AP_SLOTDATA_MIN_VERSION = 6;
 
         internal readonly long version;
         internal readonly FVersion world_version;
@@ -22,6 +22,7 @@ namespace CupheadArchipelago.AP {
         internal readonly GameModes mode;
         internal readonly bool expert_mode;
         internal readonly Weapon start_weapon;
+        internal readonly bool start_weapon_none;
         internal readonly WeaponModes weapon_mode;
         internal readonly int[] contract_requirements;
         internal readonly int dlc_ingredient_requirements;
@@ -55,18 +56,21 @@ namespace CupheadArchipelago.AP {
             use_dlc = GetAPSlotDataValue<bool>(slotData, "use_dlc");
             mode = GetAPSlotDataValue<GameModes>(slotData, "mode");
             expert_mode = GetAPSlotDataValue<bool>(slotData, "expert_mode");
-            start_weapon = GetAPSlotDataValue<sbyte>(slotData, "start_weapon") switch {
-                1 => Weapon.level_weapon_spreadshot,
-                2 => Weapon.level_weapon_homing,
-                3 => Weapon.level_weapon_bouncer,
-                4 => Weapon.level_weapon_charge,
-                5 => Weapon.level_weapon_boomerang,
-                6 => Weapon.level_weapon_crackshot,
-                7 => Weapon.level_weapon_wide_shot,
-                8 => Weapon.level_weapon_upshot,
-                127 => Weapon.None,
-                _ => Weapon.level_weapon_peashot,
-            };
+            if (start_weapon_none) start_weapon = Weapon.None;
+            else {
+                start_weapon = GetAPSlotDataValue<sbyte>(slotData, "start_weapon") switch {
+                    1 => Weapon.level_weapon_spreadshot,
+                    2 => Weapon.level_weapon_homing,
+                    3 => Weapon.level_weapon_bouncer,
+                    4 => Weapon.level_weapon_charge,
+                    5 => Weapon.level_weapon_boomerang,
+                    6 => Weapon.level_weapon_crackshot,
+                    7 => Weapon.level_weapon_wide_shot,
+                    8 => Weapon.level_weapon_upshot,
+                    127 => Weapon.None,
+                    _ => Weapon.level_weapon_peashot,
+                };
+            }
             Logging.Log($"start_weapon: {start_weapon}");
             weapon_mode = GetAPSlotDataValue<WeaponModes>(slotData, "weapon_mode");
             contract_requirements = GetAPSlotDataDeserializedValue<List<int>>(slotData, "contract_requirements").ToArray();
@@ -80,7 +84,7 @@ namespace CupheadArchipelago.AP {
             boss_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "boss_grade_checks");
             rungun_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "rungun_grade_checks");
             start_maxhealth = GetAPSlotDataValue<int>(slotData, "start_maxhealth");
-            start_maxhealth_p2 = GetOptionalAPSlotDataValue(slotData, "start_maxhealth_p2", start_maxhealth);
+            start_maxhealth_p2 = GetAPSlotDataValue<int>(slotData, "start_maxhealth_p2");
             dlc_chalice = GetAPSlotDataValue<DlcChaliceModes>(slotData, "dlc_chalice");
             dlc_boss_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_boss_chalice_checks");
             dlc_rungun_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_rungun_chalice_checks");
