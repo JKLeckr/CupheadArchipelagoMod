@@ -75,7 +75,7 @@ jobs:
           echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         #with:
         #  fetch-depth: 0  # Fetch all history for possible versioning
 
@@ -84,7 +84,7 @@ jobs:
           rm -rf ref/
 
       - name: Checkout Private Reference Assemblies
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
