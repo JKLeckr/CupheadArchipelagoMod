@@ -1,6 +1,18 @@
 name: TagRelease
 
 on:
+  workflow_dispatch:
+      inputs:
+        release_tag:
+          description: "Tag to publish draft release assets to (required for manual runs)"
+          required: false
+          type: string
+        do_version_check:
+          description: "Skip checking version mismatches between software and tag"
+          required: false
+          default: true
+          type: boolean
+
   push:
     tags:
       - '*'
@@ -10,29 +22,41 @@ jobs:
   prep_release:
     name: Prepare Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      MOD_NAME: "CupheadArchipelago"
 
     outputs:
-      rel_ver: ${{ steps.set_env.outputs.rel_ver }}
-      mod_name: ${{ steps.set_env.outputs.mod_name }}
+      rel_tag: ${{ steps.vars.outputs.rel_tag }}
+      mod_name: ${{ steps.vars.outputs.mod_name }}
 
     steps:
-      - name: Set Env
-        id: set_env
+      - name: Set Vars
+        id: vars
+        shell: bash
         run: |
-          export RELEASE_VERSION="${GITHUB_REF#refs/*/}"
-          export MOD_NAME="CupheadArchipelago"
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            TAG="${{ github.event.inputs.release_tag }}"
+          fi
+          if [[ -z "${TAG}" ]]; then
+            echo "No release tag available. For workflow_dispatch, provide inputs.release_tag."
+            exit 1
+          fi
+          echo "rel_tag=${TAG}" >> "${GITHUB_OUTPUT}"
 
-          echo "rel_ver=$RELEASE_VERSION" >> $GITHUB_OUTPUT
-          echo "mod_name=$MOD_NAME" >> $GITHUB_OUTPUT
-
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "mod_name=${{ env.MOD_NAME }}" >> $GITHUB_OUTPUT
 
       - name: Upload Release Assets
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           prerelease: false
-          name: AP Mod ${{ env.RELEASE_VERSION }}
+          name: AP Mod ${{ steps.vars.outputs.rel_tag }}
           token: ${{ secrets.AP_TOKEN }}
 
   build_release:
@@ -41,7 +65,7 @@ jobs:
     needs: prep_release
 
     env:
-      RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_ver }}
+      RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
       MOD_NAME: ${{ needs.prep_release.outputs.mod_name }}
 
     steps:
@@ -78,6 +102,7 @@ jobs:
           dotnet clean
 
       - name: Check version
+        if: ${{ github.event.inputs.do_version_check == 'true' }}
         run: |
           export PARSED_VERSION="$(grep -oPm1 '(?<=<Version>)[^<]+' CupheadArchipelago/CupheadArchipelago.csproj)"
           dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ "${PARSED_VERSION}" "${{ env.RELEASE_VERSION }}"
@@ -99,7 +124,7 @@ jobs:
           zip -r ../${{ env.FILE_NAME }} ${{ env.MOD_NAME }}
 
       - name: Upload Release Assets
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           prerelease: false
