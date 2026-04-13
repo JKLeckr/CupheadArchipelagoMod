@@ -10,7 +10,7 @@ on:
         do_version_check:
           description: "Skip checking version mismatches between software and tag"
           required: false
-          default: true
+          default: false
           type: boolean
 
   push:
