@@ -24,7 +24,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
         [HarmonyPatch(typeof(PlanePlayerWeaponManager), "Start")]
         internal static class Start {
             static void Postfix(PlanePlayerWeaponManager __instance, ref Weapon ___currentWeapon) {
-                if (APData.IsCurrentSlotEnabled()) return;
+                if (!APData.IsCurrentSlotEnabled()) return;
                 if (__instance.player.stats.isChalice && !PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_bomb)) {
                     ___currentWeapon = Weapon.plane_chalice_weapon_bomb;
                 }
