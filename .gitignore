@@ -7,6 +7,7 @@
 *.bak
 
 # Excluded Folders
+/[Rr]ef/
 [Rr]estricted/
 [Ee]xclude/
 [Ee]xcluded/
@@ -37,7 +38,6 @@ bld/
 # References
 **/[Rr]ef/*
 !**/[Rr]ef/.folder
-!**/[Rr]ef/*.md
 
 # Visual Studio 2015 cache/options directory
 .vs/
