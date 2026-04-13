@@ -1,6 +1,6 @@
 ---
 name: Issue Report
-about: File an issue.
+about: File an issue. Only these are accepted. Others are ignored.
 title: ''
 labels: ''
 assignees: ''
