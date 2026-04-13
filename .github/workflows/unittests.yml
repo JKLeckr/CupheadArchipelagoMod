@@ -17,7 +17,7 @@ on:
       - '!**/Templates/**'
 
 jobs:
-  build-release:
+  unittest:
     name: Test Win64
     runs-on: windows-latest
 

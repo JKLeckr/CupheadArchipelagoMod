@@ -7,14 +7,24 @@ on:
       - '!*norel*'
 
 jobs:
-  prep-release:
+  prep_release:
     name: Prepare Release
     runs-on: ubuntu-latest
 
+    outputs:
+      rel_ver: ${{ steps.set_env.outputs.rel_ver }}
+      mod_name: ${{ steps.set_env.outputs.mod_name }}
+
     steps:
       - name: Set Env
+        id: set_env
         run: |
           export RELEASE_VERSION="${GITHUB_REF#refs/*/}"
+          export MOD_NAME="CupheadArchipelago"
+
+          echo "rel_ver=$RELEASE_VERSION" >> $GITHUB_OUTPUT
+          echo "mod_name=$MOD_NAME" >> $GITHUB_OUTPUT
+
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
       - name: Upload Release Assets
@@ -25,20 +35,19 @@ jobs:
           name: AP Mod ${{ env.RELEASE_VERSION }}
           token: ${{ secrets.AP_TOKEN }}
 
-  build-release:
+  build_release:
     name: Build and Upload Release
     runs-on: ubuntu-latest
-    needs: prep-release
+    needs: prep_release
+
+    env:
+      RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_ver }}
+      MOD_NAME: ${{ needs.prep_release.outputs.mod_name }}
 
     steps:
       - name: Set Env
         run: |
-          export RELEASE_VERSION="${GITHUB_REF#refs/*/}"
-          export MOD_NAME="CupheadArchipelago"
           export FILE_NAME="${MOD_NAME}-${RELEASE_VERSION}.zip"
-
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
-          echo "MOD_NAME=$MOD_NAME" >> $GITHUB_ENV
           echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
 
       - name: Checkout repository
