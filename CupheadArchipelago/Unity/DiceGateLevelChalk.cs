@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 namespace CupheadArchipelago.Unity {
     internal class DiceGateLevelChalk : MonoBehaviour {
+        private const string DICE_CHALK_TICS_ASSET_NAME = "cap_dicehouse_chalkboard_tics";
+
         private bool _initted = false;
 
         [SerializeField]
@@ -52,7 +54,13 @@ namespace CupheadArchipelago.Unity {
             Transform slashTemplate = bgparent.GetChild(7);
             SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
 
-            Texture2D oTex = AssetMngr.GetLoadedAsset<Texture2D>("cap_dicehouse_chalkboard_tics");
+            if (!AssetMngr.IsAssetLoaded(DICE_CHALK_TICS_ASSET_NAME)) {
+                Logging.LogWarning($"{DICE_CHALK_TICS_ASSET_NAME} is not loaded. Loading.");
+                AssetMngr.LoadAsset(DICE_CHALK_TICS_ASSET_NAME);
+            };
+
+            Texture2D oTex = AssetMngr.GetLoadedAsset<Texture2D>(DICE_CHALK_TICS_ASSET_NAME);
+
             sr.material.shader = StaticAssets.OverlayShader;
             MaterialPropertyBlock mblock = new();
             sr.GetPropertyBlock(mblock);

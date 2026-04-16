@@ -21,7 +21,7 @@ namespace CupheadArchipelago.Unity {
         IEnumerator Disable_cr() {
             while (!initted) yield return null;
             yield return null;
-            if (toDisable != null) toDisable.enabled = false;
+            toDisable?.enabled = false;
             Destroy(this);
             yield break;
         }
