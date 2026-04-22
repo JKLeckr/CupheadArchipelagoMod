@@ -55,6 +55,7 @@ namespace CupheadArchipelago.AP {
         private static int scoutMapStatus = 0;
         private static bool sending = false;
         private static bool reconnecting = false;
+        private static bool gotConnectPacket = false;
         private static int shownMessage = 0;
         private static DeathLinkService deathLinkService = null;
         private static readonly byte debug = 0;
@@ -195,9 +196,17 @@ namespace CupheadArchipelago.AP {
 
                 SessionStatus = 7;
 
+                while (!gotConnectPacket) {
+                    Thread.Sleep(100);
+                    if (SessionStatus <= 0) return false;
+                }
+                Logging.Log($"[APClient] Starting location scout...");
+                RunScout();
+
                 if (scoutMapStatus==0) Logging.Log($"[APClient] Waiting for location scout...");
                 while (scoutMapStatus==0) {
                     Thread.Sleep(100);
+                    if (SessionStatus <= 0) return false;
                 }
                 if (scoutMapStatus<0) {
                     Logging.LogError($"[APClient] Scout failed!");
@@ -378,6 +387,7 @@ namespace CupheadArchipelago.AP {
         public static bool CloseArchipelagoSession(bool reset = true) {
             bool res = false;
             Enabled = false;
+            gotConnectPacket = false;
             if (session!=null) {
                 if (session.Socket.Connected) {
                     Logging.Log($"[APClient] Disconnecting APSession...");
@@ -423,6 +433,7 @@ namespace CupheadArchipelago.AP {
             itemApplyLevelQueue = new();
             itemApplySpecialLevelQueue = new();
             offline = false;
+            gotConnectPacket = false;
             APSettings.Init();
         }
 
@@ -926,7 +937,7 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"Packet got: {packet.PacketType}");
             switch (packet.PacketType) {
                 case ArchipelagoPacketType.Connected: {
-                    RunScout();
+                    gotConnectPacket = true;
                     break;
                 }
                 default: break;
