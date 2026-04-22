@@ -19,6 +19,7 @@ namespace CupheadArchipelago.Unity {
         }
 
         void OnDestroy() {
+            Logging.Log("Shutting Down");
             APClient.CloseArchipelagoSession(false);
         }
     }
