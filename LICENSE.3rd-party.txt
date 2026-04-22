@@ -749,14 +749,14 @@ native-websocket-sharp
                         OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     
     
-                Each of these libraries have their own dependencies with their own licenses.
-                Visit the repositories for each library for info on their dependencies.
-    
-                Binary distributions should have a generated nativews-THIRDPARTY.yml that has
-                the complete list of libraries with attributions and/or licenses.
-                If not, you can generate it using a tool like cargo-bundle-licenses inside the
-                c-wspp-rs source project. You can get the source project from
-                https://github.com/JKLeckr/native-websocket-sharp.
+            Each of these libraries have their own dependencies with their own licenses.
+            Visit the repositories for each library for info on their dependencies.
+
+            Binary distributions should have a generated nativews-THIRDPARTY.yml that has
+            the complete list of libraries with attributions and/or licenses.
+            If not, you can generate it using a tool like cargo-bundle-licenses inside the
+            c-wspp-rs source project. You can get the source project from
+            https://github.com/JKLeckr/native-websocket-sharp.
 
 
 CupheadArchipelago partially uses code from BepInEx for writing its log files
