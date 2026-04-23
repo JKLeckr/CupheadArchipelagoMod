@@ -1,9 +1,12 @@
 /// Copyright 2025-2026 JKLeckr
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
@@ -37,7 +40,21 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     Logging.Log($"Current Map Scene: {___scene}");
-                    LogMapsVisited();
+                    RecordMapsVisited();
+                    try {
+                        APClient.APSessionDataStorage[Scope.Slot, "current_map"].Initialize(0);
+                        APClient.APSessionDataStorage[Scope.Slot, "current_map"] = ___scene switch {
+                            Scenes.scene_map_world_1 => 0,
+                            Scenes.scene_map_world_2 => 1,
+                            Scenes.scene_map_world_3 => 2,
+                            Scenes.scene_map_world_4 => 3,
+                            Scenes.scene_map_world_DLC => 4,
+                            _ => -1
+                        };
+                        Logging.Log($"Successfully wrote 'current_map' to DataStorage.");
+                    } catch (Exception e) {
+                        Logging.LogWarning($"Failed to write 'current_map' to DataStorage: {e.Message}");
+                    }
                     apmngr.Init(APManager.MngrType.Normal);
                     apmngr.SetActive(true);
                     __instance.StartCoroutine(UpdateCoins_cr());
@@ -57,12 +74,21 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 PlayerData.MapData mapData = PlayerData.Data.GetMapData(mapScene);
                 return mapData?.sessionStarted ?? false;
             }
-            private static void LogMapsVisited() {
+            private static void RecordMapsVisited() {
                 StringBuilder res = new();
-                for (int i=0;i<mapScenes.Length;i++) {
+                int mapbits = 0;
+                for (int i = 0; i < mapScenes.Length; i++) {
                     if (MapSessionStarted(mapScenes[i])) {
+                        mapbits |= 1 << i;
                         res.Append($"{mapNames[i]} ");
                     }
+                }
+                try {
+                    APClient.APSessionDataStorage[Scope.Slot, "maps_visited"].Initialize(0);
+                    APClient.APSessionDataStorage[Scope.Slot, "maps_visited"] += Bitwise.Or(mapbits);
+                    Logging.Log($"Successfully wrote 'maps_visited' to DataStorage.");
+                } catch (Exception e) {
+                    Logging.LogWarning($"Failed to write 'maps_visited' to DataStorage: {e.Message}");
                 }
                 Logging.Log($"Visited worlds: {res}");
             }

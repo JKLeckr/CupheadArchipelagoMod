@@ -24,8 +24,8 @@ namespace CupheadArchipelago.Mapping {
             {14, Levels.FlyingBird},
             {15, Levels.FlyingMermaid},
             {16, Levels.Robot},
-            //{17, Levels.DicePalaceMain},
-            //{18, Levels.Devil},
+            {17, Levels.DicePalaceMain},
+            {18, Levels.Devil},
             {19, Levels.DicePalaceBooze},
             {20, Levels.DicePalaceChips},
             {21, Levels.DicePalaceCigar},
@@ -46,21 +46,21 @@ namespace CupheadArchipelago.Mapping {
             {102, Levels.SnowCult},
             {103, Levels.Airplane},
             {104, Levels.FlyingCowboy},
-            //{105, Levels.Saltbaker},
-            //{106, Levels.Graveyard},
-            //{107, Levels.ChessPawn},
-            //{108, Levels.ChessKnight},
-            //{109, Levels.ChessBishop},
-            //{110, Levels.ChessRook},
-            //{111, Levels.ChessQueen},
-            //{112, Levels.ChessCastle},
+            {105, Levels.Saltbaker},
+            {106, Levels.Graveyard},
+            {107, Levels.ChessPawn},
+            {108, Levels.ChessKnight},
+            {109, Levels.ChessBishop},
+            {110, Levels.ChessRook},
+            {111, Levels.ChessQueen},
+            {112, Levels.ChessCastle},
         };
         private static readonly Dictionary<Levels, long> levelIdMap = [];
 
         private static readonly HashSet<Levels> bossLevels;
         private static readonly HashSet<Levels> rungunLevels;
         private static readonly HashSet<Levels> dicePalaceLevels;
-        //private static readonly HashSet<Levels> dlcChessCastleLevels;
+        private static readonly HashSet<Levels> dlcChessCastleLevels;
 
         private static LevelMap instance = null;
 
@@ -76,7 +76,7 @@ namespace CupheadArchipelago.Mapping {
             ];
             rungunLevels = [.. Level.platformingLevels];
             dicePalaceLevels = [.. Level.world4MiniBossLevels];
-            //dlcChessCastleLevels = [.. Level.kingOfGamesLevels];
+            dlcChessCastleLevels = [.. Level.kingOfGamesLevels];
         }
 
         internal static void Init(LevelMap map) {
@@ -91,7 +91,7 @@ namespace CupheadArchipelago.Mapping {
         public static bool LevelIsBoss(Levels level) => bossLevels.Contains(level) && LevelExists(level);
         public static bool LevelIsRungun(Levels level) => rungunLevels.Contains(level) && LevelExists(level);
         public static bool LevelIsDicePalace(Levels level) => dicePalaceLevels.Contains(level) && LevelExists(level);
-        //public static bool LevelIsDlcChessCastle(Levels level) => dlcChessCastleLevels.Contains(level) && LevelExists(level);
+        public static bool LevelIsDlcChessCastle(Levels level) => dlcChessCastleLevels.Contains(level) && LevelExists(level);
 
         public static Levels GetMappedLevel(Levels orig, bool quiet = false) {
             if (IsInitted()) return instance.MapLevel(orig, quiet);

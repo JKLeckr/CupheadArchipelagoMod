@@ -22,7 +22,8 @@ namespace CupheadArchipelago.AP {
         private static ArchipelagoSession session;
         public static bool Enabled { get; private set; } = false;
         public static bool Connected { get => session?.Socket.Connected ?? false; }
-        public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapStatus==1; }
+        public static bool Ready { get => SessionStatus == STATUS_READY && scoutMapStatus == 1; }
+        public static IDataStorageHelper APSessionDataStorage { get => session.DataStorage; }
         public static APData APSessionGSData { get => GetAPSessionData(); }
         public static APData.PlayerData APSessionGSPlayerData { get => APSessionGSData.playerData; }
         public static int APSessionPlayerTeam { get; private set; }
@@ -898,10 +899,21 @@ namespace CupheadArchipelago.AP {
             APSessionGSData.deathCount++;
             Logging.Log($"{APSessionGSData.deathCount} deaths");
             if (!IsDeathLinkActive()) return;
-            int remainingGrace = APSettings.DeathLinkGraceCount - (int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1));
-            if (remainingGrace != 0) {
-                Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}...");
-                return;
+            if (APSettings.DeathLinkGraceCount > 0) {
+                int remainingGrace = APSettings.DeathLinkGraceCount - ((int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1)));
+                try {
+                    APClient.APSessionDataStorage[Scope.Slot, "deathlink_grace_count"].Initialize(APSettings.DeathLinkGraceCount);
+                    APClient.APSessionDataStorage[Scope.Slot, "deathlink_grace_count"] = remainingGrace;
+                    Logging.Log($"Successfully wrote 'deathlink_grace_count' to DataStorage.");
+                } catch (Exception e) {
+                    Logging.LogWarning($"Failed to write 'deathlink_grace_count' to DataStorage: {e.Message}");
+                }
+                if (remainingGrace != APSettings.DeathLinkGraceCount) {
+                    Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}{(remainingGrace == 0 ? " (warning)" : "")}.");
+                    return;
+                } else {
+                    Logging.Log($"[APClient] No DeathLink Grace's to save your allies this time!");
+                }
             }
             Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
