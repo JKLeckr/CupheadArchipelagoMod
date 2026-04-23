@@ -59,9 +59,16 @@ jobs:
           name: AP Mod ${{ steps.vars.outputs.rel_tag }}
           token: ${{ secrets.AP_TOKEN }}
 
-  build_release_win:
-    name: Build and Upload Release
-    runs-on: ubuntu-latest
+  build_release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - {name: win64, runner: ubuntu-latest, priv_branch: main}
+          - {name: macos, runner: macos-latest, priv_branch: main-macos}
+
+    name: Build and Upload Release ${{ matrix.os.name }}
+    runs-on: ${{ matrix.os.runner }}
     needs: prep_release
 
     env:
@@ -71,7 +78,7 @@ jobs:
     steps:
       - name: Set Env
         run: |
-          export FILE_NAME="${MOD_NAME}-${RELEASE_VERSION}.zip"
+          export FILE_NAME="${MOD_NAME}-${RELEASE_VERSION}_${{ matrix.os.name }}.zip"
           echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
 
       - name: Checkout repository
@@ -88,7 +95,7 @@ jobs:
         with:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
-          ref: main
+          ref: ${{ matrix.os.priv_branch }}
           path: CupheadArchipelago/ref
 
       - name: Setup dotnet
