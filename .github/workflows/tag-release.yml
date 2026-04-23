@@ -59,7 +59,7 @@ jobs:
           name: AP Mod ${{ steps.vars.outputs.rel_tag }}
           token: ${{ secrets.AP_TOKEN }}
 
-  build_release:
+  build_release_win:
     name: Build and Upload Release
     runs-on: ubuntu-latest
     needs: prep_release
@@ -92,7 +92,7 @@ jobs:
           path: CupheadArchipelago/ref
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "10.0.x"
 
