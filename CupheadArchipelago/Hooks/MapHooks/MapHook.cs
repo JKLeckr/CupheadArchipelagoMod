@@ -40,7 +40,6 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                 if (APData.IsCurrentSlotEnabled()) {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     Logging.Log($"Current Map Scene: {___scene}");
-                    RecordMapsVisited();
                     try {
                         APClient.APSessionDataStorage[Scope.Slot, "current_map"].Initialize(0);
                         APClient.APSessionDataStorage[Scope.Slot, "current_map"] = ___scene switch {
@@ -52,9 +51,11 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                             _ => -1
                         };
                         Logging.Log($"Successfully wrote 'current_map' to DataStorage.");
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         Logging.LogWarning($"Failed to write 'current_map' to DataStorage: {e.Message}");
                     }
+                    RecordMapsVisited();
                     apmngr.Init(APManager.MngrType.Normal);
                     apmngr.SetActive(true);
                     __instance.StartCoroutine(UpdateCoins_cr());
