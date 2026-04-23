@@ -1,0 +1,22 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/CupheadArchipelago.Helpers/">
+    <Project Path="CupheadArchipelago.Helpers/CheckVersions/CheckVersions.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="CupheadArchipelago.Helpers/FVerParser/FVerParser.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="CupheadArchipelago.Helpers/GenManifest/GenManifest.csproj">
+      <Platform Project="x64" />
+    </Project>
+  </Folder>
+  <Project Path="CupheadArchipelago.Tests/CupheadArchipelago.Tests.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="CupheadArchipelago/CupheadArchipelago.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>
