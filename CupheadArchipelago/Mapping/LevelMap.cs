@@ -128,8 +128,10 @@ namespace CupheadArchipelago.Mapping {
                     ) {
                         shuffleMap.Add(level, mappedLevel);
                     }
-                    else {
-                        Logging.LogError($"[LevelMap] Invalid map combination: \"{level} -> {mappedLevel}\" Type mismatch!");
+                    else if (level == mappedLevel) {
+                        Logging.Log($"[LevelMap] Skipping map combination: \"{level} -> {mappedLevel}\". Unsupported types.");
+                    } else {
+                        Logging.LogError($"[LevelMap] Invalid map combination: \"{level} -> {mappedLevel}\" Unsupported types!");
                         throw new ArgumentException("Levels must be mapped to the same type!");
                     }
                 }
