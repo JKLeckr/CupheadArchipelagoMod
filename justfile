@@ -12,8 +12,8 @@ default:
 setup:
     dotnet restore
 
-build:
-    dotnet build {{ proj_name }}
+build runtime_identifier='':
+    dotnet build {{ proj_name }} {{ if runtime_identifier == '' { '' } else { '-r ' + runtime_identifier } }}
 
 build-tests:
     dotnet build {{ test_proj_name }}

@@ -5,7 +5,7 @@
 - A copy of Cuphead
 - [.NET SDK](https://dotnet.microsoft.com/en-us/download) 10 or greater. You need the `dotnet` program in your path.
 - [just](https://github.com/casey/just?tab=readme-ov-file#installation). You need the `just` program in your path.
-- [c-ws-websocket-sharp](https://github.com/JKLeckr/c-ws-websocket-sharp). Note that it must be the windows version (even on Wine/Proton). The macOS version of the game requires the macOS version.
+- [native-websocket-sharp](https://github.com/JKLeckr/native-websocket-sharp). Note that it must be the net35 windows version (even on Wine/Proton). The macOS version of the game requires the net35 macOS version.
 
 ### Notes
 
@@ -28,7 +28,7 @@ Note the `ref` folder in the project directory (`CupheadArchipelago`) you just c
     - `UnityEngine.dll`
     - `UnityEngine.UI.dll`
 
-2. Copy the dll files from the extracted `c-ws-websocket-sharp` zip to the `ref` folder.
+2. Copy the dll files from the extracted `native-websocket-sharp` zip to the `ref` folder.
 
 #### 4. Prepare Project:
 In the directory, on the terminal:

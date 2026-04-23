@@ -23,6 +23,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
+    <NativeWebSocketLibrary>nativews-win64.dll</NativeWebSocketLibrary>
+    <NativeWebSocketLibrary Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('OSX'))">nativews-macos-universal.dylib</NativeWebSocketLibrary>
+    <NativeWebSocketLibrary Condition="'$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('osx'))">nativews-macos-universal.dylib</NativeWebSocketLibrary>
   </PropertyGroup>
 
   <ItemGroup>
@@ -83,14 +86,15 @@
 
   <Target Name="ReplaceWebsocketSharp" AfterTargets="Build">
     <Delete Files="$(OutputPath)websocket-sharp.dll" />
+    <Delete Files="$(OutputPath)nativews-win64.dll;$(OutputPath)nativews-macos-universal.dylib" />
+    <Delete Files="$(OutputPath)nativews-win64.pdb" />
     <Copy SourceFiles="$(ProjectDir)./ref/websocket-sharp.dll" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="$(ProjectDir)./ref/websocket-sharp.pdb" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="$(ProjectDir)./ref/nativews-win64.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="$(ProjectDir)./ref/nativews-win64.pdb" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(ProjectDir)./ref/$(NativeWebSocketLibrary)" DestinationFolder="$(OutputPath)" />
   </Target>
 
   <Target Name="CleanupExtraFiles" AfterTargets="Clean">
-    <Delete Files="$(OutputPath)nativews-win64.dll" />
+    <Delete Files="$(OutputPath)nativews-win64.dll;$(OutputPath)nativews-macos-universal.dylib" />
     <Delete Files="$(OutputPath)nativews-win64.pdb" />
     <Delete Files="$(OutputPath)websocket-sharp.pdb" />
   </Target>
