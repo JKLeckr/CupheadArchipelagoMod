@@ -33,6 +33,11 @@ namespace CupheadArchipelago.Interfaces {
                 PlayerData.Data.Gift(PlayerId.PlayerOne, weapon);
             if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerTwo, weapon))
                 PlayerData.Data.Gift(PlayerId.PlayerTwo, weapon);
+
+            var p1loadout = PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne);
+            var p2loadout = PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo);
+            if (p1loadout.primaryWeapon == Weapon.None) p1loadout.primaryWeapon = weapon;
+            if (p2loadout.primaryWeapon == Weapon.None) p2loadout.primaryWeapon = weapon;
         }
         public void Gift(Charm charm) {
             if (!PlayerData.Data.IsUnlocked(PlayerId.PlayerOne, charm))
