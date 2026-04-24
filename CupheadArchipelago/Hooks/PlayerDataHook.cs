@@ -40,9 +40,15 @@ namespace CupheadArchipelago.Hooks {
                     PlayerInventories inventories = (PlayerInventories)_fi_inventories.GetValue(data);
                     Logging.Log($"Start Weapon: {APSettings.StartWeapon}");
                     Weapon weapon = APSettings.StartWeapon;
-                    if (weapon != Weapon.None) inventories.playerOne._weapons = [weapon];
+                    if (weapon != Weapon.None) {
+                        inventories.playerOne._weapons = [weapon];
+                        inventories.playerTwo._weapons = [weapon];
+                    }
+                    else {
+                        inventories.playerOne._weapons = [];
+                        inventories.playerTwo._weapons = [];
+                    }
                     data.Loadouts.playerOne.primaryWeapon = weapon;
-                    if (weapon != Weapon.None) inventories.playerTwo._weapons = [weapon];
                     data.Loadouts.playerTwo.primaryWeapon = weapon;
                     if (APSettings.UseDLC && APSettings.DLCChaliceMode == DlcChaliceModes.Start) {
                         inventories.playerOne._charms = [Charm.charm_chalice];
