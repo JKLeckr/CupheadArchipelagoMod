@@ -18,6 +18,10 @@ namespace CupheadArchipelago.AP {
                     case APItemType.Weapon: {
                             Weapon weapon = ItemMap.GetWeapon(itemId);
                             pdMngr.Gift(weapon);
+                            var p1loadout = PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne);
+                            var p2loadout = PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo);
+                            if (p1loadout.primaryWeapon == Weapon.None) p1loadout.primaryWeapon = weapon;
+                            if (p2loadout.primaryWeapon == Weapon.None) p2loadout.primaryWeapon = weapon;
                             if (ItemMap.IsPlaneItem(itemId)) {
                                 ResolvePlaneWeapons(itemId, pdMngr.Gift);
                             }

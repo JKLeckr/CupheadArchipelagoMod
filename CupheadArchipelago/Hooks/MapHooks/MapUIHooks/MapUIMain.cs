@@ -4,10 +4,12 @@
 namespace CupheadArchipelago.Hooks.MapHooks.MapUIHooks {
     public class MapUIMain {
         public static void Hook() {
+            MapUICoinsHook.Hook();
             MapEventNotificationHook.Hook();
             MapDifficultySelectStartUIHook.Hook();
+            MapEquipUICardBackSelectHook.Hook();
+            MapEquipUICardBackSelectIconHook.Hook();
             MapEquipUIChecklistHook.Hook();
-            MapUICoinsHook.Hook();
         }
     }
 }

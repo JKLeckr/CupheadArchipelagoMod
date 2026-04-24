@@ -7,6 +7,7 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
     internal class LevelPlayerWeaponManagerHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(HandleWeaponFiring));
             Harmony.CreateAndPatchAll(typeof(StartBasic));
             Harmony.CreateAndPatchAll(typeof(StartEx));
         }
@@ -15,8 +16,9 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
 
         [HarmonyPatch(typeof(LevelPlayerWeaponManager), "HandleWeaponFiring")]
         internal static class HandleWeaponFiring {
-            static bool Prefix(LevelPlayerWeaponManager __instance) =>
-                PlayerData.Data.Loadouts.GetPlayerLoadout(__instance.player.id).primaryWeapon != Weapon.None;
+            static bool Prefix(LevelPlayerWeaponManager __instance) {
+                return PlayerData.Data.Loadouts.GetPlayerLoadout(__instance.player.id).primaryWeapon != Weapon.None;
+            }
         }
 
         [HarmonyPatch(typeof(LevelPlayerWeaponManager), "StartBasic")]

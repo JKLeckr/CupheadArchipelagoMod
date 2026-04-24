@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace CupheadArchipelago.AP {
     public class APData {
-        internal const int AP_DATA_VERSION = 3;
+        internal const int AP_DATA_VERSION = 4;
 
         public static bool Loaded { get; private set; } = false;
         public static APData[] SData { get; private set; }
@@ -275,7 +275,7 @@ namespace CupheadArchipelago.AP {
             else
                 cond = saveDataType == SaveDataType.AP;
             if (cond) {
-                res = !playerData.HasStartWeapon();
+                res = !playerData.IsInitialized();
             } else {
                 global::PlayerData data = global::PlayerData.GetDataForSlot(index);
                 res = !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;
@@ -413,13 +413,14 @@ namespace CupheadArchipelago.AP {
                 }
             }
             public bool WeaponHasBit(Weapon weapon, uint bit) {
-                return weapons.ContainsKey(weapon) ? (weapons[weapon] & bit) == bit : false;
+                return weapons.ContainsKey(weapon) && (weapons[weapon] & bit) == bit;
             }
+            public bool HasAnyWeapon() => weapons.Count > 0;
 
-            [JsonProperty("got_start_weapon")]
-            private bool got_start_weapon = false;
-            public bool HasStartWeapon() => got_start_weapon;
-            public void GotStartWeapon() => got_start_weapon = true;
+            [JsonProperty("initted")]
+            private bool initted = false;
+            public bool IsInitialized() => initted;
+            public void MarkInitialized() => initted = true;
         }
     }
 }

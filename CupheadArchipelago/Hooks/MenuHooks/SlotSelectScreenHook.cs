@@ -172,7 +172,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
 
                 if (APData.SData[_slotSelection].enabled) {
                     _lockMenu = true;
-                    if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
+                    if (!APData.SData[_slotSelection].playerData.IsInitialized()) {
                         Logging.Log("Cleaning APData...");
                         APData.ResetData(_slotSelection, false, false, false);
                     }
@@ -238,7 +238,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     yield return null;
                 }
 
-                if (!APData.SData[_slotSelection].playerData.HasStartWeapon()) {
+                if (!APData.SData[_slotSelection].playerData.IsInitialized()) {
                     try {
                         PlayerDataHook.APSanitizeSlot(_slotSelection);
                     } catch (Exception e) {
@@ -246,7 +246,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                         APClient.CloseArchipelagoSession(true);
                         APAbort();
                     }
-                    APData.SData[_slotSelection].playerData.GotStartWeapon();
+                    APData.SData[_slotSelection].playerData.MarkInitialized();
                 }
 
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
