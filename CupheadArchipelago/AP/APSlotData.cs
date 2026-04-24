@@ -56,21 +56,18 @@ namespace CupheadArchipelago.AP {
             use_dlc = GetAPSlotDataValue<bool>(slotData, "use_dlc");
             mode = GetAPSlotDataValue<GameModes>(slotData, "mode");
             expert_mode = GetAPSlotDataValue<bool>(slotData, "expert_mode");
-            if (start_weapon_none) start_weapon = Weapon.None;
-            else {
-                start_weapon = GetAPSlotDataValue<sbyte>(slotData, "start_weapon") switch {
-                    1 => Weapon.level_weapon_spreadshot,
-                    2 => Weapon.level_weapon_homing,
-                    3 => Weapon.level_weapon_bouncer,
-                    4 => Weapon.level_weapon_charge,
-                    5 => Weapon.level_weapon_boomerang,
-                    6 => Weapon.level_weapon_crackshot,
-                    7 => Weapon.level_weapon_wide_shot,
-                    8 => Weapon.level_weapon_upshot,
-                    127 => Weapon.None,
-                    _ => Weapon.level_weapon_peashot,
-                };
-            }
+            start_weapon = GetAPSlotDataValue<sbyte>(slotData, "start_weapon") switch {
+                1 => Weapon.level_weapon_spreadshot,
+                2 => Weapon.level_weapon_homing,
+                3 => Weapon.level_weapon_bouncer,
+                4 => Weapon.level_weapon_charge,
+                5 => Weapon.level_weapon_boomerang,
+                6 => Weapon.level_weapon_crackshot,
+                7 => Weapon.level_weapon_wide_shot,
+                8 => Weapon.level_weapon_upshot,
+                127 => Weapon.None,
+                _ => Weapon.level_weapon_peashot,
+            };
             Logging.Log($"start_weapon: {start_weapon}");
             weapon_mode = GetAPSlotDataValue<WeaponModes>(slotData, "weapon_mode");
             contract_requirements = GetAPSlotDataDeserializedValue<List<int>>(slotData, "contract_requirements").ToArray();
