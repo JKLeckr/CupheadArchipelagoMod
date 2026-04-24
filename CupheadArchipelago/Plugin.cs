@@ -69,10 +69,10 @@ namespace CupheadArchipelago {
                 }
 
                 if (config.LogLicense > 0) {
-                    ModLicense license = new();
+                    ModInfo.ModLicense license = new();
                     string lictext = $"License:\n--- LICENSE ---\n{license.PLUGIN_NOTICE}\n";
                     if (config.LogLicense == LicenseLogModes.All) {
-                        ModLicenseThirdParty license3rdParty = new();
+                        ModInfo.ModLicenseThirdParty license3rdParty = new();
                         lictext += $"\n -- Third Party --\n{license3rdParty.PLUGIN_LIB_FULL_NOTICE}\n\n -- End Third Party --";
                     }
                     else {

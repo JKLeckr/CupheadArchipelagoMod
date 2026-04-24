@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using UnityEngine;
 
 namespace CupheadArchipelago.Config {
     public class SaveData {
@@ -12,9 +11,9 @@ namespace CupheadArchipelago.Config {
         private const string AP_SAVE_FILE_KEY_SUFFIX = "_apdata";
 
         internal static readonly string DEFAULT_SAVE_PATH =
-            (Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer) ?
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Library/Application Support/unity.Studio MDHR.Cuphead/Cuphead") :
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
+            ModInfo.IsMacOS()
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Library/Application Support/unity.Studio MDHR.Cuphead/Cuphead")
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
         internal static readonly string[] AP_SAVE_FILE_KEYS = new string[3];
 
         internal static string APSavePath { get; private set; } = "";
