@@ -65,7 +65,7 @@ jobs:
       matrix:
         os:
           - {name: win64, runner: ubuntu-latest, priv_branch: main}
-          - {name: macos, runner: macos-latest, priv_branch: main-macos}
+          #- {name: macos, runner: macos-latest, priv_branch: main-macos}
 
     name: Build and Upload Release ${{ matrix.os.name }}
     runs-on: ${{ matrix.os.runner }}
