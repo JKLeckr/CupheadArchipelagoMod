@@ -13,7 +13,7 @@ namespace CupheadArchipelago.Config {
         private ConfigEntry<LicenseLogModes> configLogLicense = config.Bind("Logging", "LogLicense", LicenseLogModes.Off, "Log the copyright notice and license on load.\nFirstParty prints only the notice for this mod itself.\nAll includes third party notices for the libraries used. (Careful! Will flood the terminal and log!)");
         private ConfigEntry<string> configSaveKeyName = config.Bind("SaveConfig", "SaveKeyName", "cuphead_player_data_v1_ap_slot_",
                 "Set save data prefix.\nPlease note that using Vanilla save files can cause data loss. It is recommended not to use Vanilla saves! (Vanilla: \"cuphead_player_data_v1_slot_\")");
-        private ConfigEntry<Cutscenes> configSkipCutscenes = config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.DLCIntro, "Skip the specified cutscenes in an AP game.");
+        private ConfigEntry<Cutscenes> configSkipCutscenes = config.Bind("Game", "SkipCutscenes", Cutscenes.Intro | Cutscenes.KettleIntro | Cutscenes.DLCIntro | Cutscenes.DLCSaltbakerIntro, "Skip the specified cutscenes in an AP game.");
         private ConfigEntry<bool> configSkipCutscenesAPOnly = config.Bind("Game", "SkipCutscenesAPOnly", true, "Skip cutscenes only if playing an Archipelago game.");
         private ConfigEntry<bool> configFileDeleteResetsAPData = config.Bind("AP", "FileDeleteResetsAPData", true, "When the save file is deleted, the Archipelago settings gets reset.");
         private ConfigEntry<APStatsFunctions> configAPStatusFunctions = config.Bind("AP", "APStatusFunctions", APStatsFunctions.ConnectionIndicator, "Enable specific Archipelago Status HUD Functionalities. (Currently does nothing)");
