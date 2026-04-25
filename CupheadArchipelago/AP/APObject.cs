@@ -57,7 +57,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem super_ii = new(14001, true);
         public static readonly APItem super_iii = new(14002, true);
         public static readonly APItem plane_super = new(14003, true);
-        public static readonly APItem ability_duck = new(16000, true);
+        public static readonly APItem ability_crouch = new(16000, true);
         public static readonly APItem ability_dash = new(16001, true);
         public static readonly APItem ability_parry = new(16002, true);
         public static readonly APItem ability_plane_parry = new(16003, true);
@@ -103,7 +103,7 @@ namespace CupheadArchipelago.AP {
         public static readonly APItem super_dlc_c_ii = new(10012001, true);
         public static readonly APItem super_dlc_c_iii = new(10012002, true);
         public static readonly APItem dlc_cplane_super = new(10012003, true);
-        public static readonly APItem ability_dlc_cduck = new(10014000, true);
+        public static readonly APItem ability_dlc_ccrouch = new(10014000, true);
         public static readonly APItem ability_dlc_p_cdash = new(10014001, true);
         public static readonly APItem ability_dlc_cdoublejump = new(10014002, true);
         public static readonly APItem ability_dlc_cplane_parry = new(10014003, true);

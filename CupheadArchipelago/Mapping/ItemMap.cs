@@ -83,12 +83,12 @@ namespace CupheadArchipelago.Mapping {
             {APItem.super_dlc_c_iii, APItemType.Super},
 
             {APItem.ability_dash, APItemType.Ability},
-            {APItem.ability_duck, APItemType.Ability},
+            {APItem.ability_crouch, APItemType.Ability},
             {APItem.ability_parry, APItemType.Ability},
             {APItem.ability_plane_parry, APItemType.Ability},
             {APItem.ability_plane_shrink, APItemType.Ability},
             {APItem.ability_dlc_p_cdash, APItemType.Ability},
-            {APItem.ability_dlc_cduck, APItemType.Ability},
+            {APItem.ability_dlc_ccrouch, APItemType.Ability},
             {APItem.ability_dlc_cdoublejump, APItemType.Ability},
             {APItem.ability_dlc_cplane_parry, APItemType.Ability},
             {APItem.ability_dlc_cplane_shrink, APItemType.Ability},
@@ -266,7 +266,7 @@ namespace CupheadArchipelago.Mapping {
             APItem.super_dlc_c_iii,
 
             APItem.ability_dlc_p_cdash,
-            APItem.ability_dlc_cduck,
+            APItem.ability_dlc_ccrouch,
             APItem.ability_dlc_cdoublejump,
             APItem.ability_dlc_cplane_parry,
             APItem.ability_dlc_cplane_shrink,

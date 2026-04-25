@@ -343,8 +343,8 @@ namespace CupheadArchipelago.AP {
             public int dlc_ingredients = 0;
             [JsonProperty("dash")]
             public bool dash = false;
-            [JsonProperty("duck")]
-            public bool duck = false;
+            [JsonProperty("crouch")]
+            public bool crouch = false;
             [JsonProperty("parry")]
             public bool parry = false;
             [JsonProperty("plane_parry")]
@@ -353,8 +353,8 @@ namespace CupheadArchipelago.AP {
             public bool plane_shrink = false;
             [JsonProperty("dlc_cdash")]
             public bool dlc_cdash = false;
-            [JsonProperty("dlc_cduck")]
-            public bool dlc_cduck = false;
+            [JsonProperty("dlc_ccrouch")]
+            public bool dlc_ccrouch = false;
             [JsonProperty("dlc_cparry")]
             public bool dlc_cparry = false;
             [JsonProperty("dlc_cdoublejump")]
@@ -377,12 +377,12 @@ namespace CupheadArchipelago.AP {
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget & SetTarget.Abilities) > 0) dash = value;
-                if ((setTarget & SetTarget.Abilities) > 0) duck = value;
+                if ((setTarget & SetTarget.Abilities) > 0) crouch = value;
                 if ((setTarget & SetTarget.Abilities) > 0) parry = value;
                 if ((setTarget & SetTarget.Abilities) > 0) plane_parry = value;
                 if ((setTarget & SetTarget.Abilities) > 0) plane_shrink = value;
                 if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cdash = value;
-                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cduck = value;
+                if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_ccrouch = value;
                 if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cparry = value;
                 if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cdoublejump = value;
                 if ((setTarget & SetTarget.ChaliceAbilities) > 0) dlc_cplane_parry = value;

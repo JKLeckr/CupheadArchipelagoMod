@@ -100,7 +100,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
 
             private static bool APPlatformDropCondition() {
                 if (APData.IsCurrentSlotEnabled()) {
-                    return APClient.APSessionGSPlayerData.duck || APSettings.DuckLockPlatDropBug;
+                    return APClient.APSessionGSPlayerData.crouch || APSettings.DuckLockPlatDropBug;
                 }
                 return true;
             }
@@ -145,9 +145,9 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
             }
             private static bool APCondition(LevelPlayerMotor instance) {
                 if (instance.player.stats.isChalice)
-                    return APData.CurrentSData.playerData.dlc_cduck;
+                    return APData.CurrentSData.playerData.dlc_ccrouch;
                 else
-                    return APData.CurrentSData.playerData.duck;
+                    return APData.CurrentSData.playerData.crouch;
             }
         }
 

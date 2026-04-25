@@ -128,10 +128,10 @@ namespace CupheadArchipelago.AP {
                 APClient.APSessionGSPlayerData.dash = true;
                 if (!IsChaliceSeparate(ItemGroups.Abilities))
                     APClient.APSessionGSPlayerData.dlc_cdash = true;
-            } else if (id==APItem.ability_duck) {
-                APClient.APSessionGSPlayerData.duck = true;
+            } else if (id==APItem.ability_crouch) {
+                APClient.APSessionGSPlayerData.crouch = true;
                 if (!IsChaliceSeparate(ItemGroups.Abilities))
-                    APClient.APSessionGSPlayerData.dlc_cduck = true;
+                    APClient.APSessionGSPlayerData.dlc_ccrouch = true;
             } else if (id==APItem.ability_parry) {
                 APClient.APSessionGSPlayerData.parry = true;
                 if (!IsChaliceSeparate(ItemGroups.Abilities))
@@ -148,8 +148,8 @@ namespace CupheadArchipelago.AP {
                 if (APClient.GetReceivedItemCount(id)>=2)
                     APClient.APSessionGSPlayerData.dlc_cparry = true;
                 APClient.APSessionGSPlayerData.dlc_cdash = true;
-            } else if (id==APItem.ability_dlc_cduck) {
-                APClient.APSessionGSPlayerData.dlc_cduck = true;
+            } else if (id==APItem.ability_dlc_ccrouch) {
+                APClient.APSessionGSPlayerData.dlc_ccrouch = true;
             } else if (id==APItem.ability_dlc_cdoublejump) {
                 APClient.APSessionGSPlayerData.dlc_cdoublejump = true;
             } else if (id==APItem.ability_dlc_cplane_parry) {
