@@ -9,7 +9,7 @@ using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.MapHooks {
+namespace CupheadArchipelago.Hooks.MapHooks.MapUIHooks {
     internal class MapEquipUIChecklistHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Init));

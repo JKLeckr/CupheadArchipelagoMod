@@ -4,6 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
@@ -16,6 +18,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
     internal class MapHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Awake));
+            Harmony.CreateAndPatchAll(typeof(start_cr));
         }
 
         internal static readonly Scenes[] mapScenes = [
@@ -128,6 +131,75 @@ namespace CupheadArchipelago.Hooks.MapHooks {
         }
 
         [HarmonyPatch(typeof(Map), "start_cr", MethodType.Enumerator)]
-        internal static class start_cr {}
+        internal static class start_cr {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new(instructions);
+                int se_success = 0;
+                int set_success = 0;
+                bool debug = false;
+
+                MethodInfo _mi_MapEventNotification_get_Current = typeof(MapEventNotification).GetProperty("Current", BindingFlags.Public | BindingFlags.Static).GetGetMethod();
+                MethodInfo _mi_ShowEvent = typeof(MapEventNotification).GetMethod("ShowEvent", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo _mi_ShowTooltipEvent = typeof(MapEventNotification).GetMethod("ShowTooltipEvent", BindingFlags.Public | BindingFlags.Instance);
+
+                MethodInfo _mi_APShowEvent = typeof(start_cr).GetMethod("APShowEvent", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo _mi_APShowTooltipEvent = typeof(start_cr).GetMethod("APShowTooltipEvent", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
+                for (int i = 0; i < codes.Count - 2; i++) {
+                    if (
+                        codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_MapEventNotification_get_Current &&
+                        codes[i + 2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 2].operand == _mi_ShowEvent
+                    ) {
+                        codes[i + 2].opcode = OpCodes.Call;
+                        codes[i + 2].operand = _mi_APShowEvent;
+                        se_success++;
+                    }
+                    if (
+                        codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == _mi_MapEventNotification_get_Current &&
+                        codes[i + 2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 2].operand == _mi_ShowTooltipEvent
+                    ) {
+                        codes[i + 2].opcode = OpCodes.Call;
+                        codes[i + 2].operand = _mi_APShowTooltipEvent;
+                        set_success++;
+                    }
+                }
+                if (se_success != 8 && set_success != 4)
+                    throw new Exception($"{nameof(start_cr)}: Patch Failed! {se_success}, {set_success}");
+                if (debug) {
+                    Logging.Log("---");
+                    Dbg.LogCodeInstructions(codes);
+                }
+
+                return codes;
+            }
+
+            private static void APShowEvent(MapEventNotification current, MapEventNotification.Type eventType) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    switch (eventType) {
+                        case MapEventNotification.Type.AirplaneIngredient:
+                        case MapEventNotification.Type.RumIngredient:
+                        case MapEventNotification.Type.OldManIngredient:
+                        case MapEventNotification.Type.SnowIngredient:
+                        case MapEventNotification.Type.CowboyIngredient:
+                        case MapEventNotification.Type.SoulContract: break;
+                        default: current.ShowEvent(eventType); break;
+                    }
+                }
+                else current.ShowEvent(eventType);
+            }
+            private static void APShowTooltipEvent(MapEventNotification current, TooltipEvent tooltipEvent) {
+                if (APData.IsCurrentSlotEnabled()) {
+                    switch (tooltipEvent) {
+                        case TooltipEvent.BackToKitchen: break;
+                        default: current.ShowTooltipEvent(tooltipEvent); break;
+                    }
+                } else {
+                    current.ShowTooltipEvent(tooltipEvent);
+                }
+            }
+        }
     }
 }

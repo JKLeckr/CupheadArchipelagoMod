@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace CupheadArchipelago.Hooks.MapHooks {
+namespace CupheadArchipelago.Hooks.MapHooks.MapUIHooks {
     internal class MapUICoinsHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));

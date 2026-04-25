@@ -4,11 +4,10 @@
 using CupheadArchipelago.AP;
 using HarmonyLib;
 
-namespace CupheadArchipelago.Hooks.MapHooks {
+namespace CupheadArchipelago.Hooks.MapHooks.MapUIHooks {
     internal class MapEventNotificationHook {
-        // TODO: Add notifications for sending and maybe receiving checks too!
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(ShowTooltipEvent));
+            //Harmony.CreateAndPatchAll(typeof(ShowTooltipEvent));
         }
 
         [HarmonyPatch(typeof(MapEventNotification), "ShowTooltipEvent")]

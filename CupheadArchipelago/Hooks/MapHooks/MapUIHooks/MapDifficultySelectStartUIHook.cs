@@ -9,7 +9,7 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
 
-namespace CupheadArchipelago.Hooks.MapHooks {
+namespace CupheadArchipelago.Hooks.MapHooks.MapUIHooks {
     internal class MapDifficultySelectStartUIHook {
         internal static void Hook() {
             //Harmony.CreateAndPatchAll(typeof(Awake));
