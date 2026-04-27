@@ -6,9 +6,9 @@
     <Product>CupheadArchipelago</Product>
     <GUID>com.JKLeckr.CupheadArchipelago</GUID>
     <Description>The Cuphead Archipelago Mod</Description>
-    <VersionPrefix>0.2.2.7</VersionPrefix>
+    <VersionPrefix>0.3.0.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
-    <VersionRelNumber>3</VersionRelNumber>
+    <VersionRelNumber>0</VersionRelNumber>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
     <RepositoryUrl>https://github.com/JKLeckr/CupheadArchipelagoMod</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
