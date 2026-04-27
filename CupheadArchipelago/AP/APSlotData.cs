@@ -10,12 +10,12 @@ using FVer;
 
 namespace CupheadArchipelago.AP {
     internal class APSlotData {
-        internal const long AP_SLOTDATA_VERSION = 6;
+        internal const long AP_SLOTDATA_VERSION = 7;
         internal const long AP_SLOTDATA_MIN_VERSION = 6;
 
         internal readonly long version;
         internal readonly FVersion world_version;
-        internal readonly long feature_bit_reqs;
+        internal readonly uint feature_bit_reqs;
         internal readonly LevelMap level_map;
         internal readonly ShopSet[] shop_map;
         internal readonly bool use_dlc;
@@ -31,7 +31,7 @@ namespace CupheadArchipelago.AP {
         internal readonly bool freemove_isles;
         internal readonly bool randomize_abilities;
         internal readonly bool randomize_abilities_aim;
-        internal readonly BossPhaseCheckMode boss_phase_checks;
+        internal readonly int boss_phase_checks;
         internal readonly GradeChecks boss_grade_checks;
         internal readonly GradeChecks rungun_grade_checks;
         internal readonly int start_maxhealth;
@@ -49,7 +49,7 @@ namespace CupheadArchipelago.AP {
         internal APSlotData(Dictionary<string, object> slotData) {
             version = GetAPSlotDataValue<long>(slotData, "version");
             world_version = GetAPSlotDataVersion(slotData, "world_version");
-            feature_bit_reqs = GetOptionalAPSlotDataValue<long>(slotData, "feature_bit_reqs", 0);
+            feature_bit_reqs = GetOptionalAPSlotDataValue<uint>(slotData, "feature_bit_reqs", 0);
             level_map = new LevelMap(GetAPSlotDataDeserializedValue<Dictionary<long, long>>(slotData, "level_map"));
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
@@ -66,7 +66,7 @@ namespace CupheadArchipelago.AP {
             freemove_isles = GetAPSlotDataValue<bool>(slotData, "freemove_isles");
             randomize_abilities = GetAPSlotDataValue<bool>(slotData, "randomize_abilities");
             randomize_abilities_aim = false; //GetAPSlotDataValue<bool>(slotData, "randomize_abilities_aim");
-            boss_phase_checks = GetAPSlotDataValue<BossPhaseCheckMode>(slotData, "boss_phase_checks");
+            boss_phase_checks = GetAPSlotDataValue<int>(slotData, "boss_phase_checks");
             boss_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "boss_grade_checks");
             rungun_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "rungun_grade_checks");
             start_maxhealth = GetAPSlotDataValue<int>(slotData, "start_maxhealth");

@@ -12,7 +12,7 @@ namespace CupheadArchipelago.AP {
         public static WeaponModes WeaponMode { get; internal set; }
         public static bool FreemoveIsles { get; internal set; }
         public static bool RandomizeAbilities { get; internal set; }
-        public static BossPhaseCheckMode BossPhaseChecks { get; internal set; }
+        public static bool BossPhaseChecks { get; internal set; }
         public static bool BossSecretChecks { get; internal set; }
         public static GradeChecks BossGradeChecks { get; internal set; }
         public static GradeChecks RungunGradeChecks { get; internal set; }
@@ -65,6 +65,7 @@ namespace CupheadArchipelago.AP {
             BossSecretChecks = false;
             BossGradeChecks = GradeChecks.Disabled;
             RungunGradeChecks = GradeChecks.Disabled;
+            BossPhaseChecks = false;
             DicePalaceBossSanity = false;
             DeathLink = DeathLinkMode.Disabled;
             DeathLinkGraceCount = 0;

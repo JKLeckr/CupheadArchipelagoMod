@@ -64,6 +64,7 @@ namespace CupheadArchipelago.AP {
         private static readonly object receivedItemsQueueLock = new();
         protected const int STATUS_READY = 1;
         protected const string GAME_NAME = "Cuphead";
+        protected const uint FEATURE_BITS = 0;
         private const int RECONNECT_MAX_RETRIES = 3;
         private const int RECONNECT_RETRY_WAIT = 5000;
 
@@ -197,7 +198,13 @@ namespace CupheadArchipelago.AP {
                 SessionStatus = 6;
 
                 Logging.Log($"[APClient] Checking client compatibility...");
-                //Check feature bits here
+                if ((FEATURE_BITS & SlotData.feature_bit_reqs) != SlotData.feature_bit_reqs) {
+                    long missing_bits = SlotData.feature_bit_reqs & ~FEATURE_BITS;
+                    Logging.LogError($"[APClient] Incompatible with MultiWorld! Missing feature bits: {missing_bits}");
+                    CloseArchipelagoSession(resetOnFail);
+                    SessionStatus = -6;
+                    return false;
+                }
 
                 SessionStatus = 7;
 
@@ -246,7 +253,7 @@ namespace CupheadArchipelago.AP {
                     APSettings.WeaponMode = SlotData.weapon_mode;
                     APSettings.FreemoveIsles = SlotData.freemove_isles;
                     APSettings.RandomizeAbilities = SlotData.randomize_abilities;
-                    APSettings.BossPhaseChecks = SlotData.boss_phase_checks;
+                    APSettings.BossPhaseChecks = SlotData.boss_phase_checks > 0;
                     APSettings.BossSecretChecks = LocationExists(APLocation.level_boss_veggies_secret);
                     APSettings.BossGradeChecks = SlotData.boss_grade_checks;
                     APSettings.DicePalaceBossSanity = LocationExists(APLocation.level_dicepalace_boss_booze);
