@@ -273,7 +273,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             break;
                         }
                         case -3: {
-                            SetAPConStatusText("Disconnected!\nCheck failed!\nWrong Slot Data Version!\nCheck Log!");
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nWrong Slot Data Version:\nMultiworld {ConnectCloseReason}!\nCheck Log!");
                             break;
                         }
                         case -5: {
