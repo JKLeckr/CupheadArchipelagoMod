@@ -144,7 +144,7 @@ namespace CupheadArchipelago.AP {
                     if (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION || slotDataVersion < APSlotData.AP_SLOTDATA_MIN_VERSION) {
                         Logging.LogError(
                             $"[APClient] Incompatible SlotData version: " +
-                            $"Client:{APSlotData.AP_SLOTDATA_VERSION} ClientMin:{APSlotData.AP_SLOTDATA_MIN_VERSION}, Server:{slotDataVersion}! Incompatible client!"
+                            $"Client:{APSlotData.AP_SLOTDATA_VERSION}, ClientMin:{APSlotData.AP_SLOTDATA_MIN_VERSION}, Server:{slotDataVersion}! Incompatible client!"
                         );
                         SessionConnectCloseReason = slotDataVersion > APSlotData.AP_SLOTDATA_VERSION ? "too new" : "too old";
                         CloseArchipelagoSession(resetOnFail);
