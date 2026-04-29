@@ -145,7 +145,7 @@ namespace CupheadArchipelago.AP {
                     if (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION || slotDataVersion < APSlotData.AP_SLOTDATA_MIN_VERSION) {
                         Logging.LogError(
                             $"[APClient] Incompatible SlotData version: " +
-                            $"Client:{APSlotData.AP_SLOTDATA_VERSION} ClientMin:{APSlotData.AP_SLOTDATA_MIN_VERSION}, Server:{slotDataVersion}! Incompatible client!"
+                            $"Client:{APSlotData.AP_SLOTDATA_VERSION}, ClientMin:{APSlotData.AP_SLOTDATA_MIN_VERSION}, Server:{slotDataVersion}! Incompatible client!"
                         );
                         SessionStatus = -3;
                         SessionConnectCloseReason = "Multiworld " + (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION ? "too new" : "too old");
