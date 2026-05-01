@@ -51,8 +51,7 @@ namespace CupheadArchipelago.AP {
 
     public enum ShopModes : byte {
         Tiers = 0,
-        //StrictTiers = 1,
-        Independent = 2,
+        Independent = 1,
     }
 
     public enum GradeChecks {
