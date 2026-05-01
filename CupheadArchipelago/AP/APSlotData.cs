@@ -11,7 +11,7 @@ using FVer;
 namespace CupheadArchipelago.AP {
     internal class APSlotData {
         internal const long AP_SLOTDATA_VERSION = 7;
-        internal const long AP_SLOTDATA_MIN_VERSION = 6;
+        internal const long AP_SLOTDATA_MIN_VERSION = 7;
 
         internal readonly long version;
         internal readonly FVersion world_version;
