@@ -12,6 +12,7 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
     internal class PlanePlayerWeaponManagerHook {
         internal static void Hook() {
             Harmony.CreateAndPatchAll(typeof(Start));
+            Harmony.CreateAndPatchAll(typeof(OnLevelStart));
             Harmony.CreateAndPatchAll(typeof(CheckBasic));
             Harmony.CreateAndPatchAll(typeof(StartBasic));
             Harmony.CreateAndPatchAll(typeof(StartEx));
@@ -25,12 +26,58 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {
         internal static class Start {
             static void Postfix(PlanePlayerWeaponManager __instance, ref Weapon ___currentWeapon) {
                 if (!APData.IsCurrentSlotEnabled()) return;
-                if (__instance.player.stats.isChalice && !PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_bomb)) {
-                    ___currentWeapon = Weapon.plane_chalice_weapon_bomb;
+                if (__instance.player.stats.isChalice) {
+                    if (!PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_3way) && PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_chalice_weapon_bomb)) {
+                        ___currentWeapon = Weapon.plane_chalice_weapon_bomb;
+                    }
+                    else {
+                        ___currentWeapon = Weapon.plane_chalice_weapon_3way;
+                    }
                 }
                 else if (!PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_peashot) && PlayerData.Data.IsUnlocked(__instance.player.id, Weapon.plane_weapon_bomb)) {
                     ___currentWeapon = Weapon.plane_weapon_bomb;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(PlanePlayerWeaponManager), "OnLevelStart")]
+        internal static class OnLevelStart {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                List<CodeInstruction> codes = new(instructions);
+                bool success = false;
+                bool debug = false;
+
+                FieldInfo _fi_isChalice = typeof(PlayerStatsManager).GetField("isChalice", BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo _fi_currentWeapon = typeof(PlanePlayerWeaponManager).GetField("currentWeapon", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo _mi_APCondition = typeof(OnLevelStart).GetMethod("APCondition", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (debug) {
+                    Dbg.LogCodeInstructions(codes);
+                }
+                for (int i = 0; i < codes.Count - 5; i++) {
+                    if (
+                        codes[i].opcode == OpCodes.Ldfld && (FieldInfo)codes[i].operand == _fi_isChalice &&
+                        codes[i + 1].opcode == OpCodes.Brfalse && codes[i + 2].opcode == OpCodes.Ldarg_0 &&
+                        codes[i + 3].opcode == OpCodes.Ldc_I4 && (int)codes[i + 3].operand == (int)Weapon.plane_chalice_weapon_3way &&
+                        codes[i + 4].opcode == OpCodes.Stfld && (FieldInfo)codes[i + 4].operand == _fi_currentWeapon &&
+                        codes[i + 5].opcode == OpCodes.Br
+                    ) {
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, _mi_APCondition));
+                        success = true;
+                        break;
+                    }
+                }
+                if (!success) throw new Exception($"{nameof(Patch)}: Patch Failed!");
+                if (debug) {
+                    Logging.Log("---");
+                    Dbg.LogCodeInstructions(codes);
+                }
+
+                return codes;
+            }
+
+            private static bool APCondition(bool orig) {
+                return !APData.IsCurrentSlotEnabled() && orig;
             }
         }
 
