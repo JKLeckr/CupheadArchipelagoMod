@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Issue tracker is **ONLY** used for reporting bugs. New features should be discussed on the [Discord channel](https://discord.com/channels/731205301247803413/1050929729844297789). Go to the discord channel for help, feedback, or anything else. *Issues that are not bug reports are immediately closed*
+Issue tracker is **ONLY** used for reporting bugs. New features should be discussed on the [Discord channel](https://discord.com/channels/731205301247803413/1497318235438186566). Go to the discord channel for help, feedback, or anything else. *Issues that are not bug reports are immediately closed*
 
 **Double check you can reproduce the problem before filing the report.**
 
