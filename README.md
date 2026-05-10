@@ -24,7 +24,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 *Note: The install process is WIP, so it is not the most user-friendly.*
 
 ### Prerequisites
-- A copy of Cuphead
+- A legal copy of Cuphead
 - [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x
 
 ### Instructions
