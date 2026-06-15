@@ -48,21 +48,36 @@ namespace CupheadArchipelago.Unity {
                 if (typingPrompt.IsFinished()) {
                     switch (menuSelection) {
                         case 1: {
-                            apData.address = typingPrompt.GetText();
+                            string txt = typingPrompt.GetText();
+                            if (txt.Length > 0) {
+                                apData.address = txt;
+                            }
+                            else {
+                                Logging.LogWarning($"[APSetupMenu] Invalid text for address: cannot be empty.");
+                                apData.address = APData.AP_DEFAULT_ADDRESS;
+                            }
                             break;
                         }
                         case 2: {
                             try {
-                                int res;
-                                res = int.Parse(typingPrompt.GetText());
+                                ushort res;
+                                res = ushort.Parse(typingPrompt.GetText());
                                 apData.port = res;
                             } catch (Exception e) {
                                 Logging.LogWarning($"[APSetupMenu] Invalid text for port: {e.Message}");
+                                apData.port = APData.AP_DEFAULT_PORT;
                             }
                             break;
                         }
                         case 3: {
-                            apData.player = typingPrompt.GetText();
+                            string txt = typingPrompt.GetText();
+                            if (txt.Length > 0) {
+                                apData.player = typingPrompt.GetText();
+                            }
+                            else {
+                                Logging.LogWarning($"[APSetupMenu] Invalid text for player: cannot be empty.");
+                                apData.player = APData.AP_DEFAULT_PLAYER_NAME;
+                            }
                             break;
                         }
                         case 4: {

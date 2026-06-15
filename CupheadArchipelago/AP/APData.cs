@@ -11,6 +11,11 @@ namespace CupheadArchipelago.AP {
     public class APData {
         internal const int AP_DATA_VERSION = 4;
 
+        internal const string AP_DEFAULT_ADDRESS = "archipelago.gg";
+        internal const ushort AP_DEFAULT_PORT = 38281;
+        internal const string AP_DEFAULT_PLAYER_NAME = "Player";
+        internal const string AP_DEFAULT_PASSWORD = "";
+
         public static bool Loaded { get; private set; } = false;
         public static APData[] SData { get; private set; }
         public static APData CurrentSData { get => SData[global::PlayerData.CurrentSaveFileIndex]; }
@@ -31,13 +36,13 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("enabled")]
         public bool enabled = false;
         [JsonProperty("address")]
-        public string address = "archipelago.gg";
+        public string address = AP_DEFAULT_ADDRESS;
         [JsonProperty("port")]
-        public int port = 38281;
+        public ushort port = AP_DEFAULT_PORT;
         [JsonProperty("player")]
-        public string player = "Player";
+        public string player = AP_DEFAULT_PLAYER_NAME;
         [JsonProperty("password")]
-        public string password = "";
+        public string password = AP_DEFAULT_PASSWORD;
         [JsonProperty("seed")]
         public string seed = "";
         [JsonProperty("playerData")]

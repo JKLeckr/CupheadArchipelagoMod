@@ -30,20 +30,19 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 ### Instructions
 1. Download the CupheadArchipelago mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).
 
-2. Place the extracted contents of BepInEx 5.x x64 for your OS into the Cuphead installation folder (the folder with `cuphead.exe` in it).
+2. Place the extracted contents of BepInEx 5.x x64 for your OS into the Cuphead installation folder (the folder with `cuphead.exe` in it). There should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. \[_[Screenshot](doc/assets/install_bepinex_example.png)_\]
 
-3. Place the contents of the extracted CupheadArchipelago folder into the `BepInEx/plugins` folder.
+3. Extract the CupheadArchipelago folder from the CupheadArchipelago mod zip and place it into the `BepInEx/plugins` folder. There should be a `CupheadArchipelago` folder `BepInEx/plugins` that contains several DLL's like `CupheadArchipelago.dll`. \[_[Screenshot](doc/assets/install_mod_example.png)_\]
 
-4. Launch game.
+4. Launch game. The mod name and version should show in the main menu. \[_[Screenshot](doc/assets/game_launched_example.jpg)_\]
 
 ### Extra Notes
 - Make sure you are installing the binary build of the mod and not the source code. Don't be one of those fellas!
-- After doing step 2, there should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. If this isn't the case, make sure you are placing all of the contents of the extracted BepInEx zip in the Cuphead installation folder.
 - If `BepInEx/plugins` does not exist, you can launch the game with BepInEx once, or create the folder yourself.
 - If you are on the Steam version, and the mod does not load, launch the game directly from Steam.
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
 - If you are using Steam on Linux or SteamOS, make sure to put `WINEDLLOVERRIDES="winhttp=n,b" %command%` in the launch arguments.
-- There are no binary builds of CupheadArchipelago for macOS. You can build from source, but you are on your own. 
+- There are no binary builds of CupheadArchipelago for macOS. You can build from source, but you are on your own. There are known issues that prevent secured connections from working.
 
 ## Building
 See [BUILDING.md](BUILDING.md)
@@ -52,9 +51,9 @@ See [BUILDING.md](BUILDING.md)
 
 1. Launch Cuphead with CupheadArchipelago installed. It will create the config files.
 2. Select an empty save slot. (Note the save slot must be empty to enable or disable Archipelago on it.)
-3. Press the button combination shown in game to show the Archiepalago setup menu (if you are using a keyboard, it's C+Z by default).
-4. Set it to enabled, and set all the required settings for connecting to Archipelago.
-5. Once you are done, close the Archipelago setup menu and start the save slot. (Note it says "AP" in the corner of the save slot if Archipelago is enabled.)
+3. Press the button combination shown in game to show the Archiepalago setup menu (if you are using a keyboard, it's C+Z by default). \[_[Screenshot](doc/assets/setup_game_slotscreen_example.jpg)_\]
+4. Set it to enabled (use left/right to toggle enabled), and set all the required settings for connecting to Archipelago.
+5. Once you are done, close the Archipelago setup menu and start the save slot. (Note it says "AP" in the corner of the save slot if Archipelago is enabled).
 6. Have fun, and watch out for bugs!
 
 ## Logs
