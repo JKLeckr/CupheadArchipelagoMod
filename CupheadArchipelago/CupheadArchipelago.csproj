@@ -101,6 +101,7 @@
     <Delete Files="$(OutputPath)nativews-win64.dll;$(OutputPath)nativews-macos-universal.dylib" />
     <Delete Files="$(OutputPath)nativews-win64.pdb" />
     <Delete Files="$(OutputPath)websocket-sharp.pdb" />
+    <RemoveDir Directories="$(OutputPath)doc" />
   </Target>
 
   <ItemGroup>
