@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace CupheadArchipelago.AP {
     public class APData {
-        internal const int AP_DATA_VERSION = 4;
+        internal const int AP_DATA_VERSION = 5;
 
         internal const string AP_DEFAULT_ADDRESS = "archipelago.gg";
         internal const ushort AP_DEFAULT_PORT = 38281;
@@ -38,7 +38,7 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("address")]
         public string address = AP_DEFAULT_ADDRESS;
         [JsonProperty("port")]
-        public int port = AP_DEFAULT_PORT; // TODO: Change to ushort
+        public ushort port = AP_DEFAULT_PORT;
         [JsonProperty("player")]
         public string player = AP_DEFAULT_PLAYER_NAME;
         [JsonProperty("password")]
