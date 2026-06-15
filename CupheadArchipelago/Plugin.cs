@@ -7,9 +7,10 @@ using CupheadArchipelago.Config;
 using CupheadArchipelago.Helpers.FVerParser;
 using FVer;
 using BepInEx;
-using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx.Unity.Mono;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
@@ -116,11 +117,11 @@ namespace CupheadArchipelago {
 
         internal MConf GetConfig() => config;
 
-        private bool IsPluginLoaded(string plugin) => FindPlugin(plugin) >= 0;
-        private int FindPlugin(string plugin) {
+        private static bool IsPluginLoaded(string plugin) => FindPlugin(plugin) >= 0;
+        private static int FindPlugin(string plugin) {
             int index = 0;
 
-            foreach (var p in Chainloader.PluginInfos) {
+            foreach (var p in UnityChainloader.Instance.Plugins) {
                 BepInPlugin metadata = p.Value.Metadata;
                 if (metadata.GUID.Equals(plugin)) {
                     return index;

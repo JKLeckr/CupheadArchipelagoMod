@@ -2,12 +2,12 @@
 
 ### Prerequisites
 - A legal copy of Cuphead
-- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x (x64)
+- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 6.x (x64)
 
 ### Instructions
 1. Download the CupheadArchipelago mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).
 
-2. Place the extracted contents of BepInEx 5.x x64 for your OS into the Cuphead installation folder (the folder with `cuphead.exe` in it). There should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. \[_[Screenshot](assets/doc/install_bepinex_example.png)_\]
+2. Place the extracted contents of BepInEx 6.x x64 for your OS into the Cuphead installation folder (the folder with `cuphead.exe` in it). There should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. \[_[Screenshot](assets/doc/install_bepinex_example.png)_\]
 
 3. Extract the CupheadArchipelago folder from the CupheadArchipelago mod zip and place it into the `BepInEx/plugins` folder. There should be a `CupheadArchipelago` folder `BepInEx/plugins` that contains several DLL's like `CupheadArchipelago.dll`. \[_[Screenshot](assets/doc/install_mod_example.png)_\]
 

@@ -7,7 +7,7 @@
     <GUID>com.JKLeckr.CupheadArchipelago</GUID>
     <Description>The Cuphead Archipelago Mod</Description>
     <VersionPrefix>0.2.3.0</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionSuffix>e1</VersionSuffix>
     <VersionRelNumber>1</VersionRelNumber>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
     <RepositoryUrl>https://github.com/JKLeckr/CupheadArchipelagoMod</RepositoryUrl>
@@ -37,7 +37,7 @@
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.*" />
     <PackageReference Include="Archipelago.MultiClient.Net.Analyzers" Version="2.0.*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.*" IncludeAssets="compile" />
     <PackageReference Include="FVer" Version="0.1.0-*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
