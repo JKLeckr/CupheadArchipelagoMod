@@ -5,7 +5,7 @@
     <AssemblyName>CupheadArchipelago</AssemblyName>
     <Product>CupheadArchipelago</Product>
     <Description>The Cuphead Archipelago Mod</Description>
-    <Version>0.2.2.4</Version>
+    <Version>0.2.2.5</Version>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -31,8 +31,8 @@
   <ItemGroup>
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.*" IncludeAssets="compile" />
     <PackageReference Include="FVer" Version="0.1.0-*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

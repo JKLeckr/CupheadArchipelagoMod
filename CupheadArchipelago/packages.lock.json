@@ -14,21 +14,23 @@
         "resolved": "1.0.8",
         "contentHash": "xrfNmunsPhBx+vStTxLonq/aHkRrDH77c9tG/x3m5eejrKe5B0nf7cJPRRt6x330sGI0bLaPTtygdeHUgvI3wQ=="
       },
-      "BepInEx.Core": {
-        "type": "Direct",
-        "requested": "[5.*, )",
-        "resolved": "5.4.21",
-        "contentHash": "NMUPlbHTTfJ+qIQCI90uIvjuUQ4wnwt4cpRsK3ItBh1DhsWFzAHXNiZjBxZkPysljEKQ2iu89sxMTga4bxBXVQ==",
-        "dependencies": {
-          "BepInEx.BaseLib": "5.4.20",
-          "HarmonyX": "2.7.0"
-        }
-      },
       "BepInEx.PluginInfoProps": {
         "type": "Direct",
-        "requested": "[1.*, )",
-        "resolved": "1.1.0",
-        "contentHash": "RqM3aaGs8Hc2m0D+8aSt9mv09rCMYNIF35NB3D6KA2zSpcXJh/9ZVWrPlIUJfA8KYzodSWcCMUexEW24fjwR3w=="
+        "requested": "[2.*, )",
+        "resolved": "2.1.0",
+        "contentHash": "VCG3QRiqNdW9ku2FEcNsbK+HKxrZmW0VxwMNyLNO7h0xGorU+C6vBHN8Qq4eAL5fU11Uks5x2uoYdqEoKD3P8A=="
+      },
+      "BepInEx.Unity.Mono": {
+        "type": "Direct",
+        "requested": "[6.0.0-be.*, )",
+        "resolved": "6.0.0-be.764",
+        "contentHash": "Dx1FIf7OXZ7OgQ9+DVSDTad5u1eJ4tQ0qUMyP7CXKx7yFJc6+YpgECUiNA4Pvl3vkLWYxchmhpu5x61HcwGBxQ==",
+        "dependencies": {
+          "BepInEx.Core": "6.0.0-be.764",
+          "HarmonyX": "2.10.2",
+          "Unity.InputSystem": "1.5.0",
+          "UnityEngine": "5.6.1"
+        }
       },
       "FVer": {
         "type": "Direct",
@@ -51,17 +53,22 @@
         "resolved": "2017.4.9",
         "contentHash": "XvyZDo6FKond0+Iwx6OSKevG86B68vFCZSR1MQ3LteuFBkTeEtjeANZpQpEibkA2ViS4Sne2R3tYQNYKkINSkg=="
       },
-      "BepInEx.BaseLib": {
+      "BepInEx.Core": {
         "type": "Transitive",
-        "resolved": "5.4.20",
-        "contentHash": "0bXgYxbCEN2Ixp3kiFEhyw+RASeFQeg/ww+lbMt7if6XMeVS60eg6epNsMA8Jbx57dmNOzNevkKKw8mP8SUMqw=="
+        "resolved": "6.0.0-be.764",
+        "contentHash": "YYtia6oXPXCeCkvom3bgI3lzzMx3LrbOCRpRmV540SXd2PWFidmDP60Jdcg3UHOuIv8d4mBCpUOZrBxq1QBdcw==",
+        "dependencies": {
+          "HarmonyX": "2.10.2",
+          "MonoMod.Utils": "22.7.31.1",
+          "SemanticVersioning": "2.0.2"
+        }
       },
       "HarmonyX": {
         "type": "Transitive",
-        "resolved": "2.7.0",
-        "contentHash": "lec/SkduQspMa3Pi/nM/NSvA84Za8HCCWA8ybdToKiTqnBZa+JC5g6rxoFQCg/1vNuYcvjy77edePZzIEsRmvw==",
+        "resolved": "2.10.2",
+        "contentHash": "/5WwkxXX8mPsRuigQt957rJGx1f0dDQxk+bvk4yYITKFjXas9Em+O71zEP8X0ym8OFQQ2XH/2SxS4NC7vEC+Xg==",
         "dependencies": {
-          "MonoMod.RuntimeDetour": "21.12.13.1"
+          "MonoMod.RuntimeDetour": "22.3.23.4"
         }
       },
       "Microsoft.NETFramework.ReferenceAssemblies.net35": {
@@ -76,20 +83,35 @@
       },
       "MonoMod.RuntimeDetour": {
         "type": "Transitive",
-        "resolved": "21.12.13.1",
-        "contentHash": "65mB+bHjT6UCGCgO+/pYhpuGPf96rQ1Whwkut/x7cqVIW0DTndDFyWc/3bngzhnY/Y6IYtBMlXsU2ATq+CxpHg==",
+        "resolved": "22.3.23.4",
+        "contentHash": "2nwwFfwYDSgUzhi+1MutTg1gyUgXoMS4+E04vHOFp84Vxs0oBkkn4mGAfhkr272y0j3vqIBzo2aT9pXRlCd/ZA==",
         "dependencies": {
           "Mono.Cecil": "0.10.4",
-          "MonoMod.Utils": "21.12.13.1"
+          "MonoMod.Utils": "22.3.23.4"
         }
       },
       "MonoMod.Utils": {
         "type": "Transitive",
-        "resolved": "21.12.13.1",
-        "contentHash": "/H+0RMWqx/D1/fSuY5jhY6GFvqhdYdlnI7J3IfL8P6y4nJkoZDxqts6+RxWWOz4pbnJdWnxSjS8XG+Lq6rUi7w==",
+        "resolved": "22.7.31.1",
+        "contentHash": "nI0E1oadXS1iMbfwfCzYF08C1jRQR9cnnHv66a4BSPd4sGu2p6g4BmctCWsdAB6oGKkSJUhcfHfxcfTsDyB94Q==",
         "dependencies": {
           "Mono.Cecil": "0.10.4"
         }
+      },
+      "SemanticVersioning": {
+        "type": "Transitive",
+        "resolved": "2.0.2",
+        "contentHash": "4EQgYdNZ92SyaO7YFk6olVnebF5V+jrHyMUjvPq89tLeMo8NSfgDF+6Zwq/lgh9j/0yfQp9Lkm0ZA0rUATCZFA=="
+      },
+      "Unity.InputSystem": {
+        "type": "Transitive",
+        "resolved": "1.5.0",
+        "contentHash": "wT/v12I32X+TlhPprHxQaw+LOkVkOPtdfVSJTurTtfN7V+d0cRaii2Nt5+oY8UhkKtHTExzMZB4dISjZQW70lA=="
+      },
+      "UnityEngine": {
+        "type": "Transitive",
+        "resolved": "5.6.1",
+        "contentHash": "uAhM+pBtZH7CvGCBQyT9CaksT9M4fzTCIMetYjOEocuFiQGF38uGgS8q5xUd1HddaeXwDG9VrMARHGz5IXhQLw=="
       },
       "fverparser": {
         "type": "Project"

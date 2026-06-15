@@ -7,9 +7,10 @@ using CupheadArchipelago.Config;
 using CupheadArchipelago.Helpers.FVerParser;
 using FVer;
 using BepInEx;
-using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx.Unity.Mono;
 using Newtonsoft.Json;
 
 namespace CupheadArchipelago {
@@ -21,9 +22,9 @@ namespace CupheadArchipelago {
 
         protected const string MOD_NAME = "CupheadArchipelago"; //PluginInfo.PLUGIN_NAME
         protected const string MOD_GUID = "com.JKLeckr.CupheadArchipelago";
-        protected const string MOD_BASE_VERSION = PluginInfo.PLUGIN_VERSION;
-        protected const string MOD_VERSION_POSTFIX = "";
-        protected const string MOD_VERSION = $"{MOD_BASE_VERSION}{MOD_VERSION_POSTFIX}";
+        protected const string MOD_BASE_VERSION = MyPluginInfo.PLUGIN_VERSION;
+        protected const string MOD_VERSION_POSTFIX = "e1";
+        protected const string MOD_VERSION = MOD_BASE_VERSION + MOD_VERSION_POSTFIX;
         protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION);
 
         private const long CONFIG_VERSION = 1;
@@ -101,10 +102,10 @@ namespace CupheadArchipelago {
                     Fail(e, -1);
                 }
                 State = 1;
-                Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
+                Logging.Log($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
             }
             else {
-                Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded, but disabled!", LoggingFlags.PluginInfo);
+                Logging.Log($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded, but disabled!", LoggingFlags.PluginInfo);
             }
         }
 
@@ -114,7 +115,7 @@ namespace CupheadArchipelago {
         private int FindPlugin(string plugin) {
             int index = 0;
 
-            foreach (var p in Chainloader.PluginInfos) {
+            foreach (var p in UnityChainloader.Instance.Plugins) {
                 BepInPlugin metadata = p.Value.Metadata;
                 if (metadata.GUID.Equals(plugin)) {
                     return index;
@@ -174,7 +175,7 @@ namespace CupheadArchipelago {
 
         private void Fail(Exception e, int failCode) {
             Logging.LogError("An exception occured while loading.");
-            Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
+            Logging.LogFatal($"Plugin {MyPluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
             State = failCode;
             Logging.LogFatal("Throwing Exception...");
             throw e;
