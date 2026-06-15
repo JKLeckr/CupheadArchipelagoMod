@@ -6,6 +6,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
         public static void Hook() {
             LevelHook.Hook();
             LevelPauseGUIHook.Hook();
+            LevelEndHook.Hook();
             HouseLevelHook.Hook();
             TutorialLevelDoorHook.Hook();
             PlatformingLevelHook.Hook();

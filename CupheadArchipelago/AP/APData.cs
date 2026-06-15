@@ -38,7 +38,7 @@ namespace CupheadArchipelago.AP {
         [JsonProperty("address")]
         public string address = AP_DEFAULT_ADDRESS;
         [JsonProperty("port")]
-        public ushort port = AP_DEFAULT_PORT;
+        public int port = AP_DEFAULT_PORT; // TODO: Change to ushort
         [JsonProperty("player")]
         public string player = AP_DEFAULT_PLAYER_NAME;
         [JsonProperty("password")]
@@ -100,6 +100,12 @@ namespace CupheadArchipelago.AP {
                 try {
                     string sdata = File.ReadAllText(filepath);
                     data = JsonConvert.DeserializeObject<APData>(sdata);
+                    if (data.port > ushort.MaxValue || data.port < ushort.MinValue) {
+                        Logging.LogError(
+                            $"[APData] For slot {index}: port is out of range ({ushort.MinValue}-{ushort.MaxValue}). Using default value ({AP_DEFAULT_PORT})"
+                        );
+                        data.port = AP_DEFAULT_PORT;
+                    }
                     data.ltime = DateTime.UtcNow.Ticks;
                     //Logging.Log($"Dump:\n{sdata}");
                     //Logging.Log($"Digest:\n{JsonConvert.SerializeObject(data)}");

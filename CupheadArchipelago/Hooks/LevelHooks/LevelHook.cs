@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Models;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
@@ -243,11 +242,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     }
                 }
             }
-            private static bool IsChalice() {
-                return PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerOne).charm == Charm.charm_chalice || (
-                    PlayerManager.Multiplayer && PlayerData.Data.Loadouts.GetPlayerLoadout(PlayerId.PlayerTwo).charm == Charm.charm_chalice
-                );
-            }
+            private static bool IsChalice() => LevelHookBase.IsChalice();
             private static bool CanLevelSecret(Levels level) {
                 /*if (level == Levels.Airplane && (APClient.CompatBits & 1) > 0)
                     return false;*/
