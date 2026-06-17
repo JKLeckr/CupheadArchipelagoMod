@@ -13,19 +13,30 @@ using UnityEngine;
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class ChessCastleLevelHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(Awake));
-            //Harmony.CreateAndPatchAll(typeof(onDialogueEndedHandler));
+            //Harmony.CreateAndPatchAll(typeof(Awake));
+            Harmony.CreateAndPatchAll(typeof(onDialogueEndedHandler));
             //Harmony.CreateAndPatchAll(typeof(onDialogueMessageHandler));
             //Harmony.CreateAndPatchAll(typeof(postWinEntry_cr));
         }
 
-        // TODO: Cleanup
         private static readonly long locationIdRun = APLocation.level_dlc_chesscastle_run;
+        private static readonly long locationIdRunChaliced = APLocation.level_dlc_chesscastle_run_dlc_chaliced;
 
         [HarmonyPatch(typeof(ChessCastleLevel), "Awake")]
         internal static class Awake {
             static void Postfix(ChessCastleLevel __instance) {
                 if (APData.IsCurrentSlotEnabled() && Level.Won) {
+                    Logging.Log("[ChessCastleLevel] Level won");
+                    if (SceneLoader.CurrentContext is GauntletContext context && context.complete) {
+                        bool notChalice = !IsChalice() || !APSettings.DLCChessChaliceChecks;
+                        Logging.Log("[ChessCastleLevel] Gauntlet complete" + (!notChalice ? " as chalice" : ""));
+                        if (notChalice) {
+                            APClient.Check(locationIdRun, false);
+                        }
+                        else if (IsChalice()) {
+                            APClient.Check(locationIdRunChaliced, false);
+                        }
+                    }
                     __instance.StartCoroutine(SendChecks_cr());
                 }
             }
@@ -38,6 +49,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
         }
 
+        // FIXME: Use a better method of sending the gauntlet check
         [HarmonyPatch(typeof(ChessCastleLevel), "onDialogueEndedHandler")]
         internal static class onDialogueEndedHandler {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
@@ -69,8 +81,14 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
             private static void APCheck(bool cond) {
                 if (APData.IsCurrentSlotEnabled() && cond) {
-                    if (!APClient.IsLocationChecked(locationIdRun))
+                    bool notChalice = !IsChalice() || !APSettings.DLCChessChaliceChecks;
+                    Logging.Log("[ChessCastleLevel] Gauntlet complete" + (!notChalice ? " as chalice" : ""));
+                    if (notChalice) {
                         APClient.Check(locationIdRun);
+                    }
+                    else if (IsChalice()) {
+                        APClient.Check(locationIdRunChaliced);
+                    }
                 }
             }
         }
@@ -101,12 +119,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (debug) {
                     Dbg.LogCodeInstructions(codes);
                 }
-                for (int i=0;i<codes.Count-4;i++) {
-                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i+1].opcode == OpCodes.Ldarg_0 && codes[i+2].opcode == OpCodes.Ldfld && codes[i+3].opcode == OpCodes.Ldc_R4 &&
-                        (float)codes[i+3].operand == 2f && codes[i+4].opcode == OpCodes.Call && (MethodInfo)codes[i+4].operand == _mi_WaitForSeconds) {
-                            codes[i+3] = new CodeInstruction(OpCodes.Call, _mi_APWaitTime);
-                            success = true;
-                            break;
+                for (int i = 0; i < codes.Count - 4; i++) {
+                    if (codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldarg_0 && codes[i + 2].opcode == OpCodes.Ldfld && codes[i + 3].opcode == OpCodes.Ldc_R4 &&
+                        (float)codes[i + 3].operand == 2f && codes[i + 4].opcode == OpCodes.Call && (MethodInfo)codes[i + 4].operand == _mi_WaitForSeconds) {
+                        codes[i + 3] = new CodeInstruction(OpCodes.Call, _mi_APWaitTime);
+                        success = true;
+                        break;
                     }
                 }
                 if (!success) throw new Exception($"{nameof(postWinEntry_cr)}: Patch Failed!");
@@ -122,5 +140,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 return APData.IsCurrentSlotEnabled() ? 0.2f : 2f;
             }
         }
+
+        private static bool IsChalice() => LevelHookBase.IsChalice();
     }
 }

@@ -5,17 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using CupheadArchipelago.AP;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.LevelHooks {
     internal class LevelEndHook {
         internal static void Hook() {
-            Harmony.CreateAndPatchAll(typeof(win_cr));
+            //Harmony.CreateAndPatchAll(typeof(win_cr));
         }
-
-        private static readonly long locationIdRun = APLocation.level_dlc_chesscastle_run;
-        private static readonly long locationIdRunChaliced = APLocation.level_dlc_chesscastle_run_dlc_chaliced;
 
         [HarmonyPatch(typeof(LevelEnd), "win_cr", MethodType.Enumerator)]
         internal static class win_cr {
@@ -63,11 +59,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
             }
 
             private static void APCheck() {
-                if (APData.IsCurrentSlotEnabled()) {
+                Logging.LogWarning("empty");
+                /*if (APData.IsCurrentSlotEnabled()) {
                     long locId = LevelHookBase.IsChalice() ? locationIdRunChaliced : locationIdRun;
                     if (!APClient.IsLocationChecked(locId))
                         APClient.Check(locId);
-                }
+                }*/
             }
         }
     }
