@@ -91,5 +91,6 @@ namespace CupheadArchipelago.AP {
         DamageOverrideP2 = 128,
         NukeOverride = 256,
         ClearReceivedItemsOverride = 512,
+        NoDataStorageOverride = 1024,
     }
 }

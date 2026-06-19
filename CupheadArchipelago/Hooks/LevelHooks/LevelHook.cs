@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Archipelago.MultiClient.Net.Enums;
+using Archipelago.MultiClient.Net.Models;
+using Archipelago.MultiClient.Net.Packets;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
@@ -31,15 +33,33 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     Levels lv = __instance.CurrentLevel;
-                    try {
-                        APClient.APSessionDataStorage[Scope.Slot, "current_level"].Initialize(-1);
-                        APClient.APSessionDataStorage[Scope.Slot, "current_level"] =
-                            LevelMap.LevelExists(lv) ?
-                            LevelMap.GetLevelId(lv) :
-                            ((int)lv < LV_MODIFIER ? ((int)lv + LV_MODIFIER) : (int)lv);
-                        Logging.Log($"Successfully wrote 'current_level' to DataStorage.");
-                    } catch (Exception e) {
-                        Logging.LogWarning($"Failed to write 'current_level' to DataStorage: {e.Message}");
+                    if (!APData.CurrentSData.IsOverridden(Overrides.NoDataStorageOverride)) {
+                        try {
+                            OperationSpecification dop = new() {
+                                OperationType = OperationType.Default,
+                                Value = -1
+                            };
+                            OperationSpecification rop = new() {
+                                OperationType = OperationType.Replace,
+                                Value =
+                                    LevelMap.LevelExists(lv) ?
+                                    LevelMap.GetLevelId(lv) :
+                                    ((int)lv < LV_MODIFIER ? ((int)lv + LV_MODIFIER) : (int)lv)
+                            };
+                            SetPacket pk = new() {
+                                Key = $"Slot:{APClient.APSessionPlayerSlot}:current_level",
+                                DefaultValue = -1,
+                                WantReply = false,
+                                Operations = [dop, rop]
+                            };
+                            APClient.SendPacketAsync(pk, (res) => {
+                                if (res) Logging.Log($"Successfully wrote 'current_level' to DataStorage.");
+                                else Logging.LogWarning($"Failed to write 'current_level' to DataStorage.");
+                            });
+                        }
+                        catch (Exception e) {
+                            Logging.LogWarning($"Failed to write 'current_level' to DataStorage: {e.Message}");
+                        }
                     }
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(GetLevelType(__instance), IsValidDeathLinkLevel(__instance));

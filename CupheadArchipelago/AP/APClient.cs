@@ -7,13 +7,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Packets;
-using Archipelago.MultiClient.Net.Models;
+using Archipelago.MultiClient.Net.Exceptions;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
-using Archipelago.MultiClient.Net.Exceptions;
-using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using Archipelago.MultiClient.Net.Models;
+using Archipelago.MultiClient.Net.Packets;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
 
@@ -907,12 +907,30 @@ namespace CupheadArchipelago.AP {
             if (!IsDeathLinkActive()) return;
             if (APSettings.DeathLinkGraceCount > 0) {
                 int remainingGrace = APSettings.DeathLinkGraceCount - ((int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1)));
-                try {
-                    APClient.APSessionDataStorage[Scope.Slot, "deathlink_grace_count"].Initialize(APSettings.DeathLinkGraceCount);
-                    APClient.APSessionDataStorage[Scope.Slot, "deathlink_grace_count"] = remainingGrace;
-                    Logging.Log($"Successfully wrote 'deathlink_grace_count' to DataStorage.");
-                } catch (Exception e) {
-                    Logging.LogWarning($"Failed to write 'deathlink_grace_count' to DataStorage: {e.Message}");
+                if (!APSessionGSData.IsAnyOverridden(Overrides.NoDataStorageOverride)) {
+                    try {
+                        OperationSpecification dop = new() {
+                            OperationType = OperationType.Default,
+                            Value = 0
+                        };
+                        OperationSpecification rop = new() {
+                            OperationType = OperationType.Replace,
+                            Value = APSettings.DeathLinkGraceCount
+                        };
+                        SetPacket pk = new() {
+                            Key = $"Slot:{APSessionPlayerSlot}:deathlink_grace_count",
+                            DefaultValue = 0,
+                            WantReply = false,
+                            Operations = [dop, rop]
+                        };
+                        SendPacketAsync(pk, (res) => {
+                            if (res) Logging.Log($"Successfully wrote 'deathlink_grace_count' to DataStorage.");
+                            else Logging.LogWarning($"Failed to write 'deathlink_grace_count' to DataStorage.");
+                        });
+                    }
+                    catch (Exception e) {
+                        Logging.LogWarning($"Failed to write 'deathlink_grace_count' to DataStorage: {e.Message}");
+                    }
                 }
                 if (remainingGrace != APSettings.DeathLinkGraceCount) {
                     Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}{(remainingGrace == 0 ? " (warning)" : "")}.");
@@ -951,13 +969,29 @@ namespace CupheadArchipelago.AP {
             return state;
         }
 
+        internal static void SendPacketAsync(ArchipelagoPacketBase packet, Action<bool> onComplete = null) {
+            Logging.LogDebug("SendPacket");
+            onComplete ??= (val) => {
+                    if (val) Logging.Log($"[APClient] Successfully sent packet.");
+                    else Logging.Log($"[APClient] Failed to send packet.");
+                };
+            session.Socket.SendPacketAsync(packet, onComplete);
+        }
+        internal static void SendPacketsAsync(List<ArchipelagoPacketBase> packets, Action<bool> onComplete = null) {
+            Logging.LogDebug("SendPackets");
+            onComplete ??= (val) => {
+                if (val) Logging.Log($"[APClient] Successfully sent packets.");
+                else Logging.Log($"[APClient] Failed to send packets.");
+            };
+            session.Socket.SendMultiplePacketsAsync(packets, onComplete);
+        }
         private static void OnPacketReceived(ArchipelagoPacketBase packet) {
             Logging.Log($"Packet got: {packet.PacketType}");
             switch (packet.PacketType) {
                 case ArchipelagoPacketType.Connected: {
-                    gotConnectPacket = true;
-                    break;
-                }
+                        gotConnectPacket = true;
+                        break;
+                    }
                 default: break;
             }
         }
