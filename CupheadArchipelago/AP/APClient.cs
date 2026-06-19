@@ -263,6 +263,8 @@ namespace CupheadArchipelago.AP {
                     APSettings.DLCChaliceMode = SlotData.dlc_chalice;
                     APSettings.DLCBossChaliceChecks = SlotData.dlc_boss_chalice_checks;
                     APSettings.DLCRunGunChaliceChecks = SlotData.dlc_rungun_chalice_checks;
+                    APSettings.DLCChessChaliceChecks = // TODO: Cleanup in next version when slot data is changed anyways
+                        LocationExists(APLocation.level_dlc_chesscastle_pawn_dlc_chaliced) ? SlotData.dlc_chess_chalice_checks : DlcChaliceCheckModes.Disabled;
                     APSettings.DLCCurseMode = SlotData.dlc_curse_mode;
                     APSettings.ShuffleMusic = SlotData.music_shuffle;
                     APSettings.DuckLockPlatDropBug = SlotData.ducklock_platdrop;

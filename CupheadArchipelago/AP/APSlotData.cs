@@ -39,6 +39,7 @@ namespace CupheadArchipelago.AP {
         internal readonly DlcChaliceModes dlc_chalice;
         internal readonly DlcChaliceCheckModes dlc_boss_chalice_checks;
         internal readonly DlcChaliceCheckModes dlc_rungun_chalice_checks;
+        internal readonly DlcChaliceCheckModes dlc_chess_chalice_checks;
         internal readonly DlcCurseModes dlc_curse_mode;
         internal readonly bool trap_loadout_anyweapon;
         internal readonly MusicGroups music_shuffle;
@@ -74,6 +75,7 @@ namespace CupheadArchipelago.AP {
             dlc_chalice = GetAPSlotDataValue<DlcChaliceModes>(slotData, "dlc_chalice");
             dlc_boss_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_boss_chalice_checks");
             dlc_rungun_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_rungun_chalice_checks");
+            dlc_chess_chalice_checks = GetOptionalAPSlotDataValue(slotData, "dlc_chess_chalice_checks", DlcChaliceCheckModes.Enabled);
             dlc_curse_mode = GetAPSlotDataValue<DlcCurseModes>(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
@@ -120,10 +122,12 @@ namespace CupheadArchipelago.AP {
             if (slotData.ContainsKey(key)) {
                 try {
                     return Converter.ConvertTo<T>(slotData[key]);
-                } catch (InvalidCastException e) {
+                }
+                catch (InvalidCastException e) {
                     Logging.LogWarning($"GetOptionalAPSlotDataValue: Could not get value from \"{key}\". Exception: {e.Message}");
                 }
-            } else {
+            }
+            else {
                 Logging.LogWarning($"GetOptionalAPSlotData: \"{key}\" is not a valid key. The world you are connecting to probably does not support this feature.");
             }
             Logging.LogWarning($"Using fallback value of \"{fallbackValue}\" for \"{key}\"");
@@ -158,11 +162,12 @@ namespace CupheadArchipelago.AP {
             try {
                 List<List<int>> map_raw = GetAPSlotDataDeserializedValue<List<List<int>>>(slotData, shopMapKey);
                 ShopSet[] map = new ShopSet[map_raw.Count];
-                for (int i=0;i<map.Length;i++) {
+                for (int i = 0; i < map.Length; i++) {
                     map[i] = new ShopSet(map_raw[i][0], map_raw[i][1]);
                 }
                 return map;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new ArgumentException($"Invalid ShopMap data! Exception: {e}");
             }
         }

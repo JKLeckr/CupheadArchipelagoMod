@@ -122,10 +122,14 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                     else if (Level.IsChessBoss) {
                         Logging.Log("[LevelHook] Chess Castle");
                         Levels clevel = instance.CurrentLevel;
-                        if (!IsChalice() || !APSettings.DLCChessChaliceChecks) {
+                        bool chaliceNotSeparate =
+                            APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
+                            (APSettings.DLCChessChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
+                        if (chaliceNotSeparate) Logging.Log($"[ChessCastleLevelHook] Chalice not separate");
+                        if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer) {
                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
                         }
-                        else if (IsChalice()) {
+                        if (IsChalice() && APSettings.DLCChessChaliceChecks > 0) {
                             APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
                         }
                     }
@@ -226,10 +230,14 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                         Logging.Log($"[LevelHook] Difficulty Test: {Level.Difficulty}>={battleNormalMode}");
                         if (Level.Difficulty >= battleNormalMode) {
                             Levels clevel = instance.CurrentLevel;
-                            if (!IsChalice() || !APSettings.DLCDicePalaceChaliceChecks) {
+                            bool chaliceNotSeparate =
+                                APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
+                                (APSettings.DLCDicePalaceChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
+                            if (chaliceNotSeparate) Logging.Log($"[LevelHook] Chalice not separate");
+                            if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer) {
                                 APClient.Check(LevelLocationMap.GetLocationId(clevel, 0), false);
                             }
-                            else if (IsChalice()) {
+                            if (IsChalice() && APSettings.DLCDicePalaceChaliceChecks > 0) {
                                 APClient.Check(LevelLocationMap.GetLocationId(clevel, 1), false);
                             }
                         }

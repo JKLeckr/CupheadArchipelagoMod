@@ -3,6 +3,8 @@
 
 namespace CupheadArchipelago.AP {
     public class APSettings {
+        private const DlcChaliceCheckModes dlcChaliceCheckBossHubMask = DlcChaliceCheckModes.Enabled | DlcChaliceCheckModes.Separate;
+
         private static int[] requiredContracts;
 
         public static bool UseDLC { get; internal set; }
@@ -37,8 +39,18 @@ namespace CupheadArchipelago.AP {
         public static DlcChaliceModes DLCChaliceMode { get; internal set; }
         public static DlcChaliceCheckModes DLCBossChaliceChecks { get; internal set; }
         public static DlcChaliceCheckModes DLCRunGunChaliceChecks { get; internal set; }
-        public static bool DLCDicePalaceChaliceChecks { get; internal set; }
-        public static bool DLCChessChaliceChecks { get; internal set; }
+        public static DlcChaliceCheckModes DLCDicePalaceChaliceChecks {
+            get;
+            internal set {
+                field = value & dlcChaliceCheckBossHubMask;
+            }
+        }
+        public static DlcChaliceCheckModes DLCChessChaliceChecks {
+            get;
+            internal set {
+                field = value & dlcChaliceCheckBossHubMask;
+            }
+        }
         public static DlcCurseModes DLCCurseMode { get; internal set; }
         public static bool AllowGameDjimmi { get; internal set; }
         public static bool ShowUnaccessibleIslesInList { get; internal set; }
@@ -84,8 +96,8 @@ namespace CupheadArchipelago.AP {
             DLCChaliceMode = DlcChaliceModes.Vanilla;
             DLCBossChaliceChecks = DlcChaliceCheckModes.Disabled;
             DLCRunGunChaliceChecks = DlcChaliceCheckModes.Disabled;
-            DLCDicePalaceChaliceChecks = false;
-            DLCChessChaliceChecks = false;
+            DLCDicePalaceChaliceChecks = DlcChaliceCheckModes.Disabled;
+            DLCChessChaliceChecks = DlcChaliceCheckModes.Disabled;
             DLCCurseMode = DlcCurseModes.Normal;
             AllowGameDjimmi = false;
             ShowUnaccessibleIslesInList = false;

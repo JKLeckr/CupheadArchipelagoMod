@@ -28,7 +28,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 if (APData.IsCurrentSlotEnabled() && Level.Won) {
                     Logging.Log("[ChessCastleLevel] Level won");
                     if (SceneLoader.CurrentContext is GauntletContext context && context.complete) {
-                        bool notChalice = !IsChalice() || !APSettings.DLCChessChaliceChecks;
+                        bool notChalice = !IsChalice() || APSettings.DLCChessChaliceChecks == DlcChaliceCheckModes.Disabled;
                         Logging.Log("[ChessCastleLevel] Gauntlet complete" + (!notChalice ? " as chalice" : ""));
                         if (notChalice) {
                             APClient.Check(locationIdRun, false);
@@ -81,14 +81,18 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
             private static void APCheck(bool cond) {
                 if (APData.IsCurrentSlotEnabled() && cond) {
-                    bool notChalice = !IsChalice() || !APSettings.DLCChessChaliceChecks;
-                    Logging.Log("[ChessCastleLevel] Gauntlet complete" + (!notChalice ? " as chalice" : ""));
-                    if (notChalice) {
-                        APClient.Check(locationIdRun);
+                    Logging.Log("[ChessCastleLevelHook] Gauntlet complete");
+                    bool chaliceNotSeparate =
+                        APSettings.UseDLC && APSettings.DLCChaliceMode > 0 &&
+                        (APSettings.DLCChessChaliceChecks & DlcChaliceCheckModes.Separate) == 0;
+                    if (!chaliceNotSeparate) Logging.Log($"[ChessCastleLevelHook] Chalice separate");
+                    if (!IsChalice() || chaliceNotSeparate || PlayerManager.Multiplayer) {
+                        APClient.Check(locationIdRun, false);
                     }
-                    else if (IsChalice()) {
-                        APClient.Check(locationIdRunChaliced);
+                    if (IsChalice() && APSettings.DLCChessChaliceChecks > 0) {
+                        APClient.Check(locationIdRunChaliced, false);
                     }
+                    APClient.SendChecks(false);
                 }
             }
         }
