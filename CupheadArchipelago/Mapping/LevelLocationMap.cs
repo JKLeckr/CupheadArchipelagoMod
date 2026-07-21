@@ -82,39 +82,39 @@ namespace CupheadArchipelago.Mapping {
 
                 {Levels.DicePalaceBooze, new APLocation[] {
                     APLocation.level_dicepalace_boss_booze,
-                    new(-254), //TEMP
+                    APLocation.level_dicepalace_boss_booze_dlc_chaliced
                 }},
                 {Levels.DicePalaceChips, new APLocation[] {
                     APLocation.level_dicepalace_boss_chips,
-                    new(-253), //TEMP
+                    APLocation.level_dicepalace_boss_chips_dlc_chaliced
                 }},
                 {Levels.DicePalaceCigar, new APLocation[] {
                     APLocation.level_dicepalace_boss_cigar,
-                    new(-252), //TEMP
+                    APLocation.level_dicepalace_boss_cigar_dlc_chaliced
                 }},
                 {Levels.DicePalaceDomino, new APLocation[] {
                     APLocation.level_dicepalace_boss_domino,
-                    new(-251), //TEMP
+                    APLocation.level_dicepalace_boss_domino_dlc_chaliced
                 }},
                 {Levels.DicePalaceRabbit, new APLocation[] {
                     APLocation.level_dicepalace_boss_rabbit,
-                    new(-250), //TEMP
+                    APLocation.level_dicepalace_boss_rabbit_dlc_chaliced
                 }},
                 {Levels.DicePalaceFlyingHorse, new APLocation[] {
                     APLocation.level_dicepalace_boss_plane_horse,
-                    new(-249), //TEMP
+                    APLocation.level_dicepalace_boss_plane_horse_dlc_chaliced
                 }},
                 {Levels.DicePalaceRoulette, new APLocation[] {
                     APLocation.level_dicepalace_boss_roulette,
-                    new(-248), //TEMP
+                    APLocation.level_dicepalace_boss_roulette_dlc_chaliced
                 }},
                 {Levels.DicePalaceEightBall, new APLocation[] {
                     APLocation.level_dicepalace_boss_eightball,
-                    new(-247), //TEMP
+                    APLocation.level_dicepalace_boss_eightball_dlc_chaliced
                 }},
                 {Levels.DicePalaceFlyingMemory, new APLocation[] {
                     APLocation.level_dicepalace_boss_plane_memory,
-                    new(-246), //TEMP
+                    APLocation.level_dicepalace_boss_plane_memory_dlc_chaliced
                 }},
 
                 {Levels.Devil, new APLocation[] {
@@ -252,23 +252,23 @@ namespace CupheadArchipelago.Mapping {
 
                 {Levels.ChessPawn, new APLocation[] {
                     APLocation.level_dlc_chesscastle_pawn,
-                    new(-255), //TEMP
+                    APLocation.level_dlc_chesscastle_pawn_dlc_chaliced
                 }},
                 {Levels.ChessKnight, new APLocation[] {
                     APLocation.level_dlc_chesscastle_knight,
-                    new(-256), //TEMP
+                    APLocation.level_dlc_chesscastle_knight_dlc_chaliced
                 }},
                 {Levels.ChessBishop, new APLocation[] {
                     APLocation.level_dlc_chesscastle_bishop,
-                    new(-257), //TEMP
+                    APLocation.level_dlc_chesscastle_bishop_dlc_chaliced
                 }},
                 {Levels.ChessRook, new APLocation[] {
                     APLocation.level_dlc_chesscastle_rook,
-                    new(-258), //TEMP
+                    APLocation.level_dlc_chesscastle_rook_dlc_chaliced
                 }},
                 {Levels.ChessQueen, new APLocation[] {
                     APLocation.level_dlc_chesscastle_queen,
-                    new(-259), //TEMP
+                    APLocation.level_dlc_chesscastle_queen_dlc_chaliced
                 }},
             };
         }
