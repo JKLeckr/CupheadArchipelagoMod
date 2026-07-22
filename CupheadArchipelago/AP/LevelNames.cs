@@ -50,8 +50,8 @@ namespace CupheadArchipelago.AP {
         internal static readonly Dictionary<Levels, string> platformLevelNames = new() {
             {Levels.Platforming_Level_1_1, "Forest Follies"},
             {Levels.Platforming_Level_1_2, "Treetop Trouble"},
-            {Levels.Platforming_Level_2_1, "Funhouse Frazzle"},
-            {Levels.Platforming_Level_2_2, "Funfair Fever"},
+            {Levels.Platforming_Level_2_1, "Funfair Fever"},
+            {Levels.Platforming_Level_2_2, "Funhouse Frazzle"},
             {Levels.Platforming_Level_3_1, "Perilous Piers"},
             {Levels.Platforming_Level_3_2, "Rugged Ridge"},
         };
