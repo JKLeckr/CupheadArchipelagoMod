@@ -101,14 +101,14 @@ namespace CupheadArchipelago.Hooks {
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();
             rect.localPosition = new Vector3(0, 0, 0);
-            rect.sizeDelta = new Vector2(400, 200);
+            rect.sizeDelta = new Vector2(800, 400);
 
             Text txt = obj.AddComponent<Text>();
             txt.alignment = TextAnchor.MiddleCenter;
             txt.font = FontLoader.GetFont(FontLoader.FontType.CupheadVogue_Bold_merged);
             txt.color = UnityEngine.Color.red;
             txt.fontSize = 32;
-            txt.text = "CupheadArchipelago\nERROR\nCheck Log";
+            txt.text = $"CupheadArchipelago\nFATAL ERROR (code {Plugin.State})\n{Plugin.StateMessage}\nCheck Log";
 
             obj.layer = 5;
         }

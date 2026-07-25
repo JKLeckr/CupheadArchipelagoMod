@@ -32,6 +32,7 @@ namespace CupheadArchipelago {
         public static string Version => MOD_VERSION;
         public static string FullVersion => $"{MOD_FRIENDLY_VERSION} ({MOD_VERSION})";
         public static int State { get; private set; } = 0;
+        public static string StateMessage { get; private set; } = "";
 
         internal static Plugin Current { get; private set; } = null;
 
@@ -101,6 +102,7 @@ namespace CupheadArchipelago {
                     Fail(e, -1);
                 }
                 State = 1;
+                StateMessage = "";
                 Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
             }
             else {
@@ -176,6 +178,7 @@ namespace CupheadArchipelago {
             Logging.LogError("An exception occured while loading.");
             Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
             State = failCode;
+            StateMessage = e.GetBaseException().Message;
             Logging.LogFatal("Throwing Exception...");
             throw e;
         }
