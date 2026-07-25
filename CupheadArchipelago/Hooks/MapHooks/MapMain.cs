@@ -13,6 +13,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             MapShmupTutorialBridgeActivatorHook.Hook();
             BoatmanEnablerHook.Hook();
             MapDLCHook.Hook();
+            MapCastleZonesHook.Hook();
             MapNPCHooks.MapNPCMain.Hook();
             MapUIHooks.MapUIMain.Hook();
         }
