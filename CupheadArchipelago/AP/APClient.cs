@@ -36,6 +36,7 @@ namespace CupheadArchipelago.AP {
         public static int CompatBits { get; private set; } = 0;
         public static string SessionConnectCloseReason { get; private set; } = "";
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
+        public static string APWorldVersion { get; private set; } = "";
         internal static APSlotData SlotData { get; private set; } = null;
         private static bool offline = false;
         private static Dictionary<long, ScoutedItemInfo> locMap = new();
@@ -138,8 +139,8 @@ namespace CupheadArchipelago.AP {
                 Logging.Log($"[APClient] Checking SlotData...");
                 try {
                     long slotDataVersion = APSlotData.GetSlotDataVersion(loginData.SlotData);
-                    string worldVersion = APSlotData.GetAPWorldVersionString(loginData.SlotData);
-                    Logging.Log($"[APClient] APWorld version {worldVersion}");
+                    APWorldVersion = APSlotData.GetAPWorldVersionString(loginData.SlotData);
+                    Logging.Log($"[APClient] APWorld version {APWorldVersion}");
                     if (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION || slotDataVersion < APSlotData.AP_SLOTDATA_MIN_VERSION) {
                         Logging.LogError(
                             $"[APClient] Incompatible SlotData version: " +
@@ -441,6 +442,7 @@ namespace CupheadArchipelago.AP {
             itemApplySpecialLevelQueue = new();
             offline = false;
             gotConnectPacket = false;
+            APWorldVersion = "";
             APSettings.Init();
         }
 
