@@ -35,6 +35,7 @@ namespace CupheadArchipelago.AP {
         public static int SessionStatus { get; private set; } = 0;
         public static int CompatBits { get; private set; } = 0;
         public static string SessionConnectCloseReason { get; private set; } = "";
+        public static string SessionConnectCloseExtraInfo { get; private set; } = "";
         public static PlayerInfo APSessionPlayerInfo { get; private set; } = null;
         public static string APWorldVersion { get; private set; } = "";
         internal static APSlotData SlotData { get; private set; } = null;
@@ -146,16 +147,17 @@ namespace CupheadArchipelago.AP {
                             $"[APClient] Incompatible SlotData version: " +
                             $"Client:{APSlotData.AP_SLOTDATA_VERSION} ClientMin:{APSlotData.AP_SLOTDATA_MIN_VERSION}, Server:{slotDataVersion}! Incompatible client!"
                         );
-                        SessionConnectCloseReason = slotDataVersion > APSlotData.AP_SLOTDATA_VERSION ? "too new" : "too old";
-                        CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -3;
+                        SessionConnectCloseReason = "Multiworld " + (slotDataVersion > APSlotData.AP_SLOTDATA_VERSION ? "too new" : "too old");
+                        SessionConnectCloseExtraInfo = $"(Server is {(APWorldVersion.Length > 0 ? APWorldVersion : "missingver")})";
+                        CloseArchipelagoSession(resetOnFail);
                         return false;
                     }
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Malformed SlotData! Exception: {e.Message}");
                     //Logging.LogError(e.ToString(), LoggingFlags.Debug);
-                    CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -2;
+                    CloseArchipelagoSession(resetOnFail);
                     return false;
                 }
 
@@ -173,8 +175,8 @@ namespace CupheadArchipelago.AP {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.LogError(e.ToString());
                     //Logging.LogError(e.ToString(), LoggingFlags.Debug);
-                    CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -4;
+                    CloseArchipelagoSession(resetOnFail);
                     return false;
                 }
 
@@ -186,8 +188,8 @@ namespace CupheadArchipelago.AP {
                 if (APSessionGSData.seed != seed) {
                     if (APSessionGSData.seed != "" && (!APSessionGSData.IsOverridden(Overrides.SeedMismatchOverride) || Enabled)) {
                         Logging.LogError("[APClient] Seed mismatch! Are you connecting to a different multiworld?");
-                        CloseArchipelagoSession(resetOnFail);
                         SessionStatus = -5;
+                        CloseArchipelagoSession(resetOnFail);
                         return false;
                     }
                     APSessionGSData.seed = seed;
@@ -228,8 +230,8 @@ namespace CupheadArchipelago.AP {
                     if (SlotData.use_dlc && !DLCManager.DLCEnabled()) {
                         if (!APSessionGSData.IsOverridden(Overrides.DlcOverride)) {
                             Logging.LogError($"[APClient] Content Mismatch! Server requires DLC, but running on a non-DLC client!");
-                            CloseArchipelagoSession(resetOnFail);
                             SessionStatus = -8;
+                            CloseArchipelagoSession(resetOnFail);
                             return false;
                         } else {
                             Logging.LogWarning($"[APClient] Content Mismatch! Server requires DLC, but running on a non-DLC client! Override enabled, continuing...");
@@ -321,8 +323,8 @@ namespace CupheadArchipelago.AP {
                 } catch (Exception e) {
                     Logging.LogError($"[APClient] Exception: {e.Message}");
                     Logging.LogError(e.ToString(), LoggingFlags.Debug);
-                    CloseArchipelagoSession(resetOnFail);
                     SessionStatus = -9;
+                    CloseArchipelagoSession(resetOnFail);
                     return false;
                 }
 
@@ -355,9 +357,9 @@ namespace CupheadArchipelago.AP {
 
                 Logging.LogError(errorMessage);
 
-                if (resetOnFail) Reset();
                 SessionConnectCloseReason = closeReasonMessage;
                 SessionStatus = -1;
+                if (resetOnFail) Reset(false);
                 return false;
             }
         }
@@ -400,7 +402,7 @@ namespace CupheadArchipelago.AP {
                 if (session.Socket.Connected) {
                     Logging.Log($"[APClient] Disconnecting APSession...");
                     session.Socket.Disconnect();
-                    SessionStatus = 0;
+                    if (SessionStatus > 0) SessionStatus = 0;
                     res = true;
                 }
             }
@@ -413,9 +415,10 @@ namespace CupheadArchipelago.AP {
         }
         private static void Reset(bool resetSessionStatus=true) {
             session = null;
-            if (resetSessionStatus && SessionStatus > 0) {
+            if (resetSessionStatus && SessionStatus >= 0) {
                 SessionStatus = 0;
                 SessionConnectCloseReason = "";
+                SessionConnectCloseExtraInfo = "";
             }
             APSessionPlayerName = "";
             APSessionPlayerSlot = -1;

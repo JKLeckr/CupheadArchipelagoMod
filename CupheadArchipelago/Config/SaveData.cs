@@ -14,6 +14,7 @@ namespace CupheadArchipelago.Config {
             ModInfo.IsMacOS()
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Library/Application Support/unity.Studio MDHR.Cuphead/Cuphead")
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cuphead");
+        internal static readonly string[] SAVE_FILE_KEYS = new string[3];
         internal static readonly string[] AP_SAVE_FILE_KEYS = new string[3];
 
         internal static string APSavePath { get; private set; } = "";
@@ -23,7 +24,8 @@ namespace CupheadArchipelago.Config {
         public static void Init(string saveKeyName, string savePath, bool iKnowWhatImDoing) {
             if (initted && !iKnowWhatImDoing) Logging.LogWarning("Reinitializing SaveData...");
             for (int i=0;i<3;i++) {
-                AP_SAVE_FILE_KEYS[i] = $"{saveKeyName}{i}{AP_SAVE_FILE_KEY_SUFFIX}";
+                SAVE_FILE_KEYS[i] = saveKeyName + i;
+                AP_SAVE_FILE_KEYS[i] = saveKeyName + i + AP_SAVE_FILE_KEY_SUFFIX;
             }
             APSavePath = savePath;
             initted = true;

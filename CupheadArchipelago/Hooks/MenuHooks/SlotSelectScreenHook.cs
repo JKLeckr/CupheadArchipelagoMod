@@ -105,6 +105,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
             private static MethodInfo _mi_game_start_cr;
             private static int Status => APClient.SessionStatus;
             private static string ConnectCloseReason => APClient.SessionConnectCloseReason;
+            private static string ConnectCloseExtraInfo => APClient.SessionConnectCloseExtraInfo;
 
             static UpdatePlayerSelect() {
                 _mi_game_start_cr = typeof(SlotSelectScreen).GetMethod("game_start_cr", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -273,8 +274,7 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             break;
                         }
                         case -3: {
-                            string ver = APClient.APWorldVersion.Length > 0 ? APClient.APWorldVersion : "missingver";
-                            SetAPConStatusText($"Disconnected!\nCheck failed!\nWrong Slot Data Version:\nMultiworld {ConnectCloseReason}!\n(Server is {ver})\nCheck Log!");
+                            SetAPConStatusText($"Disconnected!\nCheck failed!\nWrong Slot Data Version:\n{ConnectCloseReason}!\n{ConnectCloseExtraInfo}\nCheck Log!");
                             break;
                         }
                         case -5: {
