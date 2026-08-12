@@ -19,12 +19,12 @@ namespace CupheadArchipelago {
     public class Plugin : BaseUnityPlugin {
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
 
-        protected const string MOD_NAME = "CupheadArchipelago"; //PluginInfo.PLUGIN_NAME
-        protected const string MOD_GUID = "com.JKLeckr.CupheadArchipelago";
+        protected const string MOD_NAME = PluginInfo.PLUGIN_NAME;
+        protected const string MOD_GUID = PluginInfo.PLUGIN_GUID;
         protected const string MOD_BASE_VERSION = PluginInfo.PLUGIN_VERSION;
-        protected const string MOD_VERSION_POSTFIX = "";
-        protected const string MOD_VERSION = $"{MOD_BASE_VERSION}{MOD_VERSION_POSTFIX}";
-        protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION);
+        protected const ushort MOD_VERSION_REL = PluginInfo.PLUGIN_VERSION_REL;
+        protected static readonly string MOD_VERSION = $"{MOD_BASE_VERSION}{(MOD_VERSION_REL > 0 ? $"r{MOD_VERSION_REL}" : "")}";
+        protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION, MOD_VERSION_REL);
 
         private const long CONFIG_VERSION = 1;
 
@@ -128,8 +128,8 @@ namespace CupheadArchipelago {
         }
 
         // TEMP. This will be changed when entering main branch version.
-        private static string GetFVer(string ver) {
-            RawFVer rawFVer = FVerParse.GetRawFVer(ver);
+        private static string GetFVer(string ver, ushort rel) {
+            RawFVer rawFVer = FVerParse.GetRawFVer(ver, rel);
             FVersion fver = new(rawFVer.baseline, rawFVer.revision, rawFVer.release, rawFVer.prefix, rawFVer.postfix);
             return fver;
         }

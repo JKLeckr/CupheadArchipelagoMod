@@ -6,7 +6,7 @@ using System;
 namespace CupheadArchipelago.Helpers.FVerParser {
     public class FVerParse {
         // TEMP. This will be changed when entering main branch version.
-        public static RawFVer GetRawFVer(string ver) {
+        public static RawFVer GetRawFVer(string ver, ushort rel = 0) {
             string[] versionParts = ver.Split(['.'], 4);
             if (int.Parse(versionParts[0]) > 0) {
                 throw new Exception("Version parsing system needs to be changed for main version!");
@@ -21,7 +21,7 @@ namespace CupheadArchipelago.Helpers.FVerParser {
             };
             int baseline = int.Parse(versionParts[2]) + 1;
             int rev = int.Parse(versionParts[3]);
-            RawFVer fver = new(baseline, rev, 0, pres, "");
+            RawFVer fver = new(baseline, rev, rel, pres, "");
             return fver;
         }
     }

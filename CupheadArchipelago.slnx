@@ -6,6 +6,9 @@
     <Project Path="CupheadArchipelago.Helpers/CheckVersions/CheckVersions.csproj">
       <Platform Project="x64" />
     </Project>
+    <Project Path="CupheadArchipelago.Helpers/CsprojParser/CsprojParser.csproj">
+      <Platform Project="x64" />
+    </Project>
     <Project Path="CupheadArchipelago.Helpers/FVerParser/FVerParser.csproj">
       <Platform Project="x64" />
     </Project>

@@ -4,8 +4,10 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>CupheadArchipelago</AssemblyName>
     <Product>CupheadArchipelago</Product>
+    <GUID>com.JKLeckr.CupheadArchipelago</GUID>
     <Description>The Cuphead Archipelago Mod</Description>
     <Version>0.2.2.6</Version>
+    <VersionRelNumber>1</VersionRelNumber>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,7 +34,6 @@
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="FVer" Version="0.1.0-*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -122,5 +123,7 @@
   <ItemGroup>
     <ProjectReference Include="../CupheadArchipelago.Helpers/FVerParser/FVerParser.csproj" />
   </ItemGroup>
+
+  <Import Project="./Mod.PluginInfoProps.props" />
 
 </Project>

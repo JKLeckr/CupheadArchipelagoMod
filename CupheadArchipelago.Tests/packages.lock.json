@@ -34,8 +34,8 @@
       },
       "Archipelago.MultiClient.Net": {
         "type": "Transitive",
-        "resolved": "6.7.0",
-        "contentHash": "fsK7kx3dC4EwvEA7kMTUwbP+kYeanYVWHyTXOjYKxl6zj4elHMj42YCjvOYqHee+V2NrRm0f0pljhWEY+BI72g=="
+        "resolved": "6.7.1",
+        "contentHash": "wheDMl5C0e175RvuY+E3oDY13myaa7f2pRRjOg9PgcbOJApVu3QT62mQ46jYJ0sn/X7Fu4bdVVxZ2bx0vwncBQ=="
       },
       "BepInEx.BaseLib": {
         "type": "Transitive",
@@ -50,11 +50,6 @@
           "BepInEx.BaseLib": "5.4.20",
           "HarmonyX": "2.7.0"
         }
-      },
-      "BepInEx.PluginInfoProps": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "RqM3aaGs8Hc2m0D+8aSt9mv09rCMYNIF35NB3D6KA2zSpcXJh/9ZVWrPlIUJfA8KYzodSWcCMUexEW24fjwR3w=="
       },
       "HarmonyX": {
         "type": "Transitive",
@@ -104,7 +99,6 @@
         "dependencies": {
           "Archipelago.MultiClient.Net": "[6.7.*, )",
           "BepInEx.Core": "[5.*, )",
-          "BepInEx.PluginInfoProps": "[1.*, )",
           "FVerParser": "[1.0.0, )",
           "UnityEngine.Modules": "[2017.4.9, )"
         }

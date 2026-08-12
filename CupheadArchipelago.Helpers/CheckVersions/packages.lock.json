@@ -8,6 +8,9 @@
         "resolved": "0.1.0-draft01e",
         "contentHash": "M9rUx3nzHMRaPecR8yBxYoD6ffXna2UcrjVe9F0LmbzucfVLuA//TFJWSLrNIsrt4fyADpy18TTaXF9qDyh+Kw=="
       },
+      "csprojparser": {
+        "type": "Project"
+      },
       "fverparser": {
         "type": "Project"
       }

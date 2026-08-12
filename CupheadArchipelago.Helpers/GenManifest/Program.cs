@@ -4,13 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using FVer;
+using CupheadArchipelago.Helpers.CsprojParser;
 using CupheadArchipelago.Helpers.FVerParser;
 
-namespace GenManifest {
+namespace CupheadArchipelago.Helpers.GenManifest {
     internal class Program {
         private const string CSPROJ_NAME = "CupheadArchipelago.csproj";
         private const string SRC_MAIN_NAME = "Plugin.cs";
@@ -41,9 +41,10 @@ namespace GenManifest {
             }
 
             try {
-                string modName = ExtractCsprojProperty(csProjPath, "AssemblyName") ?? Path.GetFileNameWithoutExtension(csProjPath);
+                string modName = CsprojExtractor.ExtractCsprojProperty(csProjPath, "AssemblyName") ?? Path.GetFileNameWithoutExtension(csProjPath);
                 RawFVer rawVer = FVerParse.GetRawFVer(
-                    ExtractCsprojProperty(csProjPath, "Version") ?? throw new NullReferenceException("Version cannot be null!")
+                    CsprojExtractor.ExtractCsprojProperty(csProjPath, "Version") ?? throw new NullReferenceException("Version cannot be null!"),
+                    CsprojExtractor.GetVersionRelNumber(csProjPath)
                 );
                 string modVersion = new FVersion(rawVer.baseline, rawVer.revision, rawVer.release, rawVer.prefix, rawVer.postfix);
 
@@ -52,7 +53,7 @@ namespace GenManifest {
                 Dictionary<string, string> constants = ExtractConstantsFromCs(csMainPath);
                 foreach (KeyValuePair<string, string> kvp in constants) {
                     //Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-                    if (kvp.Key == "MOD_GUID")
+                    if (kvp.Key == "MOD_GUID") // TODO: Get from csproj instead now that it is in there.
                         modGuid = kvp.Value;
                 }
 
@@ -77,23 +78,7 @@ namespace GenManifest {
             return 0;
         }
 
-        static string? ExtractCsprojProperty(string csprojPath, string propertyName) {
-            try {
-                XDocument doc = XDocument.Load(csprojPath);
-                XNamespace ns = doc.Root?.Name.Namespace ?? "";
-                XElement? property = doc.Root?
-                    .Element(ns + "PropertyGroup")?
-                    .Element(ns + propertyName);
-
-                return property?.Value.Trim();
-            }
-            catch {
-                return null;
-            }
-        }
-
-        static Dictionary<string, string> ExtractConstantsFromCs(string csFilePath)
-        {
+        static Dictionary<string, string> ExtractConstantsFromCs(string csFilePath) {
             Dictionary<string, string> constants = [];
             string pattern = @"protected\s+const\s+string\s+(\w+)\s*=\s*""([^""]*)"";";
             string code = File.ReadAllText(csFilePath);

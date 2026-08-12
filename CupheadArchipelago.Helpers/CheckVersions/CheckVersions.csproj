@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+  	<ProjectReference Include="../CsprojParser/CsprojParser.csproj" />
     <ProjectReference Include="../FVerParser/FVerParser.csproj" />
   </ItemGroup>
 

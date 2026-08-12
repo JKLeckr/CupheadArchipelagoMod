@@ -3,13 +3,14 @@
 
 using System;
 using FVer;
+using CupheadArchipelago.Helpers.CsprojParser;
 using CupheadArchipelago.Helpers.FVerParser;
 
 namespace CupheadArchipelago.Helpers.CheckVersions {
     internal class Program {
         private static int Main(string[] args) {
             if (args.Length != 2) {
-                Console.WriteLine("FORMAT: CMD <PROJ_SEMVER> <TEST_FVER>");
+                Console.WriteLine("FORMAT: CMD <PROJ_SEMVER> <TEST_FVER>"); // TODO: Finish switching to using CsProjParser
                 return -1;
             }
 

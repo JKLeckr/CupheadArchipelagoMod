@@ -24,12 +24,6 @@
           "HarmonyX": "2.7.0"
         }
       },
-      "BepInEx.PluginInfoProps": {
-        "type": "Direct",
-        "requested": "[1.*, )",
-        "resolved": "1.1.0",
-        "contentHash": "RqM3aaGs8Hc2m0D+8aSt9mv09rCMYNIF35NB3D6KA2zSpcXJh/9ZVWrPlIUJfA8KYzodSWcCMUexEW24fjwR3w=="
-      },
       "FVer": {
         "type": "Direct",
         "requested": "[0.1.0-*, )",
