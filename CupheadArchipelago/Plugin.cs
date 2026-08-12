@@ -184,9 +184,10 @@ namespace CupheadArchipelago {
         private void Fail(Exception e, int failCode) {
             Logging.LogError("An exception occured while loading.");
             Logging.LogFatal($"Plugin {ModPluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
-            Logging.LogFatal($"Exception: {e.Message}");
+            string baseExceptionMessage = e.GetBaseException().Message;
             State = failCode;
-            StateMessage = e.GetBaseException().Message;
+            StateMessage = baseExceptionMessage;
+            Logging.LogFatal($"Exception: {baseExceptionMessage}");
             Logging.LogFatal("Throwing Exception...");
             throw new Exception($"Plugin {ModPluginInfo.PLUGIN_GUID}: Exceptions occurred!", e);
         }
