@@ -2,10 +2,8 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
 using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using System.IO;
+using Newtonsoft.Json;
 using FVer;
 using CupheadArchipelago.Helpers.CsprojParser;
 using CupheadArchipelago.Helpers.FVerParser;
@@ -13,7 +11,6 @@ using CupheadArchipelago.Helpers.FVerParser;
 namespace CupheadArchipelago.Helpers.GenManifest {
     internal class Program {
         private const string CSPROJ_NAME = "CupheadArchipelago.csproj";
-        private const string SRC_MAIN_NAME = "Plugin.cs";
 
         private static int Main(string[] args) {
             if (args.Length < 1 || args.Length > 2) {
@@ -29,35 +26,21 @@ namespace CupheadArchipelago.Helpers.GenManifest {
             }
 
             string csProjPath = Path.Combine(modDir, CSPROJ_NAME);
-            string csMainPath = Path.Combine(modDir, SRC_MAIN_NAME);
 
             if (!File.Exists(csProjPath)) {
                 Console.WriteLine($"Error: {csProjPath}: no such file or directory!");
                 return -3;
             }
-            if (!File.Exists(csMainPath)) {
-                Console.WriteLine($"Error: {csMainPath}: no such file or directory!");
-                return -4;
-            }
 
             try {
                 string modName = CsprojExtractor.ExtractCsprojProperty(csProjPath, "AssemblyName") ?? Path.GetFileNameWithoutExtension(csProjPath);
                 RawFVer rawVer = FVerParse.GetRawFVer(
-                    CsprojExtractor.ExtractCsprojProperty(csProjPath, "Version") ?? throw new NullReferenceException("Version cannot be null!"),
+                    CsprojExtractor.GetFullVersionString(csProjPath),
                     CsprojExtractor.GetVersionRelNumber(csProjPath)
                 );
                 string modVersion = new FVersion(rawVer.baseline, rawVer.revision, rawVer.release, rawVer.prefix, rawVer.postfix);
 
-                string modGuid = "";
-
-                Dictionary<string, string> constants = ExtractConstantsFromCs(csMainPath);
-                foreach (KeyValuePair<string, string> kvp in constants) {
-                    //Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-                    if (kvp.Key == "MOD_GUID") // TODO: Get from csproj instead now that it is in there.
-                        modGuid = kvp.Value;
-                }
-
-                if (modGuid == "") throw new Exception("MOD_GUID cannot be null!");
+                string modGuid = CsprojExtractor.ExtractCsprojProperty(csProjPath, "GUID") ?? throw new NullReferenceException("GUID cannot be null!");
 
                 Manifest manifest = new(modName, modGuid, modVersion, []);
 
@@ -73,25 +56,10 @@ namespace CupheadArchipelago.Helpers.GenManifest {
             }
             catch (Exception ex) {
                 Console.WriteLine($"Error: {ex.Message}");
+                return -100;
             }
 
             return 0;
-        }
-
-        static Dictionary<string, string> ExtractConstantsFromCs(string csFilePath) {
-            Dictionary<string, string> constants = [];
-            string pattern = @"protected\s+const\s+string\s+(\w+)\s*=\s*""([^""]*)"";";
-            string code = File.ReadAllText(csFilePath);
-
-            foreach (Match match in Regex.Matches(code, pattern)) {
-                if (match.Groups.Count == 3) {
-                    string name = match.Groups[1].Value;
-                    string value = match.Groups[2].Value;
-                    constants[name] = value;
-                }
-            }
-
-            return constants;
         }
 
         private class Manifest(string mod_name, string mod_guid, string mod_version, string[] mod_dependencies) {

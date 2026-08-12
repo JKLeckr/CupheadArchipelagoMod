@@ -21,11 +21,18 @@ namespace CupheadArchipelago.Helpers.CsprojParser {
             }
         }
 
+        public static string GetFullVersionString(string csprojPath) {
+            string prefix = ExtractCsprojProperty(csprojPath, "VersionPrefix") ?? throw new NullReferenceException("VersionPrefix is null");
+            string suffix = ExtractCsprojProperty(csprojPath, "VersionSuffix") ?? "";
+
+            return prefix + (suffix.Length > 0 ? "-" : "") + suffix;
+        }
+
         public static ushort GetVersionRelNumber(string csprojPath) {
             try {
                 string str = ExtractCsprojProperty(csprojPath, "VersionRelNumber") ?? "";
                 return ushort.Parse(str);
-            } catch (Exception) {
+            } catch {
                 return 0;
             }
         }

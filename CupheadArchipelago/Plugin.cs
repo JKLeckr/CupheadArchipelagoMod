@@ -19,17 +19,19 @@ namespace CupheadArchipelago {
     public class Plugin : BaseUnityPlugin {
         internal const string DEP_SAVECONFIG_MOD_GUID = "com.JKLeckr.CupheadSaveConfig";
 
-        protected const string MOD_NAME = PluginInfo.PLUGIN_NAME;
-        protected const string MOD_GUID = PluginInfo.PLUGIN_GUID;
-        protected const string MOD_BASE_VERSION = PluginInfo.PLUGIN_VERSION;
-        protected const ushort MOD_VERSION_REL = PluginInfo.PLUGIN_VERSION_REL;
-        protected static readonly string MOD_VERSION = $"{MOD_BASE_VERSION}{(MOD_VERSION_REL > 0 ? $"r{MOD_VERSION_REL}" : "")}";
-        protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION, MOD_VERSION_REL);
+        protected const string MOD_NAME = ModPluginInfo.PLUGIN_NAME;
+        protected const string MOD_GUID = ModPluginInfo.PLUGIN_GUID;
+        protected const string MOD_BASE_VERSION = ModPluginInfo.PLUGIN_VERSION;
+        protected const ushort MOD_VERSION_REL = ModPluginInfo.PLUGIN_VERSION_REL;
+        protected const string MOD_VERSION_POSTFIX = ModPluginInfo.PLUGIN_VERSION_SUFFIX;
+        protected static readonly string MOD_VERSION = GetModVersion(MOD_BASE_VERSION, 0, MOD_VERSION_POSTFIX); // rel is not semantically supported
+        protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION, MOD_VERSION_REL, MOD_VERSION_POSTFIX);
 
         private const long CONFIG_VERSION = 1;
 
         public static string Name => MOD_NAME;
         public static string Version => MOD_VERSION;
+        public static string SimpleFullVersion => $"{MOD_FRIENDLY_VERSION} ({MOD_BASE_VERSION})";
         public static string FullVersion => $"{MOD_FRIENDLY_VERSION} ({MOD_VERSION})";
         public static int State { get; private set; } = 0;
         public static string StateMessage { get; private set; } = "";
@@ -103,10 +105,10 @@ namespace CupheadArchipelago {
                 }
                 State = 1;
                 StateMessage = "";
-                Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
+                Logging.Log($"Plugin {ModPluginInfo.PLUGIN_GUID} is loaded!", LoggingFlags.PluginInfo);
             }
             else {
-                Logging.Log($"Plugin {PluginInfo.PLUGIN_GUID} is loaded, but disabled!", LoggingFlags.PluginInfo);
+                Logging.Log($"Plugin {ModPluginInfo.PLUGIN_GUID} is loaded, but disabled!", LoggingFlags.PluginInfo);
             }
         }
 
@@ -127,9 +129,14 @@ namespace CupheadArchipelago {
             return -1;
         }
 
+        private static string GetModVersion(string vbase, ushort vrel, string vpostfix) {
+            return $"{vbase}{(vrel > 0 ? $"r{vrel}" : "")}{(vpostfix.Length > 0 ? $"-{vpostfix}" : "")}";
+        }
+
         // TEMP. This will be changed when entering main branch version.
-        private static string GetFVer(string ver, ushort rel) {
-            RawFVer rawFVer = FVerParse.GetRawFVer(ver, rel);
+        private static string GetFVer(string ver, ushort rel, string postfix) {
+            string verstr = ver + (postfix.Length > 0 ? "-" : "") + postfix;
+            RawFVer rawFVer = FVerParse.GetRawFVer(verstr, rel);
             FVersion fver = new(rawFVer.baseline, rawFVer.revision, rawFVer.release, rawFVer.prefix, rawFVer.postfix);
             return fver;
         }
@@ -176,11 +183,12 @@ namespace CupheadArchipelago {
 
         private void Fail(Exception e, int failCode) {
             Logging.LogError("An exception occured while loading.");
-            Logging.LogFatal($"Plugin {PluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
+            Logging.LogFatal($"Plugin {ModPluginInfo.PLUGIN_GUID} failed to load! (Code: {failCode})");
+            Logging.LogFatal($"Exception: {e.Message}");
             State = failCode;
             StateMessage = e.GetBaseException().Message;
             Logging.LogFatal("Throwing Exception...");
-            throw e;
+            throw new Exception($"Plugin {ModPluginInfo.PLUGIN_GUID}: Exceptions occurred!", e);
         }
     }
 }

@@ -111,8 +111,7 @@ jobs:
       - name: Check version
         if: ${{ github.event.inputs.do_version_check == 'true' }}
         run: |
-          export PARSED_VERSION="$(grep -oPm1 '(?<=<Version>)[^<]+' CupheadArchipelago/CupheadArchipelago.csproj)"
-          dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ "${PARSED_VERSION}" "${{ env.RELEASE_VERSION }}"
+          dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ ${{ env.MOD_NAME }} "${{ env.RELEASE_VERSION }}"
 
       - name: Build Project
         working-directory: ${{ env.MOD_NAME }}
