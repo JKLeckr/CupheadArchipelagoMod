@@ -1,4 +1,7 @@
 # Building
+
+**Building on macOS?** See [BUILDING_MACOS.md](BUILDING_MACOS.md) for macOS-specific instructions (including Apple Silicon / Rosetta, the macOS BepInEx build, the native websocket library, and the `FVerParser.dll` step).
+
 *Note: These instructions assume you know what you are doing with building projects and terminals and stuff.*
 
 ### Prerequisites
