@@ -40,6 +40,7 @@ namespace CupheadArchipelago.AP {
         internal readonly DlcChaliceCheckModes dlc_boss_chalice_checks;
         internal readonly DlcChaliceCheckModes dlc_rungun_chalice_checks;
         internal readonly DlcChaliceCheckModes dlc_chess_chalice_checks;
+        internal readonly bool dlc_kingsleap_psugar;
         internal readonly DlcCurseModes dlc_curse_mode;
         internal readonly bool trap_loadout_anyweapon;
         internal readonly MusicGroups music_shuffle;
@@ -76,6 +77,7 @@ namespace CupheadArchipelago.AP {
             dlc_boss_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_boss_chalice_checks");
             dlc_rungun_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_rungun_chalice_checks");
             dlc_chess_chalice_checks = GetOptionalAPSlotDataValue(slotData, "dlc_chess_chalice_checks", DlcChaliceCheckModes.Enabled);
+            dlc_kingsleap_psugar = GetOptionalAPSlotDataValue(slotData, "dlc_kingsleap_psugar", true);
             dlc_curse_mode = GetAPSlotDataValue<DlcCurseModes>(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);

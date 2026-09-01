@@ -11,8 +11,20 @@ using HarmonyLib;
 namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
     internal class LevelPlayerAnimationControllerHook {
         internal static void Hook() {
+            Harmony.CreateAndPatchAll(typeof(Start));
             Harmony.CreateAndPatchAll(typeof(Update));
+            Harmony.CreateAndPatchAll(typeof(OnParryStart));
+            Harmony.CreateAndPatchAll(typeof(OnParrySuccess));
             Harmony.CreateAndPatchAll(typeof(OnChaliceDashSparkle));
+        }
+
+        [HarmonyPatch(typeof(LevelPlayerAnimationController), "Start")]
+        internal static class Start {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                return LevelPlayerHookBase
+                        .LevelPlayerParryChessHookBase
+                        .LevelPlayerParryChessHookTranspiler(instructions);
+            }
         }
 
         [HarmonyPatch(typeof(LevelPlayerAnimationController), "Update")]
@@ -57,6 +69,24 @@ namespace CupheadArchipelago.Hooks.PlayerHooks.LevelPlayerHooks {
         internal static class OnChaliceDashSparkle {
             static bool Prefix() {
                 return !APData.IsCurrentSlotEnabled() || APClient.APSessionGSPlayerData.dlc_cparry;
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelPlayerAnimationController), "OnParryStart")]
+        internal static class OnParryStart {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                return LevelPlayerHookBase
+                        .LevelPlayerParryChessHookBase
+                        .LevelPlayerParryChessHookTranspiler(instructions);
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelPlayerAnimationController), "OnParrySuccess")]
+        internal static class OnParrySuccess {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                return LevelPlayerHookBase
+                        .LevelPlayerParryChessHookBase
+                        .LevelPlayerParryChessHookTranspiler(instructions);
             }
         }
     }
