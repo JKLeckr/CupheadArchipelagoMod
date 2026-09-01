@@ -2,7 +2,9 @@
 
 *Note: These instructions assume you know what you are doing with building projects and terminals and stuff.*
 
-This is the macOS companion to [BUILDING.md](BUILDING.md). The mod ships prebuilt binaries for Windows only, so on macOS you must build from source. These steps were verified on **Apple Silicon (M-series)** running Cuphead's native Steam (macOS) build with **Archipelago 0.6.7**.
+This is the macOS companion to [BUILDING.md](BUILDING.md). The mod ships prebuilt binaries for Windows only, so on macOS you must build from source. These steps were verified on **Apple Silicon (M-2 2023)** running Cuphead's native Steam (macOS) build with **Archipelago 0.6.7**.
+
+*Note: This is **NOT** a guide on how to setup Archipelago or a custom server. All proceeding steps relating to **server setup** and **APWorld creation** can be found in the **APWorld repository** and **Archipelago Instructions**.*
 
 ## Prerequisites
 
@@ -14,7 +16,7 @@ This is the macOS companion to [BUILDING.md](BUILDING.md). The mod ships prebuil
   rustup target add x86_64-apple-darwin aarch64-apple-darwin
   ```
 - Xcode Command Line Tools (`xcode-select --install`)
-- On Apple Silicon: [Rosetta 2](https://support.apple.com/en-us/102527) (`softwareupdate --install-rosetta`). Cuphead's macOS binary and BepInEx are x64, so they run translated.
+- [Rosetta 2](https://support.apple.com/en-us/102527) (`softwareupdate --install-rosetta`). Cuphead's macOS binary and BepInEx are x64, so they run translated.
 
 ### Directory conventions used below
 
@@ -30,9 +32,7 @@ This is the macOS companion to [BUILDING.md](BUILDING.md). The mod ships prebuil
 
 ## 1. Install BepInEx
 
-The macOS build of BepInEx is distributed as `BepInEx_macos_universal_5.4.23.x.zip` (a universal binary; works on both Intel and Apple Silicon). Download it from the [BepInEx releases page](https://github.com/BepInEx/BepInEx/releases) and extract it into `GAME_DIR`, next to `Cuphead.app`.
-
-**macOS has no `doorstop_config.ini`** — that file is the Windows mechanism (via `winhttp.dll`). On macOS the Doorstop configuration lives inside `run_bepinex.sh` as shell variables at the top of the script; the defaults are fine. The `BepInEx/config`, `BepInEx/plugins`, and `BepInEx/LogOutput.log` folders are created on first run.
+The macOS build of BepInEx is distributed as `BepInEx_macos_universal_5.4.23.x.zip`. Download it from the [BepInEx releases page](https://github.com/BepInEx/BepInEx/releases) and extract it into `GAME_DIR`, next to `Cuphead.app`.
 
 Then:
 
@@ -43,9 +43,8 @@ Then:
    ```
 2. Configure Steam to launch the game through BepInEx:
    - Steam → right-click **Cuphead** → **Properties → General → Set Launch Options…**
-   - Enter the **absolute** path to the script: `"/path/to/Cuphead/run_bepinex.sh" %command%`
-   - The script auto-detects the game executable from `%command%`; no need to edit `executable_name` when launching through Steam.
-3. Launch Cuphead once through Steam so BepInEx generates its config (`BepInEx/config/BepInEx.cfg` and `BepInEx/LogOutput.log`).
+   - Enter the path to the script: `"/path/to/Cuphead/run_bepinex.sh" %command%`
+3. Launch and close Cuphead once through Steam so BepInEx generates its config (`BepInEx/config/BepInEx.cfg` and `BepInEx/LogOutput.log`).
 4. If Gatekeeper blocks the unsigned Doorstop files, clear their quarantine:
    ```
    cd "$HOME/Library/Application Support/Steam/steamapps/common/Cuphead"
@@ -68,7 +67,7 @@ just setup
 > git submodule update --init --recursive
 > ```
 
-Build the **net35** target, which is what the mod needs, and force a single MSBuild node to avoid a race between the framework builds over the same `lipo` output path:
+Build the **net35** target (flag avoids a lipo race between parallel framework builds)
 
 ```bash
 dotnet build WebSocketSharp/websocket-sharp.csproj -c Release -f net35 -m:1
@@ -78,8 +77,11 @@ Verify the universal dylib was produced:
 
 ```bash
 lipo -info WebSocketSharp/bin/Release/net35/nativews-macos-universal.dylib
-# expect: Architectures in the fat file: ... are: x86_64 arm64
 ```
+  Expected Output ^
+  ```bash
+  Architectures in the fat file: ... are: x86_64 arm64
+  ```
 
 The three files you need from `NATIVEWS_DIR/WebSocketSharp/bin/Release/net35/` for the mod's `ref/` folder are:
 - `websocket-sharp.dll`
@@ -125,7 +127,7 @@ just setup
 just build
 ```
 
-The csproj detects macOS and automatically selects `nativews-macos-universal.dylib` as the native websocket library. The built output lands in `MOD_OUT_DIR`.
+Output lands in `MOD_OUT_DIR`.
 
 ## 4. Copy the result into the game
 
@@ -142,22 +144,8 @@ cp ~/Projects/CupheadArchipelagoMod/CupheadArchipelago/bin/Debug/CupheadArchipel
 cp ~/Projects/CupheadArchipelagoMod/CupheadArchipelago/bin/Debug/CupheadArchipelago/FVerParser.dll                     BepInEx/plugins/CupheadArchipelago/
 ```
 
-> **`FVerParser.dll` is required but is missing from the copy list in BUILDING.md.** Without it, the plugin throws `FileNotFoundException: FVerParser` during type initialization. That error is NOT written to `BepInEx/LogOutput.log` (Unity-side exceptions are hidden there by default); it only appears in Unity's log at `~/Library/Logs/Unity/Player.log`. Symptom: the chainloader reports the plugin as loaded, but the version banner, the in-game AP menu, and the mod config files never appear. To see Unity errors in `LogOutput.log`, set `[Logging.Disk] WriteUnityLog = true` in `BepInEx/config/BepInEx.cfg`.
+> **Note** :`FVerParser.dll` is required but is missing from the copy list in BUILDING.md.** Without it, the plugin throws `FileNotFoundException: FVerParser` during type initialization. That error is NOT written to `BepInEx/LogOutput.log`. It only appears in Unity's log at `~/Library/Logs/Unity/Player.log`. To see Unity errors in `LogOutput.log`, set `[Logging.Disk] WriteUnityLog = true` in `BepInEx/config/BepInEx.cfg`.
 
 ## 5. Run the game
 
 Launch Cuphead **through Steam** (so the launch option runs BepInEx). The mod name + version appear in the **top-right corner of the save-select screen** (not the title menu).
-
-## Troubleshooting
-
-| Issue | Fix |
-|---|---|
-| Chainloader shows the plugin loaded, but no banner/menu/config | Missing runtime DLL — copy `FVerParser.dll` into the plugin folder (see Step 4 note) |
-| Unity-side errors invisible in `LogOutput.log` | Set `[Logging.Disk] WriteUnityLog = true` in `BepInEx/config/BepInEx.cfg`; also check `~/Library/Logs/Unity/Player.log` |
-| `just setup` fails on `lib/tungstenite/Cargo.toml` | Run `git submodule update --init --recursive` in `NATIVEWS_DIR` |
-| `lipo: can't move temporary file …` during the native build | Build only the net35 target with a single node: `dotnet build WebSocketSharp/websocket-sharp.csproj -c Release -f net35 -m:1` |
-| Build errors referencing `ref/` | Confirm the 3 game DLLs plus the websocket files are present in `MOD_REF_DIR` |
-| Game won't launch / mod won't inject | Verify Steam launch options point at the absolute path to `run_bepinex.sh`; clear quarantine with `xattr -dr com.apple.quarantine run_bepinex.sh libdoorstop.dylib` |
-| Rosetta prompt appears | Required on Apple Silicon — Cuphead macOS and BepInEx are x64 |
-| Secured (`wss://`) connections fail | Known macOS limitation with the native websocket library — use a plain `ws://` server (e.g. a locally hosted `MultiServer.py`) |
-| Wrong FPS / missing sounds / missing items | Documented upstream bugs — see the mod's `known-issues.txt`; turn off VSync if parts of the game misbehave |
