@@ -77,7 +77,7 @@ namespace CupheadArchipelago.AP {
             dlc_boss_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_boss_chalice_checks");
             dlc_rungun_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_rungun_chalice_checks");
             dlc_chess_chalice_checks = GetOptionalAPSlotDataValue(slotData, "dlc_chess_chalice_checks", DlcChaliceCheckModes.Enabled);
-            dlc_kingsleap_psugar = GetOptionalAPSlotDataValue(slotData, "dlc_kingsleap_psugar", true);
+            dlc_kingsleap_psugar = GetAPSlotDataValue<bool>(slotData, "dlc_kingsleap_psugar");
             dlc_curse_mode = GetAPSlotDataValue<DlcCurseModes>(slotData, "dlc_curse_mode");
             trap_loadout_anyweapon = GetAPSlotDataValue<bool>(slotData, "trap_loadout_anyweapon");
             music_shuffle = 0; //GetOptionalAPSlotDataValue<MusicGroups>(slotData, "music_rando", 0);
