@@ -38,7 +38,7 @@ namespace CupheadArchipelago.AP.Data {
         [JsonProperty("address")]
         public string address = AP_DEFAULT_ADDRESS;
         [JsonProperty("port")]
-        public int port = AP_DEFAULT_PORT; // TODO: Change to ushort
+        public ushort port = AP_DEFAULT_PORT;
         [JsonProperty("player")]
         public string player = AP_DEFAULT_PLAYER_NAME;
         [JsonProperty("password")]
