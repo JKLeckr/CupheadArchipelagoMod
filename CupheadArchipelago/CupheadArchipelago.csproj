@@ -8,9 +8,11 @@
     <Description>The Cuphead Archipelago Mod</Description>
     <VersionPrefix>0.2.2.7</VersionPrefix>
     <VersionSuffix></VersionSuffix>
-    <VersionRelNumber>0</VersionRelNumber>
+    <VersionRelNumber>1</VersionRelNumber>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
+    <RepositoryUrl>https://github.com/JKLeckr/CupheadArchipelagoMod</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <Distribution></Distribution>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -51,6 +53,10 @@
       <Link>README.md</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="../BUILDING.md">
+      <Link>BUILDING.md</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="../LICENSE.txt">
       <Link>LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -71,12 +77,8 @@
       <Link>LICENSE.assets.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="../known-issues.txt">
-      <Link>known-issues.txt</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="../doc/**/*">
-      <Link>doc/%(RecursiveDir)%(Filename)%(Extension)</Link>
+    <None Include="../assets/doc/*">
+      <Link>assets/doc/%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -103,7 +105,7 @@
     <Delete Files="$(OutputPath)nativews-win64.dll;$(OutputPath)nativews-macos-universal.dylib" />
     <Delete Files="$(OutputPath)nativews-win64.pdb" />
     <Delete Files="$(OutputPath)websocket-sharp.pdb" />
-    <RemoveDir Directories="$(OutputPath)doc" />
+    <RemoveDir Directories="$(OutputPath)assets" />
   </Target>
 
   <ItemGroup>

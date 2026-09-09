@@ -24,6 +24,7 @@ namespace CupheadArchipelago {
         protected const string MOD_BASE_VERSION = ModPluginInfo.PLUGIN_VERSION;
         protected const ushort MOD_VERSION_REL = ModPluginInfo.PLUGIN_VERSION_REL;
         protected const string MOD_VERSION_POSTFIX = ModPluginInfo.PLUGIN_VERSION_SUFFIX;
+        protected const string PLUGIN_DIST = ModPluginInfo.PLUGIN_DIST;
         protected static readonly string MOD_VERSION = GetModVersion(MOD_BASE_VERSION, 0, MOD_VERSION_POSTFIX); // rel is not semantically supported
         protected static readonly string MOD_FRIENDLY_VERSION = GetFVer(MOD_BASE_VERSION, MOD_VERSION_REL, MOD_VERSION_POSTFIX);
 
@@ -54,6 +55,7 @@ namespace CupheadArchipelago {
                 SetupLogging();
                 Logging.Log("----------------------------------------");
                 Logging.Log($"CupheadArchipelago {FullVersion}");
+                if (PLUGIN_DIST.Length > 0) Logging.Log($"{PLUGIN_DIST} Build");
                 Logging.Log("Created by JKLeckr");
                 Logging.Log("----------------------------------------");
 

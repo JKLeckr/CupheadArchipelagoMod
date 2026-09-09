@@ -2,12 +2,6 @@
   "version": 1,
   "dependencies": {
     "net10.0": {
-      "FVer": {
-        "type": "Direct",
-        "requested": "[0.1.0-*, )",
-        "resolved": "0.1.0-draft01e",
-        "contentHash": "M9rUx3nzHMRaPecR8yBxYoD6ffXna2UcrjVe9F0LmbzucfVLuA//TFJWSLrNIsrt4fyADpy18TTaXF9qDyh+Kw=="
-      },
       "Newtonsoft.Json": {
         "type": "Direct",
         "requested": "[13.0.*, )",
@@ -19,6 +13,13 @@
       },
       "fverparser": {
         "type": "Project"
+      },
+      "genmanifestmain": {
+        "type": "Project",
+        "dependencies": {
+          "CsprojParser": "[1.0.0, )",
+          "FVerParser": "[1.0.0, )"
+        }
       }
     }
   }

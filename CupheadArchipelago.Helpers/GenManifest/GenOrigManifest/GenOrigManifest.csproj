@@ -13,16 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FVer" Version="0.1.0-*">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.*" />
   </ItemGroup>
 
   <ItemGroup>
-  	<ProjectReference Include="../CsprojParser/CsprojParser.csproj" />
-    <ProjectReference Include="../FVerParser/FVerParser.csproj" />
+  	<ProjectReference Include="../GenManifestMain/GenManifestMain.csproj" />
   </ItemGroup>
 
 </Project>

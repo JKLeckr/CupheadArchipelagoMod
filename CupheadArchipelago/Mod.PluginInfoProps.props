@@ -35,6 +35,8 @@ SOFTWARE.
             <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(VersionPrefix)</BepInExPluginVersion>
             <BepInExPluginVersionSuffix Condition="'$(BepInExPluginVersionSuffix)' == ''">$(VersionSuffix)</BepInExPluginVersionSuffix>
 
+            <Distribution Condition="'$(Distribution)' == ''">$(Distribution)</Distribution>
+
             <GeneratedText><![CDATA[
 namespace $(RootNamespace)
 {
@@ -46,6 +48,8 @@ namespace $(RootNamespace)
         public const string PLUGIN_VERSION_SUFFIX = "$(BepInExPluginVersionSuffix)"%3B
 
         public const ushort PLUGIN_VERSION_REL = $(VersionRelNumber)%3B
+
+        public const string PLUGIN_DIST = "$(Distribution)"%3B
     }
 }
       ]]></GeneratedText>

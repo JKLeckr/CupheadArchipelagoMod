@@ -121,12 +121,26 @@ jobs:
 
       - name: Generate Manifest
         run: |
-          dotnet run --no-restore --project ${{ env.MOD_NAME }}.Helpers/GenManifest ${{ env.MOD_NAME }} build/${{ env.MOD_NAME }}/manifest.json
+          dotnet run --no-restore --project ${{ env.MOD_NAME }}.Helpers/GenManifest/GenOrigManifest ${{ env.MOD_NAME }}/${{ env.MOD_NAME }}.csproj build/${{ env.MOD_NAME }}/manifest.json
+
+      - name: Prepare Build for Packaging
+        working-directory: build
+        run: |
+          rm -rf ${{ env.MOD_NAME }}/assets
+          rm -f ${{ env.MOD_NAME }}/BUILDING.md
+
+          cp -v ../${{ env.MOD_NAME }}/INSTALLING.md ${{ env.MOD_NAME }}/
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/
+
+          sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
+          sed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
+
+          sed -i 's# \\\[_\[Screenshot\]\([^)]*\)_\\\]##g' ${{ env.MOD_NAME }}/README.md
+          sed -i 's# \\\[_\[Screenshot\]\([^)]*\)_\\\]##g' ${{ env.MOD_NAME }}/INSTALLING.md
 
       - name: Build ZIP package
         working-directory: build
         run: |
-          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/
           zip -r ../${{ env.FILE_NAME }} ${{ env.MOD_NAME }}
 
       - name: Upload Release Assets

@@ -12,7 +12,13 @@
     <Project Path="CupheadArchipelago.Helpers/FVerParser/FVerParser.csproj">
       <Platform Project="x64" />
     </Project>
-    <Project Path="CupheadArchipelago.Helpers/GenManifest/GenManifest.csproj">
+    <Project Path="CupheadArchipelago.Helpers/GenManifest/GenManifestMain/GenManifestMain.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="CupheadArchipelago.Helpers/GenManifest/GenOrigManifest/GenOrigManifest.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="CupheadArchipelago.Helpers/GenManifest/GenThunderstoreManifest/GenThunderstoreManifest.csproj">
       <Platform Project="x64" />
     </Project>
   </Folder>
