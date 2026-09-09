@@ -129,7 +129,7 @@ jobs:
           rm -rf ${{ env.MOD_NAME }}/assets
           rm -f ${{ env.MOD_NAME }}/BUILDING.md
 
-          cp -v ../${{ env.MOD_NAME }}/INSTALLING.md ${{ env.MOD_NAME }}/
+          cp -v ../INSTALLING.md ${{ env.MOD_NAME }}/
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/
 
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
