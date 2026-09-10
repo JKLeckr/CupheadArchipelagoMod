@@ -9,6 +9,7 @@ using CupheadArchipelago.Helpers.GenManifest.GenManifestMain;
 namespace CupheadArchipelago.Helpers.GenManifest.GenThunderstoreManifest {
     internal class Program {
         private static readonly string[] modTSDeps = ["BepInEx-BepInExPack-5.4.2305"];
+        private const byte modPkRev = 0;
 
         private static int Main(string[] args) {
             if (args.Length < 1 || args.Length > 2) {
@@ -32,7 +33,7 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenThunderstoreManifest {
                     mdata.modVersionSem,
                     mdata.modVersionRel,
                     mdata.modVersionPostfix
-                );
+                ) + modPkRev;
 
                 Manifest manifest = new(
                     mdata.modName,
