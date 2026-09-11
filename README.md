@@ -20,7 +20,7 @@ APWorld: [Archipelago-cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
 
 Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelagoMod) (This project)
 
-## Install
+## Installing
 See [INSTALLING.md](INSTALLING.md)
 
 ## Building

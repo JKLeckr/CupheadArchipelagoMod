@@ -53,8 +53,8 @@
       <Link>README.md</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="../BUILDING.md">
-      <Link>BUILDING.md</Link>
+    <None Include="../INSTALLING.md">
+      <Link>INSTALLING.md</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="../LICENSE.txt">

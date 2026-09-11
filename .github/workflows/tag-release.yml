@@ -12,11 +12,25 @@ on:
           required: false
           default: false
           type: boolean
+        build_gh_release:
+          description: "Build GitHub release"
+          required: false
+          default: true
+          type: boolean
+        build_ts_package:
+          description: "Build Thunderstore package"
+          required: false
+          default: true
+          type: boolean
 
   push:
     tags:
       - '*'
       - '!*norel*'
+
+env:
+  MOD_NAME: "CupheadArchipelago"
+  ASSETS_URL_DIR: "https://raw.githubusercontent.com/JKLeckr/CupheadArchipelagoMod/refs/heads/main/assets"
 
 jobs:
   prep_release:
@@ -49,8 +63,6 @@ jobs:
           fi
           echo "rel_tag=${TAG}" >> "${GITHUB_OUTPUT}"
 
-          echo "mod_name=${{ env.MOD_NAME }}" >> $GITHUB_OUTPUT
-
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v3
         with:
@@ -70,10 +82,10 @@ jobs:
     name: Build and Upload Release ${{ matrix.os.name }}
     runs-on: ${{ matrix.os.runner }}
     needs: prep_release
+    if: ${{ github.event.inputs.build_gh_release == 'true' }}
 
     env:
       RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
-      MOD_NAME: ${{ needs.prep_release.outputs.mod_name }}
 
     steps:
       - name: Set Env
@@ -127,16 +139,14 @@ jobs:
         working-directory: build
         run: |
           rm -rf ${{ env.MOD_NAME }}/assets
-          rm -f ${{ env.MOD_NAME }}/BUILDING.md
 
-          cp -v ../INSTALLING.md ${{ env.MOD_NAME }}/
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/
 
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
           sed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
 
-          sed -i 's# \\\[_\[Screenshot\]\([^)]*\)_\\\]##g' ${{ env.MOD_NAME }}/README.md
-          sed -i 's# \\\[_\[Screenshot\]\([^)]*\)_\\\]##g' ${{ env.MOD_NAME }}/INSTALLING.md
+          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
+          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/INSTALLING.md
 
       - name: Build ZIP package
         working-directory: build
@@ -152,3 +162,99 @@ jobs:
           token: ${{ secrets.AP_TOKEN }}
           files: |
             ${{ env.FILE_NAME }}
+
+  build_release_ts_dist:
+    name: Build Thunderstore Release
+    runs-on: ubuntu-latest
+    needs: prep_release
+    if: ${{ github.event.inputs.build_ts_package == 'true' }}
+
+    env:
+      RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
+
+    steps:
+      - name: Set Env
+        run: |
+          export FILE_NAME="JKLeckr-${MOD_NAME}.zip"
+          echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Clean project directory
+        run: |
+          rm -rf ref/
+
+      - name: Checkout Private Reference Assemblies
+        uses: actions/checkout@v6
+        with:
+          repository: JKLeckr/CupheadArchipelagoMod-Private
+          token: ${{ secrets.AP_PRIVATE_TOKEN }}
+          ref: ${{ matrix.os.priv_branch }}
+          path: CupheadArchipelago/ref
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup Project
+        run: |
+          dotnet restore
+          dotnet clean
+
+      - name: Check version
+        if: ${{ github.event.inputs.do_version_check == 'true' }}
+        run: |
+          dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ ${{ env.MOD_NAME }} "${{ env.RELEASE_VERSION }}"
+
+      - name: Build Project
+        working-directory: ${{ env.MOD_NAME }}
+        run: |
+          mkdir ../build
+          dotnet build --no-restore -o ../build
+
+      - name: Generate Manifest
+        run: |
+          dotnet run --no-restore --project ${{ env.MOD_NAME }}.Helpers/GenManifest/GenThunderstoreManifest ${{ env.MOD_NAME }}/${{ env.MOD_NAME }}.csproj build/manifest.json
+
+      - name: Prepare Build for Packaging
+        working-directory: build
+        run: |
+          mkdir -p BepInEx/plugins
+          mv -vf *.dll *.pdb BepInEx/plugins/
+
+          rm -rf assets
+          rm -f BUILDING.md
+          rm -f INSTALLING.md
+
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses .
+
+          sed -i '/^## Installing$/,/^See \[INSTALLING\.md\](INSTALLING\.md)$/d' README.md
+          sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' README.md
+          sed -i '/^$/N;/^\n$/D' README.md
+
+          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' README.md
+
+      - name: Build ZIP package
+        working-directory: build
+        run: |
+          zip -r ../${{ env.FILE_NAME }} *
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          prerelease: false
+          name: AP Mod ${{ env.RELEASE_VERSION }}
+          token: ${{ secrets.AP_TOKEN }}
+          files: |
+            ${{ env.FILE_NAME }}
+
+      - name: Upload Thunderstore Package Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: thunderstore-dist-zip
+          path: ${{ env.FILE_NAME }}
+          overwrite: true
+          archive: false
