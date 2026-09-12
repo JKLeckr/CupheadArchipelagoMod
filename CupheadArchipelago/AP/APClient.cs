@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
@@ -313,12 +312,14 @@ namespace CupheadArchipelago.AP {
                         deathLinkService = session.CreateDeathLinkService();
                         deathLinkService.EnableDeathLink();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
+
+                        UpdateDeathLinkGraceCount();
                     }
-                    receivedItemsUnique = new HashSet<APItemData>(new APItemDataComparer(false));
+                    receivedItemsUnique = new(new APItemDataComparer(false));;
 
                     Logging.Log($"[APClient] Catching up...");
                     if (!Enabled) {
-                        SendChecksThread(DoneChecks.ToArray(), true);
+                        SendChecksThread([.. DoneChecks], true);
                         CatchUpChecks();
                     }
                 } catch (Exception e) {
@@ -543,7 +544,7 @@ namespace CupheadArchipelago.AP {
         public static void SendChecks(bool sendGoal) {
             if (DoneChecks.Count<1) return;
             Logging.LogDebug("SendChecks");
-            long[] locs = DoneChecks.ToArray();
+            long[] locs = [.. DoneChecks];
             if (session.Socket.Connected) {
                 Logging.Log($"[APClient] Sending Checks...");
                 if (Logging.IsDebugEnabled()) {
@@ -912,38 +913,7 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"{APSessionGSData.deathCount} deaths");
             if (!IsDeathLinkActive()) return;
             if (APSettings.DeathLinkGraceCount > 0) {
-                int remainingGrace = APSettings.DeathLinkGraceCount - ((int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1)));
-                if (!APSessionGSData.IsAnyOverridden(Overrides.NoDataStorageOverride)) {
-                    try {
-                        OperationSpecification dop = new() {
-                            OperationType = OperationType.Default,
-                            Value = 0
-                        };
-                        OperationSpecification rop = new() {
-                            OperationType = OperationType.Replace,
-                            Value = APSettings.DeathLinkGraceCount
-                        };
-                        SetPacket pk = new() {
-                            Key = $"Slot:{APSessionPlayerSlot}:deathlink_grace_count",
-                            DefaultValue = 0,
-                            WantReply = false,
-                            Operations = [dop, rop]
-                        };
-                        SendPacketAsync(pk, (res) => {
-                            if (res) Logging.Log($"Successfully wrote 'deathlink_grace_count' to DataStorage.");
-                            else Logging.LogWarning($"Failed to write 'deathlink_grace_count' to DataStorage.");
-                        });
-                    }
-                    catch (Exception e) {
-                        Logging.LogWarning($"Failed to write 'deathlink_grace_count' to DataStorage: {e.Message}");
-                    }
-                }
-                if (remainingGrace != APSettings.DeathLinkGraceCount) {
-                    Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}{(remainingGrace == 0 ? " (warning)" : "")}.");
-                    return;
-                } else {
-                    Logging.Log($"[APClient] No DeathLink Grace's to save your allies this time!");
-                }
+                UpdateDeathLinkGraceCount();
             }
             Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
@@ -960,6 +930,20 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"[APClient] Your message: \"{causeMessage}\"");
             DeathLink death = new(APSessionPlayerName, causeMessage);
             ThreadPool.QueueUserWorkItem(_ => SendDeathLinkThread(death));
+        }
+
+        private static void UpdateDeathLinkGraceCount() {
+            int remainingGrace = APSettings.DeathLinkGraceCount - ((int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1)));
+            if (!APSessionGSData.IsAnyOverridden(Overrides.NoDataStorageOverride)) {
+                APDataStorage.WriteDeathLinkGraceCount(remainingGrace);
+            }
+            if (remainingGrace != APSettings.DeathLinkGraceCount) {
+                Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}{(remainingGrace == 0 ? " (warning)" : "")}.");
+                return;
+            }
+            else {
+                Logging.Log($"[APClient] No DeathLink Grace's to save your allies this time!");
+            }
         }
 
         private static bool SendDeathLinkThread(DeathLink death) {
@@ -1054,7 +1038,7 @@ namespace CupheadArchipelago.AP {
                         Logging.Log(" -- End Location data dump --");
                     }
                     scoutMapStatus = 1;
-                }, session.Locations.AllLocations.ToArray());
+                }, [.. session.Locations.AllLocations]);
             } else scoutMapStatus = 1;
         }
 

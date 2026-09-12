@@ -7,11 +7,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
-using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
+using CupheadArchipelago.Mapping.Bits;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 
@@ -22,20 +20,13 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             Harmony.CreateAndPatchAll(typeof(start_cr));
         }
 
-        internal static readonly Scenes[] mapScenes = [
-            Scenes.scene_map_world_1,
-            Scenes.scene_map_world_2,
-            Scenes.scene_map_world_3,
-            Scenes.scene_map_world_4,
-            Scenes.scene_map_world_DLC
-        ];
-        internal static readonly string[] mapNames = [
-            "w1",
-            "w2",
-            "w3",
-            "wh",
-            "w4"
-        ];
+        private static readonly Dictionary<Scenes, string> mapNames = new() {
+            {Scenes.scene_map_world_1, "w1"},
+            {Scenes.scene_map_world_2, "w2"},
+            {Scenes.scene_map_world_3, "w3"},
+            {Scenes.scene_map_world_4, "wh"},
+            {Scenes.scene_map_world_DLC, "w4"}
+        };
 
         [HarmonyPatch(typeof(Map), "Awake")]
         internal static class Awake {
@@ -45,36 +36,7 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     Logging.Log($"Current Map Scene: {___scene}");
                     if (!APData.CurrentSData.IsOverridden(Overrides.NoDataStorageOverride)) {
-                        try {
-                            OperationSpecification dop = new() {
-                                OperationType = OperationType.Default,
-                                Value = 0
-                            };
-                            OperationSpecification rop = new() {
-                                OperationType = OperationType.Replace,
-                                Value = ___scene switch {
-                                    Scenes.scene_map_world_1 => 0,
-                                    Scenes.scene_map_world_2 => 1,
-                                    Scenes.scene_map_world_3 => 2,
-                                    Scenes.scene_map_world_4 => 3,
-                                    Scenes.scene_map_world_DLC => 4,
-                                    _ => -1
-                                }
-                            };
-                            SetPacket pk = new() {
-                                Key = $"Slot:{APClient.APSessionPlayerSlot}:current_map",
-                                DefaultValue = 0,
-                                WantReply = false,
-                                Operations = [dop, rop]
-                            };
-                            APClient.SendPacketAsync(pk, (res) => {
-                                if (res) Logging.Log($"Successfully wrote 'current_map' to DataStorage.");
-                                else Logging.LogWarning($"Failed to write 'current_map' to DataStorage.");
-                            });
-                        }
-                        catch (Exception e) {
-                            Logging.LogWarning($"Failed to write 'current_map' to DataStorage: {e.Message}");
-                        }
+                        APDataStorage.WriteCurrentMap(___scene);
                     }
                     RecordMapsVisited();
                     apmngr.Init(APManager.MngrType.Normal);
@@ -99,36 +61,14 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             private static void RecordMapsVisited() {
                 StringBuilder res = new();
                 int mapbits = 0;
-                for (int i = 0; i < mapScenes.Length; i++) {
-                    if (MapSessionStarted(mapScenes[i])) {
-                        mapbits |= 1 << i;
-                        res.Append($"{mapNames[i]} ");
+                foreach (Scenes s in mapNames.Keys) {
+                    if (MapSessionStarted(s)) {
+                        mapbits |= MapBits.GetBit(s);
+                        res.Append(mapNames[s] + " ");
                     }
                 }
                 if (!APData.CurrentSData.IsOverridden(Overrides.NoDataStorageOverride)) {
-                    try {
-                        OperationSpecification dop = new() {
-                            OperationType = OperationType.Default,
-                            Value = 0
-                        };
-                        OperationSpecification oop = new() {
-                            OperationType = OperationType.Or,
-                            Value = mapbits
-                        };
-                        SetPacket pk = new() {
-                            Key = $"Slot:{APClient.APSessionPlayerSlot}:maps_visited",
-                            DefaultValue = 0,
-                            WantReply = false,
-                            Operations = [dop, oop]
-                        };
-                        APClient.SendPacketAsync(pk, (res) => {
-                            if (res) Logging.Log($"Successfully wrote 'maps_visited' to DataStorage.");
-                            else Logging.LogWarning($"Failed to write 'maps_visited' to DataStorage.");
-                        });
-                    }
-                    catch (Exception e) {
-                        Logging.LogWarning($"Failed to write 'maps_visited' to DataStorage: {e.Message}");
-                    }
+                    APDataStorage.WriteMapsVisited(mapbits);
                 }
                 Logging.Log($"Visited worlds: {res}");
             }
