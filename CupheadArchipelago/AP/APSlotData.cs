@@ -52,7 +52,7 @@ namespace CupheadArchipelago.AP {
             version = GetAPSlotDataValue<long>(slotData, "version");
             world_version = GetAPSlotDataVersion(slotData, "world_version");
             feature_bit_reqs = GetOptionalAPSlotDataValue<long>(slotData, "feature_bit_reqs", 0);
-            level_map = new LevelMap(GetAPSlotDataDeserializedValue<Dictionary<long, long>>(slotData, "level_map"));
+            level_map = new LevelMap(GetAPSlotDataDeserializedValue<Dictionary<int, int>>(slotData, "level_map"));
             shop_map = GetAPShopMap(slotData);
             //Logging.Log($"shop_map: {shop_map}");
             use_dlc = GetAPSlotDataValue<bool>(slotData, "use_dlc");

@@ -319,8 +319,8 @@ namespace CupheadArchipelago.AP {
                     receivedItemsUnique = new(new APItemDataComparer(false));
                     #pragma warning restore IDE0028
 
-                    Logging.Log($"[APClient] Catching up...");
                     if (!Enabled) {
+                        Logging.Log($"[APClient] Catching up...");
                         SendChecksThread([.. DoneChecks], true);
                         CatchUpChecks();
                     }

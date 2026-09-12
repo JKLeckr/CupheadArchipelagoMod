@@ -37,7 +37,9 @@ namespace CupheadArchipelago.Hooks.MapHooks {
                     Logging.Log($"Current Map Scene: {___scene}");
                     if (!APData.CurrentSData.IsOverridden(Overrides.NoDataStorageOverride)) {
                         APDataStorage.WriteCurrentMap(___scene);
+                        APDataStorage.WriteCurrentLevel(null);
                     }
+                    RecordStats();
                     RecordMapsVisited();
                     apmngr.Init(APManager.MngrType.Normal);
                     apmngr.SetActive(true);
@@ -57,6 +59,13 @@ namespace CupheadArchipelago.Hooks.MapHooks {
             private static bool MapSessionStarted(Scenes mapScene) {
                 PlayerData.MapData mapData = PlayerData.Data.GetMapData(mapScene);
                 return mapData?.sessionStarted ?? false;
+            }
+            private static void RecordStats() {
+                if (!APData.CurrentSData.IsOverridden(Overrides.NoDataStorageOverride)) {
+                    APDataStorage.WriteAPDataStatAgradeLevels();
+                    APDataStorage.WriteAPDataStatPacifistLevels();
+                    APDataStorage.WriteAPDataStatDlcChalicedLevels();
+                }
             }
             private static void RecordMapsVisited() {
                 StringBuilder res = new();

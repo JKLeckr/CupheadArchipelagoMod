@@ -379,12 +379,20 @@ namespace CupheadArchipelago.AP {
             public int healthupgrades = 0;
             [JsonProperty("dlc_boat")]
             public bool dlc_boat = false;
-            [JsonProperty("stat_coins_collected")]
-            public int coins_collected = 0;
+
             [JsonProperty("aim_directions")]
             public AimDirections aim_directions = 0;
             [JsonProperty("weapons")]
             private Dictionary<Weapon, uint> weapons = [];
+
+            [JsonProperty("stat_coins_collected")]
+            public int coins_collected = 0;
+            [JsonProperty("stat_agrade_levels")]
+            public long agrade_levels = 0;
+            [JsonProperty("stat_pacifist_levels")]
+            public long pacifist_levels = 0;
+            [JsonProperty("stat_dlc_chaliced_levels")]
+            public long dlc_chaliced_levels = 0;
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget & SetTarget.Abilities) > 0) dash = value;

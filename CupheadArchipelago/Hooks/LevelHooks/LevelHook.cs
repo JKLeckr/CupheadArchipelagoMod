@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
+using CupheadArchipelago.Mapping.Bits;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 
@@ -148,6 +149,10 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             )
                                                 ccheck |= 2;
                                             ccheck |= 1;
+                                            APClient.APSessionGSPlayerData.dlc_chaliced_levels |= LevelBits.GetBossLevelBit(clevel);
+                                        }
+                                        if (Level.Grade >= LevelScoringData.Grade.AMinus) {
+                                            APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetBossLevelBit(clevel);
                                         }
                                         if (APSettings.BossGradeChecks > 0) {
                                             LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.BossGradeChecks) - 1);
@@ -188,6 +193,13 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             )
                                                 ccheck |= 2;
                                             ccheck |= 1;
+                                            APClient.APSessionGSPlayerData.dlc_chaliced_levels |= LevelBits.GetBossLevelBit(clevel);
+                                        }
+                                        if (Level.Grade >= LevelScoringData.Grade.AMinus) {
+                                            APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetBossLevelBit(clevel);
+                                            if (Level.Grade >= LevelScoringData.Grade.P) {
+                                                APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetBossLevelBit(clevel);
+                                            }
                                         }
                                         if (APSettings.RungunGradeChecks > 0) {
                                             LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.RungunGradeChecks) - 1);

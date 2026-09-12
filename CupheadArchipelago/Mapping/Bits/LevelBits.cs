@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.Mapping.Bits {
     public class LevelBits {
-        private static readonly Dictionary<Levels, int> levelBossBitIds = new() {
+        private static readonly Dictionary<Levels, sbyte> levelBossBitIds = new() {
             {Levels.Veggies, 0},
             {Levels.Slime, 1},
             {Levels.Frogs, 2},
@@ -37,41 +37,41 @@ namespace CupheadArchipelago.Mapping.Bits {
             {Levels.Graveyard, 25},
         };
 
-        private static readonly Dictionary<Levels, int> levelBossDicePalaceBitIds = new() {
-            {Levels.DicePalaceBooze, 0},
-            {Levels.DicePalaceChips, 1},
-            {Levels.DicePalaceCigar, 2},
-            {Levels.DicePalaceDomino, 3},
-            {Levels.DicePalaceRabbit, 4},
-            {Levels.DicePalaceFlyingHorse, 5},
-            {Levels.DicePalaceRoulette, 6},
-            {Levels.DicePalaceEightBall, 7},
-            {Levels.DicePalaceFlyingMemory, 8}
+        private static readonly Dictionary<Levels, sbyte> levelBossDicePalaceBitIds = new() {
+            {Levels.DicePalaceBooze, 32},
+            {Levels.DicePalaceChips, 33},
+            {Levels.DicePalaceCigar, 34},
+            {Levels.DicePalaceDomino, 35},
+            {Levels.DicePalaceRabbit, 36},
+            {Levels.DicePalaceFlyingHorse, 37},
+            {Levels.DicePalaceRoulette, 38},
+            {Levels.DicePalaceEightBall, 39},
+            {Levels.DicePalaceFlyingMemory, 40},
         };
 
-        private static readonly Dictionary<Levels, int> levelBossDlcChessCastleBitIds = new() {
-            {Levels.ChessPawn, 0},
-            {Levels.ChessKnight, 1},
-            {Levels.ChessBishop, 2},
-            {Levels.ChessRook, 3},
-            {Levels.ChessQueen, 4},
-            {Levels.ChessCastle, 5},
+        private static readonly Dictionary<Levels, sbyte> levelBossDlcChessCastleBitIds = new() {
+            {Levels.ChessPawn, 41},
+            {Levels.ChessKnight, 42},
+            {Levels.ChessBishop, 43},
+            {Levels.ChessRook, 44},
+            {Levels.ChessQueen, 45},
+            {Levels.ChessCastle, 46},
         };
 
-        private static readonly Dictionary<Levels, int> levelRunGunBitIds = new() {
-            {Levels.Platforming_Level_1_1, 0},
-            {Levels.Platforming_Level_1_2, 1},
-            {Levels.Platforming_Level_2_1, 2},
-            {Levels.Platforming_Level_2_2, 3},
-            {Levels.Platforming_Level_3_1, 4},
-            {Levels.Platforming_Level_3_2, 5},
+        private static readonly Dictionary<Levels, sbyte> levelRunGunBitIds = new() {
+            {Levels.Platforming_Level_1_1, 26},
+            {Levels.Platforming_Level_1_2, 27},
+            {Levels.Platforming_Level_2_1, 28},
+            {Levels.Platforming_Level_2_2, 29},
+            {Levels.Platforming_Level_3_1, 30},
+            {Levels.Platforming_Level_3_2, 31},
         };
 
         public static bool IsBitableBossLevel(Levels level) {
             return levelBossBitIds.ContainsKey(level);
         }
 
-        public static int GetBossLevelBit(Levels level) {
+        public static long GetBossLevelBit(Levels level) {
             if (!levelBossBitIds.ContainsKey(level)) {
                 throw new KeyNotFoundException("'" + level + "' is not a valid Boss level.");
             }
@@ -93,7 +93,7 @@ namespace CupheadArchipelago.Mapping.Bits {
             return levelRunGunBitIds.ContainsKey(level);
         }
 
-        public static int GetRunGunLevelBit(Levels level) {
+        public static long GetRunGunLevelBit(Levels level) {
             if (!levelRunGunBitIds.ContainsKey(level)) {
                 throw new KeyNotFoundException("'" + level + "'" + " is not a valid RunGun level.");
             }
@@ -115,7 +115,7 @@ namespace CupheadArchipelago.Mapping.Bits {
             return levelBossDicePalaceBitIds.ContainsKey(level);
         }
 
-        public static int GetDicePalaceBossLevelBit(Levels level) {
+        public static long GetDicePalaceBossLevelBit(Levels level) {
             if (!levelBossDicePalaceBitIds.ContainsKey(level)) {
                 throw new KeyNotFoundException("'" + level + "'" + " is not a valid DicePalace level.");
             }
@@ -137,7 +137,7 @@ namespace CupheadArchipelago.Mapping.Bits {
             return levelBossDlcChessCastleBitIds.ContainsKey(level);
         }
 
-        public static int GetDlcChessBossLevelBit(Levels level) {
+        public static long GetDlcChessBossLevelBit(Levels level) {
             if (!levelBossDlcChessCastleBitIds.ContainsKey(level)) {
                 throw new KeyNotFoundException("'" + level + "'" + " is not a valid DlcChess level.");
             }

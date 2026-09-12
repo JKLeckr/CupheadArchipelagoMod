@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CupheadArchipelago.Mapping {
     public class LevelMap {
-        private static readonly Dictionary<long, Levels> levelMap = new() {
+        private static readonly Dictionary<int, Levels> levelMap = new() {
             {0, Levels.Veggies},
             {1, Levels.Slime},
             {2, Levels.Frogs},
@@ -54,8 +54,15 @@ namespace CupheadArchipelago.Mapping {
             {110, Levels.ChessRook},
             {111, Levels.ChessQueen},
             {112, Levels.ChessCastle},
+
+            {1000, Levels.Tutorial},
+            {1001, Levels.Mausoleum},
+            {1002, Levels.House},
+            {1003, Levels.DiceGate},
+            {1004, Levels.ShmupTutorial},
+            {1100, Levels.Kitchen},
         };
-        private static readonly Dictionary<Levels, long> levelIdMap = [];
+        private static readonly Dictionary<Levels, int> levelIdMap = [];
 
         private static readonly HashSet<Levels> bossLevels;
         private static readonly HashSet<Levels> rungunLevels;
@@ -65,7 +72,7 @@ namespace CupheadArchipelago.Mapping {
         private static LevelMap instance = null;
 
         static LevelMap() {
-            foreach (long key in levelMap.Keys) {
+            foreach (int key in levelMap.Keys) {
                 levelIdMap.Add(levelMap[key], key);
             }
             bossLevels = [
@@ -85,9 +92,9 @@ namespace CupheadArchipelago.Mapping {
 
         public static bool IsInitted() => instance != null;
 
-        public static bool LevelIdExists(long id) => levelMap.ContainsKey(id);
+        public static bool LevelIdExists(int id) => levelMap.ContainsKey(id);
         public static bool LevelExists(Levels level) => levelIdMap.ContainsKey(level);
-        public static long GetLevelId(Levels level) => levelIdMap[level];
+        public static int GetLevelId(Levels level) => levelIdMap[level];
         public static bool LevelIsBoss(Levels level) => bossLevels.Contains(level) && LevelExists(level);
         public static bool LevelIsRungun(Levels level) => rungunLevels.Contains(level) && LevelExists(level);
         public static bool LevelIsDicePalace(Levels level) => dicePalaceLevels.Contains(level) && LevelExists(level);
@@ -115,9 +122,9 @@ namespace CupheadArchipelago.Mapping {
 
         private readonly Dictionary<Levels, Levels> shuffleMap;
 
-        public LevelMap(IDictionary<long, long> map) {
+        public LevelMap(IDictionary<int, int> map) {
             shuffleMap = [];
-            foreach (long lid in levelMap.Keys) {
+            foreach (int lid in levelMap.Keys) {
                 Levels level = levelMap[lid];
                 if (map.ContainsKey(lid)) {
                     // TODO: eventually support more combinations
