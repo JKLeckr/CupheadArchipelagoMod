@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using System.Reflection;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Config;
+using CupheadArchipelago.Data;
 using CupheadArchipelago.Unity;
 using HarmonyLib;
 using UnityEngine;
@@ -249,6 +250,8 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                     }
                     APData.SData[_slotSelection].playerData.MarkInitialized();
                 }
+
+                LevelPlayerDataIndex.Init();
 
                 if (APSettings.Hard) Level.SetCurrentMode(Level.Mode.Hard);
                 else Level.SetCurrentMode(Level.Mode.Normal);
