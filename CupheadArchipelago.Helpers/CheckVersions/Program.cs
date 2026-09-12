@@ -31,11 +31,13 @@ namespace CupheadArchipelago.Helpers.CheckVersions {
                 return -3;
             }
 
+            var csProjDoc = CsprojExtractor.LoadXmlDocument(csProjPath);
+
             RawFVer rawFVer;
             try {
                 rawFVer = FVerParse.GetRawFVer(
-                    CsprojExtractor.GetFullVersionString(csProjPath),
-                    CsprojExtractor.GetVersionRelNumber(csProjPath)
+                    CsprojExtractor.GetFullVersionString(csProjDoc),
+                    CsprojExtractor.GetVersionRelNumber(csProjDoc)
                 );
             }
             catch (Exception ex) {
