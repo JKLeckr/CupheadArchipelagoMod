@@ -61,7 +61,7 @@ namespace CupheadArchipelago.AP {
             start_weapon = GetWeaponFromId(GetAPSlotDataValue<sbyte>(slotData, "start_weapon"));
             Logging.Log($"start_weapon: {start_weapon}");
             weapon_mode = GetAPSlotDataValue<WeaponModes>(slotData, "weapon_mode");
-            contract_requirements = GetAPSlotDataDeserializedValue<List<int>>(slotData, "contract_requirements").ToArray();
+            contract_requirements = [.. GetAPSlotDataDeserializedValue<List<int>>(slotData, "contract_requirements")];
             dlc_ingredient_requirements = GetAPSlotDataValue<int>(slotData, "dlc_ingredient_requirements");
             contract_goal_requirements = GetAPSlotDataValue<int>(slotData, "contract_goal_requirements");
             dlc_ingredient_goal_requirements = GetAPSlotDataValue<int>(slotData, "dlc_ingredient_goal_requirements");

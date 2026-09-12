@@ -19,7 +19,7 @@ namespace CupheadArchipelago.Tests {
             ];
             Console.WriteLine($"Running NUnitLite with args [{ArgsToString(largs)}]");
             Console.WriteLine();
-            return new AutoRun().Execute(largs.ToArray());
+            return new AutoRun().Execute([.. largs]);
         }
 
         private static string ArgsToString(IEnumerable<string> args) {

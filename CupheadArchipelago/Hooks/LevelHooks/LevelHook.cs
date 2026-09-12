@@ -6,9 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Models;
-using Archipelago.MultiClient.Net.Packets;
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
@@ -27,39 +24,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(Level), "Awake")]
         internal static class Awake {
-            private const int LV_MODIFIER = 10000000;
-
             static void Postfix(Level __instance) {
                 Logging.Log($"LIndex: {__instance.mode}", LoggingFlags.Debug);
                 if (APData.IsCurrentSlotEnabled()) {
                     Levels lv = __instance.CurrentLevel;
                     if (!APData.CurrentSData.IsOverridden(Overrides.NoDataStorageOverride)) {
-                        try {
-                            OperationSpecification dop = new() {
-                                OperationType = OperationType.Default,
-                                Value = -1
-                            };
-                            OperationSpecification rop = new() {
-                                OperationType = OperationType.Replace,
-                                Value =
-                                    LevelMap.LevelExists(lv) ?
-                                    LevelMap.GetLevelId(lv) :
-                                    ((int)lv < LV_MODIFIER ? ((int)lv + LV_MODIFIER) : (int)lv)
-                            };
-                            SetPacket pk = new() {
-                                Key = $"Slot:{APClient.APSessionPlayerSlot}:current_level",
-                                DefaultValue = -1,
-                                WantReply = false,
-                                Operations = [dop, rop]
-                            };
-                            APClient.SendPacketAsync(pk, (res) => {
-                                if (res) Logging.Log($"Successfully wrote 'current_level' to DataStorage.");
-                                else Logging.LogWarning($"Failed to write 'current_level' to DataStorage.");
-                            });
-                        }
-                        catch (Exception e) {
-                            Logging.LogWarning($"Failed to write 'current_level' to DataStorage: {e.Message}");
-                        }
+                        APDataStorage.WriteCurrentLevel(lv);
                     }
                     APManager apmngr = __instance.gameObject.AddComponent<APManager>();
                     apmngr.Init(GetLevelType(__instance), IsValidDeathLinkLevel(__instance));
@@ -94,7 +64,7 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
 
         [HarmonyPatch(typeof(Level), "_OnPreWin")]
         internal static class _OnPreWin {
-            private static HashSet<Levels> secretLevels = [
+            private static readonly HashSet<Levels> secretLevels = [
                 Levels.Veggies,
                 Levels.FlyingGenie,
                 Levels.SallyStagePlay,

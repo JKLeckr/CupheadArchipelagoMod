@@ -6,9 +6,9 @@
     <Product>CupheadArchipelago</Product>
     <GUID>com.JKLeckr.CupheadArchipelago</GUID>
     <Description>The Cuphead Archipelago Mod</Description>
-    <VersionPrefix>0.2.2.7</VersionPrefix>
+    <VersionPrefix>0.2.2.8</VersionPrefix>
     <VersionSuffix></VersionSuffix>
-    <VersionRelNumber>3</VersionRelNumber>
+    <VersionRelNumber>0</VersionRelNumber>
     <Copyright>Copyright 2025-2026 JKLeckr</Copyright>
     <RepositoryUrl>https://github.com/JKLeckr/CupheadArchipelagoMod</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.*" />
+    <PackageReference Include="Archipelago.MultiClient.Net.Analyzers" Version="2.0.*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="FVer" Version="0.1.0-*">
