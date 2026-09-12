@@ -6,6 +6,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using CupheadArchipelago.Mapping;
+using CupheadArchipelago.Mapping.Bits;
 
 namespace CupheadArchipelago.AP {
     internal class APDataStorage {
@@ -47,14 +48,7 @@ namespace CupheadArchipelago.AP {
                 };
                 OperationSpecification rop = new() {
                     OperationType = OperationType.Replace,
-                    Value = scene switch {
-                        Scenes.scene_map_world_1 => 0,
-                        Scenes.scene_map_world_2 => 1,
-                        Scenes.scene_map_world_3 => 2,
-                        Scenes.scene_map_world_4 => 3,
-                        Scenes.scene_map_world_DLC => 4,
-                        _ => -1
-                    }
+                    Value = MapBits.IsBittableMap(scene) ? MapBits.GetBitId(scene) : -1
                 };
                 SetPacket pk = new() {
                     Key = $"Slot:{APClient.APSessionPlayerSlot}:current_map",
