@@ -315,7 +315,9 @@ namespace CupheadArchipelago.AP {
 
                         UpdateDeathLinkGraceCount();
                     }
-                    receivedItemsUnique = new(new APItemDataComparer(false));;
+                    #pragma warning disable IDE0028
+                    receivedItemsUnique = new(new APItemDataComparer(false));
+                    #pragma warning restore IDE0028
 
                     Logging.Log($"[APClient] Catching up...");
                     if (!Enabled) {
