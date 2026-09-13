@@ -117,6 +117,7 @@ namespace CupheadArchipelago.AP.Data {
                 if (data == null) {
                     Logging.LogError($"[APData] Data could not be unserialized for key: {filename}. Loading defaults.");
                     SData[index] = new APData {
+                        index = index,
                         state = state
                     };
                 }
