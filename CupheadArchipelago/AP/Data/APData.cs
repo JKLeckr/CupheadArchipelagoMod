@@ -135,25 +135,21 @@ namespace CupheadArchipelago.AP.Data {
                         SData[index].Save(false);
                         data = SData[index];
                     }
-                    if (data.version != AP_DATA_VERSION && !data.IsEmpty()) {
+                    if (data.version != AP_DATA_VERSION && data.enabled && !data.IsEmpty()) {
                         bool _override = data.IsOverridden(Overrides.DataVersionOverride);
                         string message =
-                            $"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}. Risk of data loss!";
-                        if (_override) {
-                            Logging.LogWarning($"{message} But ignoring as requested.");
+                            $"[APData] Slot {index}: Data version mismatch. {data.version} != {AP_DATA_VERSION}.";
+                        if (data.IsUpgradable()) {
+                            Logging.Log($"{message} Can be upgraded.");
+                        }
+                        else if (_override) {
+                            Logging.LogWarning(message + " Risk of data loss! But ignoring as requested.");
                         }
                         else {
-                            Logging.LogWarning(message);
+                            Logging.LogWarning(message + " Risk of data loss!");
                             data.state = 1;
                         }
                     }
-                    /*if (data.IsOverridden(Overrides.ClearReceivedItemsOverride)) {
-                        data._override &= ~(int)Overrides.ClearReceivedItemsOverride;
-                        Logging.LogWarning($"[APData] Slot {index}: Clearing received items...");
-                        int counter = data.receivedItems.Count;
-                        data.receivedItems.Clear();
-                        Logging.LogWarning($"[APData] Slot {index}: Removed {counter} items.");
-                    }*/
                     if (data.IsCheater()) {
                         Overrides enabledCheats = (Overrides)(data.GetOverrides() & GetCheaterOverrides());
                         Logging.LogWarning($"[APData] Slot {index} has cheats enabled: [{enabledCheats}].");
@@ -285,8 +281,9 @@ namespace CupheadArchipelago.AP.Data {
                 cond = enabled || saveDataType != SaveDataType.Vanilla;
             else
                 cond = saveDataType == SaveDataType.AP;
+
             if (cond) {
-                res = !playerData.IsInitialized();
+                res = !playerData.IsInitialized() && version >= 4;
             } else {
                 global::PlayerData data = global::PlayerData.GetDataForSlot(index);
                 res = !data.GetMapData(Scenes.scene_map_world_1).sessionStarted && !data.IsTutorialCompleted && data.CountLevelsCompleted(Level.world1BossLevels) == 0;

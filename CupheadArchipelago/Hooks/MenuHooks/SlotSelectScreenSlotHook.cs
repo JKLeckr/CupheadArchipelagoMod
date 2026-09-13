@@ -16,10 +16,12 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
         private static GameObject[] slotAPText = null;
         private static byte[] states;
         private const int APTEXT_SIBLING_INDEX = 3;
-        private static readonly Color hColor = new Color(.82f,.76f,.70f);
-        private static readonly Color bColor = new Color(.18f,.18f,.18f);
-        private static readonly Color ehColor = new Color(.32f,.18f,.18f);
-        private static readonly Color ebColor = new Color(.82f,.18f,.18f);
+        private static readonly Color hColor = new(.82f,.76f,.70f);
+        private static readonly Color bColor = new(.18f,.18f,.18f);
+        private static readonly Color ehColor = new(.32f,.18f,.18f);
+        private static readonly Color ebColor = new(.82f, .18f, .18f);
+        private static readonly Color uhColor = new(.18f,.18f,.24f);
+        private static readonly Color ubColor = new(.32f,.32f,.82f);
 
         internal static void Hook() {
             instances = new SlotSelectScreenSlot[3];
@@ -116,19 +118,28 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                 Transform slotAPText_inst = __instance.transform.GetChild(APTEXT_SIBLING_INDEX);
                 if (slotAPText_inst!=null) {
                     TextMeshProUGUI txt = slotAPText_inst.GetComponent<TextMeshProUGUI>();
-                    if (APData.IsSlotEnabled(slot) && APData.SData[slot].state==0) {
-                        txt.color = selected?hColor:bColor;
-                        slotAPText_inst.gameObject.SetActive(true);
-                        states[slot] = 1;
+                    if (APData.IsSlotEnabled(slot) && APData.SData[slot].state == 0) {
+                        if (APData.SData[slot].IsUpgradable()) {
+                            txt.color = selected ? uhColor : ubColor;
+                            txt.text = "UP";
+                            slotAPText_inst.gameObject.SetActive(true);
+                            states[slot] = 4;
+                        }
+                        else {
+                            txt.color = selected ? hColor : bColor;
+                            txt.text = "AP";
+                            slotAPText_inst.gameObject.SetActive(true);
+                            states[slot] = 1;
+                        }
                     }
-                    else if (APData.SData[slot].state<0) {
-                        txt.color = selected?ehColor:ebColor;
+                    else if (APData.SData[slot].state < 0) {
+                        txt.color = selected ? ehColor : ebColor;
                         txt.text = "E" + APData.SData[slot].state;
                         slotAPText_inst.gameObject.SetActive(true);
                         states[slot] = 2;
                     }
-                    else if (APData.SData[slot].state>0) {
-                        txt.color = selected?ehColor:ebColor;
+                    else if (APData.SData[slot].state > 0) {
+                        txt.color = selected ? ehColor : ebColor;
                         txt.text = "!" + APData.SData[slot].state;
                         slotAPText_inst.gameObject.SetActive(true);
                         states[slot] = 3;
