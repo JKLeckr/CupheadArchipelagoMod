@@ -21,6 +21,8 @@ jobs:
     name: Test Win64
     runs-on: windows-latest
 
+    if: ${{ vars.PULL_PRIV != '' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

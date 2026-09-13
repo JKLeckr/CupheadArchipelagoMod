@@ -42,6 +42,8 @@ jobs:
     env:
       MOD_NAME: "CupheadArchipelago"
 
+    if: ${{ vars.PULL_PRIV != '' && (github.event.inputs.build_gh_package != 'false' || github.event.inputs.build_ts_package != 'false') }}
+
     outputs:
       rel_tag: ${{ steps.vars.outputs.rel_tag }}
       mod_name: ${{ steps.vars.outputs.mod_name }}
@@ -82,7 +84,8 @@ jobs:
     name: Build and Upload Release ${{ matrix.os.name }}
     runs-on: ${{ matrix.os.runner }}
     needs: prep_release
-    if: ${{ github.event.inputs.build_gh_release == 'true' }}
+
+    if: ${{ vars.PULL_PRIV != '' && github.event.inputs.build_gh_release != 'false' }}
 
     env:
       RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
@@ -167,7 +170,8 @@ jobs:
     name: Build Thunderstore Release
     runs-on: ubuntu-latest
     needs: prep_release
-    if: ${{ github.event.inputs.build_ts_package == 'true' }}
+
+    if: ${{ vars.PULL_PRIV != '' && github.event.inputs.build_ts_package != 'false' }}
 
     env:
       RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
