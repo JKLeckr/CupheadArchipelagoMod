@@ -143,7 +143,7 @@ jobs:
         run: |
           rm -rf ${{ env.MOD_NAME }}/assets
 
-          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/websocket-licenses
 
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
           sed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
@@ -232,7 +232,7 @@ jobs:
           rm -f BUILDING.md
           rm -f INSTALLING.md
 
-          cp -rv ../${{ env.MOD_NAME }}/ref/licenses .
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ./websocket-licenses
 
           sed -i '/^## Installing$/,/^See \[INSTALLING\.md\](INSTALLING\.md)$/d' README.md
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' README.md
@@ -244,16 +244,6 @@ jobs:
         working-directory: build
         run: |
           zip -r ../${{ env.FILE_NAME }} *
-
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v3
-        with:
-          draft: true
-          prerelease: false
-          name: AP Mod ${{ env.RELEASE_VERSION }}
-          token: ${{ secrets.AP_TOKEN }}
-          files: |
-            ${{ env.FILE_NAME }}
 
       - name: Upload Thunderstore Package Artifact
         uses: actions/upload-artifact@v7
