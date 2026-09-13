@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Mapping.Bits;
 using CupheadArchipelago.Unity;
@@ -193,12 +194,12 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             )
                                                 ccheck |= 2;
                                             ccheck |= 1;
-                                            APClient.APSessionGSPlayerData.dlc_chaliced_levels |= LevelBits.GetBossLevelBit(clevel);
+                                            APClient.APSessionGSPlayerData.dlc_chaliced_levels |= LevelBits.GetRunGunLevelBit(clevel);
                                         }
                                         if (Level.Grade >= LevelScoringData.Grade.AMinus) {
-                                            APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetBossLevelBit(clevel);
+                                            APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetRunGunLevelBit(clevel);
                                             if (Level.Grade >= LevelScoringData.Grade.P) {
-                                                APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetBossLevelBit(clevel);
+                                                APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetRunGunLevelBit(clevel);
                                             }
                                         }
                                         if (APSettings.RungunGradeChecks > 0) {
