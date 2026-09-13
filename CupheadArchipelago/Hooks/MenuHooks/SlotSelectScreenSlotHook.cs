@@ -1,14 +1,14 @@
 /// Copyright 2025-2026 JKLeckr
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
-using CupheadArchipelago.AP;
-using HarmonyLib;
-using UnityEngine;
-using TMPro;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
+using CupheadArchipelago.AP.Data;
+using HarmonyLib;
+using UnityEngine;
+using TMPro;
 
 namespace CupheadArchipelago.Hooks.MenuHooks {
     internal class SlotSelectScreenSlotHook {

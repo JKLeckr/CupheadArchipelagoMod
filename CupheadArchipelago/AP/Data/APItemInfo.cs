@@ -3,7 +3,7 @@
 
 using Archipelago.MultiClient.Net.Enums;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.AP.Data {
     public class APItemInfo(long id, string name, ItemFlags flags)
     {
         public long Id { get; private set; } = id;

@@ -5,6 +5,7 @@ using System;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Mapping.Bits;
 
@@ -209,21 +210,45 @@ namespace CupheadArchipelago.AP {
                 };
                 OperationSpecification oop = new() {
                     OperationType = OperationType.Or,
-                    Value = APData.CurrentSData.playerData.dlc_chaliced_levels
+                    Value = APData.CurrentSData.playerData.dlc_chaliced_levels_p1
                 };
                 SetPacket pk = new() {
-                    Key = $"Slot:{APClient.APSessionPlayerSlot}:dlc_chaliced_levels",
+                    Key = $"Slot:{APClient.APSessionPlayerSlot}:dlc_chaliced_levels_p1",
                     DefaultValue = 0,
                     WantReply = false,
                     Operations = [dop, oop]
                 };
                 APClient.SendPacketAsync(pk, (res) => {
-                    if (res) Logging.Log($"Successfully wrote 'dlc_chaliced_levels' to DataStorage.");
-                    else Logging.LogWarning($"Failed to write 'dlc_chaliced_levels' to DataStorage.");
+                    if (res) Logging.Log($"Successfully wrote 'dlc_chaliced_levels_p1' to DataStorage.");
+                    else Logging.LogWarning($"Failed to write 'dlc_chaliced_levels_p1' to DataStorage.");
                 });
             }
             catch (Exception e) {
-                Logging.LogWarning($"Failed to write 'dlc_chaliced_levels' to DataStorage: {e.Message}");
+                Logging.LogWarning($"Failed to write 'dlc_chaliced_levels_p1' to DataStorage: {e.Message}");
+            }
+
+            try {
+                OperationSpecification dop2 = new() {
+                    OperationType = OperationType.Default,
+                    Value = 0
+                };
+                OperationSpecification oop2 = new() {
+                    OperationType = OperationType.Or,
+                    Value = APData.CurrentSData.playerData.dlc_chaliced_levels_p2
+                };
+                SetPacket pk2 = new() {
+                    Key = $"Slot:{APClient.APSessionPlayerSlot}:dlc_chaliced_levels_p2",
+                    DefaultValue = 0,
+                    WantReply = false,
+                    Operations = [dop2, oop2]
+                };
+                APClient.SendPacketAsync(pk2, (res) => {
+                    if (res) Logging.Log($"Successfully wrote 'dlc_chaliced_levels_p2' to DataStorage.");
+                    else Logging.LogWarning($"Failed to write 'dlc_chaliced_levels_p2' to DataStorage.");
+                });
+            }
+            catch (Exception e) {
+                Logging.LogWarning($"Failed to write 'dlc_chaliced_levels_p2' to DataStorage: {e.Message}");
             }
         }
     }

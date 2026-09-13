@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Archipelago.MultiClient.Net.Models;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.AP.Data {
     public class APItemData {
         [JsonProperty("id")]
         public readonly long id;

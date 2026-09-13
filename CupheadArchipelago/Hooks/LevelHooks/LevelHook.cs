@@ -150,10 +150,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             )
                                                 ccheck |= 2;
                                             ccheck |= 1;
-                                            APClient.APSessionGSPlayerData.dlc_chaliced_levels |= LevelBits.GetBossLevelBit(clevel);
-                                        }
-                                        if (Level.Grade >= LevelScoringData.Grade.AMinus) {
-                                            APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetBossLevelBit(clevel);
                                         }
                                         if (APSettings.BossGradeChecks > 0) {
                                             LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.BossGradeChecks) - 1);
@@ -194,13 +190,6 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                                             )
                                                 ccheck |= 2;
                                             ccheck |= 1;
-                                            APClient.APSessionGSPlayerData.dlc_chaliced_levels |= LevelBits.GetRunGunLevelBit(clevel);
-                                        }
-                                        if (Level.Grade >= LevelScoringData.Grade.AMinus) {
-                                            APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetRunGunLevelBit(clevel);
-                                            if (Level.Grade >= LevelScoringData.Grade.P) {
-                                                APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetRunGunLevelBit(clevel);
-                                            }
                                         }
                                         if (APSettings.RungunGradeChecks > 0) {
                                             LevelScoringData.Grade tgtGrade = LevelScoringData.Grade.AMinus + (((int)APSettings.RungunGradeChecks) - 1);
@@ -344,6 +333,29 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 }
 
                 return codes;
+            }
+            static void Postfix(Level __instance) {
+                Levels clevel = __instance.CurrentLevel;
+
+                if (!LevelBits.IsBitableLevel(clevel)) {
+                    return;
+                }
+
+                PlayerData.PlayerLevelDataObject pdata = PlayerData.Data.GetLevelData(__instance.CurrentLevel);
+
+                if (pdata.grade >= LevelScoringData.Grade.AMinus) {
+                    APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetLevelBit(clevel);
+                }
+                if (pdata.grade == LevelScoringData.Grade.P) {
+                    APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetLevelBit(clevel);
+                }
+
+                if (pdata.completedAsChaliceP1) {
+                    APClient.APSessionGSPlayerData.dlc_chaliced_levels_p1 |= LevelBits.GetLevelBit(clevel);
+                }
+                if (pdata.completedAsChaliceP2) {
+                    APClient.APSessionGSPlayerData.dlc_chaliced_levels_p2 |= LevelBits.GetLevelBit(clevel);
+                }
             }
 
             private static Level.Mode HackDifficulty(Level.Mode mode, Level.Type type) {

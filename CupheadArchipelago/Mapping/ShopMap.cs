@@ -61,13 +61,8 @@ namespace CupheadArchipelago.Mapping {
         }
     }
 
-    public readonly struct ShopSet {
-        public ShopSet(int weapons, int charms) {
-            Weapons = weapons;
-            Charms = charms;
-        }
-
-        public int Weapons { get; }
-        public int Charms { get; }
+    public readonly struct ShopSet(int weapons, int charms) {
+        public int Weapons { get; } = weapons;
+        public int Charms { get; } = charms;
     }
 }

@@ -2,6 +2,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
 using System;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Interfaces;
 using CupheadArchipelago.Mapping;
 

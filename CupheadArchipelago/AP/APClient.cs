@@ -13,6 +13,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Unity;
 

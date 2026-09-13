@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CupheadArchipelago.Data {
-    internal class LevelPlayerDataIndex(int slot) {
+    public class LevelPlayerDataIndex(int slot) {
         public static LevelPlayerDataIndex Current { get; protected set; }
 
         private readonly Dictionary<Levels, PlayerData.PlayerLevelDataObject> pldIndex = [];

@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using CupheadArchipelago.Config;
 using CupheadArchipelago.Tests.Core;
-using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using NUnit.Framework;
 
 namespace CupheadArchipelago.Tests {

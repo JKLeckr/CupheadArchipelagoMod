@@ -67,6 +67,19 @@ namespace CupheadArchipelago.Mapping.Bits {
             {Levels.Platforming_Level_3_2, 31},
         };
 
+        private static readonly Dictionary<Levels, sbyte> levelBitIds = [];
+
+        static LevelBits() {
+            foreach (KeyValuePair<Levels, sbyte> kvp in levelBossBitIds)
+                levelBitIds[kvp.Key] = kvp.Value;
+            foreach (KeyValuePair<Levels, sbyte> kvp in levelRunGunBitIds)
+                levelBitIds[kvp.Key] = kvp.Value;
+            foreach (KeyValuePair<Levels, sbyte> kvp in levelBossDicePalaceBitIds)
+                levelBitIds[kvp.Key] = kvp.Value;
+            foreach (KeyValuePair<Levels, sbyte> kvp in levelBossDlcChessCastleBitIds)
+                levelBitIds[kvp.Key] = kvp.Value;
+        }
+
         public static bool IsBitableBossLevel(Levels level) {
             return levelBossBitIds.ContainsKey(level);
         }
@@ -153,6 +166,28 @@ namespace CupheadArchipelago.Mapping.Bits {
 
         public static Levels[] GetBittableDlcChessBossLevels() {
             return [.. levelBossDlcChessCastleBitIds.Keys];
+        }
+
+        public static bool IsBitableLevel(Levels level) {
+            return levelBitIds.ContainsKey(level);
+        }
+
+        public static long GetLevelBit(Levels level) {
+            if (!levelBitIds.ContainsKey(level)) {
+                throw new KeyNotFoundException("'" + level + "'" + " is not a valid DlcChess level.");
+            }
+            return 1 << levelBitIds[level];
+        }
+
+        public static int GetLevelBitId(Levels level) {
+            if (!levelBitIds.ContainsKey(level)) {
+                throw new KeyNotFoundException("'" + level + "'" + " is not a valid DlcChess level.");
+            }
+            return levelBitIds[level];
+        }
+
+        public static Levels[] GetBittableLevels() {
+            return [.. levelBitIds.Keys];
         }
     }
 }

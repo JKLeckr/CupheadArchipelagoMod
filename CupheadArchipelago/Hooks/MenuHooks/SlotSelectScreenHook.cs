@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Config;
 using CupheadArchipelago.Data;
 using CupheadArchipelago.Unity;
@@ -192,7 +193,19 @@ namespace CupheadArchipelago.Hooks.MenuHooks {
                             APClient.CloseArchipelagoSession(true);
                         }
                     }
-                    if (APData.SData[_slotSelection].version != APData.AP_DATA_VERSION) {
+                    if (APData.SData[_slotSelection].IsUpgradable()) {
+                        SetAPConStatusText("Upgrading Save...");
+                        try {
+                            APDataUpgrader.UpgradeStatsV4to5(_slotSelection);
+                            APData.SData[_slotSelection].Upgrade();
+                        } catch (Exception e) {
+                            Logging.LogError("APData could not be upgraded. Exception: " + e);
+                            SetAPConStatusText("Error!\nCould not upgrade save!\nCheck Log!");
+                            APAbort(false);
+                            return;
+                        }
+                    }
+                    else if (APData.SData[_slotSelection].version != APData.AP_DATA_VERSION) {
                         SetAPConStatusText("Error!\nData Version Mismatch!\nCheck Log!");
                         APAbort(false);
                         return;

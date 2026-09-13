@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
-using UnityEngine;
+using CupheadArchipelago.AP.Data;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.CutsceneHooks {

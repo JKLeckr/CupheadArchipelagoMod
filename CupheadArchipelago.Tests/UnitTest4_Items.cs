@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using CupheadArchipelago.Tests.Core;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Tests.TestClasses;
 using NUnit.Framework;

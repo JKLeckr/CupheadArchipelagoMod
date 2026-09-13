@@ -1,7 +1,7 @@
 /// Copyright 2025-2026 JKLeckr
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
-using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.CutsceneHooks {

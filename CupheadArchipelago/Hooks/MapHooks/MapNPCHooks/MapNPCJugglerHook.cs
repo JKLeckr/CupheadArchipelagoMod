@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.MapHooks.MapNPCHooks {

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Mapping;
 using CupheadArchipelago.Mapping.Bits;
 using CupheadArchipelago.Unity;

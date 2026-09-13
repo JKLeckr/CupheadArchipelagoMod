@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.AP.Data {
     public class APItemGroups {
         public enum ItemGroup {
             None = 0,

@@ -3,6 +3,7 @@
 
 using System;
 using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using UnityEngine;
 using UnityEngine.UI;
 

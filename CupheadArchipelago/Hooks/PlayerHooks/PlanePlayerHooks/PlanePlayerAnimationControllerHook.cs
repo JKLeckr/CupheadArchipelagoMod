@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using HarmonyLib;
 
 namespace CupheadArchipelago.Hooks.PlayerHooks.PlanePlayerHooks {

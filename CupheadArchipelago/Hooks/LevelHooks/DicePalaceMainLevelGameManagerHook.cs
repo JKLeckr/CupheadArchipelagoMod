@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using CupheadArchipelago.AP;
+using CupheadArchipelago.AP.Data;
 using CupheadArchipelago.Mapping;
 using HarmonyLib;
 using static DicePalaceMainLevelGameManager;

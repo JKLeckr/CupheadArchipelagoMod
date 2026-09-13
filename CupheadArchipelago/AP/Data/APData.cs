@@ -7,9 +7,9 @@ using System.IO;
 using CupheadArchipelago.Config;
 using Newtonsoft.Json;
 
-namespace CupheadArchipelago.AP {
+namespace CupheadArchipelago.AP.Data {
     public class APData {
-        internal const int AP_DATA_VERSION = 4;
+        internal const int AP_DATA_VERSION = 5;
 
         internal const string AP_DEFAULT_ADDRESS = "archipelago.gg";
         internal const ushort AP_DEFAULT_PORT = 38281;
@@ -55,7 +55,7 @@ namespace CupheadArchipelago.AP {
         public long deathCount;
         // TODO: Use appliedItems for more than just filler items
         [JsonProperty("appliedItems")]
-        private Dictionary<long, int> appliedItems = [];
+        private readonly Dictionary<long, int> appliedItems = [];
         [JsonProperty("goalsCompleted")]
         private Goals goalsCompleted = Goals.None;
         [JsonProperty("ftime")]
@@ -321,6 +321,25 @@ namespace CupheadArchipelago.AP {
             return appliedItems[itemId];
         }
 
+        public bool Upgrade() {
+            if (!IsUpgradable()) {
+                Logging.Log("[APData] Not upgradable.");
+                return false;
+            }
+
+            if (version != 4) {
+                Logging.Log("[APData] Save data is an older version (" + version + "). Cannot upgrade.");
+                return false;
+            }
+
+            version = AP_DATA_VERSION;
+            return true;
+        }
+
+        public bool IsUpgradable() {
+            return !IsEmpty() && version == 4;
+        }
+
         public class PlayerData {
             [Flags]
             public enum SetTarget {
@@ -391,8 +410,10 @@ namespace CupheadArchipelago.AP {
             public long agrade_levels = 0;
             [JsonProperty("stat_pacifist_levels")]
             public long pacifist_levels = 0;
-            [JsonProperty("stat_dlc_chaliced_levels")]
-            public long dlc_chaliced_levels = 0;
+            [JsonProperty("stat_dlc_chaliced_levels_p1")]
+            public long dlc_chaliced_levels_p1 = 0;
+            [JsonProperty("stat_dlc_chaliced_levels_p2")]
+            public long dlc_chaliced_levels_p2 = 0;
 
             public void SetBoolValues(bool value, SetTarget setTarget) {
                 if ((setTarget & SetTarget.Abilities) > 0) dash = value;
