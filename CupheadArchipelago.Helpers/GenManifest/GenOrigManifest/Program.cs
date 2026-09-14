@@ -11,6 +11,7 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenOrigManifest {
         private static readonly string[] modAuthors = ["JKLeckr"];
         private static readonly string modLicense = "GPL-3.0-or-later";
         private static readonly string[] modDeps = [];
+        private const byte modPkRev = 0;
 
         private static int Main(string[] args) {
             if (args.Length < 1 || args.Length > 2) {
@@ -30,13 +31,13 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenOrigManifest {
             try {
                 mdata = ManifestData.GatherManifestData(srcFile);
 
-                string versionNumber = Util.SemVersionFourPartToThreePart(mdata.modVersionSem, mdata.modVersionRel, mdata.modVersionPostfix);
-
                 Manifest manifest = new(
                     mdata.modName,
                     mdata.modGuid,
                     mdata.modVersion,
                     mdata.modVersionSemFull,
+                    mdata.modVersionRel,
+                    modPkRev,
                     modAuthors,
                     modLicense,
                     mdata.websiteUrl,
@@ -66,6 +67,8 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenOrigManifest {
             string mod_guid,
             string mod_version,
             string mod_sem_version,
+            int mod_sem_version_rel,
+            byte mod_package_rev,
             string[] mod_authors,
             string mod_license,
             string website_url,
@@ -76,6 +79,8 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenOrigManifest {
             public string mod_guid = mod_guid;
             public string mod_version = mod_version;
             public string mod_sem_version = mod_sem_version;
+            public int mod_sem_version_rel = mod_sem_version_rel;
+            public byte mod_package_rev = mod_package_rev;
             public string[] mod_authors = mod_authors;
             public string mod_license = mod_license;
             public string website_url = website_url;
