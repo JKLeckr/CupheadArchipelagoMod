@@ -314,7 +314,9 @@ namespace CupheadArchipelago.AP {
                         deathLinkService.EnableDeathLink();
                         deathLinkService.OnDeathLinkReceived += OnDeathLinkReceived;
 
-                        UpdateDeathLinkGraceCount();
+                        if (!APSessionGSData.IsAnyOverridden(Overrides.NoDataStorageOverride)) {
+                            APDataStorage.WriteDeathLinkGraceCount(CalculateDeathLinkGraceCount());
+                        }
                     }
                     #pragma warning disable IDE0028
                     receivedItemsUnique = new(new APItemDataComparer(false));
@@ -916,7 +918,17 @@ namespace CupheadArchipelago.AP {
             Logging.Log($"{APSessionGSData.deathCount} deaths");
             if (!IsDeathLinkActive()) return;
             if (APSettings.DeathLinkGraceCount > 0) {
-                UpdateDeathLinkGraceCount();
+                int remainingGrace = CalculateDeathLinkGraceCount();
+                if (!APSessionGSData.IsAnyOverridden(Overrides.NoDataStorageOverride)) {
+                    APDataStorage.WriteDeathLinkGraceCount(remainingGrace);
+                }
+                if (remainingGrace != APSettings.DeathLinkGraceCount) {
+                    Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}{(remainingGrace == 0 ? " (warning)" : "")}.");
+                    return;
+                }
+                else {
+                    Logging.Log($"[APClient] No DeathLink Grace's to save your allies this time!");
+                }
             }
             Logging.Log("[APClient] Sharing your death...");
             string player = APSessionPlayerInfo.Alias;
@@ -935,18 +947,8 @@ namespace CupheadArchipelago.AP {
             ThreadPool.QueueUserWorkItem(_ => SendDeathLinkThread(death));
         }
 
-        private static void UpdateDeathLinkGraceCount() {
-            int remainingGrace = APSettings.DeathLinkGraceCount - ((int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1)));
-            if (!APSessionGSData.IsAnyOverridden(Overrides.NoDataStorageOverride)) {
-                APDataStorage.WriteDeathLinkGraceCount(remainingGrace);
-            }
-            if (remainingGrace != APSettings.DeathLinkGraceCount) {
-                Logging.Log($"[APClient] Remaining DeathLink Grace's: {remainingGrace}{(remainingGrace == 0 ? " (warning)" : "")}.");
-                return;
-            }
-            else {
-                Logging.Log($"[APClient] No DeathLink Grace's to save your allies this time!");
-            }
+        private static int CalculateDeathLinkGraceCount() {
+            return APSettings.DeathLinkGraceCount - ((int)(APSessionGSData.deathCount % (APSettings.DeathLinkGraceCount + 1)));
         }
 
         private static bool SendDeathLinkThread(DeathLink death) {
