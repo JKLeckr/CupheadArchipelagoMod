@@ -5,7 +5,7 @@
 - A copy of Cuphead
 - [.NET SDK](https://dotnet.microsoft.com/en-us/download) 10 or greater. You need the `dotnet` program in your path.
 - [just](https://github.com/casey/just?tab=readme-ov-file#installation). You need the `just` program in your path.
-- [native-websocket-sharp](https://github.com/JKLeckr/native-websocket-sharp). Note that it must be the net35 windows version (even on Wine/Proton). The macOS version of the game requires the net35 macOS version.
+- [native-websocket-sharp](https://github.com/JKLeckr/native-websocket-sharp). Note that it must be the net35 windows version (even on Wine/Proton). The macOS version must be built from source (See documentation to build on the [native-websocket-sharp](https://github.com/JKLeckr/native-websocket-sharp) repo).
 
 ### Notes
 
@@ -58,7 +58,7 @@ In the game directory:
     - `Archipelago.MultiClient.Net.dll`
     - `CupheadArchipelago.dll`
     - `websocket-sharp.dll`
-    - `c-ws.dll` (or `c-ws.dylib` if on macOS)
+    - `nativews-win64.dll` (or `native-macos-universal.dylib` if on macOS)
 
 #### 8. Run Game:
 Enjoy!
