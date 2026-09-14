@@ -228,6 +228,8 @@ jobs:
           mkdir -p BepInEx/plugins
           mv -vf *.dll *.pdb BepInEx/plugins/
 
+          mv -f assets/icon.png .
+
           rm -rf assets
           rm -f BUILDING.md
           rm -f INSTALLING.md
