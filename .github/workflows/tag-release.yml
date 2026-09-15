@@ -118,6 +118,12 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Setup macOS specific tools
+        if: runner.os == 'macOS'
+        run: |
+          brew install gnu-sed
+          echo "/opt/homebrew/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+
       - name: Setup Project
         run: |
           dotnet restore
