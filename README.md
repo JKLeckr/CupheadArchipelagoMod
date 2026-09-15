@@ -21,7 +21,8 @@ APWorld: [Archipelago-cuphead](https://github.com/JKLeckr/Archipelago-cuphead)
 Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelagoMod) (This project)
 
 ## Installing
-See [INSTALLING.md](INSTALLING.md)
+You can install it through [Thunderstore](https://thunderstore.io/c/cuphead/p/JKLeckr/CupheadArchipelago/) using a supported mod manager of your choice.
+For installing the manual way (classic), see [INSTALLING.md](INSTALLING.md).
 
 ## Building
 See [BUILDING.md](BUILDING.md)
