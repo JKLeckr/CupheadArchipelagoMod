@@ -118,6 +118,11 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Setup macOS specific tools
+        if: runner.os == 'macOS'
+        run: |
+          brew install gnu-sed
+
       - name: Setup Project
         run: |
           dotnet restore
@@ -141,6 +146,11 @@ jobs:
       - name: Prepare Build for Packaging
         working-directory: build
         run: |
+          if command -v gsed &> /dev/null; then
+            echo "Using gsed as sed"
+            alias sed=gsed
+          fi
+
           rm -rf ${{ env.MOD_NAME }}/assets
 
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/websocket-licenses

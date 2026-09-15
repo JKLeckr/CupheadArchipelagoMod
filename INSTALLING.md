@@ -20,3 +20,4 @@
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
 - If you are using Steam on Linux or SteamOS, make sure to put `WINEDLLOVERRIDES="winhttp=n,b" %command%` in the launch arguments.
 - On macOS, copy `nativews-macos-universal.dylib` into the game directory (the folder with `cuphead.exe` in it). This is needed if you want to connect to anything!
+- macOS 27 or newer is unsupported because Rosetta is discontinued (other than minimum stuffs for older x86_64 games to run). BepInEx does not load on these newer systems. Stay on macOS 26 or older until there is a proper alternative (CrossOver perhaps?). Please reach out on the Discord channel if you have any insights on this.
