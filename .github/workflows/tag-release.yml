@@ -79,7 +79,7 @@ jobs:
       matrix:
         os:
           - {name: win64, runner: ubuntu-latest, priv_branch: main}
-          #- {name: macos, runner: macos-latest, priv_branch: main-macos}
+          - {name: macos, runner: macos-26, priv_branch: main-macos}
 
     name: Build and Upload Release ${{ matrix.os.name }}
     runs-on: ${{ matrix.os.runner }}
@@ -236,7 +236,7 @@ jobs:
 
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ./websocket-licenses
 
-          sed -i '/^## Installing$/,/^See \[INSTALLING\.md\](INSTALLING\.md)$/d' README.md
+          sed -i '/^## Installing$/,/INSTALLING\.md](INSTALLING\.md)/d' README.md
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' README.md
           sed -i '/^$/N;/^\n$/D' README.md
 
