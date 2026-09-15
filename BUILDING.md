@@ -57,6 +57,8 @@ In the game directory:
     - `Newtonsoft.Json.dll`
     - `Archipelago.MultiClient.Net.dll`
     - `CupheadArchipelago.dll`
+    - `CupheadArchipelago.pdb` (for easy debugging)
+    - `FVerParser.dll`
     - `websocket-sharp.dll`
     - `nativews-win64.dll` (or `native-macos-universal.dylib` if on macOS)
 
