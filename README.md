@@ -22,6 +22,7 @@ Client Mod: [CupheadArchipelagoMod](https://github.com/JKLeckr/CupheadArchipelag
 
 ## Installing
 You can install it through [Thunderstore](https://thunderstore.io/c/cuphead/p/JKLeckr/CupheadArchipelago/) using a supported mod manager of your choice.
+
 For installing the manual way (classic), see [INSTALLING.md](INSTALLING.md).
 
 ## Building
