@@ -129,7 +129,7 @@ jobs:
           dotnet clean
 
       - name: Check version
-        if: ${{ github.event.inputs.do_version_check == 'true' }}
+        if: ${{ (vars.DO_VER_CHECK != '' && github.event.inputs.do_version_check == '') || github.event.inputs.do_version_check == 'true' }}
         run: |
           dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ ${{ env.MOD_NAME }} "${{ env.RELEASE_VERSION }}"
 
@@ -148,18 +148,20 @@ jobs:
         run: |
           if command -v gsed &> /dev/null; then
             echo "Using gsed as sed"
-            alias sed=gsed
+            export SED_CMD=gsed
+          else
+            export SED_CMD=sed
           fi
 
           rm -rf ${{ env.MOD_NAME }}/assets
 
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/websocket-licenses
 
-          sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
-          sed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
+          $SED_CMD -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
+          $SED_CMD -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
 
-          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
-          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/INSTALLING.md
+          $SED_CMD -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
+          $SED_CMD -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/INSTALLING.md
 
       - name: Build ZIP package
         working-directory: build
