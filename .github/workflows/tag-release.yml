@@ -144,24 +144,35 @@ jobs:
           dotnet run --no-restore --project ${{ env.MOD_NAME }}.Helpers/GenManifest/GenOrigManifest ${{ env.MOD_NAME }}/${{ env.MOD_NAME }}.csproj build/${{ env.MOD_NAME }}/manifest.json
 
       - name: Prepare Build for Packaging
+        if: runner.os != 'macOS'
         working-directory: build
         run: |
-          if command -v gsed &> /dev/null; then
-            echo "Using gsed as sed"
-            export SED_CMD=gsed
-          else
-            export SED_CMD=sed
-          fi
-
           rm -rf ${{ env.MOD_NAME }}/assets
+          rm -f ${{ env.MOD_NAME }}/INSTALLING.macos.md
 
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/websocket-licenses
 
-          $SED_CMD -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
-          $SED_CMD -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
+          sed -i '/INSTALLING\.macos\.md/d' ${{ env.MOD_NAME }}/README.md
+          sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
+          sed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
 
-          $SED_CMD -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
-          $SED_CMD -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/INSTALLING.md
+          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
+          sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/INSTALLING.md
+
+      - name: Prepare Build for Packaging (macOS)
+        if: runner.os == 'macOS'
+        working-directory: build
+        run: |
+          rm -rf ${{ env.MOD_NAME }}/assets
+          rm -f ${{ env.MOD_NAME }}/INSTALLING.md
+
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/websocket-licenses
+
+          gsed -i '/INSTALLING\.md/d' ${{ env.MOD_NAME }}/README.md
+          gsed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
+          gsed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
+
+          gsed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
 
       - name: Build ZIP package
         working-directory: build
@@ -245,12 +256,15 @@ jobs:
           rm -rf assets
           rm -f BUILDING.md
           rm -f INSTALLING.md
+          rm -f INSTALLING.macos.md
 
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ./BepInEx/plugins/websocket-licenses
           mv -v ./BepInEx/plugins/websocket-licenses/{,nativews-}LICENSE.txt
           mv -v ./BepInEx/plugins/websocket-licenses/{,nativews-}LICENSE.third-party.txt
 
-          sed -i '/^## Installing$/,/INSTALLING\.md](INSTALLING\.md)/d' README.md
+          sed -i 's/, \[GOG\](.*)//' README.md
+
+          sed -i '/^## Installing$/,/INSTALLING\.macos\.md](INSTALLING\.macos\.md)/d' README.md
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' README.md
           sed -i '/^$/N;/^\n$/D' README.md
 

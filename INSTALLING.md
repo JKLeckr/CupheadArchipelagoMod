@@ -2,14 +2,14 @@
 
 ### Prerequisites
 - A legal copy of Cuphead
-- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x (x64)
+- [BepInEx](https://github.com/BepInEx/BepInEx/releases) 5.x (win x64)
 
 ### Instructions
-1. Download the CupheadArchipelago mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).
+1. Download the CupheadArchipelago win version of the mod from the [releases page](https://github.com/JKLeckr/CupheadArchipelagoMod/releases).
 
-2. Place the extracted contents of BepInEx 5.x x64 for your OS into the Cuphead installation folder (the folder with `cuphead.exe` in it). There should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. \[_[Screenshot](assets/doc/install_bepinex_example.png)_\]
+2. Place the extracted contents of BepInEx 5.x win x64 into the Cuphead installation folder (the folder with `cuphead.exe` in it). There should be a `winhttp.dll` and a `doorstop_config` along with a `BepInEx` folder and some other files in the same directory as `cuphead.exe`. \[_[Screenshot](assets/doc/install_bepinex_example.png)_\]
 
-3. Extract the CupheadArchipelago folder from the CupheadArchipelago mod zip and place it into the `BepInEx/plugins` folder. There should be a `CupheadArchipelago` folder `BepInEx/plugins` that contains several DLL's like `CupheadArchipelago.dll`. On macOS, copy `nativews-macos-universal.dylib` into the game directory (see [extra notes](#extra-notes)). \[_[Screenshot](assets/doc/install_mod_example.png)_\]
+3. Extract the CupheadArchipelago folder from the CupheadArchipelago mod zip and place it into the `BepInEx/plugins` folder. There should be a `CupheadArchipelago` folder `BepInEx/plugins` that contains several DLL's like `CupheadArchipelago.dll`. \[_[Screenshot](assets/doc/install_mod_example.png)_\]
 
 4. Launch game. The mod name and version should show in the main menu. \[_[Screenshot](assets/doc/game_launched_example.jpg)_\]
 
@@ -19,5 +19,3 @@
 - If you are on the Steam version, and the mod does not load, launch the game directly from Steam.
 - If you are on Linux using Wine/Proton, use the Windows build of BepInEx.
 - If you are using Steam on Linux or SteamOS, make sure to put `WINEDLLOVERRIDES="winhttp=n,b" %command%` in the launch arguments.
-- On macOS, copy `nativews-macos-universal.dylib` into the game directory (the folder with `cuphead.exe` in it). This is needed if you want to connect to anything!
-- macOS 27 or newer is unsupported because Rosetta is discontinued (other than minimum stuffs for older x86_64 games to run). BepInEx does not load on these newer systems. Stay on macOS 26 or older until there is a proper alternative (CrossOver perhaps?). Please reach out on the Discord channel if you have any insights on this.

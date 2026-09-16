@@ -62,5 +62,7 @@ In the game directory:
     - `websocket-sharp.dll`
     - `nativews-win64.dll` (or `native-macos-universal.dylib` if on macOS)
 
+3. On macOS, copy `native-macos-universal.dylib` to the same directory as `Cuphead.app` as well.
+
 #### 8. Run Game:
 Enjoy!

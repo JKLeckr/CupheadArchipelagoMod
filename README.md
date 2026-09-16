@@ -25,6 +25,8 @@ You can install it through [Thunderstore](https://thunderstore.io/c/cuphead/p/JK
 
 For installing the manual way (classic), see [INSTALLING.md](INSTALLING.md).
 
+For installing on macOS, see [INSTALLING.macos.md](INSTALLING.macos.md).
+
 ## Building
 See [BUILDING.md](BUILDING.md)
 
