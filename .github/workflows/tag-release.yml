@@ -246,7 +246,7 @@ jobs:
           rm -f BUILDING.md
           rm -f INSTALLING.md
 
-          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ./websocket-licenses
+          cp -rv ../${{ env.MOD_NAME }}/ref/licenses ./BepInEx/plugins/websocket-licenses
 
           sed -i '/^## Installing$/,/INSTALLING\.md](INSTALLING\.md)/d' README.md
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' README.md
