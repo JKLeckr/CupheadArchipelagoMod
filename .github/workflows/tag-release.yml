@@ -129,7 +129,7 @@ jobs:
           dotnet clean
 
       - name: Check version
-        if: ${{ (vars.DO_VER_CHECK != '' && github.event.inputs.do_version_check == '') || github.event.inputs.do_version_check == 'true' }}
+        if: ${{ (github.ref_name != 'testee' && github.event.inputs.do_version_check == '') || github.event.inputs.do_version_check == 'true' }}
         run: |
           dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ ${{ env.MOD_NAME }} "${{ env.RELEASE_VERSION }}"
 
@@ -236,7 +236,7 @@ jobs:
           dotnet clean
 
       - name: Check version
-        if: ${{ github.event.inputs.do_version_check == 'true' }}
+        if: ${{ (github.ref_name != 'testee' && github.event.inputs.do_version_check == '') || github.event.inputs.do_version_check == 'true' }}
         run: |
           dotnet run --project ./CupheadArchipelago.Helpers/CheckVersions/ ${{ env.MOD_NAME }} "${{ env.RELEASE_VERSION }}"
 
