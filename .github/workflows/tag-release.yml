@@ -202,7 +202,7 @@ jobs:
 
     env:
       RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
-      INSTALL_NOTE: _For other methods of installing the mod, see the CupheadArchipelago Mod [GitHub Page](https://github.com/JKLeckr/CupheadArchipelagoMod)_
+      INSTALL_NOTE: _For other methods of installing the mod, see the CupheadArchipelago Mod [GitHub Page](https://github.com/JKLeckr/CupheadArchipelagoMod)._
 
     steps:
       - name: Set Env
