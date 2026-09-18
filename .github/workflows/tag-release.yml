@@ -269,7 +269,7 @@ jobs:
 
           sed -i 's/, \[GOG\](.*)//' README.md
 
-          sed -i '/## Installing/a ${{ env.INSTALL_NOTE }}\n'
+          sed -i '/## Installing/a ${{ env.INSTALL_NOTE }}\n' README.md
 
           sed -i '/^For installing the manual way/,/INSTALLING\.macos\.md](INSTALLING\.macos\.md)/d' README.md
 
