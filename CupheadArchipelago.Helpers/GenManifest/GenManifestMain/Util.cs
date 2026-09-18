@@ -15,7 +15,7 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenManifestMain {
             ushort part3 = ushort.Parse(vparts[2]);
             byte part4 = byte.Parse(vparts[3]);
 
-            if (part3 > 999) {
+            if (part3 > 99) {
                 throw new Exception("semVersion part 3 cannot exceed 999");
             }
             if (part4 > 99) {
@@ -27,7 +27,7 @@ namespace CupheadArchipelago.Helpers.GenManifest.GenManifestMain {
 
             byte format = 1;
             int npart3 =
-                (format * 10000000) +
+                (format * 1000000) +
                 (part3 * 10000) +
                 (part4 * 100) +
                 semVersionRel + (postfix.Length == 0 ? 10 : 0);
