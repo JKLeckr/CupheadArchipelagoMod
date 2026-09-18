@@ -154,6 +154,7 @@ jobs:
 
           sed -i '/INSTALLING\.macos\.md/d' ${{ env.MOD_NAME }}/README.md
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
+
           sed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
 
           sed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
@@ -168,8 +169,11 @@ jobs:
 
           cp -rv ../${{ env.MOD_NAME }}/ref/licenses ${{ env.MOD_NAME }}/websocket-licenses
 
+          gsed -i '/\[Thunderstore\]/d' ${{ env.MOD_NAME }}/README.md
           gsed -i '/INSTALLING\.md/d' ${{ env.MOD_NAME }}/README.md
+
           gsed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' ${{ env.MOD_NAME }}/README.md
+
           gsed -i '/^$/N;/^\n$/D' ${{ env.MOD_NAME }}/README.md
 
           gsed -i 's#\[Screenshot\](assets/#\[Screenshot\](${{ env.ASSETS_URL_DIR }}/#g' ${{ env.MOD_NAME }}/README.md
@@ -198,6 +202,7 @@ jobs:
 
     env:
       RELEASE_VERSION: ${{ needs.prep_release.outputs.rel_tag }}
+      INSTALL_NOTE: _For other methods of installing the mod, see the CupheadArchipelago Mod [GitHub Page](https://github.com/JKLeckr/CupheadArchipelagoMod)_
 
     steps:
       - name: Set Env
@@ -264,7 +269,10 @@ jobs:
 
           sed -i 's/, \[GOG\](.*)//' README.md
 
-          sed -i '/^## Installing$/,/INSTALLING\.macos\.md](INSTALLING\.macos\.md)/d' README.md
+          sed -i '/## Installing/a ${{ env.INSTALL_NOTE }}\n'
+
+          sed -i '/^For installing the manual way/,/INSTALLING\.macos\.md](INSTALLING\.macos\.md)/d' README.md
+
           sed -i '/^## Building$/,/^See \[BUILDING\.md\](BUILDING\.md)$/d' README.md
           sed -i '/^$/N;/^\n$/D' README.md
 
