@@ -20,7 +20,7 @@ _There is an assumption you know how to use a terminal and get around a mac. If 
 
 6. Extract the CupheadArchipelago folder from the CupheadArchipelago mod zip and place it into the `BepInEx/plugins` folder. There should be a `CupheadArchipelago` folder `BepInEx/plugins` that contains several DLL's like `CupheadArchipelago.dll`.
 
-7. Copy `nativews-macos-universal.dylib` into the game directory. Allow the file for gatekeeper by running `xattr -dr com.apple.quarantine run_bepinex.sh libdoorstop.dylib` in the same directory.
+7. Copy `nativews-macos-universal.dylib` into the game directory. Allow the file for gatekeeper by running `xattr -dr com.apple.quarantine run_bepinex.sh nativews-macos-universal.dylib` in the same directory.
 
 8. If **using Steam**, you must modify the launch options by going into properties for that game and setting it to `"/whatever/the/path/is/to/Cuphead/run_bepinex.sh" %command%`. Include the quotes. You can use "Get Info" on `run_bepinex.sh` to get the full path and paste it in. Make sure that path is inside the quotes, but not the command. If you do not do this step right, it will fail to launch.
 
