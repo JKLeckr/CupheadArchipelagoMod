@@ -10,7 +10,7 @@ using FVer;
 
 namespace CupheadArchipelago.AP {
     internal class APSlotData {
-        internal const long AP_SLOTDATA_VERSION = 6;
+        internal const long AP_SLOTDATA_VERSION = 7;
         internal const long AP_SLOTDATA_MIN_VERSION = 6;
 
         internal readonly long version;
@@ -36,6 +36,7 @@ namespace CupheadArchipelago.AP {
         internal readonly GradeChecks rungun_grade_checks;
         internal readonly int start_maxhealth;
         internal readonly int start_maxhealth_p2;
+        internal readonly int max_maxhealth;
         internal readonly DlcChaliceModes dlc_chalice;
         internal readonly DlcChaliceCheckModes dlc_boss_chalice_checks;
         internal readonly DlcChaliceCheckModes dlc_rungun_chalice_checks;
@@ -73,6 +74,7 @@ namespace CupheadArchipelago.AP {
             rungun_grade_checks = GetAPSlotDataValue<GradeChecks>(slotData, "rungun_grade_checks");
             start_maxhealth = GetAPSlotDataValue<int>(slotData, "start_maxhealth");
             start_maxhealth_p2 = GetAPSlotDataValue<int>(slotData, "start_maxhealth_p2");
+            max_maxhealth = GetOptionalAPSlotDataValue(slotData, "max_maxhealth", start_maxhealth);
             dlc_chalice = GetAPSlotDataValue<DlcChaliceModes>(slotData, "dlc_chalice");
             dlc_boss_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_boss_chalice_checks");
             dlc_rungun_chalice_checks = GetAPSlotDataValue<DlcChaliceCheckModes>(slotData, "dlc_rungun_chalice_checks");
