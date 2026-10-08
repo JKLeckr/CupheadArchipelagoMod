@@ -4,6 +4,7 @@
 using CupheadArchipelago.AP;
 using CupheadArchipelago.Config;
 using CupheadArchipelago.TestEnv;
+using CupheadArchipelago.Unity;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(Update));
         }
 
+        //private static bool fail = false;
         private static CupheadInput.AnyPlayerInput input;
 
         [HarmonyPatch(typeof(StartScreen), "Awake")]
@@ -25,12 +27,22 @@ namespace CupheadArchipelago.Hooks {
                     Logging.LogFatal("Errors occured. Aborting game to prevent damage!");
                     CreateModErrorText();
                     input = new CupheadInput.AnyPlayerInput(false);
+                    //fail = true;
                     return false;
                 }
                 if (MConf.IsTesting()) {
                     Logging.Log("Running in Test Mode: Running in test environment instead of game.");
                     TestMngr.Init();
                     input = new CupheadInput.AnyPlayerInput(false);
+                    //fail = true;
+                    return false;
+                }
+                if (!APMain.Exists()) {
+                    Logging.LogFatal("APMain does not exist/was destroyed. Unity is probably destroying this Mod's objects!");
+                    Logging.LogFatal("Giving up and aborting game!");
+                    CreateModErrorText(-255, "APMain missing/dead!");
+                    input = new CupheadInput.AnyPlayerInput(false);
+                    //fail = true;
                     return false;
                 }
                 return true;
@@ -43,7 +55,7 @@ namespace CupheadArchipelago.Hooks {
         [HarmonyPatch(typeof(StartScreen), "Start")]
         internal static class Start {
             static bool Prefix() {
-                return Plugin.State >= 0 && !MConf.IsTesting();
+                return Plugin.State >= 0 && !MConf.IsTesting() && APMain.Exists();
             }
             static void Postfix() {
                 Logging.Log($"DLC: {(DLCManager.DLCEnabled() ? "Enabled" : "Disabled")}");
@@ -92,11 +104,15 @@ namespace CupheadArchipelago.Hooks {
         }
 
         private static void CreateModErrorText() {
-            GameObject canvas = new GameObject("ErrCanvas");
+            CreateModErrorText(Plugin.State, Plugin.StateMessage);
+        }
+
+        private static void CreateModErrorText(int errcode, string errmessage) {
+            GameObject canvas = new("ErrCanvas");
             canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.AddComponent<CanvasScaler>();
             canvas.AddComponent<GraphicRaycaster>();
-            GameObject obj = new GameObject("ModErrorText");
+            GameObject obj = new("ModErrorText");
             obj.transform.SetParent(canvas.transform, false);
             obj.SetActive(true);
             RectTransform rect = obj.AddComponent<RectTransform>();
@@ -108,7 +124,7 @@ namespace CupheadArchipelago.Hooks {
             txt.font = FontLoader.GetFont(FontLoader.FontType.CupheadVogue_Bold_merged);
             txt.color = UnityEngine.Color.red;
             txt.fontSize = 32;
-            txt.text = $"CupheadArchipelago\nFATAL ERROR (code {Plugin.State})\n{Plugin.StateMessage}\nCheck Log";
+            txt.text = $"CupheadArchipelago\nFATAL ERROR (code {errcode})\n{errmessage}\nCheck Log";
 
             obj.layer = 5;
         }
