@@ -6,21 +6,52 @@ using UnityEngine;
 
 namespace CupheadArchipelago.Unity {
     internal class APMain : MonoBehaviour {
-        private static GameObject current = null;
+        private static APMain current = null;
+
+        private byte state = 0;
+        public bool Initted { get => state == 1; }
 
         internal static void Create() {
             if (current == null) {
-                current = new GameObject("APMain", typeof(APMain));
+                GameObject obj = new("APMain");
+                obj.AddComponent<APMain>();
+                obj.SetActive(true);
+                Logging.Log("APMain active");
+            }
+            else {
+                Logging.LogWarning("APMain already exists!");
             }
         }
 
+        internal static bool Exists() => current?.Initted == true;
+
         void Awake() {
-            DontDestroyOnLoad(gameObject);
+            Logging.Log("APMain created");
+            if (current == null) {
+                current = this;
+            }
+            if (current == this) {
+                DontDestroyOnLoad(gameObject);
+                state = 1;
+                Logging.Log("APMain Initialized");
+            }
+            else {
+                Logging.LogError("APMain initialized incorrectly!");
+                state = 2;
+                Destroy(this);
+            }
         }
 
         void OnDestroy() {
-            Logging.Log("Shutting Down");
-            APClient.CloseArchipelagoSession(false);
+            if (current == this) {
+                Logging.Log("APMain Destroyed");
+                if (state <= 0) {
+                    Logging.LogError("APMain Destroyed Prematurely");
+                }
+                Logging.Log("Closing existing sessions");
+                APClient.CloseArchipelagoSession(false);
+                current = null;
+            }
         }
     }
 }
