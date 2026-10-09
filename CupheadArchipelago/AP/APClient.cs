@@ -897,14 +897,14 @@ namespace CupheadArchipelago.AP {
         private static void OnDeathLinkReceived(DeathLink deathLink) {
             Logging.Log($"[APClient] DeathLink: {deathLink.Cause}");
             Logging.Log($"[APClient] Death received from {deathLink.Source}");
-            if (APManager.Current!=null) {
+            if (APManager.Current != null && APManager.Current.GetMngrType() == APManager.MngrType.Level && APManager.Current.IsDeathLinkEnabled()) {
                 Logging.Log($"[APClient] Commencing...");
                 string message = $"{deathLink.Source} plugged you!{(deathLink.Cause == "" ? "" : $" Cause: \"{deathLink.Cause}\"")}";
                 APManager.Current.TriggerDeath(message);
                 Logging.Log($"[APClient] Enjoy your death!");
             }
             else {
-                Logging.Log($"[APClient] Death avoided because level conditions were not met.");
+                Logging.Log($"[APClient] Death averted because level conditions were not met.");
             }
         }
         public static bool IsDeathLinkActive() => deathLinkService != null;
