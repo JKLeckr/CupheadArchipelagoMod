@@ -22,7 +22,7 @@ namespace CupheadArchipelago.Unity {
         private float mapApplyInterval = 0.025f;
         private bool init = false;
         private bool active = false;
-        private MngrType type = MngrType.Normal;
+        private MngrType mngrType = MngrType.Normal;
         private float timer = 0f;
         [SerializeField]
         private bool deathLink = false;
@@ -46,16 +46,19 @@ namespace CupheadArchipelago.Unity {
                 Current = this;
             }
             Logging.Log($"[APManager] Initialized as Current {type}");
-            this.type = type;
+            this.mngrType = type;
             this.deathLink = deathLink;
             init = true;
         }
         public bool IsActive() => active;
         public void SetActive(bool active) => this.active = active;
 
+        public MngrType GetMngrType() => mngrType;
+
         public bool IsDeathTriggered() => death;
+        public bool IsDeathLinkEnabled() => deathLink;
         public void TriggerDeath(string message = "Self") {
-            if (type != MngrType.Level) return;
+            if (!deathLink) return;
             if (IsDeathTriggered()) {
                 Logging.LogWarning("[APManager] Death already triggered!");
                 return;
@@ -88,7 +91,7 @@ namespace CupheadArchipelago.Unity {
                 }
                 else if (active && PauseManager.state != PauseManager.State.Paused) {
                     if (debug) Logging.Log($"ReceiveQueue {APClient.ItemReceiveQueueCount()}");
-                    if (type == MngrType.Level && deathLink && death && !deathExecuted) {
+                    if (mngrType == MngrType.Level && deathLink && death && !deathExecuted) {
                         Logging.Log($"[APManager] Killing Players.");
                         PlayerStatsInterface.KillPlayer(PlayerId.Any);
                         Logging.Log($"[APManager] {deathMessage}");
@@ -109,11 +112,11 @@ namespace CupheadArchipelago.Unity {
                         if (slowFire<0) slowFire = 0;
                     }
                     APClient.ItemUpdate();
-                    float applyInterval = type switch {
+                    float applyInterval = mngrType switch {
                         MngrType.Level or MngrType.SpecialLevel => levelApplyInterval,
                         _ => mapApplyInterval,
                     };
-                    if (type == MngrType.Level || type == MngrType.SpecialLevel) {
+                    if (mngrType == MngrType.Level || mngrType == MngrType.SpecialLevel) {
                         if (debug) Logging.Log($"ItemSpecialLevelQueue {APClient.ItemApplySpecialLevelQueueCount()}");
                         if (!APClient.ItemApplySpecialLevelQueueIsEmpty()) {
                             if (debug) Logging.Log($"ItemSpecialLevelQueue has item");
@@ -129,7 +132,7 @@ namespace CupheadArchipelago.Unity {
                             }
                         }
                     }
-                    if (type == MngrType.Level) {
+                    if (mngrType == MngrType.Level) {
                         if (debug) Logging.Log($"ItemLevelQueue {APClient.ItemApplyLevelQueueCount()}");
                         if (!APClient.ItemApplyLevelQueueIsEmpty()) {
                             if (debug) Logging.Log($"ItemLevelQueue has item");
