@@ -17,7 +17,6 @@ namespace CupheadArchipelago.Hooks {
             Harmony.CreateAndPatchAll(typeof(Update));
         }
 
-        //private static bool fail = false;
         private static CupheadInput.AnyPlayerInput input;
 
         [HarmonyPatch(typeof(StartScreen), "Awake")]
@@ -27,14 +26,12 @@ namespace CupheadArchipelago.Hooks {
                     Logging.LogFatal("Errors occured. Aborting game to prevent damage!");
                     CreateModErrorText();
                     input = new CupheadInput.AnyPlayerInput(false);
-                    //fail = true;
                     return false;
                 }
                 if (MConf.IsTesting()) {
                     Logging.Log("Running in Test Mode: Running in test environment instead of game.");
                     TestMngr.Init();
                     input = new CupheadInput.AnyPlayerInput(false);
-                    //fail = true;
                     return false;
                 }
                 if (!APMain.Exists()) {
@@ -42,7 +39,6 @@ namespace CupheadArchipelago.Hooks {
                     Logging.LogFatal("Giving up and aborting game!");
                     CreateModErrorText(-255, "APMain missing/dead!");
                     input = new CupheadInput.AnyPlayerInput(false);
-                    //fail = true;
                     return false;
                 }
                 return true;
