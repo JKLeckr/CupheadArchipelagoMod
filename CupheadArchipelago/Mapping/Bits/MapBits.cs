@@ -29,7 +29,7 @@ namespace CupheadArchipelago.Mapping.Bits {
             if (!mapBitIds.ContainsKey(map)) {
                 throw new KeyNotFoundException("'" + map + "'" + " is not a valid map.");
             }
-            return 1 << mapBitIds[map];
+            return mapBitIds[map];
         }
 
         public static Scenes[] GetBittableMaps() {
