@@ -239,6 +239,12 @@ jobs:
           ref: ch_ap
           path: ref_ts
 
+      # Complete this later
+      - name: Check Thunderstore data
+        if: ${{ vars.PULL_PRIV != '' && github.event.inputs.fetch_ts_changelog != 'false' }}
+        run: |
+          true
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
