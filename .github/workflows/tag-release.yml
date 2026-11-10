@@ -22,6 +22,11 @@ on:
           required: false
           default: true
           type: boolean
+        fetch_ts_changelog:
+          description: "Fetch Thunderstore changelog from Thunderstore data repo"
+          required: false
+          default: true
+          type: boolean
 
   push:
     tags:
@@ -111,7 +116,7 @@ jobs:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
           ref: ${{ matrix.os.priv_branch }}
-          path: CupheadArchipelago/ref
+          path: ${{ env.MOD_NAME }}/ref
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -223,7 +228,16 @@ jobs:
           repository: JKLeckr/CupheadArchipelagoMod-Private
           token: ${{ secrets.AP_PRIVATE_TOKEN }}
           ref: ${{ matrix.os.priv_branch }}
-          path: CupheadArchipelago/ref
+          path: ${{ env.MOD_NAME }}/ref
+
+      - name: Checkout Thunderstore data
+        uses: actions/checkout@v6
+        if: ${{ vars.PULL_PRIV != '' && github.event.inputs.fetch_ts_changelog != 'false' }}
+        with:
+          repository: JKLeckr/ThunderStore-data
+          token: ${{ secrets.TS_PRIVATE_REPO_TOKEN }}
+          ref: ch_ap
+          path: ref_ts
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -253,6 +267,12 @@ jobs:
       - name: Prepare Build for Packaging
         working-directory: build
         run: |
+          if [ -d "../ref_ts/${{ env.MOD_NAME }}/" ]; then
+            cp -rvf ../ref_ts/${{ env.MOD_NAME }}/* .
+          else
+            echo "No Thunderstore Data"
+          fi
+
           mkdir -p BepInEx/plugins
           mv -vf *.dll *.pdb BepInEx/plugins/
 
