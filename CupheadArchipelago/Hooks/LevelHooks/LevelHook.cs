@@ -335,26 +335,28 @@ namespace CupheadArchipelago.Hooks.LevelHooks {
                 return codes;
             }
             static void Postfix(Level __instance) {
-                Levels clevel = __instance.CurrentLevel;
+                if (APData.IsCurrentSlotEnabled()) {
+                    Levels clevel = __instance.CurrentLevel;
 
-                if (!LevelBits.IsBitableLevel(clevel)) {
-                    return;
-                }
+                    if (!LevelBits.IsBitableLevel(clevel)) {
+                        return;
+                    }
 
-                PlayerData.PlayerLevelDataObject pdata = PlayerData.Data.GetLevelData(__instance.CurrentLevel);
+                    PlayerData.PlayerLevelDataObject pdata = PlayerData.Data.GetLevelData(__instance.CurrentLevel);
 
-                if (pdata.grade >= LevelScoringData.Grade.AMinus) {
-                    APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetLevelBit(clevel);
-                }
-                if (pdata.grade == LevelScoringData.Grade.P) {
-                    APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetLevelBit(clevel);
-                }
+                    if (pdata.grade >= LevelScoringData.Grade.AMinus) {
+                        APClient.APSessionGSPlayerData.agrade_levels |= LevelBits.GetLevelBit(clevel);
+                    }
+                    if (pdata.grade == LevelScoringData.Grade.P) {
+                        APClient.APSessionGSPlayerData.pacifist_levels |= LevelBits.GetLevelBit(clevel);
+                    }
 
-                if (pdata.completedAsChaliceP1) {
-                    APClient.APSessionGSPlayerData.dlc_chaliced_levels_p1 |= LevelBits.GetLevelBit(clevel);
-                }
-                if (pdata.completedAsChaliceP2) {
-                    APClient.APSessionGSPlayerData.dlc_chaliced_levels_p2 |= LevelBits.GetLevelBit(clevel);
+                    if (pdata.completedAsChaliceP1) {
+                        APClient.APSessionGSPlayerData.dlc_chaliced_levels_p1 |= LevelBits.GetLevelBit(clevel);
+                    }
+                    if (pdata.completedAsChaliceP2) {
+                        APClient.APSessionGSPlayerData.dlc_chaliced_levels_p2 |= LevelBits.GetLevelBit(clevel);
+                    }
                 }
             }
 
